@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register | SILAB</title>
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../CSS/auth.css">
+
+</head>
+
+<body>
+
+    <main class="register-container">
+
+        <!-- =================================
+             BAGIAN KIRI
+        ================================== -->
+
+        <section class="visual-panel">
+
+            <!-- BACKGROUND LABORATORIUM -->
+            <img
+                src="../Assets/Background.svg"
+                alt=""
+                class="visual-background"
+            >
+
+            <!-- IDENTITAS SILAB -->
+            <div class="brand">
+
+                <img
+                    src="../Assets/Logo_RPL.svg"
+                    alt="Logo SILAB"
+                    class="brand-logo"
+                >
+
+                <div class="brand-text">
+                    <h1>SILAB</h1>
+                    <p>Sistem Peminjaman Laboratorium</p>
+                    <p>Universitas Khairun</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             BAGIAN KANAN
+        ================================== -->
+
+        <section class="register-panel">
+
+            <div class="register-content">
+
+                <!-- HEADER -->
+                <header class="register-header">
+
+                    <h2>Buat Akun</h2>
+
+                    <p>Daftar sekarang untuk mulai menggunakan sistem</p>
+
+                </header>
+
+
+                <!-- FORM REGISTER -->
+                <form class="register-form">
+
+                    <!-- NAMA LENGKAP -->
+                    <div class="input-group">
+
+                        <i class="bi bi-person"></i>
+
+                        <input
+                            type="text"
+                            name="nama"
+                            placeholder="Nama Lengkap"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- NIP / NPM -->
+                    <div class="input-group">
+
+                        <i class="bi bi-person"></i>
+
+                        <input
+                            type="text"
+                            inputmode="numeric"
+                            name="identifier"
+                            placeholder="NIP/NPM"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- NOMOR TELEPON -->
+                    <div class="input-group">
+
+                        <i class="bi bi-envelope"></i>
+
+                        <input
+                            type="tel"
+                            name="no_telp"
+                            placeholder="No Telp"
+                            autocomplete="tel"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="input-group">
+
+                        <i class="bi bi-lock"></i>
+
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <i class="bi bi-eye password-icon"></i>
+
+                    </div>
+
+
+                    <!-- KONFIRMASI PASSWORD -->
+                    <div class="input-group">
+
+                        <i class="bi bi-lock"></i>
+
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            placeholder="Konfirmasi Password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <i class="bi bi-eye password-icon"></i>
+
+                    </div>
+
+
+                    <!-- PERSETUJUAN -->
+                    <label class="terms">
+
+                        <input
+                            type="checkbox"
+                            name="terms"
+                            required
+                        >
+
+                        <span>
+                            Saya setuju dengan
+                            <a href="#">syarat dan ketentuan</a>
+                            serta
+                            <a href="#">kebijakan privasi</a>
+                        </span>
+
+                    </label>
+
+
+                    <!-- BUTTON DAFTAR -->
+                    <button
+                        type="button"
+                        class="btn-register"
+                    >
+                        Daftar
+                    </button>
+
+                </form>
+
+
+                <!-- FOOTER -->
+                <div class="register-footer">
+
+                    <p>
+                        Sudah punya akun?
+                        <a href="login.html">Login di sini</a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
