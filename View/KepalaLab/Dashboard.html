@@ -30,7 +30,7 @@
     <!-- =====================================
         1. NAVBAR
     ====================================== -->
-
+        
     <header class="navbar">
 
         <!-- IDENTITAS SILAB -->
@@ -53,70 +53,61 @@
         <!-- MENU NAVIGASI -->
         <nav class="navbar-menu">
 
-            <a href="dashboard.html" class="nav-link active">
+            <a href="Dashboard.html" class="nav-link active">
                 Dashboard Kepala Lab
             </a>
 
-            <a href="konflik.html" class="nav-link">
+            <a href="penyelesaian_konflik.html" class="nav-link">
                 Penyelesaian Konflik
             </a>
 
-            <a href="manajemen-user.html" class="nav-link">
+            <a href="manajemen_user.html" class="nav-link">
                 Manajemen User
             </a>
 
         </nav>
-            
-        <!-- =====================================
-            PROFIL KEPALA LAB
-        ===================================== -->
+        
+    <!-- PROFIL KEPALA LAB -->
+    <div class="navbar-profile">
 
-        <div class="navbar-profile">
+        <div class="profile-info">
+            <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
+            <p>Kepala Lab</p>
+        </div>
 
-            <!-- NAMA DAN JABATAN DI NAVBAR -->
-            <div class="profile-info">
+        <details class="profile-dropdown">
 
-                <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
-                <p>Kepala Lab</p>
+            <summary class="profile-trigger">
+                <i class="bi bi-person"></i>
+            </summary>
 
-            </div>
+            <div class="profile-menu">
 
-            <!-- IKON DAN DROPDOWN PROFIL -->
-            <details class="profile-dropdown">
+                <div class="profile-info">
 
-                <summary class="profile-trigger">
-                    <i class="bi bi-person"></i>
-                </summary>
+                    <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
 
-                <!-- POPUP PROFIL -->
-                <div class="profile-menu">
+                    <span>NIP : XXXXXXXX</span>
 
-                    <div class="profile-info">
-
-                        <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
-
-                        <span>NIP : XXXXXXXX</span>
-
-                        <div class="profile-role">
-                            <i class="bi bi-shield-check"></i>
-                            Kepala Lab RPL
-                        </div>
-
+                    <div class="profile-role">
+                        <i class="bi bi-shield-check"></i>
+                        Kepala Lab RPL
                     </div>
-
-                    <div class="profile-divider"></div>
-
-                    <!-- KELUAR -->
-                    <a href="../auth/login.html" class="logout-link">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Keluar/Logout
-                    </a>
 
                 </div>
 
-            </details>
+                <div class="profile-divider"></div>
 
-        </div>  
+                <a href="../auth/login.html" class="logout-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Keluar / Logout
+                </a>
+
+            </div>
+
+        </details>
+
+    </div>
 
     </header>
 
