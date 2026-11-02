@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Pengguna | SILAB</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- BOOTSTRAP ICON -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS BERSAMA -->
+    <link rel="stylesheet" href="../CSS/pengguna/navbar.css">
+
+    <!-- CSS DASHBOARD -->
+    <link rel="stylesheet" href="../CSS/pengguna/dashboard.css">
+</head>
+
+<body>
+
+    <!-- ======================================
+         NAVBAR PENGGUNA
+    ======================================= -->
+
+    <header class="navbar">
+
+        <!-- LOGO DAN IDENTITAS -->
+
+        <div class="navbar-brand">
+
+            <img src="../Assets/Logo_RPL.svg"
+                 alt="Logo SILAB"
+                 class="navbar-logo">
+
+            <div class="brand-info">
+                <h1>SILAB</h1>
+                <p>Teknik Informatika - Universitas Khairun</p>
+            </div>
+
+        </div>
+
+
+        <!-- MENU -->
+
+        <nav class="navbar-menu">
+
+            <a href="dashboard.html" class="nav-link active">
+                Dashboard Pengguna
+            </a>
+
+            <a href="riwayat.html" class="nav-link">
+                Riwayat
+            </a>
+
+            <a href="rekomendasi.html" class="nav-link">
+                Rekomendasi
+            </a>
+
+        </nav>
+
+
+        <!-- PROFIL -->
+
+        <div class="navbar-profile">
+
+            <span class="user-navbar-name">
+                Djuleha M. Asyik
+            </span>
+
+            <details class="profile-dropdown">
+
+                <summary class="profile-trigger">
+                    <i class="bi bi-person"></i>
+                </summary>
+
+                <div class="profile-menu">
+
+                    <div class="profile-info">
+                        <p>Djuleha M. Asyik</p>
+                        <span>Akun Pengguna SILAB</span>
+                    </div>
+
+                    <div class="profile-role">
+                        <i class="bi bi-shield-check"></i>
+                        Pengguna
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <a href="../auth/login.html" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Keluar / Logout
+                    </a>
+
+                </div>
+
+            </details>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================
+         KONTEN DASHBOARD
+    ======================================= -->
+
+    <main class="user-dashboard-container">
+
+
+        <!-- HEADER DASHBOARD -->
+
+        <section class="user-welcome-card">
+
+            <div class="user-welcome-content">
+
+                <div class="user-portal-label">
+                    <i class="bi bi-circle-fill"></i>
+                    PORTAL PEMINJAMAN PENGGUNA
+                </div>
+
+                <h2>Dashboard Pengguna</h2>
+
+                <p>
+                    Cek ketersediaan slot waktu lab sebelum mengajukan
+                    peminjaman. Sistem otomatis mengalokasikan prioritas
+                    sesuai regulasi prodi.
+                </p>
+
+            </div>
+
+            <a href="pengajuan.html" class="user-apply-button">
+                <i class="bi bi-plus-circle"></i>
+                Buat Pengajuan Peminjaman
+            </a>
+
+        </section>
+
+
+        <!-- PANEL JADWAL -->
+
+        <section class="user-schedule-panel">
+
+
+            <!-- HEADER JADWAL -->
+
+            <div class="user-schedule-header">
+
+                <h3>
+                    Jadwal Slot Waktu
+                    <span>•</span>
+                    Kamis, 24 Oktober 2026
+                </h3>
+
+                <div class="user-live-status">
+                    <i class="bi bi-circle-fill"></i>
+                    Live Hari Ini
+                </div>
+
+            </div>
+
+
+            <!-- DAFTAR SLOT -->
+
+            <div class="user-slot-list">
+
+
+                <!-- SLOT PERTAMA -->
+
+                <article class="user-slot-card">
+
+                    <div class="user-slot-time">
+                        08.00 – 10.30
+                    </div>
+
+                    <div class="user-slot-detail">
+
+                        <div class="user-slot-title">
+
+                            <h4>Pemrograman Terstruktur</h4>
+
+                            <span class="user-requirement-badge">
+                                Kebutuhan PC : 36
+                            </span>
+
+                            <span class="user-requirement-badge">
+                                Kebutuhan Kursi : 36
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Kelas IF-3A
+                            <span>•</span>
+                            Dosen Pengampu: Satria Dwi Pauwah S.T., M.Kom
+                        </p>
+
+                    </div>
+
+                    <div class="user-slot-status">
+
+                        <span class="user-status-full">
+                            <i class="bi bi-circle-fill"></i>
+                            TERISI
+                        </span>
+
+                    </div>
+
+                </article>
+
+
+                <!-- SLOT KEDUA -->
+
+                <article class="user-slot-card">
+
+                    <div class="user-slot-time">
+                        10.30 – 12.00
+                    </div>
+
+                    <div class="user-slot-detail">
+
+                        <div class="user-slot-title">
+
+                            <h4>Mobile Programming</h4>
+
+                            <span class="user-requirement-badge">
+                                Kebutuhan PC : 25
+                            </span>
+
+                            <span class="user-requirement-badge">
+                                Kebutuhan Kursi : 25
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Kelas IF-5B
+                            <span>•</span>
+                            Dosen Pengampu: Yasir Munir S.T., M.Kom
+                        </p>
+
+                    </div>
+
+                    <div class="user-slot-status">
+
+                        <span class="user-status-full">
+                            <i class="bi bi-circle-fill"></i>
+                            TERISI
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- KETERANGAN OPERASIONAL -->
+
+            <div class="user-operational-note">
+
+                <p>
+                    Lab RPL dapat dipakai dari pukul 07.30 s.d 18.00,
+                    Penggunaan lab di jam 19.00 ke atas memerlukan otoritas
+                    <br>
+                    laboran dan kepala lab.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

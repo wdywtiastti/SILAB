@@ -1,0 +1,493 @@
+
+/* ==================================================
+   SILAB - PENGAJUAN PEMINJAMAN
+================================================== */
+
+
+/* ==================================================
+   1. CONTAINER UTAMA
+================================================== */
+
+.user-application-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
+
+    margin: 18px auto 30px;
+}
+
+
+/* ==================================================
+   2. JUDUL HALAMAN
+================================================== */
+
+.application-heading {
+    margin-bottom: 14px;
+}
+
+.application-label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 10px;
+
+    color: #A27600;
+    background: #FFF3D6;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.application-label i {
+    font-size: 8px;
+}
+
+.application-heading h2 {
+    margin: 9px 0 6px;
+
+    color: #33266A;
+
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.application-heading p {
+    max-width: 650px;
+
+    color: #667A9B;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+
+/* ==================================================
+   3. LAYOUT FORM DAN KATEGORI
+================================================== */
+
+.application-layout {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 2fr)
+        minmax(280px, 0.96fr);
+
+    align-items: start;
+
+    gap: 24px;
+}
+
+
+/* ==================================================
+   4. FORMULIR
+================================================== */
+
+.application-form {
+    width: 100%;
+    min-width: 0;
+    min-height: 420px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+}
+
+
+/* GROUP INPUT */
+
+.application-group {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 16px;
+}
+
+.application-group label {
+    margin-bottom: 7px;
+
+    color: #263249;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.application-group label span {
+    color: #C41E42;
+}
+
+
+/* ==================================================
+   5. INPUT
+================================================== */
+
+.application-group input,
+.application-select select {
+    width: 100%;
+    height: 36px;
+
+    padding: 0 11px;
+
+    color: #263249;
+    background: #F4F6F9;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 11px;
+
+    transition: 0.2s;
+}
+
+.application-group input:focus,
+.application-select select:focus {
+    background: #FFFFFF;
+    border-color: #33266A;
+}
+
+
+/* ==================================================
+   6. INPUT WAKTU
+================================================== */
+
+.application-time-row {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+}
+
+.application-time-row input {
+    min-width: 0;
+
+    padding: 0 8px;
+
+    font-size: 10px;
+
+    color-scheme: light;
+}
+
+
+/* ==================================================
+   7. SELECT KATEGORI
+================================================== */
+
+.application-select {
+    position: relative;
+    width: 100%;
+}
+
+.application-select select {
+    appearance: none;
+    -webkit-appearance: none;
+
+    padding-left: 36px;
+    padding-right: 30px;
+
+    cursor: pointer;
+}
+
+.application-select > i:first-child {
+    position: absolute;
+
+    top: 50%;
+    left: 12px;
+
+    transform: translateY(-50%);
+
+    color: #E6AD32;
+
+    font-size: 13px;
+
+    pointer-events: none;
+}
+
+.application-select .select-arrow {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    color: #667A9B;
+
+    font-size: 11px;
+
+    pointer-events: none;
+}
+
+
+/* ==================================================
+   8. INPUT NAMA KEGIATAN
+================================================== */
+
+.application-input-icon {
+    position: relative;
+    width: 100%;
+}
+
+.application-input-icon > i {
+    position: absolute;
+
+    top: 50%;
+    left: 12px;
+
+    transform: translateY(-50%);
+
+    color: #E6AD32;
+
+    font-size: 13px;
+
+    pointer-events: none;
+}
+
+.application-input-icon input {
+    padding-left: 36px;
+}
+
+
+/* ==================================================
+   9. TOMBOL FORM
+================================================== */
+
+.application-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: auto;
+    padding-top: 15px;
+}
+
+.application-cancel,
+.application-submit {
+    min-height: 37px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 0 16px;
+
+    color: #34445B;
+    background: #F4F6F9;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.application-cancel:hover,
+.application-submit:hover {
+    background: #E9EDF3;
+}
+
+.application-submit i {
+    font-size: 11px;
+}
+
+
+/* PESAN VALIDASI */
+
+.application-feedback {
+    display: none;
+
+    margin-top: 10px;
+
+    color: #18794E;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.application-feedback.show {
+    display: block;
+}
+
+
+/* ==================================================
+   10. PANEL KATEGORI
+================================================== */
+
+.application-category {
+    width: 100%;
+    min-height: 190px;
+
+    padding: 17px 16px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+}
+
+
+/* HEADER KATEGORI */
+
+.application-category-heading {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 16px;
+}
+
+.application-category-heading h3 {
+    color: #33266A;
+
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.application-category-heading > i {
+    position: absolute;
+    left: 0;
+
+    color: #911E3F;
+
+    font-size: 14px;
+}
+
+
+/* DAFTAR KATEGORI */
+
+.application-category-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.application-category-list div {
+    min-height: 35px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    color: #34445B;
+    background: #F0F4F9;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+
+/* ==================================================
+   11. RESPONSIVE TABLET
+================================================== */
+
+@media screen and (max-width: 1100px) {
+
+    .user-application-container {
+        width: calc(100% - 35px);
+    }
+
+    .application-layout {
+        grid-template-columns:
+            minmax(0, 1.7fr)
+            minmax(250px, 1fr);
+
+        gap: 20px;
+    }
+
+}
+
+
+/* ==================================================
+   12. RESPONSIVE MOBILE
+================================================== */
+
+@media screen and (max-width: 700px) {
+
+    .user-application-container {
+        width: calc(100% - 24px);
+        margin: 12px auto 20px;
+    }
+
+    .application-heading h2 {
+        font-size: 22px;
+    }
+
+    .application-heading p {
+        font-size: 10px;
+    }
+
+    .application-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .application-form {
+        min-height: 420px;
+        padding: 15px;
+    }
+
+    .application-time-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .application-actions {
+        flex-wrap: wrap;
+    }
+
+    .application-cancel {
+        flex: 0.7;
+    }
+
+    .application-submit {
+        flex: 1.3;
+    }
+
+    .application-category-heading h3 {
+        font-size: 23px;
+    }
+
+}
