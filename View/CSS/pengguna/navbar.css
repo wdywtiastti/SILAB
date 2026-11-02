@@ -1,0 +1,481 @@
+
+/* ==================================================
+   SILAB - SHARED NAVBAR PENGGUNA
+   Digunakan oleh Dashboard, Pengajuan, Riwayat,
+   dan Rekomendasi.
+================================================== */
+
+/* 1. GLOBAL RESET */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #33266A;
+    --maroon: #911E3F;
+    --yellow: #F8B916;
+
+    --white: #FFFFFF;
+    --text: #202B40;
+    --text-muted: #667A9B;
+
+    --border: #E1E1E5;
+    --background: #F4F5F8;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    width: 100%;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    background: var(--background);
+    color: var(--text);
+
+    overflow-x: hidden;
+}
+
+
+/* ==================================================
+   2. NAVBAR UTAMA
+================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+    height: 72px;
+    min-height: 72px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 0 25px;
+
+    background: var(--white);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+/* ==================================================
+   3. IDENTITAS SILAB
+================================================== */
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    height: 100%;
+    min-width: 0;
+}
+
+.navbar-logo {
+    display: block;
+
+    width: 50px;
+    height: 50px;
+
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+    justify-content: center;
+
+    gap: 3px;
+}
+
+.brand-info h1 {
+    margin: 0;
+
+    color: var(--primary);
+
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.brand-info p {
+    margin: 0;
+
+    color: #555555;
+
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.3;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   4. MENU NAVIGASI
+================================================== */
+
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 13px;
+
+    color: #111111;
+    background: var(--white);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    border: 1px solid #D9DCE3;
+    border-radius: 10px;
+
+    transition: 0.2s ease;
+}
+
+.nav-link:hover {
+    background: #F5F1F7;
+}
+
+.nav-link.active {
+    color: var(--white);
+    background: var(--maroon);
+
+    border-color: var(--maroon);
+}
+
+
+/* ==================================================
+   5. PROFIL PENGGUNA
+================================================== */
+
+.navbar-profile {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    height: 100%;
+
+    flex-shrink: 0;
+}
+
+.user-navbar-name {
+    display: block;
+
+    color: #111111;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   6. TOMBOL IKON PROFIL
+================================================== */
+
+.profile-dropdown {
+    position: relative;
+
+    display: block;
+
+    flex-shrink: 0;
+}
+
+.profile-trigger {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: var(--primary);
+    color: var(--white);
+
+    border-radius: 50%;
+
+    cursor: pointer;
+    list-style: none;
+}
+
+.profile-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.profile-trigger i {
+    font-size: 22px;
+}
+
+
+/* ==================================================
+   7. DROPDOWN PROFIL
+================================================== */
+
+.profile-menu {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+    left: auto;
+
+    width: 230px;
+    max-width: calc(100vw - 24px);
+
+    height: auto;
+
+    display: block;
+
+    padding: 13px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+    z-index: 1500;
+}
+
+.profile-menu,
+.profile-menu * {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+
+/* IDENTITAS PENGGUNA */
+
+.profile-menu .profile-info {
+    display: block;
+    width: 100%;
+
+    text-align: left;
+}
+
+.profile-menu .profile-info p {
+    margin: 0 0 4px;
+
+    color: #263249;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.profile-menu .profile-info span {
+    display: block;
+
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* BADGE ROLE */
+
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    width: fit-content;
+
+    margin-top: 9px;
+    padding: 4px 9px;
+
+    color: var(--primary);
+    background: var(--white);
+
+    border: 1px solid #DDE3EF;
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.profile-role i {
+    color: #16A34A;
+    font-size: 11px;
+}
+
+
+/* GARIS PEMBATAS */
+
+.profile-divider {
+    width: 100%;
+    height: 1px;
+
+    margin: 11px 0;
+
+    background: #EDF0F5;
+}
+
+
+/* LOGOUT */
+
+.logout-link {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    width: 100%;
+
+    padding: 5px 2px;
+
+    color: var(--maroon);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.logout-link:hover {
+    color: #761630;
+    background: #FFF5F7;
+}
+
+.logout-link i {
+    font-size: 13px;
+}
+
+
+/* ==================================================
+   8. RESPONSIVE TABLET
+================================================== */
+
+@media screen and (max-width: 1100px) {
+
+    .navbar {
+        grid-template-columns:
+            minmax(0, 1fr)
+            auto;
+
+        height: auto;
+        min-height: 72px;
+
+        padding: 10px 20px;
+
+        row-gap: 10px;
+    }
+
+    .navbar-brand {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .navbar-profile {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .navbar-menu {
+        grid-column: 1 / -1;
+        grid-row: 2;
+
+        justify-content: flex-start;
+
+        overflow-x: auto;
+        padding-bottom: 3px;
+    }
+
+}
+
+
+/* ==================================================
+   9. RESPONSIVE MOBILE
+================================================== */
+
+@media screen and (max-width: 480px) {
+
+    .navbar {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .navbar-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .brand-info h1 {
+        font-size: 21px;
+    }
+
+    .brand-info p {
+        font-size: 9px;
+        white-space: normal;
+    }
+
+    .user-navbar-name {
+        display: none;
+    }
+
+    .profile-trigger {
+        width: 40px;
+        height: 40px;
+    }
+
+    .navbar-menu {
+        gap: 6px;
+    }
+
+    .nav-link {
+        padding: 8px 10px;
+        font-size: 10px;
+    }
+
+}

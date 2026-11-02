@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pengajuan Peminjaman | SILAB</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- BOOTSTRAP ICON -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS BERSAMA -->
+    <link rel="stylesheet" href="../CSS/pengguna/navbar.css">
+
+    <!-- CSS PENGAJUAN -->
+    <link rel="stylesheet" href="../CSS/pengguna/pengajuan.css">
+</head>
+
+<body>
+
+    <!-- ======================================
+         NAVBAR PENGGUNA
+    ======================================= -->
+
+    <header class="navbar">
+
+        <!-- LOGO DAN IDENTITAS -->
+
+        <div class="navbar-brand">
+
+            <img src="../Assets/Logo_RPL.svg"
+                 alt="Logo SILAB"
+                 class="navbar-logo">
+
+            <div class="brand-info">
+                <h1>SILAB</h1>
+                <p>Teknik Informatika - Universitas Khairun</p>
+            </div>
+
+        </div>
+
+
+        <!-- MENU -->
+
+        <nav class="navbar-menu">
+
+            <a href="dashboard.html" class="nav-link active">
+                Dashboard Pengguna
+            </a>
+
+            <a href="riwayat.html" class="nav-link">
+                Riwayat
+            </a>
+
+            <a href="rekomendasi.html" class="nav-link">
+                Rekomendasi
+            </a>
+
+        </nav>
+
+
+        <!-- PROFIL -->
+
+        <div class="navbar-profile">
+
+            <span class="user-navbar-name">
+                Djuleha M. Asyik
+            </span>
+
+            <details class="profile-dropdown">
+
+                <summary class="profile-trigger">
+                    <i class="bi bi-person"></i>
+                </summary>
+
+                <div class="profile-menu">
+
+                    <div class="profile-info">
+                        <p>Djuleha M. Asyik</p>
+                        <span>Akun Pengguna SILAB</span>
+                    </div>
+
+                    <div class="profile-role">
+                        <i class="bi bi-shield-check"></i>
+                        Pengguna
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <a href="../auth/login.html" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Keluar / Logout
+                    </a>
+
+                </div>
+
+            </details>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================
+         KONTEN PENGAJUAN
+    ======================================= -->
+
+    <main class="user-application-container">
+
+
+        <!-- JUDUL HALAMAN -->
+
+        <section class="application-heading">
+
+            <div class="application-label">
+                <i class="bi bi-circle-fill"></i>
+                FORMULIR PEMINJAMAN
+            </div>
+
+            <h2>Ajukan Peminjaman Laboratorium RPL</h2>
+
+            <p>
+                Isi data formulir di bawah ini untuk mengajukan permohonan
+                penggunaan Lab RPL dengan proses verifikasi terpadu.
+            </p>
+
+        </section>
+
+
+        <!-- LAYOUT FORM DAN KATEGORI -->
+
+        <section class="application-layout">
+
+
+            <!-- FORMULIR PEMINJAMAN -->
+
+            <form class="application-form" id="peminjamanForm">
+
+
+                <!-- JUMLAH PC -->
+
+                <div class="application-group">
+
+                    <label for="jumlahPC">
+                        Perangkat komputer Yang Diperlukan
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="jumlahPC"
+                        name="jumlahPC"
+                        min="1"
+                        value="30"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- JUMLAH KURSI -->
+
+                <div class="application-group">
+
+                    <label for="jumlahKursi">
+                        Kursi Yang Diperlukan
+                        <span>*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="jumlahKursi"
+                        name="jumlahKursi"
+                        min="1"
+                        value="30"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- WAKTU PEMINJAMAN -->
+
+                <div class="application-time-row">
+
+
+                    <div class="application-group">
+
+                        <label for="waktuMulai">
+                            Waktu Mulai <span>*</span>
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="waktuMulai"
+                            name="waktuMulai"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="application-group">
+
+                        <label for="waktuSelesai">
+                            Waktu Selesai <span>*</span>
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="waktuSelesai"
+                            name="waktuSelesai"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- KATEGORI KEGIATAN -->
+
+                <div class="application-group">
+
+                    <label for="kategori">
+                        Kategori Kegiatan <span>*</span>
+                    </label>
+
+                    <div class="application-select">
+
+                        <i class="bi bi-people"></i>
+
+                        <select
+                            id="kategori"
+                            name="kategori"
+                            required
+                        >
+
+                            <option value="Kuliah Pengganti">
+                                2. Kuliah Pengganti
+                            </option>
+
+                            <option value="Asistensi / Responsi" selected>
+                                3. Asistensi / Responsi
+                            </option>
+
+                            <option value="HMTI">
+                                4. HMTI
+                            </option>
+
+                            <option value="Belajar Mandiri">
+                                5. Belajar Mandiri
+                            </option>
+
+                        </select>
+
+                        <i class="bi bi-chevron-down select-arrow"></i>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NAMA KEGIATAN -->
+
+                <div class="application-group">
+
+                    <label for="namaKegiatan">
+                        Nama Kegiatan / Mata Kuliah <span>*</span>
+                    </label>
+
+                    <div class="application-input-icon">
+
+                        <i class="bi bi-book"></i>
+
+                        <input
+                            type="text"
+                            id="namaKegiatan"
+                            name="namaKegiatan"
+                            value="Asistensi Pemrograman Terstruktur"
+                            placeholder="Nama kegiatan atau mata kuliah"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOMBOL FORM -->
+
+                <div class="application-actions">
+
+                    <a href="dashboard.html" class="application-cancel">
+                        Batal
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="application-submit"
+                    >
+                        Kirim Pengajuan Peminjaman
+                        <i class="bi bi-send"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- PESAN VALIDASI -->
+
+                <p
+                    id="applicationFeedback"
+                    class="application-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+
+            <!-- PANEL KATEGORI -->
+
+            <aside class="application-category">
+
+                <div class="application-category-heading">
+
+                    <i class="bi bi-sliders"></i>
+
+                    <h3>Kategori</h3>
+
+                </div>
+
+
+                <div class="application-category-list">
+
+                    <div>2. Kuliah Pengganti</div>
+
+                    <div>3. Asistensi / Responsi</div>
+
+                    <div>4. HMTI</div>
+
+                    <div>5. Belajar Mandiri</div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+
+    <!-- ======================================
+         VALIDASI FORMULIR
+    ======================================= -->
+
+    <script>
+
+        const form = document.getElementById("peminjamanForm");
+
+        const mulai = document.getElementById("waktuMulai");
+
+        const selesai = document.getElementById("waktuSelesai");
+
+        const feedback = document.getElementById("applicationFeedback");
+
+
+        // Validasi tanggal selesai
+
+        function validasiWaktu() {
+
+            selesai.setCustomValidity("");
+
+            if (!mulai.value || !selesai.value) {
+                return;
+            }
+
+            const waktuAwal = new Date(mulai.value);
+
+            const waktuAkhir = new Date(selesai.value);
+
+            if (waktuAkhir <= waktuAwal) {
+
+                selesai.setCustomValidity(
+                    "Waktu selesai harus setelah waktu mulai."
+                );
+
+            }
+
+        }
+
+
+        mulai.addEventListener("change", validasiWaktu);
+
+        selesai.addEventListener("change", validasiWaktu);
+
+
+        // Proses submit
+
+        form.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            validasiWaktu();
+
+            if (!form.reportValidity()) {
+                return;
+            }
+
+            feedback.textContent =
+                "Data berhasil divalidasi. Pengiriman ke database belum diaktifkan.";
+
+            feedback.classList.add("show");
+
+        });
+
+    </script>
+
+</body>
+</html>
