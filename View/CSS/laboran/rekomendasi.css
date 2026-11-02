@@ -1,0 +1,1134 @@
+/* =========================================
+   1. CONTAINER HALAMAN
+========================================= */
+.rekomendasi-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
+    margin: 18px auto 25px;
+}
+
+
+/* =========================================
+   2. CARD BASE
+========================================= */
+.card {
+    background-color: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px 20px;
+    margin-bottom: 22px;
+}
+
+
+/* =========================================
+   3. HEADER CARD
+========================================= */
+.page-header-card {
+    padding: 16px 20px 18px;
+}
+
+.header-decoration {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.header-decoration span {
+    width: 20px;
+    height: 4px;
+    border-radius: 10px;
+}
+
+.header-decoration span:nth-child(1) { background-color: #911E3F; }
+.header-decoration span:nth-child(2) { background-color: #F8B916; }
+.header-decoration span:nth-child(3) { background-color: #33266A; }
+
+.header-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.info-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.info-tag.tag-disposisi {
+    background-color: #ECEDF3;
+    color: #33266A;
+}
+
+.info-tag.tag-disposisi i {
+    font-size: 6px;
+}
+
+.info-tag.tag-fasilitas {
+    background-color: #FEF3C7;
+    color: #6B4A00;
+    border: 1px solid #FBE59A;
+}
+
+.info-tag.tag-fasilitas i {
+    color: #D49A06;
+    font-size: 10px;
+}
+
+.page-header-card h2 {
+    font-size: 19px;
+    font-weight: 800;
+    color: #33266A;
+    margin-bottom: 5px;
+}
+
+.page-header-card p {
+    max-width: 600px;
+    font-size: 10px;
+    line-height: 1.45;
+    color: #475569;
+}
+
+
+/* =========================================
+   4. STATISTIK CARDS
+========================================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 0;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-icon.ungu {
+    background-color: #F1EDF7;
+    color: #911E3F;
+}
+
+.stat-icon.kuning {
+    background-color: #FEF3C7;
+    color: #D49A06;
+}
+
+.stat-icon.maroon {
+    background-color: #F1EDF7;
+    color: #911E3F;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-content small {
+    display: block;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #667A9B;
+    margin-bottom: 4px;
+}
+
+.stat-content h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #33266A;
+    margin-bottom: 3px;
+}
+
+.stat-content span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 8px;
+    color: #667A9B;
+}
+
+.stat-content span i {
+    font-size: 5px;
+    color: #911E3F;
+}
+
+
+/* =========================================
+   5. TABEL CONTAINER
+========================================= */
+.tabel-container {
+    padding: 14px 16px 16px;
+}
+
+.tabel-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    background-color: #911E3F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-filter i {
+    font-size: 12px;
+}
+
+
+/* =========================================
+   6. SEARCH BOX
+========================================= */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background-color: #F7F8FA;
+    border: 1px solid #E8E8EE;
+    border-radius: 20px;
+    min-width: 280px;
+    transition: 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: #33266A;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.1);
+}
+
+.search-box i {
+    color: #667A9B;
+    font-size: 12px;
+}
+
+.search-box input {
+    border: none;
+    background: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 10px;
+    color: #263249;
+    width: 100%;
+}
+
+.search-box input::placeholder {
+    color: #999;
+}
+
+
+/* =========================================
+   7. TABEL TERGESER
+========================================= */
+.tabel-wrapper {
+    overflow-x: auto;
+}
+
+.tabel-tergeser {
+    border: 1px solid #ECECF1;
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    min-width: 860px;
+}
+
+.tabel-tergeser .tabel-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.3fr 1.3fr 0.9fr;
+    align-items: center;
+    padding: 14px 18px;
+    border-top: 1px solid #ECECF1;
+}
+
+.tabel-tergeser .tabel-row.tabel-header {
+    padding: 12px 18px;
+    border-top: none;
+    background-color: #F7F8FA;
+    border-radius: 12px 12px 0 0;
+}
+
+.tabel-tergeser .tabel-header span {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    color: #33266A;
+    text-align: center;
+}
+
+
+/* =========================================
+   8. KOLOM TABEL
+========================================= */
+
+/* Kolom Pemohon */
+.kolom-pemohon strong {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #33266A;
+}
+
+.kolom-pemohon span {
+    display: block;
+    font-size: 8.5px;
+    color: #667A9B;
+    margin-top: 2px;
+}
+
+/* Kolom Jadwal */
+.kolom-jadwal strong {
+    font-size: 9.5px;
+    font-weight: 700;
+}
+
+.kolom-jadwal strong.merah {
+    color: #911E3F;
+}
+
+/* Kolom Kegiatan */
+.kolom-kegiatan strong {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #202B40;
+    margin-bottom: 3px;
+}
+
+.kolom-kegiatan span {
+    display: block;
+    font-size: 8px;
+    color: #667A9B;
+    margin-bottom: 2px;
+}
+
+/* Kolom Alasan */
+.badge-alasan {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    background-color: #FEF3C7;
+    color: #6B4A00;
+    border: 1px solid #FBE59A;
+    border-radius: 20px;
+    font-size: 8px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.badge-alasan i {
+    font-size: 5px;
+    color: #F8B916;
+}
+
+.kolom-alasan .dosen {
+    display: block;
+    font-size: 8.5px;
+    color: #911E3F;
+    font-weight: 600;
+}
+
+/* Kolom Aksi */
+.btn-rekomendasi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 14px;
+    background-color: #911E3F;
+    color: #FFFFFF;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-rekomendasi:hover {
+    background-color: #761630;
+}
+
+
+/* =========================================
+   9. PAGINATION
+========================================= */
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #ECECF1;
+}
+
+.pagination-info {
+    font-size: 10px;
+    color: #667A9B;
+    margin: 0;
+}
+
+.pagination-info strong {
+    color: #33266A;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-page {
+    padding: 7px 14px;
+    background-color: #FFFFFF;
+    color: #33266A;
+    border: 1px solid #E1E1E5;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-page:hover {
+    background-color: #F7F8FA;
+    border-color: #33266A;
+}
+
+.btn-page.active {
+    background-color: #911E3F;
+    color: #FFFFFF;
+    border-color: #911E3F;
+}
+
+
+/* =========================================
+   10. RESPONSIVE
+========================================= */
+@media screen and (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabel-tergeser .tabel-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .tabel-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        min-width: auto;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* =========================================
+PERBAIKAN PAGINATION - SESUAI FIGMA
+========================================= */
+.pagination-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+    border-top: 1px solid #ECECF1 !important;
+    flex-wrap: nowrap !important;
+}
+
+.pagination-info {
+    font-size: 11px !important;
+    color: #667A9B !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+.pagination-info strong {
+    color: #33266A !important;
+    font-weight: 700 !important;
+}
+
+.pagination-buttons {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Tombol Sebelumnya/Berikutnya - Lebih Lebar */
+#btnPrev,
+#btnNext {
+    padding: 9px 18px !important;
+    background-color: #FFFFFF !important;
+    color: #33266A !important;
+    border: 1px solid #E1E1E5 !important;
+    border-radius: 8px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#btnPrev:hover,
+#btnNext:hover {
+    background-color: #F7F8FA !important;
+    border-color: #33266A !important;
+}
+
+/* Tombol Nomor Halaman - Lebih Kecil & Rounded */
+#btnPage1,
+#btnPage2 {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    background-color: #FFFFFF !important;
+    color: #33266A !important;
+    border: 1px solid #E1E1E5 !important;
+    border-radius: 8px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#btnPage1:hover,
+#btnPage2:hover {
+    background-color: #F7F8FA !important;
+    border-color: #33266A !important;
+}
+
+/* Tombol Aktif - Warna Maroon */
+#btnPage1.active,
+#btnPage2.active {
+    background-color: #911E3F !important;
+    color: #FFFFFF !important;
+    border-color: #911E3F !important;
+}
+
+#btnPage1.active:hover,
+#btnPage2.active:hover {
+    background-color: #761630 !important;
+    border-color: #761630 !important;
+}
+
+/* =========================================
+RESPONSIVE PAGINATION
+========================================= */
+@media screen and (max-width: 700px) {
+    .pagination-container {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    
+    .pagination-buttons {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* =========================================
+PAGINATION
+========================================= */
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #ECECF1;
+}
+
+.pagination-info {
+    font-size: 10px;
+    color: #667A9B;
+    margin: 0;
+}
+
+.pagination-info strong {
+    color: #33266A;
+}
+
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Tambahkan ini di rekomendasi.css jika belum ada */
+.btn-page {
+    padding: 8px 14px;
+    background-color: #FFFFFF;
+    color: #33266A;
+    border: 1px solid #E1E1E5;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-page:hover:not(:disabled):not(.active) {
+    background-color: #F7F8FA;
+    border-color: #33266A;
+    transform: translateY(-1px);
+}
+
+.btn-page.active {
+    background-color: #911E3F;
+    color: #FFFFFF;
+    border-color: #911E3F;
+    cursor: default;
+}
+
+.btn-page:disabled {
+    background-color: #F9FAFB;
+    color: #9CA3AF;
+    border-color: #E5E7EB;
+    cursor: not-allowed;
+}
+
+/* =========================================
+SEARCH BOX
+========================================= */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background-color: #F7F8FA;
+    border: 1px solid #E8E8EE;
+    border-radius: 20px;
+    min-width: 280px;
+    transition: 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: #33266A;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.1);
+}
+
+.search-box i {
+    color: #667A9B;
+    font-size: 12px;
+}
+
+.search-box input {
+    border: none;
+    background: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 10px;
+    color: #263249;
+    width: 100%;
+}
+
+.search-box input::placeholder {
+    color: #999;
+}
+
+/* =========================================
+RESPONSIVE
+========================================= */
+@media screen and (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabel-tergeser .tabel-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .tabel-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        min-width: auto;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+/* =========================================
+PERBAIKAN HALAMAN BUAT REKOMENDASI
+========================================= */
+
+/* Header Card untuk Halaman Rekomendasi */
+.page-header-card {
+    padding: 16px 20px 18px;
+}
+
+/* Badge Menunggu */
+.badge-menunggu {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    background-color: #FFFBEB;
+    color: #911E3F;
+    border: 1px solid #F3D277;
+    border-radius: 20px;
+    font-size: 8.5px;
+    font-weight: 700;
+}
+
+.badge-menunggu i {
+    color: #911E3F;
+    font-size: 6px;
+}
+
+/* Rincian Grid - 3 Kolom */
+.rincian-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.rincian-box {
+    padding: 13px 14px;
+    background-color: #FFFFFF;
+    border: 1px solid #E8E8EE;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.rincian-box > small {
+    display: block;
+    font-size: 8px;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.rincian-box > strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: #33266A;
+    margin-bottom: 11px;
+}
+
+.rincian-box > strong span {
+    font-weight: 500;
+    color: #263249;
+}
+
+.rincian-box > strong.dosen {
+    font-size: 11px;
+}
+
+/* Chip/Badge Kecil */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 7.5px;
+    font-weight: 700;
+}
+
+.chip.ungu {
+    background-color: #ECEDF3;
+    color: #33266A;
+}
+
+.chip.ungu i {
+    font-size: 5px;
+}
+
+.chip.merah {
+    background-color: #FDEEF1;
+    color: #911E3F;
+    border: 1px solid #F6D3DA;
+}
+
+.chip.kuning {
+    background-color: #FEF3C7;
+    color: #6B4A00;
+    border: 1px solid #FBE59A;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 14px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 8px;
+    font-weight: 700;
+    color: #33266A;
+    margin-bottom: 7px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    background-color: #F7F8FA;
+    color: #263249;
+    border: 1px solid #E8E8EE;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+.form-input {
+    padding: 10px 12px;
+    font-size: 10px;
+}
+
+.form-textarea {
+    min-height: 52px;
+    padding: 12px;
+    font-size: 10px;
+    resize: vertical;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #33266A;
+    background-color: #FFFFFF;
+}
+
+/* Footer Aksi */
+.footer-aksi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    margin-top: 16px;
+}
+
+.footer-aksi p {
+    font-size: 10px;
+    line-height: 1.5;
+    color: #33266A;
+    margin: 0;
+}
+
+.footer-tombol {
+    display: flex;
+    gap: 10px;
+}
+
+/* Tombol */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-batal {
+    background-color: #FFFFFF;
+    color: #911E3F;
+    border-color: #911E3F;
+}
+
+.btn-batal:hover {
+    background-color: #FFF5F7;
+}
+
+.btn-kirim {
+    background-color: #911E3F;
+    color: #FFFFFF;
+}
+
+.btn-kirim:hover {
+    background-color: #761630;
+}
+
+.btn-kirim i {
+    color: #F8B916;
+}
+
+/* Responsive */
+@media screen and (max-width: 900px) {
+    .rincian-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .footer-aksi {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .footer-tombol {
+        width: 100%;
+    }
+    
+    .footer-tombol .btn {
+        flex: 1;
+    }
+}
+.btn-tambah {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background-color: #FFFBEB;
+    color: #6B4A00;
+    border: 1px solid #F3D277;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-tambah::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #F8B916;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Icon box dengan background */
+.card-title-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.card-title-icon.ungu { 
+    background-color: #33266A; 
+    color: #FFFFFF;
+}
+
+.card-title-icon.maroon { 
+    background-color: #911E3F; 
+    color: #FFFFFF;
+}
+.btn-tambah-jadwal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: #FFFBEB;
+    color: #6B4A00;
+    border: 1px solid #F3D277;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-tambah-jadwal i {
+    font-size: 14px;
+}
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #911E3F;
+    pointer-events: none;
+}
+
+/* =========================================
+PERBAIKAN CARD TITLE - ICON SEJAJAR JUDUL
+========================================= */
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #EDF0F5;
+    margin-bottom: 14px;
+}
+
+.card-title-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.card-title-icon.ungu { 
+    background-color: #33266A; 
+    color: #FFFFFF;
+}
+
+.card-title-icon.maroon { 
+    background-color: #911E3F; 
+    color: #FFFFFF;
+}
+
+.card-title h3 {
+    font-size: 13px;
+    font-weight: 800;
+    color: #33266A;
+    margin: 0;
+}
+
+/* Pastikan card-title-split juga sejajar */
+.card-title-split {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #EDF0F5;
+    margin-bottom: 14px;
+}
+
+.card-title-split .card-title {
+    flex: 1;
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.card-title-split .btn-tambah {
+    margin-bottom: 0;
+}
+/* =========================================
+PERBAIKAN DATE PICKER - POSISI & Z-INDEX
+========================================= */
+
+/* Pastikan form-group memiliki posisi relative */
+.form-group {
+    position: relative;
+    z-index: 1;
+}
+
+/* Input datetime-local harus di atas elemen lain */
+.form-input[type="datetime-local"] {
+    position: relative;
+    z-index: 10;
+}
+
+/* Pastikan card tidak memotong date picker */
+.card {
+    overflow: visible !important;
+}
+
+/* Styling untuk kalender browser */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    position: relative;
+    z-index: 20;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Fix untuk Firefox */
+input[type="datetime-local"] {
+    position: relative;
+}
+

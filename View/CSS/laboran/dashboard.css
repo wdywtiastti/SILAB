@@ -1,0 +1,890 @@
+
+/* =========================================
+   1. CONTAINER DASHBOARD LABORAN
+========================================= */
+
+.dashboard-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
+
+    margin: 16px auto 25px;
+}
+
+.card {
+    position: relative;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================
+   2. HEADER PANEL
+========================================= */
+
+.dashboard-header {
+    padding: 16px 20px 18px;
+}
+
+.header-decoration {
+    display: flex;
+    gap: 6px;
+
+    margin-bottom: 10px;
+}
+
+.header-decoration span {
+    width: 20px;
+    height: 4px;
+
+    border-radius: 10px;
+}
+
+.header-decoration span:nth-child(1) { background-color: #911E3F; }
+.header-decoration span:nth-child(2) { background-color: #F8B916; }
+.header-decoration span:nth-child(3) { background-color: #33266A; }
+
+.header-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.info-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.info-tag.tag-panel {
+    background-color: #ECEDF3;
+    color: #33266A;
+}
+
+.info-tag.tag-panel i {
+    font-size: 6px;
+}
+
+.info-tag.tag-fasilitas {
+    background-color: #FEF3C7;
+    color: #6B4A00;
+
+    border: 1px solid #FBE59A;
+}
+
+.info-tag.tag-fasilitas i {
+    color: #D49A06;
+    font-size: 10px;
+}
+
+.dashboard-header h2 {
+    font-size: 19px;
+    font-weight: 800;
+
+    color: #33266A;
+
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    max-width: 430px;
+
+    font-size: 10px;
+    line-height: 1.45;
+
+    color: #475569;
+}
+
+.btn-otoritas {
+    position: absolute;
+    top: 47px;
+    right: 16px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 12px;
+
+    background-color: #ECEDF3;
+    color: #33266A;
+
+    border: 1px solid #D5D7E3;
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   3. SESI BERLANGSUNG
+========================================= */
+
+.sesi-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 14px 18px 16px;
+}
+
+.sesi-info {
+    flex: 1;
+    min-width: 260px;
+}
+
+.sesi-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 14px;
+}
+
+.badge-sesi {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 4px 10px;
+
+    background-color: #FEF3C7;
+    color: #6B4A00;
+
+    border: 1px solid #FBE59A;
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.badge-sesi i {
+    color: #F8B916;
+    font-size: 8px;
+}
+
+.sesi-jam {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: 700;
+
+    color: #263249;
+}
+
+.sesi-info h3 {
+    font-size: 17px;
+    font-weight: 800;
+
+    color: #33266A;
+
+    margin-bottom: 5px;
+}
+
+.sesi-lokasi {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 9px;
+    color: #475569;
+}
+
+.sesi-lokasi strong {
+    color: #33266A;
+}
+
+.sesi-lokasi i {
+    color: #911E3F;
+    font-size: 11px;
+}
+
+.sesi-aksi {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+}
+
+.batas-waktu {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 9px;
+    color: #667A9B;
+}
+
+.batas-waktu i {
+    color: #D49A06;
+}
+
+.tombol-validasi {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 11px 18px;
+
+    border: 1px solid transparent;
+    border-radius: 30px;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.btn-hadir {
+    background-color: #911E3F;
+    color: #FFFFFF;
+
+    min-width: 170px;
+}
+
+.btn-hadir:hover {
+    background-color: #761630;
+}
+
+.btn-tidak {
+    background-color: #F1EDF7;
+    color: #911E3F;
+
+    border-color: #E9DDEB;
+
+    min-width: 170px;
+}
+
+.btn-tidak:hover {
+    background-color: #E8E0F2;
+}
+
+
+/* =========================================
+   4. JADWAL PEMINJAMAN HARI INI
+========================================= */
+
+.jadwal-card {
+    padding: 14px 16px 16px;
+}
+
+.jadwal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 0 3px;
+    margin-bottom: 14px;
+}
+
+.jadwal-head h3 {
+    font-size: 16px;
+    font-weight: 800;
+
+    color: #33266A;
+
+    margin-bottom: 4px;
+}
+
+.jadwal-head p {
+    font-size: 9px;
+    color: #475569;
+}
+
+.badge-terjadwal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 4px 10px;
+
+    background-color: #FEF3C7;
+    color: #6B4A00;
+
+    border: 1px solid #FBE59A;
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.badge-terjadwal i {
+    color: #D49A06;
+}
+
+.tabel-wrapper {
+    overflow-x: auto;
+
+    border: 1px solid #ECECF1;
+    border-radius: 12px;
+
+    background-color: #FBFBFD;
+}
+
+.tabel-jadwal {
+    min-width: 860px;
+}
+
+.tabel-row {
+    display: grid;
+    grid-template-columns: 1.15fr 2.2fr 1.1fr 1.1fr;
+    align-items: center;
+
+    padding: 14px 20px;
+
+    border-top: 1px solid #ECECF1;
+}
+
+.tabel-row.tabel-header {
+    padding: 12px 20px;
+
+    border-top: none;
+    background-color: #FFFFFF;
+}
+
+.tabel-header span {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+
+    color: #33266A;
+}
+
+.tabel-header span:nth-child(3),
+.tabel-header span:nth-child(4),
+.tabel-row .kolom-kategori,
+.tabel-row .kolom-status {
+    text-align: center;
+}
+
+.tabel-row.aktif {
+    background-color: #FEF6DC;
+}
+
+/* KOLOM JAM */
+
+.kolom-jam {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kolom-jam > i {
+    font-size: 13px;
+    color: #667A9B;
+}
+
+.tabel-row.aktif .kolom-jam > i {
+    color: #911E3F;
+}
+
+.jam-text strong {
+    display: block;
+
+    font-family: 'Courier New', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+
+    color: #202B40;
+}
+
+.jam-text small {
+    display: block;
+
+    font-size: 8px;
+    color: #667A9B;
+
+    margin-top: 2px;
+}
+
+.jam-text small.merah {
+    font-weight: 800;
+    color: #911E3F;
+}
+
+.jam-text small.ungu {
+    font-weight: 700;
+    color: #33266A;
+}
+
+.tabel-row.aktif .jam-text strong {
+    color: #911E3F;
+}
+
+/* KOLOM KEGIATAN */
+
+.kolom-kegiatan strong {
+    display: block;
+
+    font-size: 9.5px;
+    font-weight: 700;
+
+    color: #202B40;
+}
+
+.kolom-kegiatan span {
+    display: block;
+
+    font-size: 8.5px;
+    font-weight: 600;
+
+    color: #475569;
+
+    margin-top: 3px;
+}
+
+/* BADGE KATEGORI */
+
+.badge-kategori {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 11px;
+
+    border-radius: 20px;
+
+    font-size: 8.5px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.badge-kategori.k1 { background-color: #33266A; color: #FFFFFF; }
+.badge-kategori.k2 { background-color: #E5E7EF; color: #33266A; }
+.badge-kategori.k4 { background-color: #FEF3C7; color: #6B4A00; border: 1px solid #FBE59A; }
+.badge-kategori.k5 { background-color: #EEF0F5; color: #33266A; }
+
+/* BADGE STATUS */
+
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 12px;
+
+    border-radius: 20px;
+
+    font-size: 8.5px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.badge-status.selesai {
+    background-color: #E9F8EE;
+    color: #15803D;
+
+    border: 1px solid #BFE8CC;
+}
+
+.badge-status.menunggu {
+    background-color: #FEF3C7;
+    color: #B45309;
+
+    border: 1px solid #FBE59A;
+}
+
+
+/* =========================================
+   5. UNDUH REKAPAN
+========================================= */
+
+.unduh-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    padding: 14px 16px;
+}
+
+.unduh-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.unduh-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #33266A;
+    color: #FFFFFF;
+
+    border-radius: 9px;
+
+    font-size: 17px;
+
+    flex-shrink: 0;
+}
+
+.unduh-judul {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 4px;
+}
+
+.unduh-judul h3 {
+    font-size: 13px;
+    font-weight: 800;
+
+    color: #33266A;
+}
+
+.badge-rekap {
+    padding: 3px 9px;
+
+    background-color: #FEF3C7;
+    color: #6B4A00;
+
+    border: 1px solid #FBE59A;
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.unduh-text p {
+    font-size: 9px;
+    color: #475569;
+}
+
+.unduh-tombol {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-pdf {
+    background-color: #FFFFFF;
+    color: #911E3F;
+
+    border-color: #911E3F;
+}
+
+.btn-pdf:hover {
+    background-color: #FFF5F7;
+}
+
+.btn-excel {
+    background-color: #33266A;
+    color: #FFFFFF;
+}
+
+.btn-excel:hover {
+    background-color: #271D52;
+}
+
+
+/* =========================================
+   6. MODAL UNDUH (TANPA JAVASCRIPT, MEMAKAI :target)
+========================================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background-color: rgba(51, 38, 106, 0.18);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-overlay:target {
+    display: flex;
+}
+
+.modal-close-area {
+    position: absolute;
+    inset: 0;
+}
+
+.modal-box {
+    position: relative;
+
+    width: 100%;
+    max-width: 440px;
+
+    overflow: hidden;
+
+    padding: 0 20px 20px;
+
+    background-color: #FFFFFF;
+
+    border-radius: 14px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+}
+
+.modal-strip {
+    display: flex;
+
+    height: 5px;
+
+    margin: 0 -20px 16px;
+}
+
+.modal-strip span { flex: 1; }
+.modal-strip span:nth-child(1) { background-color: #911E3F; }
+.modal-strip span:nth-child(2) { background-color: #F8B916; }
+.modal-strip span:nth-child(3) { background-color: #33266A; }
+
+.modal-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 10px;
+
+    background-color: #ECEDF3;
+    color: #33266A;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+.modal-box h3 {
+    font-size: 17px;
+    font-weight: 800;
+
+    color: #33266A;
+
+    margin-bottom: 38px;
+}
+
+.modal-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    color: #33266A;
+
+    margin-bottom: 7px;
+}
+
+.modal-input {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    background-color: #F7F8FA;
+    color: #475569;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 11px;
+}
+
+.modal-divider {
+    height: 1px;
+
+    background-color: #EDF0F5;
+
+    margin: 16px 0;
+}
+
+.modal-aksi {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 10px;
+}
+
+.modal-aksi .btn {
+    border-radius: 8px;
+    padding: 11px 12px;
+}
+
+.btn-batal {
+    background-color: #FFFFFF;
+    color: #263249;
+
+    border-color: #D9DCE3;
+}
+
+.btn-batal:hover {
+    background-color: #F5F5F8;
+}
+
+.btn-unduh-maroon {
+    background-color: #911E3F;
+    color: #FFFFFF;
+}
+
+.btn-unduh-maroon:hover {
+    background-color: #761630;
+}
+
+.btn-unduh-ungu {
+    background-color: #33266A;
+    color: #FFFFFF;
+}
+
+.btn-unduh-ungu:hover {
+    background-color: #271D52;
+}
+
+
+/* =========================================
+   7. RESPONSIVE
+========================================= */
+
+@media screen and (max-width: 800px) {
+
+    .btn-otoritas {
+        position: static;
+        margin-top: 12px;
+    }
+
+    .sesi-aksi {
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .tombol-validasi {
+        flex-direction: column;
+    }
+
+    .unduh-tombol {
+        width: 100%;
+    }
+
+    .unduh-tombol .btn {
+        flex: 1;
+    }
+
+}
+
+/* =========================================
+PERBAIKAN LAYOUT HEADER
+========================================= */
+.dashboard-header {
+    position: relative;
+}
+
+.btn-otoritas {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* PERBAIKAN TABEL HEADER */
+.tabel-header span {
+    text-transform: uppercase;
+}
+
+/* PERBAIKAN BADGE SESI */
+.badge-sesi i {
+    font-size: 8px;
+}
+
+/* PERBAIKAN UNDUH CARD */
+.unduh-content {
+    flex: 1;
+}
+
+.unduh-judul {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* =========================================
+BADGE KATEGORI - SESUAI FIGMA
+========================================= */
+.badge-kategori {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-kategori i {
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* K1 Praktikum - Ungu Tua */
+.badge-kategori.k1 {
+    background-color: #33266A;
+    color: #FFFFFF;
+}
+
+/* K2 Dosen - Abu-abu Muda */
+.badge-kategori.k2 {
+    background-color: #E8E8EE;
+    color: #33266A;
+}
+
+/* K4 HMTI - Kuning */
+.badge-kategori.k4 {
+    background-color: #FEF3C7;
+    color: #6B4A00;
+    border: 1px solid #FBE59A;
+}
+
+/* K5 Mandiri - Abu-abu Sangat Muda */
+.badge-kategori.k5 {
+    background-color: #F1F5F9;
+    color: #33266A;
+}
