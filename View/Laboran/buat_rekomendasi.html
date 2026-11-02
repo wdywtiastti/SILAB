@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Rekomendasi Jadwal Pengganti | SILAB</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../CSS/laboran/navbar.css">
+    <link rel="stylesheet" href="../CSS/laboran/rekomendasi.css">
+    
+    <style>
+        /* Fix untuk date picker */
+        .form-group {
+            position: relative;
+            z-index: 1;
+        }
+        
+        input[type="date"],
+        input[type="datetime-local"] {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Pastikan card memiliki overflow visible */
+        .card {
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="../Assets/Logo_RPL.svg" alt="SILAB Logo" class="navbar-logo">
+            <div class="brand-info">
+                <h1>SILAB</h1>
+                <p>Teknik Informatika - Universitas Khairun</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-link">Dashboard Laboran</a>
+            <a href="rekomendasi_jadwal.html" class="nav-link active">Rekomendasi Jadwal</a>
+        </div>
+        <div class="navbar-profile">
+            <div class="profile-info">
+                <h3>Satria Dwi Pauwah S.T.,M.Kom</h3>
+                <p>Laboran Lab RPL</p>
+            </div>
+            <details class="profile-dropdown">
+                <summary class="profile-trigger"><i class="bi bi-person"></i></summary>
+                <div class="profile-menu">
+                    <div class="profile-info">
+                        <p>Satria Dwi Pauwah S.T., M.Kom.</p>
+                        <span>NIP : 197804122005011003</span>
+                        <div class="profile-role"><i class="bi bi-check-circle-fill"></i> Laboran Lab</div>
+                    </div>
+                    <div class="profile-divider"></div>
+                    <a href="../auth/login.html" class="logout-link"><i class="bi bi-box-arrow-right"></i> Keluar/Logout</a>
+                </div>
+            </details>
+        </div>
+    </nav>
+
+    <div class="rekomendasi-container">
+
+        <!-- HEADER -->
+        <div class="card page-header-card">
+            <div class="header-decoration">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="header-tags">
+                <span class="info-tag tag-disposisi">
+                    <i class="bi bi-circle-fill"></i> 
+                    PANEL OPERASIONAL LABORAN • ALOKASI JADWAL KOMPENSASI
+                </span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2>Buat Rekomendasi Jadwal Pengganti</h2>
+                    <p>Berikan opsi jadwal alternatif bagi pengguna yang jadwalnya tergeser oleh penugasan prioritas akademik yang lebih tinggi.</p>
+                </div>
+                <div style="margin-top: 10px;">
+                    <span class="badge-menunggu" style="margin-top: 0;">
+                        <i class="bi bi-circle-fill"></i> 
+                        1 Permintaan Tergeser Menunggu Rekomendasi
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RINCIAN JADWAL TERGESER -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-icon ungu">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3>Rincian Jadwal Tergeser</h3>
+            </div>
+            <div class="rincian-grid">
+                <div class="rincian-box">
+                    <small>Data Pemohon</small>
+                    <strong>Djuleha M. Asyik • 07352411038</strong>
+                    <span class="chip ungu">
+                        <i class="bi bi-circle-fill"></i> P5 - Belajar Mandiri
+                    </span>
+                </div>
+                <div class="rincian-box">
+                    <small>Jadwal Semula (Dibatalkan)</small>
+                    <strong>Senin, 21 Oktober 2026 <span>(13.00 - 15.30 WIT)</span></strong>
+                    <span class="chip merah">
+                        <i class="bi bi-x-circle-fill"></i> Dibatalkan Sistem
+                    </span>
+                </div>
+                <div class="rincian-box">
+                    <small>Alasan Pembatalan Regulasi</small>
+                    <strong class="dosen">Yasir Muin S.T., M.Kom.</strong>
+                    <span class="chip kuning">
+                        <i class="bi bi-circle-fill"></i> K2 - Kuliah Pengganti
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALOKASI REKOMENDASI JADWAL PENGGANTI -->
+        <div class="card">
+            <div class="card-title-split">
+                <div class="card-title">
+                    <div class="card-title-icon maroon">
+                        <i class="bi bi-calendar-plus"></i>
+                    </div>
+                    <h3>Alokasi Rekomendasi Jadwal Pengganti</h3>
+                </div>
+                <button class="btn-tambah">
+                    Tambah Jadwal Lain
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Waktu Mulai</label>
+                    <input type="datetime-local" class="form-input" style="z-index: 10;">
+                </div>
+                <div class="form-group">
+                    <label>Waktu Selesai</label>
+                    <input type="datetime-local" class="form-input" style="z-index: 10;">
+                </div>
+                <div class="form-group full">
+                    <label>Catatan Panduan untuk Djuleha M. asyik</label>
+                    <textarea class="form-textarea" placeholder="Disarankan memilih sesi siang karena kondisi ruangan tenang, bebas dari jadwal kelas wajib, dan P-2 sampai P-4"></textarea>
+                </div>
+            </div>
+            <div class="footer-aksi">
+                <p>
+                    <i class="bi bi-clock-fill" style="color: #D49A06;"></i> 
+                    Tenggat waktu konfirmasi pemohon selama 24 Jam<br>
+                    slot akan terkunci sementara sampai waktu konfirmasi berakhir
+                </p>
+                <div class="footer-tombol">
+    <a href="rekomendasi_jadwal.html" class="btn btn-batal">Batal</a>
+    <a href="rekomendasi_jadwal.html" class="btn btn-kirim">
+        Kirim Rekomendasi ke Dashboard Pengguna 
+        <i class="bi bi-arrow-right"></i>
+    </a>
+</div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
