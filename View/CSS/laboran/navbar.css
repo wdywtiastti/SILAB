@@ -1,0 +1,552 @@
+
+/* =========================================
+RESET DAN GLOBAL
+========================================= */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #33266A;
+    --maroon: #911E3F;
+    --yellow: #F8B916;
+    --white: #FFFFFF;
+
+    --text: #202B40;
+    --text-muted: #667A9B;
+
+    --border: #E1E1E5;
+    --background: #F4F5F8;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+}
+
+
+/* =========================================
+2. NAVBAR
+========================================= */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 8px 25px;
+    gap: 20px;
+
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E1E1E5;
+}
+
+
+/* IDENTITAS SILAB */
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 300px;
+}
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.brand-info h1 {
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.1;
+
+    color: var(--primary);
+}
+
+.brand-info p {
+    font-size: 11px;
+    color: #555555;
+
+    margin-top: 4px;
+}
+
+
+/* MENU NAVIGASI */
+
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.nav-link {
+    padding: 9px 13px;
+
+    text-decoration: none;
+    color: #111111;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    border: 1px solid #D9DCE3;
+    border-radius: 10px;
+
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #F5F1F7;
+}
+
+.nav-link.active {
+    background-color: var(--maroon);
+    color: var(--white);
+
+    border-color: var(--maroon);
+}
+
+
+/* PROFIL LABORAN */
+
+.navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-info {
+    text-align: right;
+}
+
+.profile-info h3 {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.profile-info p {
+    font-size: 12px;
+    color: #777777;
+}
+
+.profile-icon {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.profile-icon i {
+    font-size: 23px;
+    font-weight: 400; /* Outline style, bukan bold */
+}
+
+
+/* =========================================
+   3. RESPONSIVE NAVBAR
+========================================= */
+
+@media screen and (max-width: 1100px) {
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .navbar-brand {
+        min-width: auto;
+    }
+
+    .navbar-menu {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+
+}
+
+
+@media screen and (max-width: 700px) {
+
+    .navbar {
+        padding: 12px 15px;
+        gap: 12px;
+    }
+
+    .navbar-brand {
+        flex: 1;
+    }
+
+    .brand-info h1 {
+        font-size: 21px;
+    }
+
+    .brand-info p {
+        font-size: 9px;
+    }
+
+    .navbar-profile {
+        gap: 7px;
+    }
+
+    .profile-info h3 {
+        font-size: 9px;
+    }
+
+    .profile-info p {
+        font-size: 9px;
+    }
+
+    .profile-icon {
+        width: 35px;
+        height: 35px;
+    }
+
+    .navbar-menu {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+    }
+
+    .nav-link {
+        font-size: 10px;
+        padding: 8px 10px;
+    }
+
+}
+
+/* =====================================
+PROFILE DROPDOWN LABORAN
+===================================== */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* IKON PROFIL */
+.profile-trigger {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #33266A;
+    color: #FFFFFF;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+    list-style: none;
+}
+
+.profile-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.profile-trigger i {
+    font-size: 22px;
+}
+
+/* POPUP PROFIL */
+.profile-menu {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 230px;
+
+    padding: 13px;
+
+    background-color: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 13px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+    z-index: 1500;
+}
+
+/* IDENTITAS */
+.profile-menu .profile-info {
+    text-align: left;
+}
+
+.profile-menu .profile-info p {
+    font-size: 11px;
+    font-weight: 600;
+    color: #263249;
+    margin-bottom: 7px;
+    text-align: left;
+}
+
+.profile-menu .profile-info span {
+    display: block;
+    font-size: 10px;
+    color: #475569;
+    text-align: left;
+}
+
+/* ROLE */
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: 9px;
+    margin-left: 0;
+    padding: 4px 8px;
+
+    border: 1px solid #dde9dc;
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 600;
+    color: #263249;
+}
+
+/* IKON ROLE WARNA HIJAU */
+.profile-role i {
+    color: #16A34A;
+}
+
+/* PEMBATAS */
+.profile-divider {
+    height: 1px;
+    background-color: #EDF0F5;
+
+    margin: 12px 0;
+}
+
+/* TOMBOL LOGOUT */
+.logout-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 2px;
+
+    color: #911E3F;
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.logout-link:hover {
+    color: #761630;
+    background-color: #FFF5F7;
+}
+
+/* IKON LOGOUT */
+
+.logout-link i {
+    font-size: 13px;
+}
+
+/* =========================================
+DROPDOWN PROFIL (FIX)
+========================================= */
+.navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+.navbar-profile .profile-info {
+    text-align: right;
+}
+
+.navbar-profile .profile-info h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #202B40;
+    margin: 0;
+}
+
+.navbar-profile .profile-info p {
+    font-size: 11px;
+    color: #667A9B;
+    margin: 0;
+}
+
+.profile-icon {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.profile-icon i {
+    font-size: 23px;
+}
+
+/* =========================================
+PROFILE DROPDOWN - PURE CSS (TANPA JS)
+========================================= */
+
+/* Container dropdown */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Hilangkan marker default <summary> */
+.profile-dropdown summary {
+    list-style: none;
+}
+
+.profile-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+.profile-dropdown summary::marker {
+    display: none;
+    content: "";
+}
+
+/* Ikon profil (trigger) */
+.profile-trigger {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #33266A;
+    color: #FFFFFF;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.profile-trigger:hover {
+    background-color: #271D52;
+    transform: scale(1.05);
+}
+
+.profile-trigger i {
+    font-size: 22px;
+}
+
+/* Menu dropdown - tersembunyi default */
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 240px;
+    padding: 14px;
+    background-color: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 13px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 1500;
+    animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Info di dalam dropdown */
+.profile-info-dropdown p {
+    font-size: 11px;
+    font-weight: 700;
+    color: #263249;
+    margin: 0 0 4px 0;
+    text-align: left;
+}
+
+.profile-info-dropdown span {
+    display: block;
+    font-size: 10px;
+    color: #475569;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* Badge role */
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border: 1px solid #DDE9DC;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #263249;
+    background-color: #F8FDF9;
+}
+
+.profile-role i {
+    color: #16A34A;
+    font-size: 10px;
+}
+
+/* Garis pemisah */
+.profile-divider {
+    height: 1px;
+    background-color: #EDF0F5;
+    margin: 12px 0;
+}
+
+/* Tombol logout */
+.logout-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 4px;
+    color: #911E3F;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.logout-link:hover {
+    color: #761630;
+    background-color: #FFF5F7;
+    padding-left: 8px;
+}
+
+.logout-link i {
+    font-size: 13px;
+}
