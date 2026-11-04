@@ -1,12 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Rekomendasi Jadwal | SILAB</title>
 
-    <!-- FONT PLUS JAKARTA SANS -->
+    <!-- FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -17,7 +19,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- SHARED NAVBAR -->
+    <!-- NAVBAR BERSAMA -->
     <link rel="stylesheet" href="../CSS/pengguna/navbar.css">
 
     <!-- CSS REKOMENDASI -->
@@ -26,10 +28,16 @@
 
 <body>
 
-    <!-- NAVBAR PENGGUNA -->
+    <!-- ==========================================
+         NAVBAR PENGGUNA
+    =========================================== -->
+
     <header class="navbar">
 
+        <!-- LOGO DAN IDENTITAS -->
+
         <div class="navbar-brand">
+
             <img src="../Assets/Logo_RPL.svg"
                  alt="Logo SILAB"
                  class="navbar-logo">
@@ -38,10 +46,14 @@
                 <h1>SILAB</h1>
                 <p>Teknik Informatika - Universitas Khairun</p>
             </div>
+
         </div>
 
+
         <!-- MENU NAVIGASI -->
+
         <nav class="navbar-menu">
+
             <a href="dashboard.html" class="nav-link">
                 Dashboard Pengguna
             </a>
@@ -53,9 +65,12 @@
             <a href="rekomendasi.html" class="nav-link active">
                 Rekomendasi
             </a>
+
         </nav>
 
-        <!-- PROFIL PENGGUNA -->
+
+        <!-- PROFIL -->
+
         <div class="navbar-profile">
 
             <span class="user-navbar-name">
@@ -96,307 +111,351 @@
     </header>
 
 
-    <!-- KONTEN UTAMA -->
-    <main class="recommendation-page">
+    <!-- ==========================================
+         KONTEN UTAMA
+    =========================================== -->
+
+    <main class="recommendation-container">
+
 
         <!-- HEADER HALAMAN -->
-        <section class="recommendation-hero">
 
-            <h2>Rekomendasi Jadwal</h2>
+        <section class="recommendation-welcome">
 
-            <p>
-                Pantau ketersediaan laboratorium dan tanggapi penawaran
-                slot pengganti dari Laboran secara terpusat.
-            </p>
+            <div class="recommendation-welcome-content">
 
-        </section>
-
-
-        <!-- PANEL REKOMENDASI -->
-        <section class="recommendation-panel"
-                 id="recommendationPanel">
-
-            <!-- HEADER PENAWARAN -->
-            <div class="offer-header">
-
-                <div class="offer-icon">
-                    <i class="bi bi-arrow-left-right"></i>
-                </div>
-
-                <div class="offer-title">
-
-                    <span class="offer-label">
-                        <i class="bi bi-shield-check"></i>
-                        Tawaran Pengganti dari Laboran
-                    </span>
-
-                    <h3>
-                        Penyesuaian Jadwal: Prioritas Ruang Kuliah Pengganti
-                    </h3>
-
-                </div>
-
-                <div class="response-deadline">
-                    <i class="bi bi-clock"></i>
-                    Batas Respon: 24 Jam ke Depan
-                </div>
-
-            </div>
-
-
-            <!-- KONTEKS PERMOHONAN TERDAHULU -->
-            <div class="context-notice">
-
-                <div class="context-heading">
-
-                    <i class="bi bi-info-circle"></i>
-
-                    <strong>
-                        Konteks Permohonan Terdahulu:
-                    </strong>
-
-                    <span>
-                        Belajar Mandiri &amp; Skripsi (K5 Mandiri)
-                    </span>
-
-                </div>
+                <h2>Rekomendasi Jadwal</h2>
 
                 <p>
-                    Jadwal Anda pada 4 hari lalu dibatalkan karena
-                    pengalihan prioritas untuk
-                    <strong>
-                        Kelas Pengganti Dosen (Dr. Ridwan, M.Kom).
-                    </strong>
-                    Laboran telah menyiapkan 2 rekomendasi slot
-                    pengganti bebas bentrokan untuk Anda.
+                    Pantau ketersediaan laboratorium dan tanggapi
+                    penawaran slot pengganti dari Laboran secara
+                    terpusat.
                 </p>
 
             </div>
 
+        </section>
 
-            <!-- PILIHAN REKOMENDASI -->
-            <div class="option-grid">
 
-                <!-- KARTU REKOMENDASI UTAMA -->
-                <article class="option-card selected-card"
-                         id="mainOption">
+        <!-- ======================================
+             PANEL REKOMENDASI
+        ======================================= -->
 
-                    <div class="option-card-top">
+        <section class="recommendation-panel">
 
-                        <span class="option-label">
-                            <i class="bi bi-circle-fill"></i>
-                            Rekomendasi Utama Laboran
+
+            <!-- HEADER TAWARAN -->
+
+            <div class="recommendation-header">
+
+                <div class="recommendation-heading-left">
+
+                    <!-- IKON PANAH DUA ARAH -->
+
+                    <div class="recommendation-main-icon">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </div>
+
+
+                    <div class="recommendation-heading-info">
+
+                        <span class="offer-badge">
+
+                            <i class="bi bi-shield-lock"></i>
+
+                            Tawaran Pengganti dari Laboran
+
                         </span>
 
-                        <span class="verified">
-                            <i class="bi bi-patch-check"></i>
-                            Terverifikasi
-                        </span>
+                        <h3>
+                            Penyesuaian Jadwal: Prioritas Ruang
+                            Kuliah Pengganti
+                        </h3>
 
                     </div>
 
-                    <div class="option-date">
-                        <i class="bi bi-calendar3"></i>
-                        Jumat, 25 Oktober 2026
-                    </div>
-
-                    <div class="option-session">
-                        Sesi Siang (13.00 - 15.30 WIT)
-                    </div>
-
-                    <div class="option-information">
-                        <i class="bi bi-check-circle-fill"></i>
-
-                        <span>
-                            36 Workstation Kosong ·
-                            Terverifikasi Bebas Praktikum Reguler
-                        </span>
-                    </div>
-
-                    <button type="button"
-                            class="choose-button primary-button"
-                            id="mainChoose"
-                            onclick="selectOption('main')">
-
-                        <i class="bi bi-check-circle"></i>
-                        Terima &amp; Jadwalkan Slot Ini
-
-                    </button>
-
-                </article>
+                </div>
 
 
-                <!-- KARTU REKOMENDASI ALTERNATIF -->
-                <article class="option-card"
-                         id="alternativeOption">
+                <!-- BATAS RESPONS -->
 
-                    <div class="option-card-top">
+                <div class="response-deadline">
 
-                        <span class="option-label">
-                            <i class="bi bi-circle-fill"></i>
-                            Opsi Alternatif Akhir Pekan
-                        </span>
+                    <i class="bi bi-clock"></i>
 
-                        <span class="alternative-label">
-                            Mandiri
-                        </span>
+                    <span>
+                        Batas Respon: 24 Jam ke Depan
+                    </span>
 
-                    </div>
-
-                    <div class="option-date">
-                        <i class="bi bi-calendar-week"></i>
-                        Sabtu, 26 Oktober 2026
-                    </div>
-
-                    <div class="option-session">
-                        Sesi Pagi (08.00 - 10.30 WIT)
-                    </div>
-
-                    <div class="option-information alternative-information">
-                        <i class="bi bi-info-circle-fill"></i>
-
-                        <span>
-                            Slot Terbuka · Ruang Lab Beroperasi
-                            Mandiri (Akses Kartu)
-                        </span>
-                    </div>
-
-                    <button type="button"
-                            class="choose-button secondary-button"
-                            id="alternativeChoose"
-                            onclick="selectOption('alternative')">
-
-                        <i class="bi bi-circle"></i>
-                        Pilih Jadwal Ini
-
-                    </button>
-
-                </article>
+                </div>
 
             </div>
 
 
-            <!-- TOMBOL TOLAK REKOMENDASI -->
-            <button type="button"
-                    class="reject-button"
-                    onclick="rejectRecommendation()">
+            <!-- ==================================
+                 KONTEKS PERMOHONAN
+            =================================== -->
 
-                <i class="bi bi-x-lg"></i>
-                Tolak &amp; Ajukan Waktu Lain Secara Manual
+            <div class="recommendation-context">
 
-            </button>
+                <div class="context-icon">
+                    <span>i</span>
+                </div>
 
-        </section>
+                <div class="context-content">
+
+                    <div class="context-heading">
+
+                        <strong>
+                            Konteks Permohonan Terdahulu:
+                        </strong>
+
+                        <span>
+                            Belajar Mandiri & Skripsi (K5 Mandiri)
+                        </span>
+
+                    </div>
+
+                    <p>
+                        Jadwal Anda pada 4 hari lalu dibatalkan karena
+                        pengalihan prioritas untuk
+                        <strong>
+                            Kelas Pengganti Dosen (Dr. Ridwan, M.Kom).
+                        </strong>
+                        Laboran telah menyiapkan 2 rekomendasi slot
+                        pengganti bebas bentrokan untuk Anda.
+                    </p>
+
+                </div>
+
+            </div>
 
 
-        <!-- KONDISI SETELAH REKOMENDASI DITOLAK -->
-        <section class="empty-recommendation"
-                 id="emptyRecommendation">
+            <!-- ==================================
+                 PILIHAN JADWAL
+            =================================== -->
 
-            <p>
-                Tidak ada rekomendasi jadwal dari laboran
-            </p>
+            <div class="recommendation-options">
+
+
+                <!-- KARTU PERTAMA -->
+
+                <label class="recommendation-option">
+
+                    <input
+                        type="radio"
+                        name="pilihan-jadwal"
+                        value="jadwal-utama"
+                    >
+
+                    <article class="recommendation-card">
+
+
+                        <!-- HEADER KARTU -->
+
+                        <div class="recommendation-card-header">
+
+                            <span class="recommendation-type">
+
+                                <i class="bi bi-circle-fill"></i>
+
+                                Rekomendasi Utama Laboran
+
+                            </span>
+
+                            <span class="verification-label">
+
+                                <i class="bi bi-patch-check"></i>
+
+                                Terverifikasi
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- TANGGAL -->
+
+                        <div class="recommendation-date">
+
+                            <i class="bi bi-calendar3"></i>
+
+                            <h3>
+                                Jumat, 25 Oktober 2026
+                            </h3>
+
+                        </div>
+
+
+                        <!-- SESI -->
+
+                        <p class="recommendation-session">
+                            Sesi Siang (13.00 – 15.30 WIT)
+                        </p>
+
+
+                        <!-- KETERSEDIAAN -->
+
+                        <div class="recommendation-availability">
+
+                            <span class="availability-icon">
+                                <i class="bi bi-check"></i>
+                            </span>
+
+                            <p>
+                                36 Workstation Kosong ·
+                                Terverifikasi Bebas Praktikum Reguler
+                            </p>
+
+                        </div>
+
+
+                        <!-- TOMBOL -->
+
+                        <div class="recommendation-button">
+
+                            <span class="button-unselected">
+
+                                <i class="bi bi-circle"></i>
+
+                                Pilih Jadwal Ini
+
+                            </span>
+
+                            <span class="button-selected">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Terima & Jadwalkan Slot Ini
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                </label>
+
+
+
+                <!-- KARTU KEDUA -->
+
+                <label class="recommendation-option">
+
+                    <input
+                        type="radio"
+                        name="pilihan-jadwal"
+                        value="jadwal-alternatif"
+                        checked
+                    >
+
+                    <article class="recommendation-card">
+
+
+                        <!-- HEADER KARTU -->
+
+                        <div class="recommendation-card-header">
+
+                            <span class="recommendation-type">
+
+                                <i class="bi bi-circle-fill"></i>
+
+                                Opsi Alternatif Akhir Pekan
+
+                            </span>
+
+                            <span class="independent-label">
+                                Mandiri
+                            </span>
+
+                        </div>
+
+
+                        <!-- TANGGAL -->
+
+                        <div class="recommendation-date">
+
+                            <i class="bi bi-calendar2-check"></i>
+
+                            <h3>
+                                Sabtu, 26 Oktober 2026
+                            </h3>
+
+                        </div>
+
+
+                        <!-- SESI -->
+
+                        <p class="recommendation-session">
+                            Sesi Pagi (08.00 – 10.30 WIT)
+                        </p>
+
+
+                        <!-- KETERSEDIAAN -->
+
+                        <div class="recommendation-availability">
+
+                            <span class="availability-icon info">
+                                <i class="bi bi-info"></i>
+                            </span>
+
+                            <p>
+                                Slot Terbuka · Ruang Lab Beroperasi
+                                Mandiri (Akses Kartu)
+                            </p>
+
+                        </div>
+
+
+                        <!-- TOMBOL -->
+
+                        <div class="recommendation-button">
+
+                            <span class="button-unselected">
+
+                                <i class="bi bi-circle"></i>
+
+                                Pilih Jadwal Ini
+
+                            </span>
+
+                            <span class="button-selected">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                Terima & Jadwalkan Slot Ini
+
+                            </span>
+
+                        </div>
+
+                    </article>
+
+                </label>
+
+
+            </div>
+
+
+            <!-- ==================================
+                 TOLAK REKOMENDASI
+            =================================== -->
+
+            <a href="pengajuan.html"
+               class="recommendation-reject">
+
+                <i class="bi bi-x"></i>
+
+                <span>
+                    Tolak & Ajukan Waktu Lain Secara Manual
+                </span>
+
+            </a>
+
 
         </section>
 
     </main>
-
-
-    <!-- JAVASCRIPT -->
-    <script>
-
-        let selectedOption = "main";
-
-
-        // MEMILIH REKOMENDASI
-        function selectOption(option) {
-
-            selectedOption = option;
-
-            const mainCard =
-                document.getElementById("mainOption");
-
-            const alternativeCard =
-                document.getElementById("alternativeOption");
-
-            const mainButton =
-                document.getElementById("mainChoose");
-
-            const alternativeButton =
-                document.getElementById("alternativeChoose");
-
-
-            // RESET KARTU
-            mainCard.classList.remove("selected-card");
-            alternativeCard.classList.remove("selected-card");
-
-
-            // RESET TOMBOL
-            mainButton.classList.remove("primary-button");
-            mainButton.classList.add("secondary-button");
-
-            alternativeButton.classList.remove("primary-button");
-            alternativeButton.classList.add("secondary-button");
-
-
-            // RESET TEKS
-            mainButton.innerHTML =
-                '<i class="bi bi-circle"></i> Pilih Jadwal Ini';
-
-            alternativeButton.innerHTML =
-                '<i class="bi bi-circle"></i> Pilih Jadwal Ini';
-
-
-            // JIKA MEMILIH REKOMENDASI UTAMA
-            if (option === "main") {
-
-                mainCard.classList.add("selected-card");
-
-                mainButton.classList.remove("secondary-button");
-                mainButton.classList.add("primary-button");
-
-                mainButton.innerHTML =
-                    '<i class="bi bi-check-circle"></i> Terima &amp; Jadwalkan Slot Ini';
-
-            }
-
-
-            // JIKA MEMILIH REKOMENDASI ALTERNATIF
-            else if (option === "alternative") {
-
-                alternativeCard.classList.add("selected-card");
-
-                alternativeButton.classList.remove("secondary-button");
-                alternativeButton.classList.add("primary-button");
-
-                alternativeButton.innerHTML =
-                    '<i class="bi bi-check-circle"></i> Terima &amp; Jadwalkan Slot Ini';
-
-            }
-
-        }
-
-
-        // MENOLAK REKOMENDASI
-        function rejectRecommendation() {
-
-            const confirmation = confirm(
-                "Apakah Anda yakin ingin menolak rekomendasi jadwal ini?"
-            );
-
-            if (!confirmation) {
-                return;
-            }
-
-            document.getElementById("recommendationPanel")
-                .style.display = "none";
-
-            document.getElementById("emptyRecommendation")
-                .style.display = "flex";
-
-        }
-
-    </script>
 
 </body>
 </html>

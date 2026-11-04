@@ -1,248 +1,227 @@
-/* =========================================================
-   SILAB - REKOMENDASI JADWAL
-   Konsisten dengan Dashboard dan Riwayat Pengguna
-========================================================= */
 
-:root {
-    --rec-primary: #33266A;
-    --rec-maroon: #911E3F;
-    --rec-yellow: #F8B916;
-
-    --rec-white: #FFFFFF;
-    --rec-text: #202B40;
-    --rec-muted: #667A9B;
-
-    --rec-border: #E1E1E5;
-    --rec-background: #F4F5F8;
-
-    --rec-purple-soft: #EFECFC;
-    --rec-red-soft: #FFF0F2;
-
-    --rec-shadow: 0 2px 4px rgba(0, 0, 0, 0.09);
-}
+/* ==================================================
+   SILAB - REKOMENDASI PENGGUNA
+   DESAIN MENGIKUTI FIGMA
+   NAVBAR MENGGUNAKAN navbar.css
+================================================== */
 
 
-/* =========================================================
-   RESET KHUSUS KONTEN REKOMENDASI
-========================================================= */
-
-.recommendation-page,
-.recommendation-page * {
-    box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-body {
-    margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--rec-text);
-    background: var(--rec-background);
-}
-
-button {
-    font-family: inherit;
-}
-
-
-/* =========================================================
+/* ==================================================
    1. CONTAINER UTAMA
-========================================================= */
+================================================== */
 
-.recommendation-page {
-    width: calc(100% - 72px);
-    max-width: 1600px;
+.recommendation-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
 
-    margin: 16px auto 28px;
+    margin: 18px auto 30px;
+}
+
+
+/* ==================================================
+   2. HEADER REKOMENDASI
+================================================== */
+
+.recommendation-welcome {
+    width: 100%;
+    min-height: 78px;
 
     display: flex;
-    flex-direction: column;
+    align-items: center;
 
-    gap: 14px;
+    padding: 12px 24px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+
+    margin-bottom: 14px;
 }
 
-
-/* =========================================================
-   2. HEADER HALAMAN
-========================================================= */
-
-.recommendation-hero {
+.recommendation-welcome-content {
     width: 100%;
-
-    padding: 17px 28px 18px;
-
-    background: var(--rec-white);
-
-    border: 1px solid var(--rec-border);
-    border-radius: 16px;
-
-    box-shadow: var(--rec-shadow);
 }
 
-.recommendation-hero h2 {
+.recommendation-welcome h2 {
     margin: 0 0 5px;
 
-    color: var(--rec-primary);
+    color: #33266A;
 
-    font-size: 28px;
+    font-size: 25px;
     font-weight: 800;
-
-    line-height: 1.3;
-    letter-spacing: -0.45px;
+    line-height: 1.25;
 }
 
-.recommendation-hero p {
-    margin: 0;
+.recommendation-welcome p {
+    max-width: 700px;
 
-    color: var(--rec-muted);
+    color: #667A9B;
 
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
-
-    line-height: 1.65;
+    line-height: 1.6;
 }
 
 
-/* =========================================================
-   3. PANEL REKOMENDASI
-========================================================= */
+/* ==================================================
+   3. PANEL UTAMA
+================================================== */
 
 .recommendation-panel {
     width: 100%;
+    min-height: 500px;
 
-    padding: 28px 28px 25px;
+    padding: 24px 24px 25px;
 
-    background: var(--rec-white);
+    background: #FFFFFF;
 
-    border: 1px solid var(--rec-border);
-    border-radius: 16px;
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
 
-    box-shadow: var(--rec-shadow);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
 }
 
 
-/* =========================================================
-   4. HEADER PENAWARAN
-========================================================= */
+/* ==================================================
+   4. HEADER TAWARAN
+================================================== */
 
-.offer-header {
-    display: flex;
-    align-items: center;
-
-    gap: 14px;
-
+.recommendation-header {
     width: 100%;
-
-    margin: 0 0 30px;
-}
-
-
-/* IKON TAWARAN */
-
-.offer-icon {
-    width: 48px;
-    height: 48px;
-
-    flex: 0 0 48px;
+    min-height: 45px;
 
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
-    color: #A51D45;
-    background: #FFF0F3;
+    gap: 15px;
 
-    border-radius: 13px;
+    margin-bottom: 25px;
 }
 
-.offer-icon i {
-    width: 22px;
-    height: 22px;
-
+.recommendation-heading-left {
     display: flex;
     align-items: center;
-    justify-content: center;
 
-    border: 2px solid currentColor;
-    border-radius: 50%;
+    gap: 11px;
 
-    font-size: 13px;
-    line-height: 1;
-}
-
-
-/* JUDUL PENAWARAN */
-
-.offer-title {
-    flex: 1 1 auto;
     min-width: 0;
 }
 
 
-/* BADGE TAWARAN */
+/* ==================================================
+   5. IKON UTAMA TAWARAN
+================================================== */
 
-.offer-label {
+.recommendation-main-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: #A21D48;
+    background: #FFF1F3;
+
+    border-radius: 12px;
+}
+
+.recommendation-main-icon i {
+    width: 29px;
+    height: 29px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2.5px solid #A21D48;
+    border-radius: 50%;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* ==================================================
+   6. BADGE TAWARAN
+================================================== */
+
+.recommendation-heading-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 3px;
+}
+
+.offer-badge {
     display: inline-flex;
     align-items: center;
 
     gap: 5px;
 
-    width: fit-content;
-
-    margin: 0 0 4px;
     padding: 5px 10px;
 
-    color: #806522;
-    background: #FFF1C9;
+    color: #806622;
+    background: #FFF2C9;
 
     border-radius: 20px;
 
     font-size: 10px;
     font-weight: 600;
 
-    line-height: 1.2;
+    white-space: nowrap;
 }
 
-.offer-label i {
-    font-size: 10px;
-    line-height: 1;
+.offer-badge i {
+    font-size: 12px;
 }
 
 
-/* JUDUL */
+/* JUDUL TAWARAN */
 
-.offer-title h3 {
+.recommendation-heading-info h3 {
     margin: 0;
 
-    color: var(--rec-text);
+    color: #202B40;
 
     font-size: 14px;
     font-weight: 700;
-
-    line-height: 1.45;
+    line-height: 1.4;
 }
 
 
-/* BATAS RESPON */
+/* ==================================================
+   7. BATAS RESPONS
+================================================== */
 
 .response-deadline {
-    flex: 0 0 auto;
-
     display: inline-flex;
     align-items: center;
+    justify-content: center;
 
-    gap: 6px;
+    gap: 5px;
+
+    flex-shrink: 0;
 
     padding: 6px 10px;
 
-    color: var(--rec-primary);
-    background: #F1EEFF;
+    color: #514A83;
+    background: #F0EDFF;
 
-    border-radius: 9px;
+    border-radius: 8px;
 
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
 
-    line-height: 1.3;
     white-space: nowrap;
 }
 
@@ -251,65 +230,100 @@ button {
 }
 
 
-/* =========================================================
-   5. KONTEKS PERMOHONAN TERDAHULU
-========================================================= */
+/* ==================================================
+   8. KONTEKS PERMOHONAN
+================================================== */
 
-.context-notice {
+.recommendation-context {
     width: 100%;
+    min-height: 72px;
 
-    margin: 0 0 30px;
-    padding: 15px 17px;
+    display: flex;
+    align-items: flex-start;
 
-    background: #F5F1FF;
+    gap: 12px;
 
-    border: 1px solid #E5DCFF;
-    border-radius: 10px;
+    padding: 13px 15px;
+
+    background: #F4F1FF;
+
+    border: 1px solid #E6E0FC;
+    border-radius: 9px;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+
+    margin-bottom: 28px;
 }
 
 
-/* HEADER KONTEKS */
+/* IKON INFORMASI MERAH */
+
+.context-icon {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: #A21D48;
+
+    border: 2.5px solid #A21D48;
+    border-radius: 50%;
+}
+
+.context-icon span {
+    display: block;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+
+/* KONTEN KONTEKS */
+
+.context-content {
+    min-width: 0;
+    flex: 1;
+}
 
 .context-heading {
     display: flex;
     align-items: center;
+
     flex-wrap: wrap;
 
-    gap: 8px;
+    gap: 9px;
 
-    margin: 0 0 7px;
-
-    color: var(--rec-primary);
-
-    font-size: 11px;
-    line-height: 1.5;
-}
-
-.context-heading > i {
-    flex: 0 0 auto;
-
-    color: #A51D45;
-
-    font-size: 15px;
+    margin-bottom: 6px;
 }
 
 .context-heading strong {
+    color: #202B40;
+
+    font-size: 11px;
     font-weight: 700;
 }
 
 .context-heading span {
-    color: var(--rec-maroon);
+    padding: 2px 8px;
+
+    color: #A21D48;
+    background: #FFF1F3;
+
+    border-radius: 20px;
+
+    font-size: 10px;
     font-weight: 700;
 }
 
-
-/* DESKRIPSI KONTEKS */
-
-.context-notice p {
-    margin: 0;
-    padding-left: 23px;
-
-    color: var(--rec-muted);
+.context-content p {
+    color: #667085;
 
     font-size: 11px;
     font-weight: 400;
@@ -317,545 +331,533 @@ button {
     line-height: 1.7;
 }
 
-.context-notice p strong {
-    color: var(--rec-text);
+.context-content p strong {
+    color: #394150;
     font-weight: 700;
 }
 
 
-/* =========================================================
-   6. GRID KARTU REKOMENDASI
-========================================================= */
+/* ==================================================
+   9. GRID KARTU
+================================================== */
 
-.option-grid {
+.recommendation-options {
+    width: 100%;
+
     display: grid;
 
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 38px;
 
     align-items: stretch;
-
-    gap: 28px;
-
-    margin: 0 0 24px;
 }
 
 
-/* =========================================================
-   7. KARTU REKOMENDASI
-========================================================= */
+/* ==================================================
+   10. RADIO INPUT
+================================================== */
 
-.option-card {
+.recommendation-option {
+    position: relative;
+
+    display: block;
+
     min-width: 0;
-    min-height: 245px;
+
+    cursor: pointer;
+}
+
+.recommendation-option input[type="radio"] {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* ==================================================
+   11. KARTU REKOMENDASI
+================================================== */
+
+.recommendation-card {
+    width: 100%;
+    min-height: 204px;
 
     display: flex;
     flex-direction: column;
 
-    padding: 17px 17px 16px;
+    padding: 15px 15px 14px;
 
-    background: var(--rec-white);
+    background: #FFFFFF;
 
-    border: 1px solid var(--rec-border);
-    border-radius: 14px;
+    border: 1px solid #E1E1E5;
+    border-radius: 12px;
 
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.09);
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.option-card:hover {
-    border-color: #C8C0E8;
-
-    box-shadow: 0 3px 10px rgba(51, 38, 106, 0.07);
-}
-
-.option-card.selected-card {
-    border: 1px solid #D6CEF5;
-
-    box-shadow: 0 2px 8px rgba(51, 38, 106, 0.06);
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
 }
 
 
-/* HEADER KARTU */
+/* ==================================================
+   12. HEADER KARTU
+================================================== */
 
-.option-card-top {
+.recommendation-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    flex-wrap: wrap;
-
     gap: 8px;
 
-    margin: 0 0 20px;
+    margin-bottom: 22px;
 }
 
 
-/* LABEL KARTU */
+/* LABEL REKOMENDASI */
 
-.option-label {
+.recommendation-type {
     display: inline-flex;
     align-items: center;
 
-    gap: 6px;
+    gap: 5px;
 
-    width: fit-content;
+    padding: 4px 9px;
 
-    padding: 5px 10px;
-
-    color: var(--rec-primary);
-    background: var(--rec-purple-soft);
+    color: #514A83;
+    background: #EFECFF;
 
     border-radius: 20px;
 
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
 
-    line-height: 1.2;
+    white-space: nowrap;
 }
 
-.option-label i {
-    color: #555B91;
+.recommendation-type i {
     font-size: 7px;
 }
 
 
-/* VERIFIKASI DAN MANDIRI */
+/* TERVERIFIKASI */
 
-.verified,
-.alternative-label {
+.verification-label {
     display: inline-flex;
     align-items: center;
 
     gap: 4px;
 
-    color: var(--rec-muted);
+    color: #514A83;
 
-    font-size: 10px;
-    font-weight: 500;
+    font-size: 9px;
+    font-weight: 600;
 
-    line-height: 1.3;
+    white-space: nowrap;
 }
 
-.verified i {
-    color: #555B91;
+.verification-label i {
     font-size: 11px;
 }
 
 
-/* =========================================================
-   8. INFORMASI TANGGAL DAN SESI
-========================================================= */
+/* MANDIRI */
 
-.option-date {
+.independent-label {
+    color: #202B40;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   13. TANGGAL
+================================================== */
+
+.recommendation-date {
     display: flex;
     align-items: center;
 
-    gap: 8px;
+    gap: 7px;
 
-    margin: 0 0 5px;
+    margin-bottom: 5px;
 
-    color: var(--rec-primary);
+    color: #33266A;
+}
 
-    font-size: 18px;
-    font-weight: 700;
+.recommendation-date i {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.recommendation-date h3 {
+    margin: 0;
+
+    color: #33266A;
+
+    font-size: 15px;
+    font-weight: 800;
 
     line-height: 1.4;
 }
 
-.option-date i {
-    flex: 0 0 auto;
 
-    color: var(--rec-primary);
+/* ==================================================
+   14. SESI
+================================================== */
 
-    font-size: 16px;
-}
+.recommendation-session {
+    margin-bottom: 8px;
 
+    color: #202B40;
 
-/* SESI */
-
-.option-session {
-    margin: 0 0 8px;
-
-    color: var(--rec-text);
-
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 
     line-height: 1.5;
 }
 
 
-/* INFORMASI SLOT */
+/* ==================================================
+   15. KETERSEDIAAN
+================================================== */
 
-.option-information {
+.recommendation-availability {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
 
     gap: 7px;
 
-    margin: 0 0 18px;
-
-    color: var(--rec-muted);
-
-    font-size: 10px;
-    font-weight: 400;
-
-    line-height: 1.6;
+    min-width: 0;
 }
 
-.option-information i {
-    flex: 0 0 auto;
-
-    margin-top: 1px;
-
-    color: #8176E8;
-
-    font-size: 13px;
-}
-
-.alternative-information i {
-    color: #9185E9;
-}
-
-
-/* =========================================================
-   9. TOMBOL PILIH JADWAL
-========================================================= */
-
-.choose-button {
-    width: 100%;
-    min-height: 39px;
+.availability-icon {
+    width: 14px;
+    height: 14px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    gap: 7px;
+    flex-shrink: 0;
+
+    color: #FFFFFF;
+    background: #C8C7FF;
+
+    border-radius: 50%;
+}
+
+.availability-icon i {
+    font-size: 9px;
+}
+
+.availability-icon.info {
+    color: #FFFFFF;
+    background: #B9B0F7;
+}
+
+.recommendation-availability p {
+    color: #667085;
+
+    font-size: 9px;
+    font-weight: 400;
+
+    line-height: 1.5;
+}
+
+
+/* ==================================================
+   16. TOMBOL PILIH
+================================================== */
+
+.recommendation-button {
+    width: 100%;
+    min-height: 31px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     margin-top: auto;
-    padding: 9px 12px;
+    padding: 8px 10px;
 
-    border: 0;
-    border-radius: 8px;
+    color: #202B40;
+    background: #FFF1F3;
 
-    cursor: pointer;
+    border-radius: 7px;
 
-    font-family: inherit;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
 
-    line-height: 1.3;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
-}
-
-.choose-button i {
-    font-size: 13px;
-    line-height: 1;
+    transition: background 0.2s ease,
+                color 0.2s ease;
 }
 
 
-/* TOMBOL UTAMA */
+/* LABEL BELUM DIPILIH */
 
-.primary-button {
-    color: var(--rec-white);
-    background: var(--rec-maroon);
-}
+.button-unselected {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-.primary-button:hover {
-    background: #761832;
-}
-
-
-/* TOMBOL ALTERNATIF */
-
-.secondary-button {
-    color: var(--rec-primary);
-    background: #FFF0F2;
-}
-
-.secondary-button:hover {
-    background: #FBE1E6;
+    gap: 6px;
 }
 
 
-/* FOCUS */
+/* LABEL TERPILIH */
 
-.choose-button:focus-visible,
-.reject-button:focus-visible {
-    outline: 3px solid rgba(51, 38, 106, 0.25);
+.button-selected {
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+}
+
+.button-unselected i,
+.button-selected i {
+    font-size: 12px;
+}
+
+
+/* ==================================================
+   17. TOMBOL MAROON BERPINDAH
+   MURNI HTML + CSS
+================================================== */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.recommendation-button {
+
+    color: #FFFFFF;
+    background: #911E3F;
+
+}
+
+
+/* TAMPILKAN TOMBOL TERPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.button-selected {
+
+    display: inline-flex;
+
+}
+
+
+/* SEMBUNYIKAN TOMBOL BELUM DIPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.button-unselected {
+
+    display: none;
+
+}
+
+
+/* KARTU TERPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card {
+
+    border-color: #E1DDF0;
+
+}
+
+
+/* FOKUS KEYBOARD */
+
+.recommendation-option
+input:focus-visible
+~ .recommendation-card {
+
+    outline: 2px solid #33266A;
     outline-offset: 3px;
+
 }
 
 
-/* =========================================================
-   10. TOMBOL TOLAK REKOMENDASI
-========================================================= */
+/* ==================================================
+   18. TOLAK REKOMENDASI
+================================================== */
 
-.reject-button {
+.recommendation-reject {
     width: fit-content;
-    min-height: 32px;
 
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
 
-    gap: 7px;
+    gap: 6px;
 
-    margin: 0;
-    padding: 4px 0;
+    margin-top: 29px;
 
-    color: #263249;
-    background: transparent;
+    color: #202B40;
 
-    border: 0;
-
-    cursor: pointer;
-
-    font-family: inherit;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
 
-    line-height: 1.5;
-    text-align: left;
+    text-decoration: none;
 
     transition: color 0.2s ease;
 }
 
-.reject-button i {
-    color: #D99B00;
-
-    font-size: 12px;
-    line-height: 1;
+.recommendation-reject i {
+    color: #D49A00;
+    font-size: 14px;
 }
 
-.reject-button:hover {
-    color: var(--rec-maroon);
-}
-
-
-/* =========================================================
-   11. KONDISI KOSONG SETELAH DITOLAK
-========================================================= */
-
-.empty-recommendation {
-    display: none;
-
-    width: 100%;
-    min-height: 300px;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 30px;
-
-    background: var(--rec-white);
-
-    border: 1px solid var(--rec-border);
-    border-radius: 16px;
-
-    box-shadow: var(--rec-shadow);
-
-    text-align: center;
-}
-
-.empty-recommendation p {
-    margin: 0;
-
-    color: var(--rec-muted);
-
-    font-size: 13px;
-    font-weight: 600;
+.recommendation-reject:hover {
+    color: #911E3F;
 }
 
 
-/* =========================================================
-   12. RESPONSIVE TABLET
-========================================================= */
+/* ==================================================
+   19. RESPONSIVE TABLET
+================================================== */
 
 @media screen and (max-width: 1100px) {
 
-    .recommendation-page {
-        width: calc(100% - 48px);
+    .recommendation-container {
+        width: calc(100% - 35px);
     }
 
-    .recommendation-panel {
-        padding: 24px;
-    }
-
-    .option-grid {
-        gap: 18px;
-    }
-
-    .option-date {
-        font-size: 16px;
+    .recommendation-options {
+        gap: 20px;
     }
 
 }
 
 
-/* =========================================================
-   13. RESPONSIVE MOBILE
-========================================================= */
+/* ==================================================
+   20. RESPONSIVE MOBILE
+================================================== */
 
 @media screen and (max-width: 700px) {
 
-    .recommendation-page {
+    .recommendation-container {
         width: calc(100% - 24px);
 
-        margin: 14px auto 20px;
-
-        gap: 12px;
+        margin: 12px auto 20px;
     }
 
-    .recommendation-hero {
-        padding: 17px 18px;
+    .recommendation-welcome {
+        min-height: auto;
+        padding: 16px;
+
+        border-radius: 13px;
     }
 
-    .recommendation-hero h2 {
-        font-size: 22px;
+    .recommendation-welcome h2 {
+        font-size: 21px;
     }
 
-    .recommendation-hero p {
-        font-size: 11px;
+    .recommendation-welcome p {
+        font-size: 10px;
     }
 
     .recommendation-panel {
-        padding: 18px 15px;
+        min-height: auto;
+        padding: 15px;
+
+        border-radius: 13px;
     }
 
-    .offer-header {
-        display: grid;
+    .recommendation-header {
+        align-items: flex-start;
+        flex-direction: column;
 
-        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 12px;
 
-        align-items: start;
-
-        column-gap: 10px;
-        row-gap: 10px;
-
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
-    .offer-icon {
-        width: 44px;
-        height: 44px;
-
-        flex-basis: 44px;
+    .recommendation-main-icon {
+        width: 42px;
+        height: 42px;
     }
 
-    .offer-title {
-        min-width: 0;
-    }
-
-    .offer-title h3 {
-        font-size: 12px;
-    }
-
-    .offer-label {
-        font-size: 9px;
-    }
-
-    .response-deadline {
-        grid-column: 2;
-
-        justify-self: start;
-
-        font-size: 9px;
-    }
-
-    .context-notice {
-        margin-bottom: 20px;
-        padding: 13px;
-    }
-
-    .context-heading {
-        gap: 6px;
-        font-size: 10px;
-    }
-
-    .context-notice p {
-        padding-left: 0;
-        font-size: 10px;
-    }
-
-    .option-grid {
-        grid-template-columns: 1fr;
-
-        gap: 13px;
-
-        margin-bottom: 16px;
-    }
-
-    .option-card {
-        min-height: 225px;
-        padding: 16px;
-    }
-
-    .option-card-top {
-        margin-bottom: 17px;
-    }
-
-    .option-date {
-        font-size: 17px;
-    }
-
-    .option-session {
+    .recommendation-heading-info h3 {
         font-size: 11px;
     }
 
-    .option-information {
-        font-size: 10px;
+    .response-deadline {
+        margin-left: 53px;
     }
 
-    .reject-button {
-        font-size: 10px;
+    .recommendation-context {
+        padding: 12px;
+        margin-bottom: 18px;
+    }
+
+    .context-heading {
+        gap: 5px;
+    }
+
+    .context-content p {
+        font-size: 9px;
+    }
+
+    .recommendation-options {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .recommendation-card {
+        min-height: 195px;
+        padding: 14px;
+    }
+
+    .recommendation-card-header {
+        margin-bottom: 18px;
+    }
+
+    .recommendation-date h3 {
+        font-size: 14px;
+    }
+
+    .recommendation-reject {
+        margin-top: 20px;
+        font-size: 9px;
     }
 
 }
 
 
-/* =========================================================
-   14. SMALL MOBILE
-========================================================= */
+/* ==================================================
+   21. RESPONSIVE LAYAR KECIL
+================================================== */
 
 @media screen and (max-width: 380px) {
 
-    .recommendation-page {
-        width: calc(100% - 20px);
+    .recommendation-type {
+        font-size: 8px;
+        padding: 4px 7px;
     }
 
-    .recommendation-hero h2 {
-        font-size: 20px;
+    .recommendation-date h3 {
+        font-size: 12px;
     }
 
-    .option-card-top {
-        align-items: flex-start;
-    }
-
-    .option-date {
-        font-size: 15px;
-    }
-
-}
-
-
-/* =========================================================
-   15. REDUCE MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
+    .verification-label,
+    .independent-label {
+        font-size: 8px;
     }
 
 }
