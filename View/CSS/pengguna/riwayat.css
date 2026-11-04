@@ -1,0 +1,592 @@
+
+/* ==================================================
+   SILAB - RIWAYAT PENGGUNA
+   CSS KHUSUS KONTEN RIWAYAT
+   NAVBAR DIATUR OLEH navbar.css
+================================================== */
+
+
+/* ==================================================
+   1. KONTEN UTAMA
+================================================== */
+
+.history-page {
+    width: calc(100% - 48px);
+    max-width: 1480px;
+
+    margin: 12px auto 40px;
+
+    padding: 0;
+
+    color: #202B40;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+
+/* ==================================================
+   2. HEADER RIWAYAT
+================================================== */
+
+.history-hero {
+    width: 100%;
+
+    min-height: 96px;
+
+    padding: 12px 22px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 12px;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+
+    margin-bottom: 10px;
+}
+
+.history-eyebrow {
+    color: #33266A;
+
+    font-size: 9px;
+    font-weight: 500;
+
+    letter-spacing: 0.15px;
+
+    margin-bottom: 8px;
+}
+
+.history-eyebrow span {
+    color: #667A9B;
+    margin: 0 3px;
+}
+
+.history-hero h2 {
+    color: #33266A;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    line-height: 1.35;
+
+    margin: 0 0 7px;
+}
+
+.history-hero p {
+    color: #667085;
+
+    font-size: 10px;
+    font-weight: 400;
+
+    line-height: 1.6;
+
+    margin: 0;
+}
+
+
+/* ==================================================
+   3. CARD RIWAYAT
+================================================== */
+
+.history-card {
+    width: calc(100% - 12px);
+
+    margin: 0 auto;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 12px;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+
+    overflow: hidden;
+}
+
+
+/* ==================================================
+   4. HEADER CARD
+================================================== */
+
+.history-card-header {
+    width: 100%;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 17px;
+
+    background: #FFFFFF;
+}
+
+.history-card-header h3 {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #202B40;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    margin: 0;
+}
+
+.history-card-header h3 i {
+    color: #911E3F;
+    font-size: 14px;
+}
+
+
+/* ==================================================
+   5. SEARCH
+================================================== */
+
+.history-search {
+    width: 248px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 10px;
+
+    background: #F8FAFC;
+
+    border: 1px solid #E7EAF1;
+    border-radius: 6px;
+}
+
+.history-search i {
+    color: #667085;
+    font-size: 12px;
+}
+
+.history-search input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #202B40;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+}
+
+.history-search input::placeholder {
+    color: #858B99;
+}
+
+
+/* ==================================================
+   6. TABEL RIWAYAT
+================================================== */
+
+.history-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+
+    table-layout: fixed;
+
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    background: #FFFFFF;
+}
+
+.history-table thead {
+    background: #F7F9FB;
+}
+
+.history-table th {
+    height: 36px;
+
+    padding: 0 12px;
+
+    color: #555B66;
+
+    font-size: 8.5px;
+    font-weight: 700;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+.history-table th:nth-child(1) {
+    width: 17%;
+}
+
+.history-table th:nth-child(2) {
+    width: 19%;
+}
+
+.history-table th:nth-child(3) {
+    width: 21%;
+}
+
+.history-table th:nth-child(4) {
+    width: 20%;
+}
+
+.history-table th:nth-child(5) {
+    width: 23%;
+}
+
+
+/* BARIS TABEL */
+
+.history-table td {
+    height: 78px;
+
+    padding: 10px 12px;
+
+    border-bottom: 1px solid #EEF0F5;
+
+    vertical-align: middle;
+
+    font-size: 9px;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ==================================================
+   7. TANGGAL
+================================================== */
+
+.history-table .date-cell {
+    padding-left: 55px;
+
+    color: #27336F;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   8. WAKTU DAN KEBUTUHAN
+================================================== */
+
+.time-main {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: #202B40;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.time-main i {
+    color: #58618A;
+    font-size: 10px;
+}
+
+.time-detail {
+    margin-top: 3px;
+
+    color: #697080;
+
+    font-size: 8.5px;
+    line-height: 1.35;
+}
+
+
+/* ==================================================
+   9. KEGIATAN DAN KATEGORI
+================================================== */
+
+.activity-name {
+    color: #202B40;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    margin-bottom: 5px;
+}
+
+.category-tag {
+    display: inline-block;
+
+    padding: 2px 8px;
+
+    color: #3F4373;
+    background: #E9E8FF;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   10. STATUS PENGAJUAN
+================================================== */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 3px 9px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.status i {
+    font-size: 6px;
+}
+
+
+/* MENUNGGU */
+
+.status.waiting {
+    color: #A65A00;
+    background: #FFF1C9;
+}
+
+.status.waiting i {
+    color: #E79A00;
+}
+
+
+/* DISETUJUI */
+
+.status.approved {
+    color: #087C50;
+    background: #E8FAF1;
+}
+
+.status.approved i {
+    color: #00B77B;
+}
+
+
+/* SELESAI */
+
+.status.completed {
+    color: #42466F;
+    background: #E6E6FF;
+}
+
+.status.completed i {
+    color: #62648F;
+}
+
+
+/* ==================================================
+   11. KETERANGAN
+================================================== */
+
+.history-table .description-cell {
+    color: #667085;
+
+    font-size: 8.5px;
+    font-weight: 400;
+}
+
+
+/* ==================================================
+   12. DATA KOSONG
+================================================== */
+
+.history-empty {
+    width: 100%;
+
+    min-height: 120px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    color: #667085;
+
+    font-size: 11px;
+}
+
+.history-empty i {
+    color: #667085;
+    font-size: 20px;
+}
+
+
+/* ==================================================
+   13. FOOTER TABEL
+================================================== */
+
+.history-footer {
+    width: 100%;
+
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 17px;
+
+    background: #F7F9FB;
+
+    color: #555B66;
+
+    font-size: 9px;
+}
+
+
+/* ==================================================
+   14. PAGINATION
+================================================== */
+
+.pagination {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+}
+
+.pagination button {
+    height: 24px;
+
+    padding: 0 12px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #EAEAFF;
+
+    color: #667085;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.pagination .page-number {
+    width: 24px;
+
+    padding: 0;
+
+    color: #FFFFFF;
+    background: #33266A;
+}
+
+.pagination .page-number.active {
+    color: #FFFFFF;
+    background: #33266A;
+}
+
+
+/* ==================================================
+   15. RESPONSIVE TABLET
+================================================== */
+
+@media screen and (max-width: 900px) {
+
+    .history-page {
+        width: calc(100% - 32px);
+    }
+
+    .history-table {
+        min-width: 900px;
+    }
+
+    .history-table .date-cell {
+        padding-left: 20px;
+    }
+
+}
+
+
+/* ==================================================
+   16. RESPONSIVE MOBILE
+================================================== */
+
+@media screen and (max-width: 600px) {
+
+    .history-page {
+        width: calc(100% - 24px);
+
+        margin-top: 10px;
+    }
+
+    .history-hero {
+        padding: 14px;
+    }
+
+    .history-hero h2 {
+        font-size: 18px;
+    }
+
+    .history-card-header {
+        height: auto;
+        min-height: 65px;
+
+        flex-wrap: wrap;
+
+        gap: 10px;
+
+        padding: 12px;
+    }
+
+    .history-search {
+        width: 100%;
+    }
+
+    .history-footer {
+        flex-wrap: wrap;
+
+        gap: 12px;
+
+        padding: 15px;
+    }
+
+}
