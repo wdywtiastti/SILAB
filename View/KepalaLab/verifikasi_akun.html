@@ -21,11 +21,18 @@
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+  <!-- =====================================
+        NAVBAR
+    ===================================== -->
+
+    <header class="navbar">
 
         <div class="navbar-brand">
-            <img src="../Assets/Logo_RPL.svg" class="navbar-logo" alt="Logo SILAB">
+            <img
+                src="../Assets/Logo_RPL.svg"
+                alt="Logo SILAB"
+                class="navbar-logo"
+            >
 
             <div class="brand-info">
                 <h1>SILAB</h1>
@@ -33,7 +40,7 @@
             </div>
         </div>
 
-        <div class="navbar-menu">
+        <nav class="navbar-menu">
             <a href="Dashboard.html" class="nav-link">
                 Dashboard Kepala Lab
             </a>
@@ -45,21 +52,45 @@
             <a href="manajemen_user.html" class="nav-link active">
                 Manajemen User
             </a>
-        </div>
+        </nav>
 
         <div class="navbar-profile">
+
             <div class="profile-info">
                 <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
                 <p>Kepala Lab</p>
             </div>
 
-            <div class="profile-icon">
-                <i class="bi bi-person"></i>
-            </div>
+            <details class="profile-dropdown">
+                <summary class="profile-trigger">
+                    <i class="bi bi-person"></i>
+                </summary>
+
+                <div class="profile-menu">
+
+                    <div class="profile-info">
+                        <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
+                        <span>NIP : XXXXXXXX</span>
+
+                        <div class="profile-role">
+                            <i class="bi bi-shield-check"></i>
+                            Kepala Lab RPL
+                        </div>
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <a href="../auth/login.html" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Keluar / Logout
+                    </a>
+
+                </div>
+            </details>
+
         </div>
 
-    </nav>
-
+    </header>
 
     <!-- KONTEN UTAMA -->
     <main class="verification-page">
