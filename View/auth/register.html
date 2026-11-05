@@ -17,8 +17,8 @@
     <!-- BOOTSTRAP ICONS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../CSS/auth.css">
+    <!-- CSS AUTHENTICATION -->
+    <link rel="stylesheet" href="../CSS/auth/auth.css">
 
 </head>
 
@@ -27,7 +27,7 @@
     <main class="register-container">
 
         <!-- =================================
-             BAGIAN KIRI
+             BAGIAN KIRI: BACKGROUND DAN LOGO
         ================================== -->
 
         <section class="visual-panel">
@@ -49,9 +49,13 @@
                 >
 
                 <div class="brand-text">
+
                     <h1>SILAB</h1>
+
                     <p>Sistem Peminjaman Laboratorium</p>
+
                     <p>Universitas Khairun</p>
+
                 </div>
 
             </div>
@@ -60,14 +64,14 @@
 
 
         <!-- =================================
-             BAGIAN KANAN
+             BAGIAN KANAN: FORM REGISTER
         ================================== -->
 
         <section class="register-panel">
 
             <div class="register-content">
 
-                <!-- HEADER -->
+                <!-- HEADER REGISTER -->
                 <header class="register-header">
 
                     <h2>Buat Akun</h2>
@@ -78,7 +82,7 @@
 
 
                 <!-- FORM REGISTER -->
-                <form class="register-form">
+                <form class="register-form" id="registerForm">
 
                     <!-- NAMA LENGKAP -->
                     <div class="input-group">
@@ -103,9 +107,12 @@
 
                         <input
                             type="text"
-                            inputmode="numeric"
                             name="identifier"
                             placeholder="NIP/NPM"
+                            inputmode="numeric"
+                            pattern="[0-9]+"
+                            title="NIP/NPM hanya boleh berisi angka."
+                            autocomplete="username"
                             required
                         >
 
@@ -115,12 +122,15 @@
                     <!-- NOMOR TELEPON -->
                     <div class="input-group">
 
-                        <i class="bi bi-envelope"></i>
+                        <i class="bi bi-telephone"></i>
 
                         <input
                             type="tel"
                             name="no_telp"
-                            placeholder="No Telp"
+                            placeholder="No. Telepon"
+                            inputmode="numeric"
+                            pattern="[0-9]+"
+                            title="Nomor telepon hanya boleh berisi angka."
                             autocomplete="tel"
                             required
                         >
@@ -141,8 +151,6 @@
                             required
                         >
 
-                        <i class="bi bi-eye password-icon"></i>
-
                     </div>
 
 
@@ -159,8 +167,6 @@
                             required
                         >
 
-                        <i class="bi bi-eye password-icon"></i>
-
                     </div>
 
 
@@ -174,27 +180,29 @@
                         >
 
                         <span>
+
                             Saya setuju dengan
-                            <a href="#">syarat dan ketentuan</a>
+
+                            <a href="syarat_ketentuan.html">syarat dan ketentuan</a>
+
                             serta
-                            <a href="#">kebijakan privasi</a>
+
+                            <a href="kebijakan_privasi.html">kebijakan privasi</a>
+
                         </span>
 
                     </label>
 
 
                     <!-- BUTTON DAFTAR -->
-                    <button
-                        type="button"
-                        class="btn-register"
-                    >
+                    <a href="#registerModal" class="btn-register">
                         Daftar
-                    </button>
+                    </a>
 
                 </form>
 
 
-                <!-- FOOTER -->
+                <!-- FOOTER REGISTER -->
                 <div class="register-footer">
 
                     <p>
@@ -209,6 +217,39 @@
         </section>
 
     </main>
+
+    <!-- POP UP PENDAFTARAN BERHASIL -->
+    <div class="register-modal" id="registerModal">
+
+        <div class="register-modal-content">
+
+            <!-- IKON BERHASIL -->
+            <div class="register-success-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <!-- JUDUL -->
+            <h2>Pendaftaran Berhasil!</h2>
+
+            <!-- DESKRIPSI -->
+            <p>
+                Akun kamu berhasil didaftarkan dan saat ini
+                sedang menunggu verifikasi dari Kepala Laboratorium.
+            </p>
+
+            <p class="waiting-info">
+                Silakan tunggu hingga akun kamu disetujui.
+                Kamu belum dapat login sebelum proses verifikasi selesai.
+            </p>
+
+            <!-- TOMBOL OK -->
+            <a href="login.html" class="btn-register-ok">
+                OK
+            </a>
+
+        </div>
+
+    </div>
 
 </body>
 

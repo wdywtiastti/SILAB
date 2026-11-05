@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -18,7 +17,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- CSS AUTHENTICATION -->
-    <link rel="stylesheet" href="../CSS/auth.css">
+    <link rel="stylesheet" href="../CSS/auth/auth.css">
 
 </head>
 
@@ -66,7 +65,7 @@
 
 
         <!-- =================================
-             BAGIAN KANAN: FORM LOGIN
+            BAGIAN KANAN: FORM LOGIN
         ================================== -->
 
         <section class="form-panel">
@@ -93,9 +92,11 @@
 
                         <input
                             type="text"
-                            inputmode="numeric"
                             name="identifier"
                             placeholder="NIP/NPM"
+                            inputmode="numeric"
+                            pattern="[0-9]+"
+                            title="NIP/NPM hanya boleh berisi angka."
                             autocomplete="username"
                             required
                         >
@@ -112,19 +113,9 @@
                             id="password"
                             name="password"
                             placeholder="Password"
-                            autocomplete="current-password"
+                            autocomplete="off"
                             required
                         >
-
-                        <!-- TOMBOL LIHAT PASSWORD -->
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            id="togglePassword"
-                            aria-label="Tampilkan password"
-                        >
-                            <i class="bi bi-eye" id="eyeIcon"></i>
-                        </button>
 
                     </div>
 
@@ -142,12 +133,9 @@
 
 
                     <!-- TOMBOL LOGIN -->
-                    <button
-                        type="button"
-                        class="btn-login"
-                    >
+                    <a href ="../KepalaLab/Dashboard.html"class="btn-login">
                         Login
-                    </button>
+                    </a>
 
                 </form>
 

@@ -1,0 +1,367 @@
+
+/* =========================================
+   RESET DAN GLOBAL
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #F7F8FA;
+    color: #252936;
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   CONTAINER UTAMA
+========================================= */
+
+.policy-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 30px 24px 60px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.policy-header {
+    max-width: 1100px;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #777E8D;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: #A71942;
+}
+
+.back-link i {
+    font-size: 17px;
+}
+
+.policy-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.policy-brand img {
+    width: 43px;
+    height: 43px;
+    object-fit: contain;
+}
+
+.policy-brand h1 {
+    font-size: 19px;
+    font-weight: 800;
+    color: #A71942;
+    line-height: 1.3;
+}
+
+.policy-brand p {
+    font-size: 10px;
+    color: #858B99;
+}
+
+
+/* =========================================
+   KONTEN DOKUMEN
+========================================= */
+
+.policy-content {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border: 1px solid #E9EAF0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(20, 25, 40, 0.035);
+}
+
+
+/* =========================================
+   JUDUL DOKUMEN
+========================================= */
+
+.policy-heading {
+    padding: 42px 56px 35px;
+    border-bottom: 1px solid #ECEEF2;
+}
+
+.policy-category {
+    display: inline-block;
+    color: #A71942;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+}
+
+.policy-heading h2 {
+    font-size: 30px;
+    font-weight: 800;
+    color: #222735;
+    line-height: 1.3;
+    margin-bottom: 10px;
+}
+
+.policy-heading > p {
+    color: #737B8B;
+    font-size: 13px;
+    max-width: 650px;
+    line-height: 1.8;
+}
+
+.updated-date {
+    display: block;
+    margin-top: 18px;
+    color: #999EAA;
+    font-size: 11px;
+}
+
+
+/* =========================================
+   ISI DOKUMEN
+========================================= */
+
+.policy-body {
+    padding: 35px 56px 45px;
+}
+
+.policy-body > p {
+    color: #5F6675;
+    font-size: 13px;
+    line-height: 1.9;
+    margin-bottom: 16px;
+    text-align: justify;
+}
+
+
+/* =========================================
+   BAGIAN PER PASAL
+========================================= */
+
+.policy-section {
+    margin-top: 30px;
+}
+
+.policy-section h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #303746;
+    margin-bottom: 13px;
+    line-height: 1.6;
+}
+
+.policy-section h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #454C5B;
+    margin: 18px 0 8px;
+}
+
+.policy-section p {
+    font-size: 13px;
+    color: #626A79;
+    line-height: 1.9;
+    margin-bottom: 12px;
+    text-align: justify;
+}
+
+.policy-section ol {
+    padding-left: 23px;
+    margin-bottom: 15px;
+}
+
+.policy-section li {
+    color: #626A79;
+    font-size: 13px;
+    line-height: 1.9;
+    padding-left: 5px;
+    margin-bottom: 7px;
+}
+
+.policy-section li::marker {
+    color: #A71942;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   INFORMASI KONTAK
+========================================= */
+
+.contact-info {
+    background: #FAF7F8;
+    border: 1px solid #F0E5E9;
+    border-left: 3px solid #A71942;
+    border-radius: 6px;
+    padding: 17px 20px;
+    margin-top: 15px;
+}
+
+.contact-info strong {
+    display: block;
+    font-size: 13px;
+    color: #343A48;
+    margin-bottom: 7px;
+}
+
+.contact-info p {
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+
+/* =========================================
+   FOOTER DOKUMEN
+========================================= */
+
+.policy-footer {
+    border-top: 1px solid #ECEEF2;
+    padding: 25px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.policy-footer p {
+    font-size: 11px;
+    color: #666E7D;
+}
+
+.policy-footer p strong {
+    color: #A71942;
+}
+
+.policy-footer span {
+    font-size: 10px;
+    color: #999EAA;
+}
+
+.policy-footer a {
+    color: #A71942;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.policy-footer a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 768px) {
+
+    .policy-container {
+        padding: 22px 18px 40px;
+    }
+
+    .policy-heading {
+        padding: 32px 32px 28px;
+    }
+
+    .policy-body {
+        padding: 28px 32px 35px;
+    }
+
+    .policy-footer {
+        padding: 22px 32px;
+    }
+
+    .policy-heading h2 {
+        font-size: 26px;
+    }
+
+}
+
+
+/* =========================================
+   RESPONSIVE MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .policy-container {
+        padding: 16px 12px 30px;
+    }
+
+    .policy-header {
+        align-items: flex-start;
+        flex-direction: column-reverse;
+        gap: 15px;
+    }
+
+    .policy-brand img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .policy-content {
+        border-radius: 10px;
+    }
+
+    .policy-heading {
+        padding: 26px 21px 23px;
+    }
+
+    .policy-heading h2 {
+        font-size: 23px;
+    }
+
+    .policy-heading > p {
+        font-size: 12px;
+    }
+
+    .policy-body {
+        padding: 24px 21px 30px;
+    }
+
+    .policy-body > p,
+    .policy-section p,
+    .policy-section li {
+        font-size: 12px;
+    }
+
+    .policy-section h3 {
+        font-size: 14px;
+    }
+
+    .policy-section h4 {
+        font-size: 12px;
+    }
+
+    .policy-footer {
+        padding: 20px 21px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}

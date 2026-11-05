@@ -620,6 +620,26 @@ body {
     color: #DC2626;
 }
 
+.action-buttons .delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    padding: 4px 2px;
+
+    background: transparent;
+    border: none;
+
+    color: #DC2626;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    cursor: pointer;
+}
+
 
 /* =========================================
    7. FOOTER DAN PAGINATION
@@ -728,7 +748,8 @@ body {
 /* PEMBUKA KEDUA MODAL */
 
 #modal-tambah-user:checked + .modal-overlay,
-#modal-edit-user:checked + .modal-overlay {
+#modal-edit-user:checked + .modal-overlay,
+#modal-hapus-user:checked + .modal-overlay {
     display: flex;
 }
 
@@ -1092,6 +1113,205 @@ body {
     font-size: 12px;
 }
 
+
+/* =====================================
+   MODAL KONFIRMASI HAPUS PENGGUNA
+===================================== */
+
+.modal-hapus-container {
+    width: 100%;
+    max-width: 430px;
+    border-radius: 16px;
+    overflow: hidden;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* HEADER MODAL */
+
+.modal-hapus-container .modal-header {
+    padding: 25px 28px 24px;
+    border-bottom: 1px solid #EDF0F5;
+    text-align: center;
+}
+
+.modal-hapus-container .modal-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* BADGE */
+
+.hapus-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+
+    background: #FFF0F3;
+    color: #911E3F;
+
+    border-radius: 30px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.hapus-badge i {
+    color: #911E3F;
+    font-size: 9px;
+}
+
+/* IKON HAPUS */
+
+.hapus-icon {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 22px auto 17px;
+
+    border-radius: 18px;
+
+    background: #FFF0F3;
+    color: #911E3F;
+
+    font-size: 26px;
+}
+
+/* JUDUL */
+
+.modal-hapus-container .modal-heading h2 {
+    margin: 0 0 9px;
+
+    color: #33266A;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+/* DESKRIPSI */
+
+.modal-hapus-container .modal-heading p {
+    max-width: 340px;
+    margin: 0 auto;
+
+    color: #667A9B;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+/* FOOTER */
+
+.modal-hapus-container .modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    padding: 17px 20px;
+
+    margin: 0;
+    border-top: none;
+}
+
+/* TOMBOL BATAL */
+
+.modal-hapus-container .btn-batal {
+    height: 39px;
+    min-width: 85px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 18px;
+
+    background: #FFFFFF;
+    border: 1px solid #D5DDE9;
+    border-radius: 10px;
+
+    color: #667085;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-hapus-container .btn-batal:hover {
+    background: #F4F5F8;
+    border-color: #33266A;
+    color: #33266A;
+}
+
+/* TOMBOL KONFIRMASI HAPUS */
+
+.btn-konfirmasi-hapus {
+    height: 39px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 18px;
+
+    background: #911E3F;
+    border: 1px solid #911E3F;
+    border-radius: 10px;
+
+    color: #FFFFFF;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.btn-konfirmasi-hapus:hover {
+    background: #761630;
+    border-color: #761630;
+}
+
+.btn-konfirmasi-hapus i {
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 480px) {
+    .modal-hapus-container .modal-header {
+        padding: 22px 17px;
+    }
+
+    .modal-hapus-container .modal-footer {
+        gap: 8px;
+    }
+
+    .modal-hapus-container .modal-heading h2 {
+        font-size: 17px;
+    }
+
+    .btn-konfirmasi-hapus {
+        padding: 0 13px;
+    }
+}
 
 /* =========================================
    10. RESPONSIVE

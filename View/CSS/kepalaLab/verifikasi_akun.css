@@ -654,3 +654,266 @@ body {
     }
 
 }
+
+/* =========================================
+   MODAL VERIFIKASI / TOLAK AKUN
+   UKURAN SAMA DENGAN MODAL HAPUS USER
+========================================= */
+
+.verification-modal-toggle {
+    display: none;
+}
+
+.verification-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(35, 35, 75, 0.38);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+#modal-verifikasi:checked + .verification-modal-overlay,
+#modal-tolak:checked + .verification-modal-overlay {
+    display: flex;
+}
+
+/* CONTAINER */
+
+.verification-modal {
+    width: 100%;
+    max-width: 430px;
+
+    border-radius: 16px;
+    overflow: hidden;
+
+    background: #FFFFFF;
+
+    box-shadow: 0 15px 45px rgba(25,25,60,0.18);
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+/* KONTEN */
+
+.verification-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    padding: 25px 28px 24px;
+}
+
+/* BADGE */
+
+.modal-badge-verifikasi,
+.modal-badge-tolak {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 7px 13px;
+
+    border-radius: 30px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.modal-badge-verifikasi {
+    background: #F1EEFB;
+    color: #33266A;
+}
+
+.modal-badge-tolak {
+    background: #FFF0F3;
+    color: #911E3F;
+}
+
+.modal-badge-verifikasi i {
+    color: #33266A;
+    font-size: 9px;
+}
+
+.modal-badge-tolak i {
+    color: #911E3F;
+    font-size: 9px;
+}
+
+/* IKON */
+
+.modal-icon-verifikasi,
+.modal-icon-tolak {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 22px auto 17px;
+
+    border-radius: 18px;
+
+    font-size: 26px;
+}
+
+.modal-icon-verifikasi {
+    background: #F1EEFB;
+    color: #33266A;
+}
+
+.modal-icon-tolak {
+    background: #FFF0F3;
+    color: #911E3F;
+}
+
+/* JUDUL */
+
+.verification-modal-content h2 {
+    margin: 0 0 9px;
+
+    color: #33266A;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+/* DESKRIPSI */
+
+.verification-modal-content p {
+    max-width: 340px;
+    margin: 0 auto;
+
+    color: #667A9B;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+/* FOOTER */
+
+.verification-modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    padding: 17px 20px;
+
+    border-top: 1px solid #EDF0F5;
+    background: #FFFFFF;
+}
+
+/* TOMBOL */
+
+.modal-btn-cancel,
+.modal-btn-approve,
+.modal-btn-reject {
+    height: 39px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border-radius: 10px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+/* BATAL */
+
+.modal-btn-cancel {
+    min-width: 85px;
+
+    background: #FFFFFF;
+    border: 1px solid #D5DDE9;
+    color: #667085;
+}
+
+.modal-btn-cancel:hover {
+    background: #F4F5F8;
+    border-color: #33266A;
+    color: #33266A;
+}
+
+/* VERIFIKASI */
+
+.modal-btn-approve {
+    background: #33266A;
+    border: 1px solid #33266A;
+    color: #FFFFFF;
+}
+
+.modal-btn-approve:hover {
+    background: #251B55;
+    border-color: #251B55;
+}
+
+/* TOLAK */
+
+.modal-btn-reject {
+    background: #911E3F;
+    border: 1px solid #911E3F;
+    color: #FFFFFF;
+}
+
+.modal-btn-reject:hover {
+    background: #761630;
+    border-color: #761630;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 480px) {
+
+    .verification-modal {
+        max-width: 100%;
+    }
+
+    .verification-modal-content {
+        padding: 22px 17px;
+    }
+
+    .verification-modal-footer {
+        gap: 8px;
+        padding: 17px 12px;
+    }
+
+    .verification-modal-content h2 {
+        font-size: 17px;
+    }
+
+    .modal-btn-cancel,
+    .modal-btn-approve,
+    .modal-btn-reject {
+        padding: 0 13px;
+    }
+}

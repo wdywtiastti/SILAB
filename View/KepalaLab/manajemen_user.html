@@ -296,9 +296,9 @@
                                     <i class="bi bi-pencil"></i>
                                     Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -318,9 +318,9 @@
                                     <i class="bi bi-pencil"></i>
                                     Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -340,9 +340,9 @@
                                     <i class="bi bi-pencil"></i>
                                     Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -362,9 +362,9 @@
                                     <i class="bi bi-pencil"></i>
                                     Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -383,9 +383,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -404,9 +404,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -425,9 +425,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -446,9 +446,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -467,9 +467,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -488,9 +488,9 @@
                                 <label for="modal-edit-user" class="edit-button">
                                     <i class="bi bi-pencil"></i> Edit
                                 </label>
-                                <button type="button" class="delete-button">
+                                <label for="modal-hapus-user" class="delete-button">
                                     <i class="bi bi-trash"></i> Hapus
-                                </button>
+                                </label>
                             </div>
                         </td>
                     </tr>
@@ -569,7 +569,7 @@
                         type="text"
                         id="nama-user"
                         name="nama"
-                        placeholder="Contoh: Desy Indriasty Faradaniyah"
+                        placeholder="Nama Lengkap"
                         required
                     >
                 </div>
@@ -583,7 +583,10 @@
                         type="text"
                         id="nip-user"
                         name="nip_npm"
-                        placeholder="Contoh: 1928040... / 073524..."
+                        placeholder="Contoh: 07352xxxxx"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        title="NIP/NPM hanya boleh berisi angka."
                         required
                     >
                 </div>
@@ -597,7 +600,6 @@
                         type="password"
                         id="password-user"
                         name="password"
-                        placeholder="••••••••••••"
                         required
                     >
 
@@ -659,7 +661,7 @@
 
                 <div class="form-group">
                     <label for="edit-nama">
-                        Nama Lengkap <span>*</span>
+                        Nama Lengkap
                     </label>
 
                     <input
@@ -673,7 +675,7 @@
 
                 <div class="form-group">
                     <label for="edit-nip">
-                        NIP / NPM <span>*</span>
+                        NIP / NPM 
                     </label>
 
                     <input
@@ -681,6 +683,9 @@
                         id="edit-nip"
                         name="nip_npm"
                         value="0024088902"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        title="NIP/NPM hanya boleh berisi angka."
                         required
                     >
                 </div>
@@ -764,6 +769,56 @@
             </form>
 
         </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI HAPUS PENGGUNA -->
+    <input type="checkbox" id="modal-hapus-user" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="modal-container modal-hapus-container">
+
+            <!-- HEADER MODAL -->
+            <div class="modal-header">
+
+                <div class="modal-heading">
+
+                    <span class="modal-badge hapus-badge">
+                        <i class="bi bi-circle-fill"></i>
+                        KONFIRMASI PENGHAPUSAN
+                    </span>
+
+                    <div class="hapus-icon">
+                        <i class="bi bi-trash3"></i>
+                    </div>
+
+                    <h2>Hapus Akun Pengguna?</h2>
+
+                    <p>
+                        Apakah kamu yakin ingin menghapus akun pengguna ini?
+                        Tindakan ini tidak dapat dibatalkan.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER MODAL -->
+            <div class="modal-footer">
+
+                <label for="modal-hapus-user" class="btn-batal">
+                    Batal
+                </label>
+
+                <label for="modal-hapus-user" class="btn-konfirmasi-hapus">
+                    <i class="bi bi-trash3"></i>
+                    Ya, Hapus Akun
+                </label>
+
+            </div>
+
+        </div>
+
     </div>
 
 </body>
