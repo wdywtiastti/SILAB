@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 
@@ -34,8 +33,6 @@
 
     <header class="navbar">
 
-        <!-- LOGO DAN IDENTITAS -->
-
         <div class="navbar-brand">
 
             <img src="../Assets/Logo_RPL.svg"
@@ -48,7 +45,6 @@
             </div>
 
         </div>
-
 
         <!-- MENU NAVIGASI -->
 
@@ -67,7 +63,6 @@
             </a>
 
         </nav>
-
 
         <!-- PROFIL -->
 
@@ -117,8 +112,20 @@
 
     <main class="recommendation-container">
 
+        <!-- KONTROL TOLAK REKOMENDASI -->
+        <!-- TANPA JAVASCRIPT -->
 
-        <!-- HEADER HALAMAN -->
+        <input
+            type="checkbox"
+            id="reject-recommendation"
+            class="reject-toggle"
+            aria-label="Sembunyikan rekomendasi jadwal"
+        >
+
+
+        <!-- ======================================
+             HEADER HALAMAN
+        ======================================= -->
 
         <section class="recommendation-welcome">
 
@@ -150,12 +157,9 @@
 
                 <div class="recommendation-heading-left">
 
-                    <!-- IKON PANAH DUA ARAH -->
-
                     <div class="recommendation-main-icon">
                         <i class="bi bi-arrow-left-right"></i>
                     </div>
-
 
                     <div class="recommendation-heading-info">
 
@@ -249,7 +253,6 @@
                     >
 
                     <article class="recommendation-card">
-
 
                         <!-- HEADER KARTU -->
 
@@ -351,7 +354,6 @@
 
                     <article class="recommendation-card">
 
-
                         <!-- HEADER KARTU -->
 
                         <div class="recommendation-card-header">
@@ -441,8 +443,10 @@
                  TOLAK REKOMENDASI
             =================================== -->
 
-            <a href="pengajuan.html"
-               class="recommendation-reject">
+            <label
+                for="reject-recommendation"
+                class="recommendation-reject"
+            >
 
                 <i class="bi bi-x"></i>
 
@@ -450,8 +454,21 @@
                     Tolak & Ajukan Waktu Lain Secara Manual
                 </span>
 
-            </a>
+            </label>
 
+
+        </section>
+
+
+        <!-- ======================================
+             EMPTY STATE SETELAH DITOLAK
+        ======================================= -->
+
+        <section class="recommendation-empty" aria-live="polite">
+
+            <p>
+                Tidak ada rekomendasi jadwal dari laboran
+            </p>
 
         </section>
 

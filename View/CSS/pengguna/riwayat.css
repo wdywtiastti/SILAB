@@ -1,7 +1,7 @@
 
 /* ==================================================
    SILAB - RIWAYAT PENGGUNA
-   Konsisten dengan Dashboard dan Rekomendasi
+   Konsisten dengan Dashboard Pengguna
 ================================================== */
 
 
@@ -26,7 +26,9 @@
     min-height: 140px;
 
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 
     padding: 20px 24px;
 
@@ -38,10 +40,6 @@
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
 
     margin-bottom: 14px;
-}
-
-.history-welcome-content {
-    width: 100%;
 }
 
 
@@ -57,7 +55,8 @@
 
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.2px;
+
+    line-height: 1.5;
 }
 
 .history-portal-label span {
@@ -67,26 +66,26 @@
 
 /* JUDUL */
 
-.history-welcome-content h2 {
+.history-welcome-card h2 {
     margin: 9px 0 6px;
 
     color: #33266A;
 
     font-size: 27px;
     font-weight: 800;
+
     line-height: 1.25;
 }
 
 
 /* DESKRIPSI */
 
-.history-welcome-content p {
-    max-width: 750px;
-
+.history-welcome-card p {
     color: #667A9B;
 
     font-size: 12px;
     font-weight: 400;
+
     line-height: 1.6;
 }
 
@@ -101,7 +100,7 @@
     background: #FFFFFF;
 
     border: 1px solid #E1E1E5;
-    border-radius: 17px;
+    border-radius: 14px;
 
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
 
@@ -115,17 +114,15 @@
 
 .history-panel-header {
     width: 100%;
-    min-height: 65px;
+    min-height: 68px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    gap: 15px;
+    gap: 20px;
 
-    padding: 12px 25px;
-
-    background: #FFFFFF;
+    padding: 14px 24px;
 }
 
 
@@ -135,11 +132,15 @@
     display: flex;
     align-items: center;
 
-    gap: 9px;
+    gap: 10px;
+
+    color: #202B40;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    line-height: 1.4;
 }
-
-
-/* IKON CLIPBOARD-CHECK SESUAI FIGMA */
 
 .history-table-title i {
     display: inline-flex;
@@ -148,51 +149,42 @@
 
     color: #A21D48;
 
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 400;
 
     line-height: 1;
-}
 
-.history-table-title h3 {
-    margin: 0;
-
-    color: #202B40;
-
-    font-family: 'Plus Jakarta Sans', sans-serif;
-
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.4;
+    flex-shrink: 0;
 }
 
 
 /* ==================================================
-   5. SEARCH INPUT
+   5. SEARCH
 ================================================== */
 
 .history-search {
-    width: 320px;
+    width: 325px;
     max-width: 100%;
     height: 38px;
 
     display: flex;
     align-items: center;
 
-    gap: 9px;
+    gap: 10px;
 
     padding: 0 12px;
 
-    background: #F8F9FC;
+    background: #F8FAFC;
 
-    border: 1px solid #E1E6F0;
+    border: 1px solid #E1E6EF;
     border-radius: 9px;
 }
 
 .history-search i {
     color: #667A9B;
 
-    font-size: 15px;
+    font-size: 16px;
+
     flex-shrink: 0;
 }
 
@@ -215,12 +207,17 @@
 }
 
 .history-search input::placeholder {
-    color: #8A91A0;
+    color: #8290A6;
+}
+
+.history-search:focus-within {
+    border-color: #33266A;
+    box-shadow: 0 0 0 2px rgba(51, 38, 106, 0.08);
 }
 
 
 /* ==================================================
-   6. TABLE WRAPPER
+   6. TABEL
 ================================================== */
 
 .history-table-wrapper {
@@ -228,20 +225,11 @@
     overflow-x: auto;
 }
 
-
-/* ==================================================
-   7. TABEL RIWAYAT
-================================================== */
-
 .history-table {
     width: 100%;
 
     border-collapse: collapse;
-    border-spacing: 0;
-
     table-layout: fixed;
-
-    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 
@@ -254,42 +242,44 @@
 
 .history-table th:nth-child(2),
 .history-table td:nth-child(2) {
-    width: 20%;
+    width: 19%;
 }
 
 .history-table th:nth-child(3),
 .history-table td:nth-child(3) {
-    width: 24%;
+    width: 21%;
 }
 
 .history-table th:nth-child(4),
 .history-table td:nth-child(4) {
-    width: 22%;
+    width: 20%;
 }
 
 .history-table th:nth-child(5),
 .history-table td:nth-child(5) {
-    width: 17%;
+    width: 23%;
 }
 
 
 /* HEADER TABEL */
 
 .history-table thead {
-    background: #F7F8FA;
+    background: #F7F9FB;
 }
 
 .history-table th {
-    height: 46px;
+    height: 48px;
 
     padding: 12px 16px;
 
-    color: #414654;
+    color: #465268;
 
     font-size: 10px;
     font-weight: 700;
 
-    text-align: center;
+    text-align: left;
+    vertical-align: middle;
+
     white-space: nowrap;
 }
 
@@ -297,52 +287,44 @@
 /* ISI TABEL */
 
 .history-table td {
-    height: 82px;
+    height: 101px;
 
-    padding: 13px 16px;
+    padding: 18px 16px;
 
     color: #202B40;
 
     font-size: 11px;
-    font-weight: 400;
 
     vertical-align: middle;
 
     border-bottom: 1px solid #EDF0F5;
 }
 
-
-/* BARIS TERAKHIR */
-
 .history-table tbody tr:last-child td {
     border-bottom: none;
 }
 
 
-/* HOVER */
-
-.history-table tbody tr:hover {
-    background: #FCFCFE;
-}
-
-
 /* ==================================================
-   8. TANGGAL REQUEST
+   7. TANGGAL
 ================================================== */
 
 .history-date {
-    color: #33266A !important;
+    display: block;
 
-    font-size: 11px !important;
-    font-weight: 700 !important;
+    color: #27356F;
+
+    font-size: 12px;
+    font-weight: 700;
 
     text-align: center;
+
     white-space: nowrap;
 }
 
 
 /* ==================================================
-   9. WAKTU REQUEST
+   8. WAKTU DAN KEBUTUHAN
 ================================================== */
 
 .history-time {
@@ -351,33 +333,33 @@
 
     gap: 5px;
 
-    margin-bottom: 3px;
-
     color: #202B40;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 
     white-space: nowrap;
 }
 
 .history-time i {
-    color: #514A83;
+    color: #53658F;
     font-size: 12px;
 }
 
-.history-requirement {
-    color: #667085;
+.history-detail {
+    margin-top: 3px;
 
-    font-size: 9px;
+    color: #667A9B;
+
+    font-size: 10px;
     font-weight: 400;
 
-    line-height: 1.6;
+    line-height: 1.45;
 }
 
 
 /* ==================================================
-   10. KEGIATAN DAN KATEGORI
+   9. KEGIATAN DAN KATEGORI
 ================================================== */
 
 .history-activity {
@@ -395,9 +377,9 @@
     display: inline-flex;
     align-items: center;
 
-    padding: 3px 8px;
+    padding: 3px 9px;
 
-    color: #514A83;
+    color: #4D4B80;
     background: #EAE9FF;
 
     border-radius: 20px;
@@ -405,12 +387,12 @@
     font-size: 9px;
     font-weight: 600;
 
-    line-height: 1.2;
+    white-space: nowrap;
 }
 
 
 /* ==================================================
-   11. STATUS PENGAJUAN
+   10. STATUS PENGAJUAN
 ================================================== */
 
 .status-badge {
@@ -438,60 +420,51 @@
 /* MENUNGGU */
 
 .status-pending {
-    color: #A85D00;
-    background: #FFF1C9;
-}
-
-.status-pending i {
-    color: #E99A00;
+    color: #9B6500;
+    background: #FFF0C9;
 }
 
 
 /* DISETUJUI */
 
 .status-approved {
-    color: #087A58;
-    background: #E6F8F0;
-}
-
-.status-approved i {
-    color: #10B981;
+    color: #07875E;
+    background: #E4F8EF;
 }
 
 
 /* SELESAI */
 
 .status-completed {
-    color: #454577;
-    background: #E8E7FF;
-}
-
-.status-completed i {
-    color: #6464A1;
+    color: #4D4B80;
+    background: #E7E7FF;
 }
 
 
 /* ==================================================
-   12. KETERANGAN / AKSI
+   11. KETERANGAN / AKSI
 ================================================== */
 
-.history-description {
-    color: #667A9B !important;
+.history-action {
+    display: block;
 
-    font-size: 9px !important;
-    font-weight: 400 !important;
+    color: #667A9B;
+
+    font-size: 10px;
+    font-weight: 400;
 
     text-align: center;
+    line-height: 1.5;
 }
 
 
 /* ==================================================
-   13. FOOTER TABEL
+   12. FOOTER PANEL
 ================================================== */
 
-.history-table-footer {
+.history-panel-footer {
     width: 100%;
-    min-height: 65px;
+    min-height: 68px;
 
     display: flex;
     align-items: center;
@@ -499,29 +472,26 @@
 
     gap: 15px;
 
-    padding: 12px 20px;
+    padding: 12px 18px;
 
-    background: #F7F8FA;
+    background: #F7F9FB;
 }
 
-
-/* JUMLAH DATA */
-
-.history-count {
-    color: #596273;
+.history-panel-footer p {
+    color: #5F6675;
 
     font-size: 10px;
     font-weight: 400;
 }
 
-.history-count strong {
+.history-panel-footer strong {
     color: #202B40;
     font-weight: 700;
 }
 
 
 /* ==================================================
-   14. PAGINATION
+   13. PAGINATION
 ================================================== */
 
 .history-pagination {
@@ -532,35 +502,27 @@
 }
 
 .history-pagination button {
-    min-width: 78px;
-    height: 30px;
+    min-height: 32px;
 
-    padding: 0 10px;
+    padding: 6px 13px;
 
-    color: #514A83;
-    background: #EFECFF;
+    color: #9296A5;
+    background: #EAE9FF;
 
     border: none;
     border-radius: 7px;
 
     font-family: 'Plus Jakarta Sans', sans-serif;
 
-    font-size: 9px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 500;
 
     cursor: not-allowed;
 }
 
-.history-pagination button:disabled {
-    opacity: 0.65;
-}
-
-
-/* HALAMAN AKTIF */
-
-.current-page {
-    width: 30px;
-    height: 30px;
+.history-pagination .current-page {
+    width: 32px;
+    height: 32px;
 
     display: flex;
     align-items: center;
@@ -571,13 +533,13 @@
 
     border-radius: 7px;
 
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
 }
 
 
 /* ==================================================
-   15. RESPONSIVE TABLET
+   14. RESPONSIVE TABLET
 ================================================== */
 
 @media screen and (max-width: 1100px) {
@@ -594,76 +556,55 @@
 
 
 /* ==================================================
-   16. RESPONSIVE MOBILE
+   15. RESPONSIVE MOBILE
 ================================================== */
 
 @media screen and (max-width: 700px) {
 
     .history-container {
         width: calc(100% - 24px);
-
         margin: 12px auto 20px;
     }
 
     .history-welcome-card {
         min-height: auto;
-
         padding: 16px;
-
-        border-radius: 13px;
     }
 
-    .history-welcome-content h2 {
-        font-size: 21px;
+    .history-welcome-card h2 {
+        font-size: 22px;
     }
 
-    .history-welcome-content p {
+    .history-welcome-card p {
         font-size: 10px;
     }
 
-    .history-portal-label {
-        font-size: 9px;
-    }
-
-    .history-panel {
-        border-radius: 13px;
-    }
-
     .history-panel-header {
-        min-height: auto;
-
         align-items: flex-start;
         flex-direction: column;
+
+        gap: 12px;
 
         padding: 15px;
     }
 
-    .history-table-title h3 {
+    .history-table-title {
         font-size: 14px;
     }
 
     .history-table-title i {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .history-search {
         width: 100%;
-        height: 36px;
     }
 
     .history-table {
-        min-width: 850px;
+        min-width: 900px;
     }
 
-    .history-table th {
-        font-size: 9px;
-    }
-
-    .history-table td {
-        padding: 12px;
-    }
-
-    .history-table-footer {
+    .history-panel-footer {
         align-items: flex-start;
         flex-direction: column;
 
@@ -672,28 +613,6 @@
 
     .history-pagination {
         align-self: flex-end;
-    }
-
-}
-
-
-/* ==================================================
-   17. RESPONSIVE LAYAR KECIL
-================================================== */
-
-@media screen and (max-width: 380px) {
-
-    .history-welcome-content h2 {
-        font-size: 19px;
-    }
-
-    .history-table-title h3 {
-        font-size: 13px;
-    }
-
-    .history-pagination button {
-        min-width: 65px;
-        font-size: 8px;
     }
 
 }

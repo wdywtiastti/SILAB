@@ -1,4 +1,3 @@
-
 /* ==================================================
    SILAB - REKOMENDASI PENGGUNA
    DESAIN MENGIKUTI FIGMA
@@ -858,6 +857,119 @@ input:focus-visible
     .verification-label,
     .independent-label {
         font-size: 8px;
+    }
+
+}
+
+
+/* ==================================================
+   22. FITUR TOLAK REKOMENDASI
+   HTML + CSS TANPA JAVASCRIPT
+================================================== */
+
+/* Checkbox menjadi kontrol status tampilan */
+
+.reject-toggle {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    margin: 0;
+
+    opacity: 0;
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+}
+
+
+/* Tombol penolakan */
+
+.recommendation-reject {
+    cursor: pointer;
+    user-select: none;
+}
+
+
+/* PESAN KOSONG AWALNYA TERSEMBUNYI */
+
+.recommendation-empty {
+    display: none;
+
+    width: 100%;
+    min-height: calc(100vh - 205px);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    text-align: center;
+}
+
+.recommendation-empty p {
+    margin: 0;
+
+    color: #202B40;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.6;
+}
+
+
+/* ==================================================
+   23. KONDISI SETELAH TOMBOL TOLAK DIKLIK
+================================================== */
+
+/* SEMBUNYIKAN PANEL REKOMENDASI */
+
+.reject-toggle:checked ~ .recommendation-panel {
+    display: none;
+}
+
+
+/* TAMPILKAN PESAN KOSONG */
+
+.reject-toggle:checked ~ .recommendation-empty {
+    display: flex;
+}
+
+
+/* FOKUS KEYBOARD */
+
+.reject-toggle:focus-visible
+~ .recommendation-panel
+.recommendation-reject {
+
+    outline: 2px solid #33266A;
+    outline-offset: 4px;
+
+    border-radius: 4px;
+
+}
+
+
+/* ==================================================
+   24. RESPONSIVE EMPTY STATE
+================================================== */
+
+@media screen and (max-width: 700px) {
+
+    .recommendation-empty {
+        min-height: calc(100vh - 180px);
+
+        padding: 20px 15px;
+    }
+
+    .recommendation-empty p {
+        font-size: 11px;
     }
 
 }
