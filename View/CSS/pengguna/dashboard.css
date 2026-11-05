@@ -543,3 +543,48 @@
     }
 
 }
+/* LIVE INDICATOR */
+
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    padding: 8px 17px;
+
+    background: #F0EDFF;
+    color: #33266A;
+
+    border-radius: 30px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* TITIK LIVE */
+
+.live-dot {
+    width: 9px;
+    height: 9px;
+
+    display: inline-block;
+
+    background: #33266A;
+    border-radius: 50%;
+
+    animation: liveBlink 1.2s ease-in-out infinite;
+}
+
+/* KEDIPAN HALUS */
+
+@keyframes liveBlink {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}

@@ -1,0 +1,975 @@
+/* ==================================================
+   SILAB - REKOMENDASI PENGGUNA
+   DESAIN MENGIKUTI FIGMA
+   NAVBAR MENGGUNAKAN navbar.css
+================================================== */
+
+
+/* ==================================================
+   1. CONTAINER UTAMA
+================================================== */
+
+.recommendation-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
+
+    margin: 18px auto 30px;
+}
+
+
+/* ==================================================
+   2. HEADER REKOMENDASI
+================================================== */
+
+.recommendation-welcome {
+    width: 100%;
+    min-height: 78px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 12px 24px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+
+    margin-bottom: 14px;
+}
+
+.recommendation-welcome-content {
+    width: 100%;
+}
+
+.recommendation-welcome h2 {
+    margin: 0 0 5px;
+
+    color: #33266A;
+
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.recommendation-welcome p {
+    max-width: 700px;
+
+    color: #667A9B;
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+
+/* ==================================================
+   3. PANEL UTAMA
+================================================== */
+
+.recommendation-panel {
+    width: 100%;
+    min-height: 500px;
+
+    padding: 24px 24px 25px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+}
+
+
+/* ==================================================
+   4. HEADER TAWARAN
+================================================== */
+
+.recommendation-header {
+    width: 100%;
+    min-height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.recommendation-heading-left {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    min-width: 0;
+}
+
+
+/* ==================================================
+   5. IKON UTAMA TAWARAN
+================================================== */
+
+.recommendation-main-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: #A21D48;
+    background: #FFF1F3;
+
+    border-radius: 12px;
+}
+
+.recommendation-main-icon i {
+    width: 29px;
+    height: 29px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2.5px solid #A21D48;
+    border-radius: 50%;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* ==================================================
+   6. BADGE TAWARAN
+================================================== */
+
+.recommendation-heading-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 3px;
+}
+
+.offer-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 5px 10px;
+
+    color: #806622;
+    background: #FFF2C9;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.offer-badge i {
+    font-size: 12px;
+}
+
+
+/* JUDUL TAWARAN */
+
+.recommendation-heading-info h3 {
+    margin: 0;
+
+    color: #202B40;
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+
+/* ==================================================
+   7. BATAS RESPONS
+================================================== */
+
+.response-deadline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    color: #514A83;
+    background: #F0EDFF;
+
+    border-radius: 8px;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.response-deadline i {
+    font-size: 11px;
+}
+
+
+/* ==================================================
+   8. KONTEKS PERMOHONAN
+================================================== */
+
+.recommendation-context {
+    width: 100%;
+    min-height: 72px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 13px 15px;
+
+    background: #F4F1FF;
+
+    border: 1px solid #E6E0FC;
+    border-radius: 9px;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+
+    margin-bottom: 28px;
+}
+
+
+/* IKON INFORMASI MERAH */
+
+.context-icon {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: #A21D48;
+
+    border: 2.5px solid #A21D48;
+    border-radius: 50%;
+}
+
+.context-icon span {
+    display: block;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+
+/* KONTEN KONTEKS */
+
+.context-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.context-heading {
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    margin-bottom: 6px;
+}
+
+.context-heading strong {
+    color: #202B40;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.context-heading span {
+    padding: 2px 8px;
+
+    color: #A21D48;
+    background: #FFF1F3;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.context-content p {
+    color: #667085;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    line-height: 1.7;
+}
+
+.context-content p strong {
+    color: #394150;
+    font-weight: 700;
+}
+
+
+/* ==================================================
+   9. GRID KARTU
+================================================== */
+
+.recommendation-options {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 38px;
+
+    align-items: stretch;
+}
+
+
+/* ==================================================
+   10. RADIO INPUT
+================================================== */
+
+.recommendation-option {
+    position: relative;
+
+    display: block;
+
+    min-width: 0;
+
+    cursor: pointer;
+}
+
+.recommendation-option input[type="radio"] {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* ==================================================
+   11. KARTU REKOMENDASI
+================================================== */
+
+.recommendation-card {
+    width: 100%;
+    min-height: 204px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 15px 15px 14px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.09);
+
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+
+/* ==================================================
+   12. HEADER KARTU
+================================================== */
+
+.recommendation-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-bottom: 22px;
+}
+
+
+/* LABEL REKOMENDASI */
+
+.recommendation-type {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    padding: 4px 9px;
+
+    color: #514A83;
+    background: #EFECFF;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.recommendation-type i {
+    font-size: 7px;
+}
+
+
+/* TERVERIFIKASI */
+
+.verification-label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 4px;
+
+    color: #514A83;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.verification-label i {
+    font-size: 11px;
+}
+
+
+/* MANDIRI */
+
+.independent-label {
+    color: #202B40;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   13. TANGGAL
+================================================== */
+
+.recommendation-date {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 5px;
+
+    color: #33266A;
+}
+
+.recommendation-date i {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.recommendation-date h3 {
+    margin: 0;
+
+    color: #33266A;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    line-height: 1.4;
+}
+
+
+/* ==================================================
+   14. SESI
+================================================== */
+
+.recommendation-session {
+    margin-bottom: 8px;
+
+    color: #202B40;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    line-height: 1.5;
+}
+
+
+/* ==================================================
+   15. KETERSEDIAAN
+================================================== */
+
+.recommendation-availability {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    min-width: 0;
+}
+
+.availability-icon {
+    width: 14px;
+    height: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    color: #FFFFFF;
+    background: #C8C7FF;
+
+    border-radius: 50%;
+}
+
+.availability-icon i {
+    font-size: 9px;
+}
+
+.availability-icon.info {
+    color: #FFFFFF;
+    background: #B9B0F7;
+}
+
+.recommendation-availability p {
+    color: #667085;
+
+    font-size: 9px;
+    font-weight: 400;
+
+    line-height: 1.5;
+}
+
+
+/* ==================================================
+   16. TOMBOL PILIH
+================================================== */
+
+.recommendation-button {
+    width: 100%;
+    min-height: 31px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: auto;
+    padding: 8px 10px;
+
+    color: #202B40;
+    background: #FFF1F3;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    transition: background 0.2s ease,
+                color 0.2s ease;
+}
+
+
+/* LABEL BELUM DIPILIH */
+
+.button-unselected {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+}
+
+
+/* LABEL TERPILIH */
+
+.button-selected {
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+}
+
+.button-unselected i,
+.button-selected i {
+    font-size: 12px;
+}
+
+
+/* ==================================================
+   17. TOMBOL MAROON BERPINDAH
+   MURNI HTML + CSS
+================================================== */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.recommendation-button {
+
+    color: #FFFFFF;
+    background: #911E3F;
+
+}
+
+
+/* TAMPILKAN TOMBOL TERPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.button-selected {
+
+    display: inline-flex;
+
+}
+
+
+/* SEMBUNYIKAN TOMBOL BELUM DIPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card
+.button-unselected {
+
+    display: none;
+
+}
+
+
+/* KARTU TERPILIH */
+
+.recommendation-option
+input:checked
+~ .recommendation-card {
+
+    border-color: #E1DDF0;
+
+}
+
+
+/* FOKUS KEYBOARD */
+
+.recommendation-option
+input:focus-visible
+~ .recommendation-card {
+
+    outline: 2px solid #33266A;
+    outline-offset: 3px;
+
+}
+
+
+/* ==================================================
+   18. TOLAK REKOMENDASI
+================================================== */
+
+.recommendation-reject {
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 29px;
+
+    color: #202B40;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.recommendation-reject i {
+    color: #D49A00;
+    font-size: 14px;
+}
+
+.recommendation-reject:hover {
+    color: #911E3F;
+}
+
+
+/* ==================================================
+   19. RESPONSIVE TABLET
+================================================== */
+
+@media screen and (max-width: 1100px) {
+
+    .recommendation-container {
+        width: calc(100% - 35px);
+    }
+
+    .recommendation-options {
+        gap: 20px;
+    }
+
+}
+
+
+/* ==================================================
+   20. RESPONSIVE MOBILE
+================================================== */
+
+@media screen and (max-width: 700px) {
+
+    .recommendation-container {
+        width: calc(100% - 24px);
+
+        margin: 12px auto 20px;
+    }
+
+    .recommendation-welcome {
+        min-height: auto;
+        padding: 16px;
+
+        border-radius: 13px;
+    }
+
+    .recommendation-welcome h2 {
+        font-size: 21px;
+    }
+
+    .recommendation-welcome p {
+        font-size: 10px;
+    }
+
+    .recommendation-panel {
+        min-height: auto;
+        padding: 15px;
+
+        border-radius: 13px;
+    }
+
+    .recommendation-header {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 12px;
+
+        margin-bottom: 18px;
+    }
+
+    .recommendation-main-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .recommendation-heading-info h3 {
+        font-size: 11px;
+    }
+
+    .response-deadline {
+        margin-left: 53px;
+    }
+
+    .recommendation-context {
+        padding: 12px;
+        margin-bottom: 18px;
+    }
+
+    .context-heading {
+        gap: 5px;
+    }
+
+    .context-content p {
+        font-size: 9px;
+    }
+
+    .recommendation-options {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .recommendation-card {
+        min-height: 195px;
+        padding: 14px;
+    }
+
+    .recommendation-card-header {
+        margin-bottom: 18px;
+    }
+
+    .recommendation-date h3 {
+        font-size: 14px;
+    }
+
+    .recommendation-reject {
+        margin-top: 20px;
+        font-size: 9px;
+    }
+
+}
+
+
+/* ==================================================
+   21. RESPONSIVE LAYAR KECIL
+================================================== */
+
+@media screen and (max-width: 380px) {
+
+    .recommendation-type {
+        font-size: 8px;
+        padding: 4px 7px;
+    }
+
+    .recommendation-date h3 {
+        font-size: 12px;
+    }
+
+    .verification-label,
+    .independent-label {
+        font-size: 8px;
+    }
+
+}
+
+
+/* ==================================================
+   22. FITUR TOLAK REKOMENDASI
+   HTML + CSS TANPA JAVASCRIPT
+================================================== */
+
+/* Checkbox menjadi kontrol status tampilan */
+
+.reject-toggle {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    margin: 0;
+
+    opacity: 0;
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+
+    white-space: nowrap;
+}
+
+
+/* Tombol penolakan */
+
+.recommendation-reject {
+    cursor: pointer;
+    user-select: none;
+}
+
+
+/* PESAN KOSONG AWALNYA TERSEMBUNYI */
+
+.recommendation-empty {
+    display: none;
+
+    width: 100%;
+    min-height: calc(100vh - 205px);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    text-align: center;
+}
+
+.recommendation-empty p {
+    margin: 0;
+
+    color: #202B40;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.6;
+}
+
+
+/* ==================================================
+   23. KONDISI SETELAH TOMBOL TOLAK DIKLIK
+================================================== */
+
+/* SEMBUNYIKAN PANEL REKOMENDASI */
+
+.reject-toggle:checked ~ .recommendation-panel {
+    display: none;
+}
+
+
+/* TAMPILKAN PESAN KOSONG */
+
+.reject-toggle:checked ~ .recommendation-empty {
+    display: flex;
+}
+
+
+/* FOKUS KEYBOARD */
+
+.reject-toggle:focus-visible
+~ .recommendation-panel
+.recommendation-reject {
+
+    outline: 2px solid #33266A;
+    outline-offset: 4px;
+
+    border-radius: 4px;
+
+}
+
+
+/* ==================================================
+   24. RESPONSIVE EMPTY STATE
+================================================== */
+
+@media screen and (max-width: 700px) {
+
+    .recommendation-empty {
+        min-height: calc(100vh - 180px);
+
+        padding: 20px 15px;
+    }
+
+    .recommendation-empty p {
+        font-size: 11px;
+    }
+
+}
