@@ -1,6 +1,7 @@
 
 /* ==================================================
    SILAB - PENGAJUAN PEMINJAMAN
+   FONT: PLUS JAKARTA SANS
 ================================================== */
 
 
@@ -11,7 +12,6 @@
 .user-application-container {
     width: calc(100% - 50px);
     max-width: 1500px;
-
     margin: 18px auto 30px;
 }
 
@@ -27,7 +27,6 @@
 .application-label {
     display: inline-flex;
     align-items: center;
-
     gap: 6px;
 
     padding: 5px 10px;
@@ -80,7 +79,6 @@
         minmax(280px, 0.96fr);
 
     align-items: start;
-
     gap: 24px;
 }
 
@@ -135,7 +133,7 @@
 
 
 /* ==================================================
-   5. INPUT
+   5. INPUT FORM
 ================================================== */
 
 .application-group input,
@@ -187,13 +185,13 @@
     padding: 0 8px;
 
     font-size: 10px;
-
     color-scheme: light;
 }
 
 
 /* ==================================================
-   7. SELECT KATEGORI
+   7. PEMILIHAN KATEGORI
+   DISESUAIKAN DENGAN FIGMA
 ================================================== */
 
 .application-select {
@@ -201,44 +199,190 @@
     width: 100%;
 }
 
-.application-select select {
-    appearance: none;
-    -webkit-appearance: none;
+.category-picker {
+    position: relative;
+    width: 100%;
+}
 
-    padding-left: 36px;
-    padding-right: 30px;
+
+/* INPUT KATEGORI */
+
+.category-picker-trigger {
+    width: 100%;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 0 12px;
+
+    color: #263249;
+    background: #F4F6F9;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+
+    cursor: pointer;
+    list-style: none;
+}
+
+.category-picker-trigger::-webkit-details-marker {
+    display: none;
+}
+
+
+/* IKON KATEGORI */
+
+.category-main-icon {
+    color: #E6AD32;
+
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+
+/* TEKS KATEGORI */
+
+.category-value {
+    display: none;
+    flex: 1;
+    text-align: left;
+}
+
+
+/* MENAMPILKAN KATEGORI TERPILIH */
+
+.category-picker:has(#kategori-k2:checked)
+.category-value-k2 {
+    display: inline;
+}
+
+.category-picker:has(#kategori-k3:checked)
+.category-value-k3 {
+    display: inline;
+}
+
+.category-picker:has(#kategori-k4:checked)
+.category-value-k4 {
+    display: inline;
+}
+
+.category-picker:has(#kategori-k5:checked)
+.category-value-k5 {
+    display: inline;
+}
+
+
+/* PANAH DROPDOWN */
+
+.category-arrow {
+    margin-left: auto;
+
+    color: #667A9B;
+    font-size: 11px;
+
+    transition: transform 0.2s ease;
+}
+
+.category-picker[open] .category-arrow {
+    transform: rotate(180deg);
+}
+
+
+/* KOTAK PILIHAN KATEGORI */
+
+.category-picker-options {
+    position: absolute;
+
+    top: calc(100% - 15px);
+    right: 26px;
+
+    z-index: 100;
+
+    width: 100px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 4px;
+
+    padding: 6px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #D9DCE3;
+    border-radius: 3px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+
+/* RADIO DISEMBUNYIKAN */
+
+.category-picker-options input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+}
+
+
+/* TOMBOL KATEGORI */
+
+.category-picker-options label {
+    min-width: 0;
+    height: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 2px 4px;
+
+    color: #263249;
+    background: #FFFFFF;
+
+    border: 1px solid #C9CED8;
+    border-radius: 4px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
 
     cursor: pointer;
 }
 
-.application-select > i:first-child {
-    position: absolute;
 
-    top: 50%;
-    left: 12px;
+/* KATEGORI AKTIF */
 
-    transform: translateY(-50%);
+.category-picker-options input:checked + label {
+    color: #202B40;
+    background: #F8B916;
 
-    color: #E6AD32;
-
-    font-size: 13px;
-
-    pointer-events: none;
+    border-color: #F8B916;
 }
 
-.application-select .select-arrow {
-    position: absolute;
 
-    top: 50%;
-    right: 12px;
+/* HOVER KATEGORI */
 
-    transform: translateY(-50%);
+.category-picker-options label:hover {
+    background: #FFF3D6;
+}
 
-    color: #667A9B;
 
-    font-size: 11px;
+/* FOKUS KEYBOARD */
 
-    pointer-events: none;
+.category-picker-options input:focus-visible + label {
+    outline: 2px solid #33266A;
+    outline-offset: 2px;
 }
 
 
@@ -325,7 +469,9 @@
 }
 
 
-/* PESAN VALIDASI */
+/* ==================================================
+   10. PESAN VALIDASI
+================================================== */
 
 .application-feedback {
     display: none;
@@ -344,7 +490,7 @@
 
 
 /* ==================================================
-   10. PANEL KATEGORI
+   11. PANEL KATEGORI
 ================================================== */
 
 .application-category {
@@ -420,7 +566,7 @@
 
 
 /* ==================================================
-   11. RESPONSIVE TABLET
+   12. RESPONSIVE TABLET
 ================================================== */
 
 @media screen and (max-width: 1100px) {
@@ -441,7 +587,7 @@
 
 
 /* ==================================================
-   12. RESPONSIVE MOBILE
+   13. RESPONSIVE MOBILE
 ================================================== */
 
 @media screen and (max-width: 700px) {
@@ -490,4 +636,52 @@
         font-size: 23px;
     }
 
+    .category-picker-options {
+        right: 12px;
+    }
+
+}
+
+/* =========================================
+   TOMBOL BATAL DAN KIRIM PENGAJUAN
+========================================= */
+
+.application-cancel {
+    background: #F4F6F9;
+    color: #667A9B;
+    border: 1px solid transparent;
+}
+
+/* TOMBOL KIRIM */
+
+.application-submit {
+    background: #F4F6F9;
+    color: #34445B;
+    border: 1px solid transparent;
+
+    transition: background 0.2s ease,
+                color 0.2s ease;
+}
+
+/* SAAT TOMBOL KIRIM DIKLIK */
+
+.application-submit:active,
+.application-submit:focus {
+    background: #911E3F;
+    color: #FFFFFF;
+    border-color: #911E3F;
+    outline: none;
+}
+
+/* IKON TOMBOL KIRIM */
+
+.application-submit i {
+    color: inherit;
+}
+
+/* HOVER */
+
+.application-submit:hover {
+    background: #911E3F;
+    color: #FFFFFF;
 }
