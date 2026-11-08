@@ -190,7 +190,7 @@ body {
 
 /* IKON INPUT */
 
-.input-group i {
+.input-group > i {
     font-size: 20px;
     color: #B8BAC2;
 
@@ -198,7 +198,9 @@ body {
     flex-shrink: 0;
 }
 
+
 /* KOLOM INPUT */
+
 .input-group input {
     flex: 1;
     min-width: 0;
@@ -214,17 +216,75 @@ body {
     font-size: 14px;
 }
 
-/* KONTROL PASSWORD BAWAAN BROWSER */
+
+/* =========================================
+   TOMBOL LIHAT PASSWORD
+========================================= */
+
+.toggle-password {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+    margin-left: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #B8BAC2;
+
+    cursor: pointer;
+    flex-shrink: 0;
+
+    transition: 0.2s ease;
+}
+
+
+/* IKON MATA */
+
+.toggle-password i {
+    font-size: 18px;
+    color: inherit;
+
+    margin: 0;
+}
+
+
+/* EFEK KETIKA DISOROT */
+
+.toggle-password:hover {
+    color: #911E3F;
+    background-color: #F8F0F3;
+}
+
+
+/* EFEK KETIKA DIPILIH MENGGUNAKAN KEYBOARD */
+
+.toggle-password:focus-visible {
+    outline: 2px solid #911E3F;
+    outline-offset: 2px;
+}
+
+
+/* SEMBUNYIKAN KONTROL PASSWORD BAWAAN BROWSER */
+
 .input-group input::-ms-reveal,
 .input-group input::-ms-clear {
-    display: block;
+    display: none;
 }
+
 
 /* PLACEHOLDER */
 
 .input-group input::placeholder {
     color: #B8BAC2;
 }
+
 
 /* =========================================
    7. INGAT SAYA
@@ -274,8 +334,8 @@ body {
 
     text-decoration: none;
     cursor: pointer;
-    transition: 0.2s ease;
 }
+
 
 /* EFEK HOVER */
 
@@ -283,7 +343,7 @@ body {
     background-color: #761630;
 }
 
-/*Tambahan penyesuaian - laili*/
+
 /* PESAN KESALAHAN LOGIN */
 
 #loginMessage {
@@ -297,6 +357,7 @@ body {
 #loginMessage:empty {
     display: none;
 }
+
 
 /* =========================================
    9. FOOTER LOGIN
@@ -434,7 +495,6 @@ body {
 }
 
 
-
 /* =========================================
    12. REGISTER CONTAINER
 ========================================= */
@@ -539,6 +599,7 @@ body {
     text-decoration: underline;
 }
 
+
 /* =========================================
    17. BUTTON DAFTAR
 ========================================= */
@@ -567,7 +628,6 @@ body {
     cursor: pointer;
 
     box-sizing: border-box;
-    transition: background-color 0.2s ease;
 }
 
 .btn-register:hover {
@@ -703,11 +763,13 @@ body {
     -webkit-backdrop-filter: blur(6px);
 }
 
+
 /* TAMPIL SAAT DIKLIK */
 
 .register-modal:target {
     display: flex;
 }
+
 
 /* KARTU POP UP */
 
@@ -735,6 +797,7 @@ body {
     animation: registerModalShow 0.25s ease;
 }
 
+
 /* ANIMASI */
 
 @keyframes registerModalShow {
@@ -748,6 +811,7 @@ body {
         transform: translateY(0);
     }
 }
+
 
 /* IKON BERHASIL */
 
@@ -769,6 +833,7 @@ body {
     font-size: 36px;
 }
 
+
 /* JUDUL */
 
 .register-modal-content h2 {
@@ -781,6 +846,7 @@ body {
     line-height: 1.4;
 }
 
+
 /* DESKRIPSI */
 
 .register-modal-content p {
@@ -792,6 +858,7 @@ body {
     font-weight: 400;
     line-height: 1.8;
 }
+
 
 /* INFORMASI MENUNGGU */
 
@@ -811,6 +878,7 @@ body {
     font-size: 12px;
     line-height: 1.8;
 }
+
 
 /* TOMBOL OK */
 
@@ -832,15 +900,14 @@ body {
     font-weight: 700;
 
     text-decoration: none;
-
-    transition: background-color 0.2s ease;
 }
 
 .btn-register-ok:hover {
     background: #761630;
 }
 
-/* RESPONSIVE */
+
+/* RESPONSIVE POP UP */
 
 @media screen and (max-width: 480px) {
 
@@ -863,4 +930,63 @@ body {
         font-size: 32px;
     }
 
+}
+
+
+/* =========================================
+   22. MICRO ANIMATION BUTTON
+========================================= */
+
+/* TRANSISI DASAR */
+
+.btn-login,
+.btn-register,
+.btn-register-ok {
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background-color 0.2s ease;
+}
+
+
+/* EFEK SAAT KURSOR DIARAHKAN */
+
+.btn-login:hover,
+.btn-register:hover,
+.btn-register-ok:hover {
+    transform: translateY(-2px) scale(1.02);
+
+    box-shadow: 0 6px 14px rgba(145, 30, 63, 0.18);
+}
+
+
+/* EFEK SAAT TOMBOL DIKLIK */
+
+.btn-login:active,
+.btn-register:active,
+.btn-register-ok:active {
+    transform: scale(0.96);
+
+    box-shadow: none;
+}
+
+
+/* EFEK FOKUS KEYBOARD */
+
+.btn-login:focus-visible,
+.btn-register:focus-visible,
+.btn-register-ok:focus-visible {
+    outline: 2px solid #911E3F;
+    outline-offset: 3px;
+}
+
+
+/* MENGHORMATI PENGATURAN REDUKSI ANIMASI */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn-login,
+    .btn-register,
+    .btn-register-ok {
+        transition: none;
+    }
 }
