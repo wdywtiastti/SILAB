@@ -83,7 +83,8 @@
 
 
                 <!-- FORM LOGIN -->
-                <form class="login-form">
+                <!--bagian ini diubah laili ya-->
+                <form class="login-form" id="loginForm" novalidate>
 
                     <!-- INPUT NIP/NPM -->
                     <div class="input-group">
@@ -104,6 +105,7 @@
                     </div>
 
                     <!-- INPUT PASSWORD -->
+                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
 
                         <i class="bi bi-lock"></i>
@@ -113,9 +115,21 @@
                             id="password"
                             name="password"
                             placeholder="Password"
-                            autocomplete="off"
+                            autocomplete="current-password"
                             required
                         >
+
+                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="password"
+                            aria-label="Tampilkan password"
+                            aria-controls="password"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
 
                     </div>
 
@@ -131,11 +145,15 @@
 
                     </label>
 
-
+                    <!--penyesuaian rute login - laili-->
+                    <!--Pengalihan akan dilakukan JavaScript berdasarkan hasil pemeriksaan identitas dan password.-->
                     <!-- TOMBOL LOGIN -->
-                    <a href ="../KepalaLab/Dashboard.html"class="btn-login">
+                    <button type="submit" class="btn-login">
                         Login
-                    </a>
+                    </button>
+
+                    <!--PESAN KESALAHAN - laili-->
+                    <p id="loginMessage" role="alert"></p>
 
                 </form>
 
@@ -155,6 +173,11 @@
         </section>
 
     </main>
+
+    <!--Penghubung dengan bagian auth di js -laili-->
+    <script src="../../JS/auth/sesi.js"></script>
+    <script src="../../JS/auth/masuk.js"></script>
+    <script src="../../JS/auth/liat_psswd.js"></script>
 
 </body>
 

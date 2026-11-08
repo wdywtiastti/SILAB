@@ -82,11 +82,10 @@
 
 
                 <!-- FORM REGISTER -->
-                <form class="register-form" id="registerForm">
+                <form class="register-form" id="registerForm" novalidate>
 
                     <!-- NAMA LENGKAP -->
                     <div class="input-group">
-
                         <i class="bi bi-person"></i>
 
                         <input
@@ -96,13 +95,12 @@
                             autocomplete="name"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="namaError"></small>
 
 
                     <!-- NIP / NPM -->
                     <div class="input-group">
-
                         <i class="bi bi-person"></i>
 
                         <input
@@ -115,13 +113,12 @@
                             autocomplete="username"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="identifierError"></small>
 
 
                     <!-- NOMOR TELEPON -->
                     <div class="input-group">
-
                         <i class="bi bi-telephone"></i>
 
                         <input
@@ -134,45 +131,66 @@
                             autocomplete="tel"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="noTelpError"></small>
 
 
                     <!-- PASSWORD -->
                     <div class="input-group">
-
                         <i class="bi bi-lock"></i>
 
                         <input
                             type="password"
+                            id="registerPassword"
                             name="password"
                             placeholder="Password"
                             autocomplete="new-password"
                             required
                         >
 
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="registerPassword"
+                            aria-label="Tampilkan password"
+                            aria-controls="registerPassword"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
                     </div>
+                    <small class="error-message" id="passwordError"></small>
 
 
                     <!-- KONFIRMASI PASSWORD -->
                     <div class="input-group">
-
                         <i class="bi bi-lock"></i>
 
                         <input
                             type="password"
+                            id="confirmPassword"
                             name="confirm_password"
                             placeholder="Konfirmasi Password"
                             autocomplete="new-password"
                             required
                         >
 
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="confirmPassword"
+                            aria-label="Tampilkan password"
+                            aria-controls="confirmPassword"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
                     </div>
+                    <small class="error-message" id="confirmPasswordError"></small>
 
 
                     <!-- PERSETUJUAN -->
                     <label class="terms">
-
                         <input
                             type="checkbox"
                             name="terms"
@@ -180,26 +198,22 @@
                         >
 
                         <span>
-
                             Saya setuju dengan
-
                             <a href="syarat_ketentuan.html">syarat dan ketentuan</a>
-
                             serta
-
                             <a href="kebijakan_privasi.html">kebijakan privasi</a>
-
                         </span>
-
                     </label>
+                    <small class="error-message" id="termsError"></small>
 
 
                     <!-- BUTTON DAFTAR -->
-                    <a href="#registerModal" class="btn-register">
+                    <button type="submit" class="btn-register">
                         Daftar
-                    </a>
+                    </button>
 
                 </form>
+
 
 
                 <!-- FOOTER REGISTER -->
@@ -250,6 +264,10 @@
         </div>
 
     </div>
+
+    <!--TAMBAHAN: penghubung ke daftar.js -laili-->
+    <script src="../../JS/auth/daftar.js"></script>
+    <script src="../../JS/auth/liat_psswd.js"></script>
 
 </body>
 
