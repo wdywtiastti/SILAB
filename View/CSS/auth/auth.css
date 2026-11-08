@@ -20,7 +20,8 @@ body {
    2. CONTAINER UTAMA
 ========================================= */
 
-.login-container {
+.login-container,
+.register-container {
     display: flex;
     width: 100%;
     min-height: 100vh;
@@ -112,7 +113,7 @@ body {
 
 
 /* =========================================
-   4. PANEL KANAN
+   4. PANEL KANAN LOGIN
 ========================================= */
 
 .form-panel {
@@ -129,7 +130,7 @@ body {
 }
 
 
-/* KONTEN FORM */
+/* KONTEN FORM LOGIN */
 
 .form-content {
     width: 100%;
@@ -217,8 +218,15 @@ body {
 }
 
 
+/* PLACEHOLDER */
+
+.input-group input::placeholder {
+    color: #B8BAC2;
+}
+
+
 /* =========================================
-   TOMBOL LIHAT PASSWORD
+   7. TOMBOL LIHAT PASSWORD
 ========================================= */
 
 .toggle-password {
@@ -255,7 +263,7 @@ body {
 }
 
 
-/* EFEK KETIKA DISOROT */
+/* EFEK HOVER */
 
 .toggle-password:hover {
     color: #911E3F;
@@ -263,7 +271,7 @@ body {
 }
 
 
-/* EFEK KETIKA DIPILIH MENGGUNAKAN KEYBOARD */
+/* FOKUS KEYBOARD */
 
 .toggle-password:focus-visible {
     outline: 2px solid #911E3F;
@@ -279,15 +287,8 @@ body {
 }
 
 
-/* PLACEHOLDER */
-
-.input-group input::placeholder {
-    color: #B8BAC2;
-}
-
-
 /* =========================================
-   7. INGAT SAYA
+   8. INGAT SAYA
 ========================================= */
 
 .remember {
@@ -311,11 +312,12 @@ body {
 
 
 /* =========================================
-   8. BUTTON LOGIN
+   9. BUTTON LOGIN
 ========================================= */
 
 .btn-login {
     width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -337,20 +339,16 @@ body {
 }
 
 
-/* EFEK HOVER */
-
-.btn-login:hover {
-    background-color: #761630;
-}
-
-
 /* PESAN KESALAHAN LOGIN */
 
 #loginMessage {
     margin-top: 12px;
+
     color: #911E3F;
+
     font-size: 12px;
     line-height: 1.5;
+
     text-align: center;
 }
 
@@ -360,7 +358,7 @@ body {
 
 
 /* =========================================
-   9. FOOTER LOGIN
+   10. FOOTER LOGIN
 ========================================= */
 
 .form-footer {
@@ -382,132 +380,7 @@ body {
 
 
 /* =========================================
-   10. RESPONSIVE TABLET
-========================================= */
-
-@media screen and (max-width: 900px) {
-
-    .visual-panel {
-        width: 40%;
-    }
-
-    .form-panel {
-        width: 60%;
-        padding: 30px;
-    }
-
-    .brand {
-        padding: 25px;
-        gap: 10px;
-    }
-
-    .brand-logo {
-        width: 65px;
-        height: 65px;
-    }
-
-    .brand-text h1 {
-        font-size: 28px;
-    }
-
-    .brand-text p {
-        font-size: 12px;
-    }
-
-    .form-header h2 {
-        font-size: 34px;
-    }
-
-}
-
-
-/* =========================================
-   11. RESPONSIVE MOBILE
-========================================= */
-
-@media screen and (max-width: 600px) {
-
-    .login-container {
-        flex-direction: column;
-    }
-
-    .visual-panel {
-        width: 100%;
-        min-height: 180px;
-    }
-
-    .visual-background {
-        object-position: center;
-    }
-
-    .brand {
-        padding: 25px;
-    }
-
-    .brand-logo {
-        width: 65px;
-        height: 65px;
-    }
-
-    .brand-text h1 {
-        font-size: 27px;
-    }
-
-    .brand-text p {
-        font-size: 12px;
-    }
-
-    .form-panel {
-        width: 100%;
-        min-height: auto;
-
-        padding: 45px 25px;
-    }
-
-    .form-content {
-        max-width: 450px;
-    }
-
-    .form-header {
-        margin-bottom: 45px;
-    }
-
-    .form-header h2 {
-        font-size: 32px;
-    }
-
-    .form-header p {
-        font-size: 14px;
-    }
-
-    .input-group {
-        margin-bottom: 28px;
-    }
-
-    .remember {
-        margin-bottom: 32px;
-    }
-
-    .form-footer {
-        margin-top: 55px;
-    }
-
-}
-
-
-/* =========================================
-   12. REGISTER CONTAINER
-========================================= */
-
-.register-container {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-}
-
-
-/* =========================================
-   13. REGISTER PANEL
+   11. PANEL REGISTER
 ========================================= */
 
 .register-panel {
@@ -533,7 +406,7 @@ body {
 
 
 /* =========================================
-   14. REGISTER HEADER
+   12. HEADER REGISTER
 ========================================= */
 
 .register-header {
@@ -554,16 +427,69 @@ body {
 
 
 /* =========================================
-   15. REGISTER FORM
+   13. REGISTER FORM
 ========================================= */
 
-.register-form .input-group {
-    margin-bottom: 24px;
+/* JARAK INPUT DIATUR OLEH PESAN ERROR */
+
+.register-container .register-form .input-group {
+    margin-bottom: 0;
 }
 
 
 /* =========================================
-   16. SYARAT DAN KETENTUAN
+   14. PESAN KESALAHAN REGISTER
+========================================= */
+
+.register-form .error-message {
+    display: block;
+
+    margin: 6px 0 18px;
+
+    color: #B42318;
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+
+/* JIKA BELUM ADA PESAN KESALAHAN */
+
+.register-form .error-message:empty {
+    height: 0;
+    margin: 0 0 24px;
+}
+
+
+/* BORDER INPUT KETIKA TERJADI KESALAHAN */
+
+.register-form .input-group.is-invalid {
+    border-color: #B42318;
+    background-color: #FFF8F7;
+}
+
+
+/* BORDER TETAP MERAH KETIKA INPUT DIPILIH */
+
+.register-form .input-group.is-invalid:focus-within {
+    border-color: #B42318;
+}
+
+
+/* PERSETUJUAN KETIKA BELUM DICENTANG */
+
+.register-form .terms.is-invalid {
+    color: #B42318;
+}
+
+.register-form .terms.is-invalid input {
+    accent-color: #B42318;
+}
+
+
+/* =========================================
+   15. SYARAT DAN KETENTUAN
 ========================================= */
 
 .terms {
@@ -573,7 +499,7 @@ body {
     gap: 10px;
 
     margin-top: 28px;
-    margin-bottom: 28px;
+    margin-bottom: 0;
 
     font-size: 12px;
     line-height: 1.6;
@@ -594,14 +520,14 @@ body {
 
 .terms a {
     color: #000000;
-    font-weight: 700;
 
+    font-weight: 700;
     text-decoration: underline;
 }
 
 
 /* =========================================
-   17. BUTTON DAFTAR
+   16. BUTTON DAFTAR
 ========================================= */
 
 .btn-register {
@@ -624,19 +550,15 @@ body {
     font-size: 15px;
     font-weight: 700;
 
-    text-decoration: none !important;
+    text-decoration: none;
     cursor: pointer;
 
     box-sizing: border-box;
 }
 
-.btn-register:hover {
-    background-color: #761630;
-}
-
 
 /* =========================================
-   18. REGISTER FOOTER
+   17. FOOTER REGISTER
 ========================================= */
 
 .register-footer {
@@ -658,92 +580,7 @@ body {
 
 
 /* =========================================
-   19. RESPONSIVE REGISTER
-========================================= */
-
-@media screen and (max-width: 900px) {
-
-    .register-panel {
-        width: 60%;
-        padding: 30px;
-    }
-
-    .register-header h2 {
-        font-size: 34px;
-    }
-
-    .register-header p {
-        font-size: 14px;
-    }
-
-    .register-header {
-        margin-bottom: 35px;
-    }
-
-    .register-form .input-group {
-        margin-bottom: 20px;
-    }
-
-}
-
-
-/* =========================================
-   20. RESPONSIVE MOBILE REGISTER
-========================================= */
-
-@media screen and (max-width: 600px) {
-
-    .register-container {
-        flex-direction: column;
-    }
-
-    .register-container .visual-panel {
-        width: 100%;
-        min-height: 180px;
-    }
-
-    .register-panel {
-        width: 100%;
-        min-height: auto;
-
-        padding: 40px 25px;
-    }
-
-    .register-content {
-        max-width: 450px;
-    }
-
-    .register-header {
-        margin-bottom: 35px;
-    }
-
-    .register-header h2 {
-        font-size: 32px;
-    }
-
-    .register-header p {
-        font-size: 13px;
-    }
-
-    .register-form .input-group {
-        margin-bottom: 20px;
-    }
-
-    .terms {
-        font-size: 11px;
-        margin-top: 22px;
-        margin-bottom: 24px;
-    }
-
-    .register-footer {
-        margin-top: 28px;
-    }
-
-}
-
-
-/* =========================================
-   21. POP UP PENDAFTARAN BERHASIL
+   18. POP UP PENDAFTARAN BERHASIL
 ========================================= */
 
 .register-modal {
@@ -798,7 +635,7 @@ body {
 }
 
 
-/* ANIMASI */
+/* ANIMASI MODAL */
 
 @keyframes registerModalShow {
     from {
@@ -834,7 +671,7 @@ body {
 }
 
 
-/* JUDUL */
+/* JUDUL MODAL */
 
 .register-modal-content h2 {
     margin: 0 0 13px;
@@ -847,7 +684,7 @@ body {
 }
 
 
-/* DESKRIPSI */
+/* DESKRIPSI MODAL */
 
 .register-modal-content p {
     margin: 0;
@@ -902,12 +739,218 @@ body {
     text-decoration: none;
 }
 
-.btn-register-ok:hover {
-    background: #761630;
+
+/* =========================================
+   19. MICRO ANIMATION BUTTON
+========================================= */
+
+/* TRANSISI DASAR */
+
+.btn-login,
+.btn-register,
+.btn-register-ok {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 
-/* RESPONSIVE POP UP */
+/* EFEK HOVER */
+
+.btn-login:hover,
+.btn-register:hover,
+.btn-register-ok:hover {
+    background-color: #761630;
+
+    transform: translateY(-2px) scale(1.02);
+
+    box-shadow: 0 6px 14px rgba(145, 30, 63, 0.18);
+}
+
+
+/* EFEK KETIKA DIKLIK */
+
+.btn-login:active,
+.btn-register:active,
+.btn-register-ok:active {
+    transform: scale(0.96);
+
+    box-shadow: none;
+}
+
+
+/* FOKUS KEYBOARD */
+
+.btn-login:focus-visible,
+.btn-register:focus-visible,
+.btn-register-ok:focus-visible {
+    outline: 2px solid #911E3F;
+    outline-offset: 3px;
+}
+
+
+/* =========================================
+   20. RESPONSIVE TABLET
+========================================= */
+
+@media screen and (max-width: 900px) {
+
+    .visual-panel {
+        width: 40%;
+    }
+
+    .form-panel,
+    .register-panel {
+        width: 60%;
+        padding: 30px;
+    }
+
+    .brand {
+        padding: 25px;
+        gap: 10px;
+    }
+
+    .brand-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .brand-text h1 {
+        font-size: 28px;
+    }
+
+    .brand-text p {
+        font-size: 12px;
+    }
+
+    .form-header h2,
+    .register-header h2 {
+        font-size: 34px;
+    }
+
+    .register-header p {
+        font-size: 14px;
+    }
+
+    .register-header {
+        margin-bottom: 35px;
+    }
+
+    .register-form .error-message:empty {
+        margin-bottom: 20px;
+    }
+
+}
+
+
+/* =========================================
+   21. RESPONSIVE MOBILE
+========================================= */
+
+@media screen and (max-width: 600px) {
+
+    .login-container,
+    .register-container {
+        flex-direction: column;
+    }
+
+    .visual-panel {
+        width: 100%;
+        min-height: 180px;
+    }
+
+    .visual-background {
+        object-position: center;
+    }
+
+    .brand {
+        padding: 25px;
+    }
+
+    .brand-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .brand-text h1 {
+        font-size: 27px;
+    }
+
+    .brand-text p {
+        font-size: 12px;
+    }
+
+    .form-panel,
+    .register-panel {
+        width: 100%;
+        min-height: auto;
+
+        padding: 40px 25px;
+    }
+
+    .form-content,
+    .register-content {
+        max-width: 450px;
+    }
+
+    .form-header {
+        margin-bottom: 45px;
+    }
+
+    .form-header h2,
+    .register-header h2 {
+        font-size: 32px;
+    }
+
+    .form-header p {
+        font-size: 14px;
+    }
+
+    .register-header {
+        margin-bottom: 35px;
+    }
+
+    .register-header p {
+        font-size: 13px;
+    }
+
+    .input-group {
+        margin-bottom: 28px;
+    }
+
+    .remember {
+        margin-bottom: 32px;
+    }
+
+    .form-footer {
+        margin-top: 55px;
+    }
+
+    .register-form .error-message:not(:empty) {
+        margin: 5px 0 16px;
+    }
+
+    .register-form .error-message:empty {
+        margin-bottom: 20px;
+    }
+
+    .terms {
+        font-size: 11px;
+        margin-top: 22px;
+        margin-bottom: 0;
+    }
+
+    .register-footer {
+        margin-top: 28px;
+    }
+
+}
+
+
+/* =========================================
+   22. RESPONSIVE POP UP
+========================================= */
 
 @media screen and (max-width: 480px) {
 
@@ -927,6 +970,7 @@ body {
     .register-success-icon {
         width: 68px;
         height: 68px;
+
         font-size: 32px;
     }
 
@@ -934,59 +978,25 @@ body {
 
 
 /* =========================================
-   22. MICRO ANIMATION BUTTON
+   23. REDUKSI ANIMASI
 ========================================= */
-
-/* TRANSISI DASAR */
-
-.btn-login,
-.btn-register,
-.btn-register-ok {
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background-color 0.2s ease;
-}
-
-
-/* EFEK SAAT KURSOR DIARAHKAN */
-
-.btn-login:hover,
-.btn-register:hover,
-.btn-register-ok:hover {
-    transform: translateY(-2px) scale(1.02);
-
-    box-shadow: 0 6px 14px rgba(145, 30, 63, 0.18);
-}
-
-
-/* EFEK SAAT TOMBOL DIKLIK */
-
-.btn-login:active,
-.btn-register:active,
-.btn-register-ok:active {
-    transform: scale(0.96);
-
-    box-shadow: none;
-}
-
-
-/* EFEK FOKUS KEYBOARD */
-
-.btn-login:focus-visible,
-.btn-register:focus-visible,
-.btn-register-ok:focus-visible {
-    outline: 2px solid #911E3F;
-    outline-offset: 3px;
-}
-
-
-/* MENGHORMATI PENGATURAN REDUKSI ANIMASI */
 
 @media (prefers-reduced-motion: reduce) {
 
     .btn-login,
     .btn-register,
-    .btn-register-ok {
+    .btn-register-ok,
+    .toggle-password,
+    .input-group {
         transition: none;
+    }
+
+    .btn-login:hover,
+    .btn-register:hover,
+    .btn-register-ok:hover,
+    .btn-login:active,
+    .btn-register:active,
+    .btn-register-ok:active {
+        transform: none;
     }
 }
