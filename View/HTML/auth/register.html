@@ -82,11 +82,10 @@
 
 
                 <!-- FORM REGISTER -->
-                <form class="register-form" id="registerForm">
+                <form class="register-form" id="registerForm" novalidate>
 
                     <!-- NAMA LENGKAP -->
                     <div class="input-group">
-
                         <i class="bi bi-person"></i>
 
                         <input
@@ -96,13 +95,12 @@
                             autocomplete="name"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="namaError"></small>
 
 
                     <!-- NIP / NPM -->
                     <div class="input-group">
-
                         <i class="bi bi-person"></i>
 
                         <input
@@ -115,13 +113,12 @@
                             autocomplete="username"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="identifierError"></small>
 
 
                     <!-- NOMOR TELEPON -->
                     <div class="input-group">
-
                         <i class="bi bi-telephone"></i>
 
                         <input
@@ -134,14 +131,12 @@
                             autocomplete="tel"
                             required
                         >
-
                     </div>
+                    <small class="error-message" id="noTelpError"></small>
 
 
                     <!-- PASSWORD -->
-                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
-
                         <i class="bi bi-lock"></i>
 
                         <input
@@ -153,7 +148,6 @@
                             required
                         >
 
-                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
                         <button
                             type="button"
                             class="toggle-password"
@@ -164,14 +158,12 @@
                         >
                             <i class="bi bi-eye-slash" aria-hidden="true"></i>
                         </button>
-
                     </div>
+                    <small class="error-message" id="passwordError"></small>
 
 
                     <!-- KONFIRMASI PASSWORD -->
-                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
-
                         <i class="bi bi-lock"></i>
 
                         <input
@@ -183,7 +175,6 @@
                             required
                         >
 
-                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
                         <button
                             type="button"
                             class="toggle-password"
@@ -194,13 +185,12 @@
                         >
                             <i class="bi bi-eye-slash" aria-hidden="true"></i>
                         </button>
-
                     </div>
+                    <small class="error-message" id="confirmPasswordError"></small>
 
 
                     <!-- PERSETUJUAN -->
                     <label class="terms">
-
                         <input
                             type="checkbox"
                             name="terms"
@@ -208,29 +198,22 @@
                         >
 
                         <span>
-
                             Saya setuju dengan
-
                             <a href="syarat_ketentuan.html">syarat dan ketentuan</a>
-
                             serta
-
                             <a href="kebijakan_privasi.html">kebijakan privasi</a>
-
                         </span>
-
                     </label>
+                    <small class="error-message" id="termsError"></small>
 
 
-                    <!--ini di ganti supaya bisa mengirimkan form yang bisa di tangani js js - laili-->
                     <!-- BUTTON DAFTAR -->
                     <button type="submit" class="btn-register">
                         Daftar
                     </button>
 
-                    <!--TAMBAHAN:pesan regis-laili-->
-                    <p id="registerMessage" role="alert"></p>
                 </form>
+
 
 
                 <!-- FOOTER REGISTER -->

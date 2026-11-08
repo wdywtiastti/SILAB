@@ -1,67 +1,249 @@
 
 /* Pengelolaan registrasi akun SILAB */
 
-// Mengambil elemen form, pesan, dan modal.
+// Mengambil elemen form.
 const formDaftar = document.getElementById("registerForm");
-const pesanDaftar = document.getElementById("registerMessage");
-const modalDaftar = document.getElementById("registerModal");
 
-// Menangani proses registrasi ketika form dikirim.
+// Mengambil seluruh input.
+const nama = formDaftar.elements.nama;
+const identifier = formDaftar.elements.identifier;
+const noTelp = formDaftar.elements.no_telp;
+const password = formDaftar.elements.password;
+const konfirmasi = formDaftar.elements.confirm_password;
+const persetujuan = formDaftar.elements.terms;
+
+// Mengambil elemen pesan kesalahan.
+const namaError = document.getElementById("namaError");
+const identifierError = document.getElementById("identifierError");
+const noTelpError = document.getElementById("noTelpError");
+const passwordError = document.getElementById("passwordError");
+const confirmPasswordError = document.getElementById("confirmPasswordError");
+const termsError = document.getElementById("termsError");
+
+
+// MENAMPILKAN PESAN KESALAHAN
+function tampilkanError(input, elemenError, pesan) {
+
+    elemenError.textContent = pesan;
+
+    input.setAttribute("aria-invalid", "true");
+
+    const kelompok = input.closest(".input-group");
+
+    if (kelompok) {
+        kelompok.classList.add("is-invalid");
+    }
+
+    const label = input.closest(".terms");
+
+    if (label) {
+        label.classList.add("is-invalid");
+    }
+}
+
+
+// MENGHAPUS PESAN KESALAHAN
+function hapusError(input, elemenError) {
+
+    elemenError.textContent = "";
+
+    input.setAttribute("aria-invalid", "false");
+
+    const kelompok = input.closest(".input-group");
+
+    if (kelompok) {
+        kelompok.classList.remove("is-invalid");
+    }
+
+    const label = input.closest(".terms");
+
+    if (label) {
+        label.classList.remove("is-invalid");
+    }
+}
+
+
+// MENGHAPUS SELURUH PESAN KESALAHAN
+function hapusSemuaError() {
+
+    hapusError(nama, namaError);
+    hapusError(identifier, identifierError);
+    hapusError(noTelp, noTelpError);
+    hapusError(password, passwordError);
+    hapusError(konfirmasi, confirmPasswordError);
+    hapusError(persetujuan, termsError);
+}
+
+
+// MENGHAPUS PESAN SAAT INPUT DIPERBAIKI
+
+nama.addEventListener("input", function () {
+    hapusError(nama, namaError);
+});
+
+identifier.addEventListener("input", function () {
+    hapusError(identifier, identifierError);
+});
+
+noTelp.addEventListener("input", function () {
+    hapusError(noTelp, noTelpError);
+});
+
+password.addEventListener("input", function () {
+    hapusError(password, passwordError);
+    hapusError(konfirmasi, confirmPasswordError);
+});
+
+konfirmasi.addEventListener("input", function () {
+    hapusError(konfirmasi, confirmPasswordError);
+});
+
+persetujuan.addEventListener("change", function () {
+    hapusError(persetujuan, termsError);
+});
+
+
+// PROSES VALIDASI REGISTRASI
 formDaftar.addEventListener("submit", function (event) {
+
     event.preventDefault();
 
-    pesanDaftar.textContent = "";
+    hapusSemuaError();
 
-    // Mengambil nilai seluruh input.
-    const nama = formDaftar.elements.nama.value.trim();
-    const identifier = formDaftar.elements.identifier.value.trim();
-    const noTelp = formDaftar.elements.no_telp.value.trim();
-    const password = formDaftar.elements.password.value;
-    const konfirmasi = formDaftar.elements.confirm_password.value;
-    const persetujuan = formDaftar.elements.terms.checked;
+    let valid = true;
 
-    // Memastikan nama tidak hanya berisi spasi.
-    if (!nama) {
-        pesanDaftar.textContent = "Nama lengkap wajib diisi.";
+    // Mengambil nilai input.
+    const nilaiNama = nama.value.trim();
+    const nilaiIdentifier = identifier.value.trim();
+    const nilaiNoTelp = noTelp.value.trim();
+    const nilaiPassword = password.value;
+    const nilaiKonfirmasi = konfirmasi.value;
+
+
+    // VALIDASI NAMA
+    if (!nilaiNama) {
+
+        tampilkanError(
+            nama,
+            namaError,
+            "Nama lengkap wajib diisi."
+        );
+
+        valid = false;
+    }
+
+
+    // VALIDASI NIP/NPM
+    if (!nilaiIdentifier) {
+
+        tampilkanError(
+            identifier,
+            identifierError,
+            "NIP/NPM wajib diisi."
+        );
+
+        valid = false;
+
+    } else if (!/^[0-9]+$/.test(nilaiIdentifier)) {
+
+        tampilkanError(
+            identifier,
+            identifierError,
+            "NIP/NPM hanya boleh berisi angka."
+        );
+
+        valid = false;
+    }
+
+
+    // VALIDASI NOMOR TELEPON
+    if (!nilaiNoTelp) {
+
+        tampilkanError(
+            noTelp,
+            noTelpError,
+            "Nomor telepon wajib diisi."
+        );
+
+        valid = false;
+
+    } else if (!/^[0-9]+$/.test(nilaiNoTelp)) {
+
+        tampilkanError(
+            noTelp,
+            noTelpError,
+            "Nomor telepon hanya boleh berisi angka."
+        );
+
+        valid = false;
+    }
+
+
+    // VALIDASI PASSWORD
+    if (!nilaiPassword) {
+
+        tampilkanError(
+            password,
+            passwordError,
+            "Password wajib diisi."
+        );
+
+        valid = false;
+    }
+
+
+    // VALIDASI KONFIRMASI PASSWORD
+    if (!nilaiKonfirmasi) {
+
+        tampilkanError(
+            konfirmasi,
+            confirmPasswordError,
+            "Konfirmasi password wajib diisi."
+        );
+
+        valid = false;
+
+    } else if (nilaiPassword !== nilaiKonfirmasi) {
+
+        tampilkanError(
+            konfirmasi,
+            confirmPasswordError,
+            "Password dan konfirmasi password tidak sama."
+        );
+
+        valid = false;
+    }
+
+
+    // VALIDASI PERSETUJUAN
+    if (!persetujuan.checked) {
+
+        tampilkanError(
+            persetujuan,
+            termsError,
+            "Silakan setujui syarat dan ketentuan."
+        );
+
+        valid = false;
+    }
+
+
+    // MENGHENTIKAN PROSES JIKA VALIDASI GAGAL
+    if (!valid) {
+
+        const inputPertama = formDaftar.querySelector(
+            '[aria-invalid="true"]'
+        );
+
+        if (inputPertama) {
+            inputPertama.focus();
+        }
+
         return;
     }
 
-    // Memastikan NIP/NPM hanya berisi angka.
-    if (!/^[0-9]+$/.test(identifier)) {
-        pesanDaftar.textContent = "NIP/NPM hanya boleh berisi angka.";
-        return;
-    }
 
-    // Memastikan nomor telepon hanya berisi angka.
-    if (!/^[0-9]+$/.test(noTelp)) {
-        pesanDaftar.textContent = "Nomor telepon hanya boleh berisi angka.";
-        return;
-    }
-
-    // Memastikan kedua password sama.
-    if (password !== konfirmasi) {
-        pesanDaftar.textContent = "Password dan konfirmasi password tidak sama.";
-        return;
-    }
-
-    // Memastikan pengguna menyetujui ketentuan.
-    if (!persetujuan) {
-        pesanDaftar.textContent = "Silakan setujui syarat dan ketentuan.";
-        return;
-    }
-
-    // Memperbarui informasi modal karena data belum disimpan.
-    modalDaftar.querySelector("h2").textContent =
-        "Validasi Formulir Berhasil!";
-
-    const keteranganModal = modalDaftar.querySelectorAll("p");
-
-    keteranganModal[0].textContent =
-        "Data yang kamu masukkan sudah memenuhi pemeriksaan formulir.";
-
-    keteranganModal[1].textContent =
-        "Data belum disimpan karena database SILAB belum tersedia.";
-
-    // Membuka modal pendaftaran.
+    // MENAMPILKAN MODAL JIKA VALIDASI BERHASIL
     window.location.hash = "registerModal";
+
 });
