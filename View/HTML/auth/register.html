@@ -139,33 +139,61 @@
 
 
                     <!-- PASSWORD -->
+                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
 
                         <i class="bi bi-lock"></i>
 
                         <input
                             type="password"
+                            id="registerPassword"
                             name="password"
                             placeholder="Password"
                             autocomplete="new-password"
                             required
                         >
 
+                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="registerPassword"
+                            aria-label="Tampilkan password"
+                            aria-controls="registerPassword"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
+
                     </div>
 
 
                     <!-- KONFIRMASI PASSWORD -->
+                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
 
                         <i class="bi bi-lock"></i>
 
                         <input
                             type="password"
+                            id="confirmPassword"
                             name="confirm_password"
                             placeholder="Konfirmasi Password"
                             autocomplete="new-password"
                             required
                         >
+
+                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="confirmPassword"
+                            aria-label="Tampilkan password"
+                            aria-controls="confirmPassword"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
 
                     </div>
 
@@ -256,6 +284,7 @@
 
     <!--TAMBAHAN: penghubung ke daftar.js -laili-->
     <script src="../../JS/auth/daftar.js"></script>
+    <script src="../../JS/auth/liat_psswd.js"></script>
 
 </body>
 

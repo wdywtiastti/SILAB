@@ -105,11 +105,11 @@
                     </div>
 
                     <!-- INPUT PASSWORD -->
+                    <!--TAMBAHAN: fitur lihat password -laili-->
                     <div class="input-group">
 
                         <i class="bi bi-lock"></i>
 
-                        <!--autocomplete di ubah dari off jadi "current-password - laili"-->
                         <input
                             type="password"
                             id="password"
@@ -118,6 +118,18 @@
                             autocomplete="current-password"
                             required
                         >
+
+                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
+                        <button
+                            type="button"
+                            class="toggle-password"
+                            data-target="password"
+                            aria-label="Tampilkan password"
+                            aria-controls="password"
+                            aria-pressed="false"
+                        >
+                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
+                        </button>
 
                     </div>
 
@@ -161,8 +173,11 @@
         </section>
 
     </main>
+
+    <!--Penghubung dengan bagian auth di js -laili-->
     <script src="../../JS/auth/sesi.js"></script>
     <script src="../../JS/auth/masuk.js"></script>
+    <script src="../../JS/auth/liat_psswd.js"></script>
 
 </body>
 
