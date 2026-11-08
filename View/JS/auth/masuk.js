@@ -32,7 +32,7 @@ loginForm.addEventListener("submit", function (event) {
 
     // Menampilkan pesan jika identitas atau password tidak sesuai.
     if (role === "") {
-        loginMessage.textContent = "NIP/NPM atau password tidak sesuai.";
+        loginMessage.textContent = "NIP/NPM atau password tidak ditemukan.";
         return;
     }
 
