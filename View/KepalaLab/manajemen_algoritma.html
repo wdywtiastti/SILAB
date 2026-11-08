@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manajemen Algoritma | SILAB</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- BOOTSTRAP ICON -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS NAVBAR BERSAMA -->
+    <link rel="stylesheet" href="../CSS/kepalaLab/navbar.css">
+
+    <!-- CSS HALAMAN -->
+    <link rel="stylesheet" href="../CSS/kepalaLab/algoritma.css">
+
+</head>
+
+<body>
+
+<!-- =====================================
+     NAVBAR KEPALA LAB
+====================================== -->
+
+<nav class="navbar">
+
+    <!-- IDENTITAS SILAB -->
+
+    <div class="navbar-brand">
+
+        <img
+            src="../Assets/Logo_RPL.svg"
+            alt="Logo SILAB"
+            class="navbar-logo"
+        >
+
+        <div class="brand-info">
+            <h1>SILAB</h1>
+            <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+
+    </div>
+
+
+    <!-- MENU NAVIGASI -->
+
+    <nav class="navbar-menu">
+
+        <a href="Dashboard.html" class="nav-link">
+            Dashboard Kepala Lab
+        </a>
+
+        <a href="penyelesaian_konflik.html" class="nav-link">
+            Penyelesaian Konflik
+        </a>
+
+        <a href="manajemen_algoritma.html" class="nav-link active">
+            Manajemen Algoritma
+        </a>
+
+        <a href="manajemen_user.html" class="nav-link">
+            Manajemen User
+        </a>
+
+    </nav>
+
+
+    <!-- PROFIL KEPALA LAB -->
+
+    <div class="navbar-profile">
+
+        <div class="profile-info">
+            <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
+            <p>Kepala Lab</p>
+        </div>
+
+        <details class="profile-dropdown">
+
+            <summary class="profile-trigger">
+                <i class="bi bi-person"></i>
+            </summary>
+
+            <div class="profile-menu">
+
+                <div class="profile-info-dropdown">
+
+                    <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
+
+                    <span>
+                        Kepala Laboratorium RPL
+                    </span>
+
+                    <div class="profile-role">
+                        <i class="bi bi-shield-check"></i>
+                        Kepala Lab
+                    </div>
+
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <a href="../auth/login.html" class="logout-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Keluar / Logout
+                </a>
+
+            </div>
+
+        </details>
+
+    </div>
+
+</nav>
+
+
+
+    <!-- =========================================
+         KONTEN UTAMA
+    ========================================== -->
+
+    <main class="algorithm-container">
+
+
+        <!-- HEADER HALAMAN -->
+
+        <section class="algorithm-heading">
+
+            <div class="algorithm-heading-content">
+
+                <div class="algorithm-label">
+                    <i class="bi bi-diagram-3"></i>
+                    PENGELOLAAN KEBIJAKAN SISTEM
+                </div>
+
+                <h2>Manajemen Algoritma</h2>
+
+                <p>
+                    Kelola aturan dan parameter penentuan prioritas
+                    peminjaman laboratorium di luar mata kuliah wajib.
+                </p>
+
+            </div>
+
+            <div class="algorithm-heading-status">
+                <i class="bi bi-shield-check"></i>
+                Area Konfigurasi Kepala Lab
+            </div>
+
+        </section>
+
+
+        <!-- INFORMASI SISTEM -->
+
+        <section class="algorithm-information">
+
+            <div class="information-icon">
+                <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div class="information-content">
+
+                <h4>Pemisahan Jadwal Wajib dan Peminjaman</h4>
+
+                <p>
+                    Mata kuliah wajib dicatat sebagai jadwal tetap dan
+                    tidak masuk klasifikasi P1–P4. Empat tingkat prioritas
+                    digunakan untuk permohonan peminjaman di luar
+                    mata kuliah wajib.
+                </p>
+
+            </div>
+
+        </section>
+
+
+                
+        <!-- =====================================
+            MANAJEMEN ATURAN (RULE BASE)
+        ====================================== -->
+
+        <section class="algorithm-panel rule-base-panel">
+
+            <div class="rule-base-header">
+
+                <div class="panel-heading-content">
+                    <span class="panel-label">
+                        LAPISAN 1 · RULE-BASED SYSTEM
+                    </span>
+
+                    <h3>Manajemen Aturan (Rule Base)</h3>
+
+                    <p>
+                        Kelola aturan deterministik sebagai dasar validasi
+                        pengajuan peminjaman laboratorium.
+                    </p>
+                </div>
+
+                <div class="panel-heading-icon">
+                    <i class="bi bi-journal-check"></i>
+                </div>
+
+            </div>
+
+            <!-- RINGKASAN ATURAN -->
+            <div class="rule-summary">
+
+                <div class="rule-summary-item">
+                    <span class="rule-summary-icon">
+                        <i class="bi bi-list-check"></i>
+                    </span>
+                    <div>
+                        <small>Total Aturan</small>
+                        <strong>3 Aturan</strong>
+                    </div>
+                </div>
+
+                <div class="rule-summary-item">
+                    <span class="rule-summary-icon active-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </span>
+                    <div>
+                        <small>Aturan Aktif</small>
+                        <strong>3 Aturan</strong>
+                    </div>
+                </div>
+
+                <div class="rule-summary-item">
+                    <span class="rule-summary-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </span>
+                    <div>
+                        <small>Jenis Sistem</small>
+                        <strong>Deterministik</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TOOLBAR -->
+            <div class="rule-toolbar">
+
+                <div class="rule-toolbar-info">
+                    <h4>Daftar Aturan Validasi</h4>
+                    <p>Aturan yang digunakan dalam pemeriksaan pengajuan.</p>
+                </div>
+
+                <label for="addRule" class="btn-add-rule">
+                    <i class="bi bi-plus-lg"></i>
+                    Tambah Aturan
+                </label>
+
+            </div>
+
+            <!-- TABEL ATURAN -->
+            <div class="algorithm-table-wrapper">
+
+                <table class="algorithm-table rule-table">
+
+                    <thead>
+                        <tr>
+                            <th>ID ATURAN</th>
+                            <th>NAMA ATURAN</th>
+                            <th>KONDISI VALIDASI</th>
+                            <th>STATUS</th>
+                            <th>AKSI</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <!-- RULE 01 -->
+                        <tr>
+
+                            <td>
+                                <span class="rule-id">RB-001</span>
+                            </td>
+
+                            <td>
+                                <strong>Jenis Kegiatan</strong>
+                                <small>Klasifikasi jenis pengajuan</small>
+                            </td>
+
+                            <td>
+                                Atribut kegiatan berada pada rentang
+                                1 sampai dengan 4.
+                            </td>
+
+                            <td>
+                                <input type="checkbox"
+                                    id="statusR1"
+                                    class="status-checkbox"
+                                    checked>
+
+                                <label for="statusR1" class="status-badge">
+                                    <span class="status-active">Aktif</span>
+                                    <span class="status-inactive">Nonaktif</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <div class="rule-actions">
+
+                                    <label for="editR1"
+                                        class="edit-button"
+                                        title="Edit aturan">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </label>
+
+                                    <label for="deleteR1"
+                                        class="delete-button"
+                                        title="Hapus aturan">
+                                        <i class="bi bi-trash3"></i>
+                                    </label>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <!-- RULE 02 -->
+                        <tr>
+
+                            <td>
+                                <span class="rule-id">RB-002</span>
+                            </td>
+
+                            <td>
+                                <strong>Waktu Pengajuan</strong>
+                                <small>Validasi waktu penggunaan</small>
+                            </td>
+
+                            <td>
+                                Waktu penggunaan berada di luar
+                                jam operasional laboratorium.
+                            </td>
+
+                            <td>
+                                <input type="checkbox"
+                                    id="statusR3"
+                                    class="status-checkbox"
+                                    checked>
+
+                                <label for="statusR3" class="status-badge">
+                                    <span class="status-active">Aktif</span>
+                                    <span class="status-inactive">Nonaktif</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <div class="rule-actions">
+
+                                    <label for="editR3"
+                                        class="edit-button"
+                                        title="Edit aturan">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </label>
+
+                                    <label for="deleteR3"
+                                        class="delete-button"
+                                        title="Hapus aturan">
+                                        <i class="bi bi-trash3"></i>
+                                    </label>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <!-- RULE 03 -->
+                        <tr>
+
+                            <td>
+                                <span class="rule-id">RB-003</span>
+                            </td>
+
+                            <td>
+                                <strong>Fasilitas Laboratorium</strong>
+                                <small>Validasi kapasitas fasilitas</small>
+                            </td>
+
+                            <td>
+                                Jumlah peserta melebihi kapasitas
+                                laboratorium yang tersedia.
+                            </td>
+
+                            <td>
+                                <input type="checkbox"
+                                    id="statusR4"
+                                    class="status-checkbox"
+                                    checked>
+
+                                <label for="statusR4" class="status-badge">
+                                    <span class="status-active">Aktif</span>
+                                    <span class="status-inactive">Nonaktif</span>
+                                </label>
+                            </td>
+
+                            <td>
+                                <div class="rule-actions">
+
+                                    <label for="editR4"
+                                        class="edit-button"
+                                        title="Edit aturan">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </label>
+
+                                    <label for="deleteR4"
+                                        class="delete-button"
+                                        title="Hapus aturan">
+                                        <i class="bi bi-trash3"></i>
+                                    </label>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- CATATAN -->
+            <div class="panel-note">
+                <i class="bi bi-info-circle"></i>
+                <span>
+                    Aturan merupakan konfigurasi validasi sistem.
+                    Perubahan aturan harus mempertimbangkan kebijakan
+                    operasional dan konsistensi algoritma SILAB.
+                </span>
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             PARAMETER DAN PRIORITAS
+        ====================================== -->
+
+        <section class="algorithm-grid">
+
+
+            <!-- PARAMETER BOBOT -->
+
+            <section class="algorithm-panel">
+
+                <div class="panel-heading">
+
+                    <div class="panel-heading-content">
+
+                        <span class="panel-label">
+                            LAPISAN PENILAIAN
+                        </span>
+
+                        <h3>Parameter dan Bobot Penilaian</h3>
+
+                        <p>
+                            Pengaturan bobot atribut yang digunakan
+                            dalam penilaian pengajuan.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-heading-icon">
+                        <i class="bi bi-sliders"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="weight-list">
+
+
+                    <!-- PARAMETER K -->
+
+                    <div class="weight-item">
+
+                        <div class="weight-heading">
+
+                            <label for="weightK">
+                                Jenis Kegiatan (K)
+                            </label>
+
+                            <span>35%</span>
+
+                        </div>
+
+                        <input type="range"
+                               id="weightK"
+                               min="0"
+                               max="100"
+                               value="35">
+
+                        <small>
+                            Bobot kepentingan kategori kegiatan.
+                        </small>
+
+                    </div>
+
+
+                    <!-- PARAMETER P -->
+
+                    <div class="weight-item">
+
+                        <div class="weight-heading">
+
+                            <label for="weightP">
+                                Skala Peserta (P)
+                            </label>
+
+                            <span>20%</span>
+
+                        </div>
+
+                        <input type="range"
+                               id="weightP"
+                               min="0"
+                               max="100"
+                               value="20">
+
+                        <small>
+                            Bobot jumlah peserta dan kebutuhan kapasitas.
+                        </small>
+
+                    </div>
+
+
+                    <!-- PARAMETER F -->
+
+                    <div class="weight-item">
+
+                        <div class="weight-heading">
+
+                            <label for="weightF">
+                                Kebutuhan Fasilitas (F)
+                            </label>
+
+                            <span>15%</span>
+
+                        </div>
+
+                        <input type="range"
+                               id="weightF"
+                               min="0"
+                               max="100"
+                               value="15">
+
+                        <small>
+                            Bobot kebutuhan fasilitas laboratorium.
+                        </small>
+
+                    </div>
+
+
+                    <!-- PARAMETER W -->
+
+                    <div class="weight-item">
+
+                        <div class="weight-heading">
+
+                            <label for="weightW">
+                                Waktu Pengajuan (W)
+                            </label>
+
+                            <span>15%</span>
+
+                        </div>
+
+                        <input type="range"
+                               id="weightW"
+                               min="0"
+                               max="100"
+                               value="15">
+
+                        <small>
+                            Bobot jarak waktu pengajuan dengan penggunaan.
+                        </small>
+
+                    </div>
+
+
+                    <!-- PARAMETER R -->
+
+                    <div class="weight-item">
+
+                        <div class="weight-heading">
+
+                            <label for="weightR">
+                                Rekam Jejak Pemohon (R)
+                            </label>
+
+                            <span>15%</span>
+
+                        </div>
+
+                        <input type="range"
+                               id="weightR"
+                               min="0"
+                               max="100"
+                               value="15">
+
+                        <small>
+                            Bobot rekam jejak sesuai indikator yang ditetapkan.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="weight-total">
+
+                    <span>Total Bobot Acuan</span>
+
+                    <strong>100%</strong>
+
+                </div>
+
+
+                <div class="panel-note">
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Nilai persentase merupakan nilai acuan tampilan.
+                        Perhitungan dan validasi bobot belum dijalankan
+                        pada frontend.
+                    </span>
+                </div>
+
+            </section>
+
+
+
+            <!-- TINGKAT PRIORITAS -->
+
+            <section class="algorithm-panel">
+
+                <div class="panel-heading">
+
+                    <div class="panel-heading-content">
+
+                        <span class="panel-label panel-label-blue">
+                            KLASIFIKASI PEMINJAMAN
+                        </span>
+
+                        <h3>Empat Tingkat Prioritas</h3>
+
+                        <p>
+                            Klasifikasi tingkat prioritas untuk
+                            pengajuan di luar mata kuliah wajib.
+                        </p>
+
+                    </div>
+
+                    <div class="panel-heading-icon blue-icon">
+                        <i class="bi bi-flag"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="priority-list">
+
+
+                    <!-- P1 -->
+
+                    <article class="priority-item priority-one">
+
+                        <div class="priority-code">
+                            P1
+                        </div>
+
+                        <div class="priority-information">
+                            <strong>Prioritas 1</strong>
+                            <small>Tingkat prioritas pertama</small>
+                        </div>
+
+                        <span class="priority-level">
+                            Tertinggi
+                        </span>
+
+                    </article>
+
+
+                    <!-- P2 -->
+
+                    <article class="priority-item priority-two">
+
+                        <div class="priority-code">
+                            P2
+                        </div>
+
+                        <div class="priority-information">
+                            <strong>Prioritas 2</strong>
+                            <small>Tingkat prioritas kedua</small>
+                        </div>
+
+                    </article>
+
+
+                    <!-- P3 -->
+
+                    <article class="priority-item priority-three">
+
+                        <div class="priority-code">
+                            P3
+                        </div>
+
+                        <div class="priority-information">
+                            <strong>Prioritas 3</strong>
+                            <small>Tingkat prioritas ketiga</small>
+                        </div>
+
+                    </article>
+
+
+                    <!-- P4 -->
+
+                    <article class="priority-item priority-four">
+
+                        <div class="priority-code">
+                            P4
+                        </div>
+
+                        <div class="priority-information">
+                            <strong>Prioritas 4</strong>
+                            <small>Tingkat prioritas keempat</small>
+                        </div>
+
+                        <span class="priority-level">
+                            Terendah
+                        </span>
+
+                    </article>
+
+                </div>
+
+
+                <div class="priority-warning">
+
+                    <i class="bi bi-exclamation-circle"></i>
+
+                    <p>
+                        Batas skor atau kriteria pemisah P1–P4
+                        perlu ditetapkan berdasarkan hasil
+                        pembahasan dengan pakar.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- FOOTNOTE -->
+
+        <div class="algorithm-footnote">
+
+            <i class="bi bi-info-circle"></i>
+
+            <p>
+                Halaman Manajemen Algoritma merupakan antarmuka
+                konfigurasi frontend. Proses evaluasi aturan,
+                perhitungan skor Decision Tree, dan penentuan
+                prioritas dilakukan pada backend.
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         MODAL EDIT RULE R1
+    ========================================== -->
+
+    <input type="checkbox" id="editR1" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal">
+
+            <div class="modal-heading">
+
+                <div>
+                    <span class="panel-label">RULE BASE</span>
+                    <h3>Edit Aturan R1</h3>
+                </div>
+
+                <label for="editR1" class="modal-close">
+                    <i class="bi bi-x-lg"></i>
+                </label>
+
+            </div>
+
+            <form>
+
+                <label>Nama Aturan</label>
+                <input type="text"
+                       value="Preemptive Kegiatan Pengganti">
+
+                <label>Kondisi Validasi</label>
+                <textarea rows="3">Kegiatan pengganti dengan surat resmi yang valid.</textarea>
+
+                <div class="modal-actions">
+
+                    <label for="editR1" class="modal-cancel">
+                        Tutup
+                    </label>
+
+                    <button type="button" class="modal-save">
+                        Simpan Tampilan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MODAL EDIT RULE R2
+    ========================================== -->
+
+    <input type="checkbox" id="editR2" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal">
+
+            <div class="modal-heading">
+
+                <div>
+                    <span class="panel-label">RULE BASE</span>
+                    <h3>Edit Aturan R2</h3>
+                </div>
+
+                <label for="editR2" class="modal-close">
+                    <i class="bi bi-x-lg"></i>
+                </label>
+
+            </div>
+
+            <form>
+
+                <label>Nama Aturan</label>
+                <input type="text" value="Blacklist dan Sanksi">
+
+                <label>Kondisi Validasi</label>
+                <textarea rows="3">Pemohon memiliki blacklist aktif atau memenuhi ketentuan sanksi.</textarea>
+
+                <div class="modal-actions">
+
+                    <label for="editR2" class="modal-cancel">
+                        Tutup
+                    </label>
+
+                    <button type="button" class="modal-save">
+                        Simpan Tampilan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MODAL EDIT RULE R3
+    ========================================== -->
+
+    <input type="checkbox" id="editR3" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal">
+
+            <div class="modal-heading">
+
+                <div>
+                    <span class="panel-label">RULE BASE</span>
+                    <h3>Edit Aturan R3</h3>
+                </div>
+
+                <label for="editR3" class="modal-close">
+                    <i class="bi bi-x-lg"></i>
+                </label>
+
+            </div>
+
+            <form>
+
+                <label>Nama Aturan</label>
+                <input type="text" value="Batas Jam Operasional">
+
+                <label>Kondisi Validasi</label>
+                <textarea rows="3">Waktu penggunaan berada di luar jam operasional laboratorium.</textarea>
+
+                <div class="modal-actions">
+
+                    <label for="editR3" class="modal-cancel">
+                        Tutup
+                    </label>
+
+                    <button type="button" class="modal-save">
+                        Simpan Tampilan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MODAL EDIT RULE R4
+    ========================================== -->
+
+    <input type="checkbox" id="editR4" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal">
+
+            <div class="modal-heading">
+
+                <div>
+                    <span class="panel-label">RULE BASE</span>
+                    <h3>Edit Aturan R4</h3>
+                </div>
+
+                <label for="editR4" class="modal-close">
+                    <i class="bi bi-x-lg"></i>
+                </label>
+
+            </div>
+
+            <form>
+
+                <label>Nama Aturan</label>
+                <input type="text" value="Kapasitas Laboratorium">
+
+                <label>Kondisi Validasi</label>
+                <textarea rows="3">Jumlah peserta melebihi kapasitas laboratorium yang tersedia.</textarea>
+
+                <div class="modal-actions">
+
+                    <label for="editR4" class="modal-cancel">
+                        Tutup
+                    </label>
+
+                    <button type="button" class="modal-save">
+                        Simpan Tampilan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+        
+    <!-- =====================================
+        MODAL TAMBAH ATURAN
+    ====================================== -->
+
+    <input type="checkbox" id="addRule" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal">
+
+            <div class="modal-heading">
+
+                <div>
+                    <span class="panel-label">RULE-BASED SYSTEM</span>
+                    <h3>Tambah Aturan Baru</h3>
+                    <p class="modal-subtitle">
+                        Tambahkan ketentuan validasi baru pada SILAB.
+                    </p>
+                </div>
+
+                <label for="addRule" class="modal-close">
+                    <i class="bi bi-x-lg"></i>
+                </label>
+
+            </div>
+
+            <form>
+
+                <label for="newRuleName">Nama Aturan</label>
+                <input type="text"
+                    id="newRuleName"
+                    placeholder="Contoh: Validasi Status Pemohon"
+                    required>
+
+                <label for="newRuleCondition">Kondisi Validasi</label>
+                <textarea id="newRuleCondition"
+                        rows="3"
+                        placeholder="Jelaskan kondisi yang harus diperiksa..."
+                        required></textarea>
+
+                <div class="modal-actions">
+
+                    <label for="addRule" class="modal-cancel">
+                        Batal
+                    </label>
+
+                    <button type="button" class="modal-save">
+                        Simpan Aturan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    
+<!-- =====================================
+     MODAL HAPUS RB-001
+====================================== -->
+
+<input type="checkbox" id="deleteR1" class="modal-toggle">
+
+<div class="modal-overlay">
+
+    <div class="rule-modal delete-modal">
+
+        <div class="delete-modal-content">
+
+            <span class="delete-modal-icon">
+                <i class="bi bi-trash3"></i>
+            </span>
+
+            <span class="panel-label delete-label">
+                KONFIRMASI PENGHAPUSAN
+            </span>
+
+            <h3>Hapus Aturan RB-001?</h3>
+
+            <p>
+                Apakah kamu yakin ingin menghapus aturan
+                <strong>Jenis Kegiatan</strong>?
+            </p>
+
+            <p class="delete-warning">
+                Aturan yang dihapus tidak lagi tersedia
+                dalam konfigurasi Rule Base.
+            </p>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <label for="deleteR1" class="modal-cancel">
+                Batal
+            </label>
+
+            <button type="button" class="modal-delete-confirm">
+                <i class="bi bi-trash3"></i>
+                Ya, Hapus Aturan
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     MODAL HAPUS RB-002
+====================================== -->
+
+<input type="checkbox" id="deleteR3" class="modal-toggle">
+
+<div class="modal-overlay">
+
+    <div class="rule-modal delete-modal">
+
+        <div class="delete-modal-content">
+
+            <span class="delete-modal-icon">
+                <i class="bi bi-trash3"></i>
+            </span>
+
+            <span class="panel-label delete-label">
+                KONFIRMASI PENGHAPUSAN
+            </span>
+
+            <h3>Hapus Aturan RB-002?</h3>
+
+            <p>
+                Apakah kamu yakin ingin menghapus aturan
+                <strong>Waktu Pengajuan</strong>?
+            </p>
+
+            <p class="delete-warning">
+                Aturan yang dihapus tidak lagi tersedia
+                dalam konfigurasi Rule Base.
+            </p>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <label for="deleteR3" class="modal-cancel">
+                Batal
+            </label>
+
+            <button type="button" class="modal-delete-confirm">
+                <i class="bi bi-trash3"></i>
+                Ya, Hapus Aturan
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!-- =====================================
+        MODAL HAPUS RB-003
+    ====================================== -->
+
+    <input type="checkbox" id="deleteR4" class="modal-toggle">
+
+    <div class="modal-overlay">
+
+        <div class="rule-modal delete-modal">
+
+            <div class="delete-modal-content">
+
+                <span class="delete-modal-icon">
+                    <i class="bi bi-trash3"></i>
+                </span>
+
+                <span class="panel-label delete-label">
+                    KONFIRMASI PENGHAPUSAN
+                </span>
+
+                <h3>Hapus Aturan RB-003?</h3>
+
+                <p>
+                    Apakah kamu yakin ingin menghapus aturan
+                    <strong>Fasilitas Laboratorium</strong>?
+                </p>
+
+                <p class="delete-warning">
+                    Aturan yang dihapus tidak lagi tersedia
+                    dalam konfigurasi Rule Base.
+                </p>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <label for="deleteR4" class="modal-cancel">
+                    Batal
+                </label>
+
+                <button type="button" class="modal-delete-confirm">
+                    <i class="bi bi-trash3"></i>
+                    Ya, Hapus Aturan
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</body>
+</html>

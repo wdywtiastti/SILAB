@@ -5,55 +5,62 @@
 .dashboard-container {
     width: calc(100% - 50px);
     max-width: 1500px;
-
-    margin: 16px auto 25px;
+    margin: 7px auto 25px;
 }
 
 .card {
     position: relative;
-
     background-color: #FFFFFF;
-
     border: 1px solid #E1E1E5;
     border-radius: 17px;
-
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     margin-bottom: 14px;
 }
 
 
 /* =========================================
-   2. HEADER PANEL
+   2. HEADER DASHBOARD
 ========================================= */
 
 .dashboard-header {
-    padding: 16px 20px 18px;
+    position: relative;
+    padding: 16px 20px;
+    background-color: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    margin-bottom: 14px;
 }
 
 .header-decoration {
     display: flex;
     gap: 6px;
-
     margin-bottom: 10px;
 }
 
 .header-decoration span {
     width: 30px;
     height: 5px;
-
     border-radius: 10px;
 }
 
-.header-decoration span:nth-child(1) { background-color: #911E3F; }
-.header-decoration span:nth-child(2) { background-color: #F8B916; }
-.header-decoration span:nth-child(3) { background-color: #33266A; }
+.header-decoration span:nth-child(1) {
+    background-color: #911E3F;
+}
+
+.header-decoration span:nth-child(2) {
+    background-color: #F8B916;
+}
+
+.header-decoration span:nth-child(3) {
+    background-color: #33266A;
+}
 
 .header-tags {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-
     margin-bottom: 12px;
 }
 
@@ -61,13 +68,10 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-
-    padding: 6px 12px;
-
+    padding: 5px 10px;
     border-radius: 20px;
-
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 600;
 }
 
 .info-tag.tag-panel {
@@ -82,52 +86,58 @@
 .info-tag.tag-fasilitas {
     background-color: #FEF3C7;
     color: #6B4A00;
-
     border: 1px solid #FBE59A;
 }
 
 .info-tag.tag-fasilitas i {
     color: #D49A06;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .dashboard-header h2 {
-    font-size: 28px;
+    font-size: 27px;
     font-weight: 800;
-
     color: #33266A;
-
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
 .dashboard-header p {
-    max-width: 430px;
-
-    font-size: 13px;
-    line-height: 1.45;
-
-    color: #475569;
+    max-width: 600px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #667A9B;
 }
 
-.btn-otoritas {
+/* Badge Otoritas Laboran */
+
+.badge-otoritas {
     position: absolute;
-    top: 47px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
 
     display: inline-flex;
     align-items: center;
     gap: 6px;
 
-    padding: 10px 14px;
+    padding: 10px 16px;
 
     background-color: #ECEDF3;
     color: #33266A;
 
     border: 1px solid #D5D7E3;
-    border-radius: 20px;
+    border-radius: 30px;
 
     font-size: 12px;
     font-weight: 700;
+
+    white-space: nowrap;
+    cursor: default;
+    user-select: none;
+}
+
+.badge-otoritas i {
+    font-size: 13px;
+    color: #33266A;
 }
 
 
@@ -142,7 +152,8 @@
     justify-content: space-between;
     gap: 12px;
 
-    padding: 14px 18px 16px;
+    min-height: 138px;
+    padding: 16px 20px;
 }
 
 .sesi-info {
@@ -153,9 +164,9 @@
 .sesi-top {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 12px;
-
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .badge-sesi {
@@ -171,7 +182,7 @@
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
 }
 
@@ -181,19 +192,16 @@
 }
 
 .sesi-jam {
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    font-weight: 700;
-
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
     color: #263249;
 }
 
 .sesi-info h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
-
     color: #33266A;
-
     margin-bottom: 5px;
 }
 
@@ -201,7 +209,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-
     font-size: 12px;
     color: #475569;
 }
@@ -212,21 +219,22 @@
 
 .sesi-lokasi i {
     color: #911E3F;
-    font-size: 14px;
+    font-size: 13px;
 }
+
+/* Aksi Validasi */
 
 .sesi-aksi {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 14px;
+    gap: 12px;
 }
 
 .batas-waktu {
     display: flex;
     align-items: center;
     gap: 5px;
-
     font-size: 12px;
     color: #667A9B;
 }
@@ -237,7 +245,8 @@
 
 .tombol-validasi {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .btn {
@@ -246,26 +255,24 @@
     justify-content: center;
     gap: 7px;
 
-    padding: 11px 18px;
+    padding: 10px 16px;
 
     border: 1px solid transparent;
     border-radius: 30px;
 
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 
     text-decoration: none;
     cursor: pointer;
-
     transition: 0.2s;
 }
 
 .btn-hadir {
+    min-width: 170px;
     background-color: #911E3F;
     color: #FFFFFF;
-
-    min-width: 170px;
 }
 
 .btn-hadir:hover {
@@ -273,12 +280,10 @@
 }
 
 .btn-tidak {
+    min-width: 170px;
     background-color: #F1EDF7;
     color: #911E3F;
-
     border-color: #E9DDEB;
-
-    min-width: 170px;
 }
 
 .btn-tidak:hover {
@@ -296,7 +301,7 @@
 
 .jadwal-head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
 
@@ -305,17 +310,15 @@
 }
 
 .jadwal-head h3 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
-
     color: #33266A;
-
     margin-bottom: 4px;
 }
 
 .jadwal-head p {
-    font-size: 12px;
-    color: #475569;
+    font-size: 10px;
+    color: #667A9B;
 }
 
 .badge-terjadwal {
@@ -331,17 +334,23 @@
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
-
     white-space: nowrap;
 }
 
 .badge-terjadwal i {
     color: #D49A06;
+    font-size: 11px;
 }
 
+
+/* =========================================
+   5. TABEL JADWAL
+========================================= */
+
 .tabel-wrapper {
+    width: 100%;
     overflow-x: auto;
 
     border: 1px solid #ECECF1;
@@ -351,88 +360,107 @@
 }
 
 .tabel-jadwal {
+    width: 100%;
     min-width: 860px;
 }
+
+/* Struktur baris */
 
 .tabel-row {
     display: grid;
     grid-template-columns: 1.15fr 2.2fr 1.1fr 1.1fr;
     align-items: center;
 
-    padding: 14px 20px;
+    min-height: 67px;
+    padding: 10px 12px;
 
     border-top: 1px solid #ECECF1;
 }
 
+/* Header tabel */
+
 .tabel-row.tabel-header {
-    padding: 12px 20px;
+    min-height: 48px;
+    padding: 10px 12px;
 
     border-top: none;
     background-color: #FFFFFF;
 }
 
 .tabel-header span {
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.7px;
-
-    color: #33266A;
+    font-size: 13px;
+    font-weight: 600;
+    color: #667A9B;
+    text-transform: uppercase;
 }
 
-.tabel-header span:nth-child(3),
-.tabel-header span:nth-child(4),
-.tabel-row .kolom-kategori,
-.tabel-row .kolom-status {
+.tabel-header span {
     text-align: center;
 }
+
+/* Baris sesi aktif */
 
 .tabel-row.aktif {
     background-color: #FEF6DC;
 }
 
-/* KOLOM JAM */
+/* Kolom kategori dan status */
+
+.tabel-row .kolom-jam,
+.tabel-row .kolom-kegiatan,
+.tabel-row .kolom-kategori,
+.tabel-row .kolom-status {
+    text-align: center;
+}
+
+/* =========================================
+   6. KOLOM JAM
+========================================= */
 
 .kolom-jam {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 9px;
 }
 
 .kolom-jam > i {
-    font-size: 16px;
+    font-size: 14px;
     color: #667A9B;
+    flex-shrink: 0;
 }
 
 .tabel-row.aktif .kolom-jam > i {
     color: #911E3F;
 }
+/* KOLOM JAM / SESI */
 
 .jam-text strong {
     display: block;
-
-    font-family: 'Courier New', monospace;
-    font-size: 16px;
-    font-weight: 700;
-
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
     color: #202B40;
 }
 
 .jam-text small {
     display: block;
-
-    font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
     color: #667A9B;
-
     margin-top: 2px;
 }
 
 .jam-text small.merah {
-    font-weight: 800;
+    font-weight: 700;
     color: #911E3F;
 }
 
 .jam-text small.ungu {
-    font-weight: 700;
+    font-weight: 600;
     color: #33266A;
 }
 
@@ -440,84 +468,123 @@
     color: #911E3F;
 }
 
-/* KOLOM KEGIATAN */
+/* =========================================
+   7. KOLOM KEGIATAN
+========================================= */
 
 .kolom-kegiatan strong {
     display: block;
-
-    font-size: 16px;
-    font-weight: 700;
-
-    color: #202B40;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #263249;
+    text-align: center;
 }
 
 .kolom-kegiatan span {
     display: block;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    color: #475569;
-
-    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #667A9B;
+    margin-top: 2px;
+    text-align: center;
 }
 
-/* BADGE KATEGORI */
+
+/* =========================================
+   8. BADGE KATEGORI
+========================================= */
 
 .badge-kategori {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    gap: 6px;
 
-    padding: 8px 14px;
+    padding: 6px 11px;
 
     border-radius: 20px;
 
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
 
     white-space: nowrap;
 }
 
-.badge-kategori.k1 { background-color: #33266A; color: #FFFFFF; }
-.badge-kategori.k2 { background-color: #E5E7EF; color: #33266A; }
-.badge-kategori.k4 { background-color: #FEF3C7; color: #6B4A00; border: 1px solid #FBE59A; }
-.badge-kategori.k5 { background-color: #EEF0F5; color: #33266A; }
+.badge-kategori i {
+    font-size: 12px;
+}
 
-/* BADGE STATUS */
+/* K1 Praktikum */
+
+.badge-kategori.k1 {
+    background-color: #33266A;
+    color: #FFFFFF;
+}
+
+/* K2 Dosen */
+
+.badge-kategori.k2 {
+    background-color: #E8E8EE;
+    color: #33266A;
+}
+
+/* K4 HMTI */
+
+.badge-kategori.k4 {
+    background-color: #FEF3C7;
+    color: #6B4A00;
+    border: 1px solid #FBE59A;
+}
+
+/* K5 Belajar Mandiri */
+
+.badge-kategori.k5 {
+    background-color: #F1F5F9;
+    color: #33266A;
+}
+
+
+/* =========================================
+   9. BADGE STATUS
+========================================= */
 
 .badge-status {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
 
-    padding: 6px 12px;
+    padding: 6px 10px;
 
     border-radius: 20px;
 
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 700;
 
     white-space: nowrap;
+}
+
+.badge-status i {
+    font-size: 11px;
 }
 
 .badge-status.selesai {
     background-color: #E9F8EE;
     color: #15803D;
-
     border: 1px solid #BFE8CC;
 }
 
 .badge-status.menunggu {
     background-color: #FEF3C7;
     color: #B45309;
-
     border: 1px solid #FBE59A;
 }
 
 
 /* =========================================
-   5. UNDUH REKAPAN
+   10. UNDUH REKAPAN
 ========================================= */
 
 .unduh-card {
@@ -533,7 +600,7 @@
 .unduh-info {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
 }
 
 .unduh-icon {
@@ -548,29 +615,30 @@
     color: #FFFFFF;
 
     border-radius: 9px;
-
-    font-size: 17px;
-
+    font-size: 16px;
     flex-shrink: 0;
+}
+
+.unduh-content {
+    flex: 1;
 }
 
 .unduh-judul {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
-
     margin-bottom: 4px;
 }
 
 .unduh-judul h3 {
-    font-size: 15px;
-    font-weight: 800;
-
+    font-size: 13px;
+    font-weight: 700;
     color: #33266A;
 }
 
 .badge-rekap {
-    padding: 4px 10px;
+    padding: 4px 9px;
 
     background-color: #FEF3C7;
     color: #6B4A00;
@@ -578,24 +646,25 @@
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
 }
 
 .unduh-text p {
-    font-size: 12px;
-    color: #475569;
+    font-size: 11px;
+    color: #667A9B;
 }
+
+/* Tombol unduh */
 
 .unduh-tombol {
     display: flex;
-    gap: 10px;
+    gap: 9px;
 }
 
 .btn-pdf {
     background-color: #FFFFFF;
     color: #911E3F;
-
     border-color: #911E3F;
 }
 
@@ -614,7 +683,7 @@
 
 
 /* =========================================
-   6. MODAL UNDUH (TANPA JAVASCRIPT, MEMAKAI :target)
+   11. MODAL UNDUH LAPORAN
 ========================================= */
 
 .modal-overlay {
@@ -643,35 +712,47 @@
     inset: 0;
 }
 
+/* Kotak modal */
+
 .modal-box {
     position: relative;
-
     width: 100%;
     max-width: 440px;
 
     overflow: hidden;
-
     padding: 0 20px 20px;
 
     background-color: #FFFFFF;
-
     border-radius: 14px;
 
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
 }
 
+/* Garis tiga warna */
+
 .modal-strip {
     display: flex;
-
     height: 5px;
-
     margin: 0 -20px 16px;
 }
 
-.modal-strip span { flex: 1; }
-.modal-strip span:nth-child(1) { background-color: #911E3F; }
-.modal-strip span:nth-child(2) { background-color: #F8B916; }
-.modal-strip span:nth-child(3) { background-color: #33266A; }
+.modal-strip span {
+    flex: 1;
+}
+
+.modal-strip span:nth-child(1) {
+    background-color: #911E3F;
+}
+
+.modal-strip span:nth-child(2) {
+    background-color: #F8B916;
+}
+
+.modal-strip span:nth-child(3) {
+    background-color: #33266A;
+}
+
+/* Isi modal */
 
 .modal-tag {
     display: inline-flex;
@@ -685,29 +766,27 @@
 
     border-radius: 20px;
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-
     margin-bottom: 10px;
 }
 
 .modal-box h3 {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 800;
-
     color: #33266A;
-
-    margin-bottom: 38px;
+    margin-bottom: 25px;
 }
+
+/* Form tanggal */
 
 .modal-label {
     display: flex;
     align-items: center;
     gap: 5px;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-
     color: #33266A;
 
     margin-bottom: 7px;
@@ -715,7 +794,6 @@
 
 .modal-input {
     width: 100%;
-
     padding: 10px 12px;
 
     background-color: #F7F8FA;
@@ -725,16 +803,23 @@
     border-radius: 8px;
 
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
 }
+
+.modal-input:focus {
+    outline: none;
+    border-color: #33266A;
+}
+
+/* Pembatas */
 
 .modal-divider {
     height: 1px;
-
     background-color: #EDF0F5;
-
     margin: 16px 0;
 }
+
+/* Tombol modal */
 
 .modal-aksi {
     display: grid;
@@ -744,13 +829,13 @@
 
 .modal-aksi .btn {
     border-radius: 8px;
-    padding: 11px 12px;
+    padding: 10px 12px;
+    font-size: 11px;
 }
 
 .btn-batal {
     background-color: #FFFFFF;
     color: #263249;
-
     border-color: #D9DCE3;
 }
 
@@ -778,23 +863,50 @@
 
 
 /* =========================================
-   7. RESPONSIVE
+   12. RESPONSIVE DASHBOARD
 ========================================= */
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1100px) {
 
-    .btn-otoritas {
-        position: static;
-        margin-top: 12px;
+    .dashboard-container {
+        width: calc(100% - 36px);
     }
 
     .sesi-aksi {
-        align-items: stretch;
+        align-items: flex-end;
+    }
+}
+
+@media screen and (max-width: 900px) {
+
+    .tabel-jadwal {
+        min-width: 860px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+
+    .dashboard-header {
+        padding: 15px;
+    }
+
+    .badge-otoritas {
+        position: static;
+        margin-top: 12px;
+        width: fit-content;
+    }
+
+    .sesi-aksi {
         width: 100%;
+        align-items: stretch;
     }
 
     .tombol-validasi {
         flex-direction: column;
+    }
+
+    .tombol-validasi .btn {
+        width: 100%;
     }
 
     .unduh-tombol {
@@ -804,137 +916,211 @@
     .unduh-tombol .btn {
         flex: 1;
     }
-
 }
+
+@media screen and (max-width: 700px) {
+
+    .dashboard-container {
+        width: calc(100% - 24px);
+        margin: 12px auto 20px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 21px;
+    }
+
+    .dashboard-header p {
+        font-size: 11px;
+    }
+
+    .header-tags {
+        gap: 5px;
+    }
+
+    .info-tag {
+        font-size: 9px;
+    }
+
+    .sesi-info h3 {
+        font-size: 16px;
+    }
+
+    .jadwal-card {
+        padding: 12px;
+    }
+
+    .jadwal-head {
+        flex-wrap: wrap;
+    }
+
+    .jadwal-head h3 {
+        font-size: 15px;
+    }
+
+    .jadwal-head p {
+        font-size: 10px;
+    }
+
+    .tabel-jadwal {
+        min-width: 860px;
+    }
+
+    .unduh-card {
+        align-items: flex-start;
+    }
+
+    .badge-otoritas {
+        font-size: 10px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    .sesi-card {
+        padding: 14px;
+    }
+
+    .sesi-top {
+        gap: 8px;
+    }
+
+    .batas-waktu {
+        font-size: 10px;
+    }
+
+    .btn {
+        font-size: 11px;
+        padding: 10px 12px;
+    }
+
+    .unduh-info {
+        align-items: flex-start;
+    }
+
+    .unduh-judul h3 {
+        font-size: 12px;
+    }
+
+    .unduh-text p {
+        font-size: 10px;
+    }
+
+    .modal-box {
+        padding: 0 16px 16px;
+    }
+
+    .modal-strip {
+        margin-left: -16px;
+        margin-right: -16px;
+    }
+
+    .modal-box h3 {
+        font-size: 17px;
+    }
+
+    .modal-aksi {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-aksi .btn {
+        width: 100%;
+    }
+}
+
 
 /* =========================================
-PERBAIKAN LAYOUT HEADER
+   13. PAGINASI JADWAL PEMINJAMAN
 ========================================= */
-.dashboard-header {
-    position: relative;
-}
 
-
-/* PERBAIKAN TABEL HEADER */
-.tabel-header span {
-    text-transform: uppercase;
-}
-
-/* PERBAIKAN BADGE SESI */
-.badge-sesi i {
-    font-size: 10px;
-}
-
-/* PERBAIKAN UNDUH CARD */
-.unduh-content {
-    flex: 1;
-}
-
-.unduh-judul {
+.jadwal-pagination {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 16px 12px 2px;
+    margin-top: 2px;
 }
 
-/* =========================================
-BADGE KATEGORI - SESUAI FIGMA
-========================================= */
-.badge-kategori {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 13px;
+.pagination-info {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    color: #667A9B;
+}
+
+.pagination-info strong {
     font-weight: 700;
-    white-space: nowrap;
+    color: #33266A;
 }
 
-.badge-kategori i {
-    font-size: 16px;
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.page-btn,
+.page-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    min-width: 34px;
+    height: 32px;
+    padding: 0 10px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 8px;
+
+    background-color: #FFFFFF;
+    color: #667A9B;
+
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* K1 Praktikum - Ungu Tua */
-.badge-kategori.k1 {
-    background-color: #33266A;
+.page-number.active {
+    background-color: #911E3F;
     color: #FFFFFF;
+    border-color: #911E3F;
 }
 
-/* K2 Dosen - Abu-abu Muda */
-.badge-kategori.k2 {
-    background-color: #E8E8EE;
+.page-btn:disabled {
+    background-color: #FFFFFF;
+    color: #B8C0CE;
+    border-color: #E1E1E5;
+    cursor: not-allowed;
+}
+
+.page-btn:not(:disabled):hover,
+.page-number:not(.active):hover {
+    background-color: #F1EDF7;
     color: #33266A;
+    border-color: #33266A;
 }
 
-/* K4 HMTI - Kuning */
-.badge-kategori.k4 {
-    background-color: #FEF3C7;
-    color: #6B4A00;
-    border: 1px solid #FBE59A;
-}
+/* RESPONSIVE PAGINASI */
 
-/* K5 Mandiri - Abu-abu Sangat Muda */
-.badge-kategori.k5 {
-    background-color: #F1F5F9;
-    color: #33266A;
-}
+@media screen and (max-width: 600px) {
+    .jadwal-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 4px 2px;
+    }
 
-/* BADGE OTORITAS LABORAN (BUKAN TOMBOL) */
-.badge-otoritas {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    .pagination-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
 
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-
-    padding: 8px 14px;
-
-    background-color: #ECEDF3;
-    color: #33266A;
-
-    border: 1px solid #D5D7E3;
-    border-radius: 20px;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    cursor: default;
-    user-select: none;
-}
-
-.badge-otoritas i {
-    font-size: 13px;
-    color: #33266A;
-}
-/* BADGE OTORITAS LABORAN - SEJAJAR JUDUL */
-.badge-otoritas {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 10px 16px;
-
-    background-color: #ECEDF3;
-    color: #33266A;
-
-    border: 1px solid #D5D7E3;
-    border-radius: 30px;
-
-    font-size: 13px;
-    font-weight: 700;
-
-    cursor: default;
-    user-select: none;
-    white-space: nowrap;
-}
-
-.badge-otoritas i {
-    font-size: 14px;
-    color: #33266A;
+    .page-btn,
+    .page-number {
+        font-size: 10px;
+    }
 }

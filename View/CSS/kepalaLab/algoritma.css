@@ -1,0 +1,1531 @@
+/* =========================================================
+   SILAB - MANAJEMEN ALGORITMA
+   KEPALA LAB
+   HTML + CSS ONLY
+========================================================= */
+
+
+/* =========================================================
+   1. CONTAINER UTAMA
+========================================================= */
+
+.algorithm-container {
+    width: calc(100% - 50px);
+    max-width: 1500px;
+
+    margin: 18px auto 30px;
+}
+
+
+/* =========================================================
+   2. HEADER HALAMAN
+========================================================= */
+
+.algorithm-heading {
+    width: 100%;
+    min-height: 135px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 20px 24px;
+    margin-bottom: 14px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+}
+
+.algorithm-heading-content {
+    min-width: 0;
+}
+
+.algorithm-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 5px 10px;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.algorithm-label i {
+    font-size: 11px;
+}
+
+.algorithm-heading h2 {
+    margin: 9px 0 6px;
+
+    color: #33266A;
+
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.algorithm-heading p {
+    max-width: 700px;
+
+    color: #667A9B;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.algorithm-heading-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 13px;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   3. INFORMASI SISTEM
+========================================================= */
+
+.algorithm-information {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px 18px;
+    margin-bottom: 15px;
+
+    background: #F0EDFF;
+
+    border: 1px solid #E3DDFC;
+    border-radius: 11px;
+}
+
+.information-icon {
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #911E3F;
+
+    flex-shrink: 0;
+}
+
+.information-icon i {
+    font-size: 18px;
+}
+
+.information-content h4 {
+    margin-bottom: 5px;
+
+    color: #202B40;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.information-content p {
+    color: #667A9B;
+
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   4. PANEL UTAMA
+========================================================= */
+
+.algorithm-panel {
+    width: 100%;
+    min-width: 0;
+
+    padding: 20px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 17px;
+
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+}
+
+.panel-heading {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+.panel-heading-content {
+    min-width: 0;
+}
+
+.panel-label {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 9px;
+    margin-bottom: 9px;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.panel-label-blue {
+    color: #315CCB;
+    background: #EAF0FF;
+}
+
+.panel-heading h3 {
+    margin-bottom: 5px;
+
+    color: #202B40;
+
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.panel-heading p {
+    max-width: 650px;
+
+    color: #667A9B;
+
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.panel-heading-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+.panel-heading-icon i {
+    font-size: 17px;
+}
+
+.panel-heading-icon.blue-icon {
+    color: #315CCB;
+    background: #EAF0FF;
+}
+
+
+/* =========================================================
+   5. TABEL RULE BASE
+========================================================= */
+
+.algorithm-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 10px;
+}
+
+.algorithm-table {
+    width: 100%;
+    min-width: 850px;
+
+    border-collapse: collapse;
+
+    background: #FFFFFF;
+}
+
+.algorithm-table thead {
+    background: #F4F5F8;
+}
+
+.algorithm-table th {
+    padding: 13px 12px;
+
+    color: #475569;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-align: left;
+    white-space: nowrap;
+
+    border-bottom: 1px solid #E1E1E5;
+}
+
+.algorithm-table td {
+    padding: 14px 12px;
+
+    color: #667A9B;
+
+    font-size: 10px;
+    line-height: 1.6;
+
+    vertical-align: middle;
+
+    border-bottom: 1px solid #EEF0F4;
+}
+
+.algorithm-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.algorithm-table tbody tr:hover {
+    background: #FAFAFD;
+}
+
+.algorithm-table .rule-code {
+    color: #33266A;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.algorithm-table td strong {
+    display: block;
+
+    color: #202B40;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.algorithm-table td small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #8791A3;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   6. STATUS RULE
+========================================================= */
+
+.status-checkbox {
+    display: none;
+}
+
+.status-badge {
+    min-width: 75px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 9px;
+
+    color: #FFFFFF;
+    background: #087A50;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.status-inactive {
+    display: none;
+}
+
+.status-checkbox:not(:checked) + .status-badge {
+    color: #667085;
+    background: #EEF0F3;
+}
+
+.status-checkbox:not(:checked) + .status-badge .status-active {
+    display: none;
+}
+
+.status-checkbox:not(:checked) + .status-badge .status-inactive {
+    display: inline;
+}
+
+
+/* =========================================================
+   7. TOMBOL EDIT
+========================================================= */
+
+.edit-button {
+    width: 30px;
+    height: 30px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-button:hover {
+    color: #FFFFFF;
+    background: #33266A;
+}
+
+
+/* =========================================================
+   8. CATATAN PANEL
+========================================================= */
+
+.panel-note {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 8px;
+
+    margin-top: 13px;
+
+    color: #667A9B;
+
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.panel-note i {
+    color: #33266A;
+
+    font-size: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   9. GRID PARAMETER DAN PRIORITAS
+========================================================= */
+
+.algorithm-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(0, 0.85fr);
+
+    align-items: start;
+
+    gap: 16px;
+
+    margin-top: 16px;
+}
+
+
+/* =========================================================
+   10. PARAMETER BOBOT
+========================================================= */
+
+.weight-list {
+    width: 100%;
+}
+
+.weight-item {
+    padding: 13px 0;
+
+    border-bottom: 1px solid #EEF0F4;
+}
+
+.weight-item:first-child {
+    padding-top: 0;
+}
+
+.weight-item:last-child {
+    border-bottom: none;
+}
+
+.weight-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+}
+
+.weight-heading label {
+    color: #263249;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.weight-heading span {
+    min-width: 45px;
+
+    padding: 4px 8px;
+
+    color: #33266A;
+    background: #EFECFC;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-align: center;
+}
+
+
+/* SLIDER */
+
+.weight-item input[type="range"] {
+    width: 100%;
+    height: 5px;
+
+    display: block;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: #E6E4F2;
+
+    border-radius: 10px;
+
+    outline: none;
+    cursor: pointer;
+}
+
+.weight-item input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 15px;
+    height: 15px;
+
+    background: #911E3F;
+
+    border: 3px solid #FFFFFF;
+    border-radius: 50%;
+
+    box-shadow: 0 0 0 1px #911E3F;
+}
+
+.weight-item input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+
+    background: #911E3F;
+
+    border: 3px solid #FFFFFF;
+    border-radius: 50%;
+
+    box-shadow: 0 0 0 1px #911E3F;
+}
+
+.weight-item small {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #8791A3;
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+/* TOTAL BOBOT */
+
+.weight-total {
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 14px;
+    margin-top: 14px;
+
+    background: #F7F6FC;
+
+    border: 1px solid #E9E5F8;
+    border-radius: 9px;
+}
+
+.weight-total span {
+    color: #596579;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.weight-total strong {
+    color: #33266A;
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   11. PRIORITAS
+========================================================= */
+
+.priority-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.priority-item {
+    width: 100%;
+    min-height: 65px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px 12px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 9px;
+
+    transition: 0.2s;
+}
+
+.priority-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.priority-code {
+    width: 39px;
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+.priority-information {
+    flex: 1;
+    min-width: 0;
+}
+
+.priority-information strong {
+    display: block;
+
+    color: #263249;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.priority-information small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8791A3;
+
+    font-size: 9px;
+}
+
+.priority-level {
+    padding: 5px 8px;
+
+    color: #667085;
+    background: #F0F1F4;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* PRIORITAS 1 */
+
+.priority-one {
+    background: #FFF8F7;
+    border-color: #F4DEDA;
+}
+
+.priority-one .priority-code {
+    color: #B42318;
+    background: #FCE8E5;
+}
+
+.priority-one .priority-level {
+    color: #B42318;
+    background: #FCE8E5;
+}
+
+
+/* PRIORITAS 2 */
+
+.priority-two {
+    background: #FFFCF5;
+    border-color: #F2E8CF;
+}
+
+.priority-two .priority-code {
+    color: #A66A00;
+    background: #FFF1CC;
+}
+
+
+/* PRIORITAS 3 */
+
+.priority-three {
+    background: #F7F9FF;
+    border-color: #E1E8FC;
+}
+
+.priority-three .priority-code {
+    color: #315CCB;
+    background: #E5ECFF;
+}
+
+
+/* PRIORITAS 4 */
+
+.priority-four {
+    background: #F7F8FA;
+    border-color: #E5E7EB;
+}
+
+.priority-four .priority-code {
+    color: #667085;
+    background: #E9ECF1;
+}
+
+.priority-four .priority-level {
+    color: #667085;
+    background: #E9ECF1;
+}
+
+
+/* =========================================================
+   12. CATATAN PRIORITAS
+========================================================= */
+
+.priority-warning {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 9px;
+
+    padding: 12px;
+    margin-top: 15px;
+
+    background: #FFF9E9;
+
+    border: 1px solid #F4E7BE;
+    border-radius: 8px;
+}
+
+.priority-warning i {
+    color: #A27600;
+
+    font-size: 13px;
+
+    flex-shrink: 0;
+}
+
+.priority-warning p {
+    color: #79652E;
+
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   13. FOOTNOTE
+========================================================= */
+
+.algorithm-footnote {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 8px;
+
+    margin-top: 16px;
+    padding: 0 3px;
+
+    color: #8791A3;
+
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.algorithm-footnote i {
+    color: #33266A;
+
+    font-size: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   14. MODAL CSS ONLY
+========================================================= */
+
+.modal-toggle {
+    display: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(32, 43, 64, 0.48);
+    backdrop-filter: blur(3px);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: 0.2s;
+}
+
+.modal-toggle:checked + .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* MODAL BOX */
+
+.rule-modal {
+    width: 100%;
+    max-width: 490px;
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    padding: 23px;
+
+    background: #FFFFFF;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 14px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+
+    transform: translateY(12px);
+    transition: 0.2s;
+}
+
+.modal-toggle:checked + .modal-overlay .rule-modal {
+    transform: translateY(0);
+}
+
+
+/* MODAL HEADER */
+
+.modal-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.modal-heading h3 {
+    color: #33266A;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* TOMBOL TUTUP */
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #667085;
+    background: #F4F6F9;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #FFFFFF;
+    background: #911E3F;
+}
+
+
+/* INPUT MODAL */
+
+.rule-modal form > label:not(.modal-check-label) {
+    display: block;
+
+    margin: 14px 0 7px;
+
+    color: #263249;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.rule-modal form > input:not([type="checkbox"]),
+.rule-modal textarea {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    color: #263249;
+    background: #F7F8FA;
+
+    border: 1px solid #E1E1E5;
+    border-radius: 7px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 11px;
+}
+
+.rule-modal textarea {
+    min-height: 75px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.rule-modal form > input:focus,
+.rule-modal textarea:focus {
+    background: #FFFFFF;
+    border-color: #33266A;
+}
+
+
+/* MODAL ACTIONS */
+
+.modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    margin-top: 18px;
+}
+
+.modal-cancel,
+.modal-save {
+    min-height: 37px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.modal-cancel {
+    color: #34445B;
+    background: #F4F6F9;
+
+    border: 1px solid #E1E1E5;
+}
+
+.modal-save {
+    color: #FFFFFF;
+    background: #911E3F;
+
+    border: 1px solid #911E3F;
+}
+
+.modal-cancel:hover {
+    background: #E9EDF3;
+}
+
+.modal-save:hover {
+    background: #761630;
+}
+
+
+/* =========================================================
+   15. RESPONSIVE TABLET
+========================================================= */
+
+@media screen and (max-width: 1100px) {
+
+    .algorithm-container {
+        width: calc(100% - 35px);
+    }
+
+    .algorithm-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   16. RESPONSIVE MOBILE
+========================================================= */
+
+@media screen and (max-width: 700px) {
+
+    .algorithm-container {
+        width: calc(100% - 24px);
+        margin: 12px auto 20px;
+    }
+
+    .algorithm-heading {
+        min-height: auto;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 14px;
+
+        padding: 16px;
+    }
+
+    .algorithm-heading h2 {
+        font-size: 22px;
+    }
+
+    .algorithm-heading p {
+        font-size: 10px;
+    }
+
+    .algorithm-heading-status {
+        font-size: 9px;
+    }
+
+    .algorithm-information {
+        padding: 13px;
+    }
+
+    .information-content h4 {
+        font-size: 11px;
+    }
+
+    .information-content p {
+        font-size: 10px;
+    }
+
+    .algorithm-panel {
+        padding: 15px;
+    }
+
+    .panel-heading h3 {
+        font-size: 15px;
+    }
+
+    .panel-heading p {
+        font-size: 10px;
+    }
+
+    .algorithm-grid {
+        gap: 13px;
+        margin-top: 13px;
+    }
+
+    .weight-heading label {
+        font-size: 10px;
+    }
+
+    .priority-item {
+        min-height: 59px;
+        padding: 9px;
+        gap: 9px;
+    }
+
+    .priority-code {
+        width: 35px;
+        height: 35px;
+    }
+
+    .priority-information strong {
+        font-size: 10px;
+    }
+
+    .priority-information small {
+        font-size: 8px;
+    }
+
+    .priority-level {
+        font-size: 8px;
+        padding: 4px 6px;
+    }
+
+    .rule-modal {
+        padding: 17px;
+    }
+
+    .modal-actions {
+        flex-wrap: wrap;
+    }
+
+    .modal-actions > * {
+        flex: 1;
+    }
+
+}
+
+
+/* =========================================================
+   17. RESPONSIVE LAYAR KECIL
+========================================================= */
+
+@media screen and (max-width: 380px) {
+
+    .algorithm-heading h2 {
+        font-size: 20px;
+    }
+
+    .algorithm-panel {
+        padding: 12px;
+    }
+
+    .priority-level {
+        display: none;
+    }
+
+}
+
+
+/* =========================================
+   RULE BASE - REDESAIN TAMPILAN
+========================================= */
+
+.rule-base-panel {
+    padding: 25px;
+}
+
+.rule-base-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.rule-base-header .panel-heading-icon {
+    width: 46px;
+    height: 46px;
+}
+
+/* RINGKASAN RULE */
+
+.rule-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+    margin-bottom: 25px;
+}
+
+.rule-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: #F8F8FC;
+    border: 1px solid #E8E6F1;
+    border-radius: 10px;
+}
+
+.rule-summary-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #33266A;
+    background: #EFECFC;
+    border-radius: 9px;
+    font-size: 16px;
+}
+
+.rule-summary-icon.active-icon {
+    color: #087A50;
+    background: #E5F5ED;
+}
+
+.rule-summary-item small {
+    display: block;
+    margin-bottom: 4px;
+    color: #667A9B;
+    font-size: 10px;
+}
+
+.rule-summary-item strong {
+    color: #202B40;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* TOOLBAR */
+
+.rule-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 14px;
+}
+
+.rule-toolbar-info h4 {
+    color: #202B40;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.rule-toolbar-info p {
+    color: #667A9B;
+    font-size: 10px;
+}
+
+.btn-add-rule {
+    min-height: 39px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 15px;
+    color: #FFFFFF;
+    background: #33266A;
+    border: 1px solid #33266A;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-add-rule:hover {
+    background: #911E3F;
+    border-color: #911E3F;
+}
+
+/* TABEL RULE */
+
+.rule-table {
+    min-width: 900px;
+}
+
+.rule-table th {
+    padding: 15px;
+    font-size: 10px;
+}
+
+.rule-table td {
+    padding: 17px 15px;
+    font-size: 11px;
+}
+
+.rule-table td strong {
+    font-size: 11px;
+}
+
+.rule-table td small {
+    font-size: 9px;
+}
+
+.rule-id {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 65px;
+    padding: 6px 9px;
+    color: #33266A;
+    background: #EFECFC;
+    border: 1px solid #E5E0F7;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* AKSI EDIT DAN HAPUS */
+
+.rule-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rule-actions .edit-button,
+.rule-actions .delete-button {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 13px;
+}
+
+.rule-actions .edit-button {
+    color: #33266A;
+    background: #EFECFC;
+}
+
+.rule-actions .edit-button:hover {
+    color: #FFFFFF;
+    background: #33266A;
+}
+
+.rule-actions .delete-button {
+    color: #B42318;
+    background: #FFF0EF;
+}
+
+.rule-actions .delete-button:hover {
+    color: #FFFFFF;
+    background: #B42318;
+}
+
+/* STATUS */
+
+.rule-table .status-badge {
+    min-width: 78px;
+    padding: 7px 11px;
+    font-size: 10px;
+}
+
+/* =========================================
+   MODAL TAMBAH DAN HAPUS
+========================================= */
+
+.modal-subtitle {
+    margin-top: 6px;
+    color: #667A9B;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.delete-modal {
+    max-width: 420px;
+    text-align: center;
+}
+
+.delete-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.delete-modal-icon {
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 15px;
+    color: #B42318;
+    background: #FFF0EF;
+    border-radius: 50%;
+    font-size: 23px;
+}
+
+.delete-label {
+    color: #B42318;
+    background: #FFF0EF;
+}
+
+.delete-modal-content h3 {
+    margin: 5px 0 10px;
+    color: #202B40;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.delete-modal-content > p {
+    color: #667A9B;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.delete-modal-content > p strong {
+    color: #202B40;
+}
+
+.delete-warning {
+    margin-top: 10px;
+    padding: 10px;
+    color: #9B3434 !important;
+    background: #FFF5F4;
+    border: 1px solid #F5D8D5;
+    border-radius: 7px;
+}
+
+.modal-delete-confirm {
+    min-height: 37px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 15px;
+    color: #FFFFFF;
+    background: #B42318;
+    border: 1px solid #B42318;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-delete-confirm:hover {
+    background: #8F1C14;
+}
+
+/* MODAL ACTION */
+
+.delete-modal .modal-actions {
+    justify-content: center;
+    margin-top: 22px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media screen and (max-width: 700px) {
+
+    .rule-base-panel {
+        padding: 15px;
+    }
+
+    .rule-summary {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .rule-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .btn-add-rule {
+        width: 100%;
+    }
+
+    .rule-base-header .panel-heading-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .rule-actions {
+        gap: 5px;
+    }
+
+    .rule-actions .edit-button,
+    .rule-actions .delete-button {
+        width: 31px;
+        height: 31px;
+    }
+
+    .delete-modal {
+        padding: 18px;
+    }
+
+}

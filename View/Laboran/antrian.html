@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antrian Pengajuan | SILAB</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- ICON -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../CSS/laboran/navbar.css">
+    <link rel="stylesheet" href="../CSS/laboran/antrian.css">
+</head>
+
+<body>
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<nav class="navbar">
+
+    <div class="navbar-brand">
+        <img src="../Assets/Logo_RPL.svg" alt="Logo SILAB" class="navbar-logo">
+
+        <div class="brand-info">
+            <h1>SILAB</h1>
+            <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+    </div>
+
+    <div class="navbar-menu">
+        <a href="dashboard.html" class="nav-link">Dashboard Laboran</a>
+        <a href="antrian.html" class="nav-link active">Antrian</a>
+        <a href="rekomendasi_jadwal.html" class="nav-link">Rekomendasi Jadwal</a>
+    </div>
+
+    <div class="navbar-profile">
+
+        <div class="profile-info">
+            <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
+            <p>Laboran Lab RPL</p>
+        </div>
+
+        <details class="profile-dropdown">
+
+            <summary class="profile-trigger">
+                <i class="bi bi-person"></i>
+            </summary>
+
+            <div class="profile-menu">
+
+                <div class="profile-info-dropdown">
+                    <p>Satria Dwi Pauwah S.T., M.Kom.</p>
+                    <span>NIP: 197804122005011003</span>
+
+                    <div class="profile-role">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Laboran Lab
+                    </div>
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <a href="../auth/login.html" class="logout-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Keluar/Logout
+                </a>
+
+            </div>
+        </details>
+    </div>
+
+</nav>
+
+
+<!-- =========================================
+     KONTEN UTAMA
+========================================= -->
+
+<main class="antrian-container">
+
+    <!-- HEADER -->
+
+    <section class="antrian-header card">
+
+        <div class="header-decoration">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="header-tags">
+
+            <span class="header-tag purple-tag">
+                <i class="bi bi-list-ol"></i>
+                PANEL ANTRIAN PENGAJUAN
+            </span>
+
+            <span class="header-tag yellow-tag">
+                <i class="bi bi-building"></i>
+                Laboratorium RPL
+            </span>
+
+        </div>
+
+        <h2>Antrian Pengajuan Peminjaman Lab</h2>
+
+        <p>
+            Daftar pengajuan peminjaman laboratorium berdasarkan
+            klasifikasi prioritas sistem. Laboran bertugas memeriksa,
+            memvalidasi, dan meneruskan permasalahan kepada Kepala Lab
+            apabila diperlukan.
+        </p>
+
+    </section>
+
+
+    <!-- =========================================
+         DAFTAR ANTRIAN
+    ========================================= -->
+
+    <section class="antrian-table-card card">
+
+        <div class="table-heading">
+
+            <div>
+                <h3>
+                    <i class="bi bi-inboxes"></i>
+                    Daftar Antrian Pengajuan
+                </h3>
+
+                <p>
+                    Urutan antrean berdasarkan hasil klasifikasi
+                    dan aturan prioritas sistem (P1 lebih tinggi
+                    daripada P2, dan P2 lebih tinggi daripada P3).
+                </p>
+            </div>
+
+            <span class="total-antrian" id="totalAntrian">
+                <i class="bi bi-file-earmark-text"></i>
+                6 Pengajuan
+            </span>
+
+        </div>
+
+
+        <!-- TABEL ANTRIAN -->
+
+        <div class="table-responsive">
+
+            <table class="antrian-table">
+
+                <thead>
+                    <tr>
+                        <th>NO / ID</th>
+                        <th>KEGIATAN & PEMOHON</th>
+                        <th>WAKTU & SESI</th>
+                        <th>SKOR & SKALA</th>
+                        <th>STATUS</th>
+                        <th>AKSI LABORAN</th>
+                    </tr>
+                </thead>
+
+                <tbody id="antrianBody">
+
+                    <!-- REQ-101 : BENTROK -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-101</span>
+                        </td>
+
+                        <td>
+                            <strong>Matakuliah Pengganti (Pemrograman Web)</strong>
+                            <small>Pemohon: Dr. Hendra (35 Mahasiswa)</small>
+                        </td>
+
+                        <td>
+                            <strong>Kamis, 08.00–10.30</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p1">P1 TINGGI</span>
+                            <small class="score-text">Skor: 96,25</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge conflict">Bentrok</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-101" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+
+                    <!-- REQ-102 : VERIFIKASI -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-102</span>
+                        </td>
+
+                        <td>
+                            <strong>Rapat Asisten Lab RPL (Persiapan Modul)</strong>
+                            <small>Pemohon: Sarah Amelia (12 Asisten)</small>
+                        </td>
+
+                        <td>
+                            <strong>Rabu, 10.00–12.00</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p2">P2 SEDANG</span>
+                            <small class="score-text">Skor: 76,50</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge verify">Verifikasi</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-102" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+
+                    <!-- REQ-103 : TERGESER -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-103</span>
+                        </td>
+
+                        <td>
+                            <strong>Belajar Mandiri (Riset Skripsi AI)</strong>
+                            <small>Pemohon: Fajar R. (2 Mahasiswa)</small>
+                        </td>
+
+                        <td>
+                            <strong>Selasa, 13.00–15.30</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p3">P3 RENDAH</span>
+                            <small class="score-text">Skor: 49,50</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge displaced">Tergeser</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-103" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+
+                    <!-- REQ-104 : BENTROK -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-104</span>
+                        </td>
+
+                        <td>
+                            <strong>Matakuliah Pengganti (Grafika Komputer)</strong>
+                            <small>Pemohon: Ibu Rina M.T. (30 Mahasiswa)</small>
+                        </td>
+
+                        <td>
+                            <strong>Kamis, 08.00–10.30</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p1">P1 TINGGI</span>
+                            <small class="score-text">Skor: 89,00</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge conflict">Bentrok</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-104" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+
+                    <!-- REQ-105 : VERIFIKASI -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-105</span>
+                        </td>
+
+                        <td>
+                            <strong>Rapat Asisten Lab (Pelatihan Asisten Baru)</strong>
+                            <small>Pemohon: Budi Santoso (8 Asisten)</small>
+                        </td>
+
+                        <td>
+                            <strong>Jumat, 15.30–17.30</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p2">P2 SEDANG</span>
+                            <small class="score-text">Skor: 71,00</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge verify">Verifikasi</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-105" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+
+                    <!-- REQ-106 : VERIFIKASI -->
+
+                    <tr>
+                        <td>
+                            <span class="request-id">#REQ-106</span>
+                        </td>
+
+                        <td>
+                            <strong>Belajar Mandiri (Tugas Kelompok Jaringan)</strong>
+                            <small>Pemohon: Kevin dkk. (4 Mahasiswa)</small>
+                        </td>
+
+                        <td>
+                            <strong>Kamis, 15.00–17.00</strong>
+                            <small>Lab RPL</small>
+                        </td>
+
+                        <td>
+                            <span class="priority-badge p3">P3 RENDAH</span>
+                            <small class="score-text">Skor: 46,00</small>
+                        </td>
+
+                        <td>
+                            <span class="status-badge verify">Verifikasi</span>
+                        </td>
+
+                        <td>
+                            <a href="#popup-req-106" class="btn-process">
+                                Periksa & Proses
+                            </a>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <!-- =====================================
+            PAGINASI TABEL ANTRIAN
+        ====================================== -->
+
+        <div class="pagination-container">
+
+            <div class="pagination-info" id="paginationInfo">
+                Menampilkan 6 dari 6 pengajuan
+            </div>
+
+            <div class="pagination-controls">
+
+                <button
+                    type="button"
+                    class="pagination-btn"
+                    id="prevPage"
+                    disabled>
+                    Sebelumnya
+                </button>
+
+                <div class="pagination-numbers" id="paginationNumbers">
+                    <button
+                        type="button"
+                        class="pagination-btn active"
+                        aria-current="page">
+                        1
+                    </button>
+                </div>
+
+                <button
+                    type="button"
+                    class="pagination-btn"
+                    id="nextPage"
+                    disabled>
+                    Berikutnya
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CATATAN -->
+
+        <div class="table-note">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+            <p>
+                Skor dan klasifikasi merupakan hasil perhitungan sistem.
+                Laboran hanya memiliki kewenangan melakukan verifikasi
+                pengajuan, menangani rekomendasi jadwal, dan melakukan
+                eskalasi konflik kepada Kepala Lab. Pengaturan bobot
+                serta konfigurasi algoritma hanya dapat dilakukan
+                oleh Kepala Lab.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================
+     POPUP REQ-101 : BENTROK
+========================================= -->
+
+<div class="review-modal" id="popup-req-101">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-101
+                </span>
+
+                <h3>Verifikasi Teknis & Alokasi Perangkat</h3>
+            </div>
+
+            <a href="#" class="modal-close" aria-label="Tutup">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <!-- KALKULASI -->
+
+        <div class="calculation-box">
+
+            <strong>Kalkulasi Matriks Hybrid #REQ-101:</strong>
+
+            <ul>
+                <li>Kategori: Matakuliah Pengganti (100 pt × 0,35 = 35,0)</li>
+                <li>Peserta: 35 Mahasiswa (100 pt × 0,20 = 20,0)</li>
+                <li>Fasilitas: PC Client + Proyektor (85 pt × 0,15 = 12,75)</li>
+                <li>Lead Time: Diajukan H-5 (90 pt × 0,15 = 13,5)</li>
+                <li>Rekam Jejak Dosen: Disiplin 100% (100 pt × 0,15 = 15,0)</li>
+            </ul>
+
+            <div class="calculation-result">
+                TOTAL SKOR: 96,25
+                <i class="bi bi-arrow-right"></i>
+                KLASIFIKASI: P1 (PRIORITAS TINGGI)
+            </div>
+
+        </div>
+
+
+        <!-- PENYELESAIAN BENTROK -->
+
+        <div class="collision-box">
+
+            <div class="collision-heading">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Tindakan Penyelesaian Bentrok
+            </div>
+
+            <p>
+                Pengajuan #REQ-101 berstatus P1 (Kuliah Pengganti)
+                dan memicu preemption terhadap #REQ-103
+                (Belajar Mandiri). Laboran perlu meneruskan kasus
+                bentrok kepada Kepala Lab untuk mendapatkan
+                keputusan penyelesaian.
+            </p>
+
+            <div class="collision-actions">
+
+                <a href="../KepalaLab/penyelesaian_konflik.html"
+                   class="btn-eskalasi">
+
+                    <i class="bi bi-shield-exclamation"></i>
+                    Eskalasi ke Kepala Lab
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     POPUP REQ-102 : VERIFIKASI
+========================================= -->
+
+<div class="review-modal" id="popup-req-102">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-102
+                </span>
+
+                <h3>Verifikasi Pengajuan Peminjaman</h3>
+            </div>
+
+            <a href="#" class="modal-close">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <div class="request-detail-box">
+
+            <div class="detail-item">
+                <small>Kegiatan</small>
+                <strong>Rapat Asisten Lab RPL (Persiapan Modul)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Pemohon</small>
+                <strong>Sarah Amelia (12 Asisten)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Waktu Penggunaan</small>
+                <strong>Rabu, 10.00–12.00</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Klasifikasi Prioritas</small>
+                <strong><span class="priority-badge p2">P2 SEDANG</span></strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Skor Sistem</small>
+                <strong>76,50</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Jumlah Peserta</small>
+                <strong>12 Asisten</strong>
+            </div>
+
+        </div>
+
+
+        <div class="review-information">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+            <span>
+                Periksa kesesuaian data pemohon, jadwal penggunaan,
+                kebutuhan perangkat, dan ketersediaan laboratorium
+                sebelum mengambil keputusan.
+            </span>
+
+        </div>
+
+
+        <div class="verification-actions">
+
+            <a href="#" class="btn-reject">
+                <i class="bi bi-x-circle"></i>
+                Tolak Pengajuan
+            </a>
+
+            <a href="#" class="btn-approve">
+                <i class="bi bi-check-circle"></i>
+                Setujui Pengajuan
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     POPUP REQ-103 : TERGESER
+========================================= -->
+
+<div class="review-modal" id="popup-req-103">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-103
+                </span>
+
+                <h3>Informasi Pengajuan Tergeser</h3>
+            </div>
+
+            <a href="#" class="modal-close">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <div class="request-detail-box">
+
+            <div class="detail-item">
+                <small>Kegiatan</small>
+                <strong>Belajar Mandiri (Riset Skripsi AI)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Pemohon</small>
+                <strong>Fajar R. (2 Mahasiswa)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Jadwal Semula</small>
+                <strong>Selasa, 13.00–15.30</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Klasifikasi Prioritas</small>
+                <strong><span class="priority-badge p3">P3 RENDAH</span></strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Skor Sistem</small>
+                <strong>49,50</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Jumlah Peserta</small>
+                <strong>2 Mahasiswa</strong>
+            </div>
+
+        </div>
+
+
+        <div class="collision-box displaced-box">
+
+            <div class="collision-heading">
+                <i class="bi bi-calendar-x"></i>
+                Informasi Penggeseran Jadwal
+            </div>
+
+            <p>
+                Pengajuan #REQ-103 tergeser akibat pengajuan
+                #REQ-101 dengan prioritas lebih tinggi pada slot
+                waktu yang sama. Laboran perlu menyiapkan
+                alternatif jadwal pengganti bagi pemohon.
+            </p>
+
+            <div class="collision-actions">
+
+                <a href="rekomendasi_jadwal.html" class="btn-recommend">
+                    <i class="bi bi-calendar-plus"></i>
+                    Buat Rekomendasi Jadwal
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     POPUP REQ-104 : BENTROK
+     DESAIN SAMA DENGAN POPUP REQ-101
+========================================= -->
+
+<div class="review-modal" id="popup-req-104">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-104
+                </span>
+
+                <h3>Verifikasi Teknis & Alokasi Perangkat</h3>
+            </div>
+
+            <a href="#" class="modal-close" aria-label="Tutup">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <!-- KALKULASI HYBRID -->
+
+        <div class="calculation-box">
+
+            <strong>Kalkulasi Matriks Hybrid #REQ-104:</strong>
+
+            <ul>
+                <li>Kategori: Matakuliah Pengganti (100 pt × 0,35 = 35,0)</li>
+                <li>Peserta: 30 Mahasiswa (100 pt × 0,20 = 20,0)</li>
+                <li>Fasilitas: PC Client + Proyektor (85 pt × 0,15 = 12,75)</li>
+                <li>Lead Time: Diajukan H-5 (90 pt × 0,15 = 13,5)</li>
+                <li>Rekam Jejak Dosen: Disiplin 100% (100 pt × 0,15 = 15,0)</li>
+            </ul>
+
+            <div class="calculation-result">
+                TOTAL SKOR: 89,00
+                <i class="bi bi-arrow-right"></i>
+                KLASIFIKASI: P1 (PRIORITAS TINGGI)
+            </div>
+
+        </div>
+
+
+        <!-- PENYELESAIAN BENTROK -->
+
+        <div class="collision-box">
+
+            <div class="collision-heading">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Tindakan Penyelesaian Bentrok
+            </div>
+
+            <p>
+                Pengajuan #REQ-104 berstatus P1 (Kuliah Pengganti).
+                Laboran perlu meneruskan kasus bentrok kepada
+                Kepala Lab untuk mendapatkan keputusan penyelesaian
+                sesuai dengan aturan prioritas dan kondisi
+                penggunaan laboratorium.
+            </p>
+
+            <div class="collision-actions">
+
+                <a href="../KepalaLab/penyelesaian_konflik.html"
+                   class="btn-eskalasi">
+
+                    <i class="bi bi-shield-exclamation"></i>
+                    Eskalasi ke Kepala Lab
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     POPUP REQ-105 : VERIFIKASI
+========================================= -->
+
+<div class="review-modal" id="popup-req-105">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-105
+                </span>
+
+                <h3>Verifikasi Pengajuan Peminjaman</h3>
+            </div>
+
+            <a href="#" class="modal-close">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <div class="request-detail-box">
+
+            <div class="detail-item">
+                <small>Kegiatan</small>
+                <strong>Rapat Asisten Lab (Pelatihan Asisten Baru)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Pemohon</small>
+                <strong>Budi Santoso (8 Asisten)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Waktu Penggunaan</small>
+                <strong>Jumat, 15.30–17.30</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Klasifikasi Prioritas</small>
+                <strong><span class="priority-badge p2">P2 SEDANG</span></strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Skor Sistem</small>
+                <strong>71,00</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Jumlah Peserta</small>
+                <strong>8 Asisten</strong>
+            </div>
+
+        </div>
+
+
+        <div class="review-information">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+            <span>
+                Periksa data pengajuan dan kebutuhan fasilitas
+                sebelum memberikan keputusan persetujuan.
+            </span>
+
+        </div>
+
+
+        <div class="verification-actions">
+
+            <a href="#" class="btn-reject">
+                <i class="bi bi-x-circle"></i>
+                Tolak Pengajuan
+            </a>
+
+            <a href="#" class="btn-approve">
+                <i class="bi bi-check-circle"></i>
+                Setujui Pengajuan
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     POPUP REQ-106 : VERIFIKASI
+========================================= -->
+
+<div class="review-modal" id="popup-req-106">
+
+    <a href="#" class="modal-backdrop" aria-label="Tutup popup"></a>
+
+    <div class="review-modal-content">
+
+        <div class="review-modal-header">
+
+            <div>
+                <span class="review-label">
+                    REVIEW DETAIL PERMOHONAN #REQ-106
+                </span>
+
+                <h3>Verifikasi Pengajuan Peminjaman</h3>
+            </div>
+
+            <a href="#" class="modal-close">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+
+        <div class="request-detail-box">
+
+            <div class="detail-item">
+                <small>Kegiatan</small>
+                <strong>Belajar Mandiri (Tugas Kelompok Jaringan)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Pemohon</small>
+                <strong>Kevin dkk. (4 Mahasiswa)</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Waktu Penggunaan</small>
+                <strong>Kamis, 15.00–17.00</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Klasifikasi Prioritas</small>
+                <strong><span class="priority-badge p3">P3 RENDAH</span></strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Skor Sistem</small>
+                <strong>46,00</strong>
+            </div>
+
+            <div class="detail-item">
+                <small>Jumlah Peserta</small>
+                <strong>4 Mahasiswa</strong>
+            </div>
+
+        </div>
+
+
+        <div class="review-information">
+
+            <i class="bi bi-info-circle-fill"></i>
+
+            <span>
+                Periksa ketersediaan aktual slot laboratorium
+                dan kesesuaian kebutuhan fasilitas sebelum
+                memberikan persetujuan.
+            </span>
+
+        </div>
+
+
+        <div class="verification-actions">
+
+            <a href="#" class="btn-reject">
+                <i class="bi bi-x-circle"></i>
+                Tolak Pengajuan
+            </a>
+
+            <a href="#" class="btn-approve">
+                <i class="bi bi-check-circle"></i>
+                Setujui Pengajuan
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+

@@ -707,6 +707,7 @@
     color: #354763;
     background: #FFFFFF;
     border: 1px solid #D7E0EC;
+    text-decoration: none;
 }
 
 .btn-recommendation:hover {
@@ -846,4 +847,272 @@
     .conflict-table {
         min-width: 950px;
     }
+}
+
+
+/* =========================================
+   13. POP UP KONFIRMASI KIRIM REKOMENDASI
+========================================= */
+
+/* CONTAINER MODAL */
+
+.recommendation-modal {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+}
+
+/* MODAL MUNCUL KETIKA DIKLIK */
+
+.recommendation-modal:target {
+    display: flex;
+}
+
+/* BACKGROUND BLUR */
+
+.recommendation-backdrop {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(51, 38, 106, 0.35);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* KOTAK POP UP */
+
+.recommendation-modal-content {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 560px;
+
+    padding: 32px 35px 0;
+
+    background: #FFFFFF;
+
+    border-radius: 18px;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+
+    text-align: center;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    overflow: hidden;
+}
+
+/* LABEL KONFIRMASI */
+
+.recommendation-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 8px 16px;
+
+    background: #FFF0F3;
+    color: #911E3F;
+
+    border-radius: 30px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.recommendation-label i {
+    font-size: 9px;
+}
+
+/* IKON */
+
+.recommendation-icon {
+    width: 80px;
+    height: 80px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 25px auto;
+
+    background: #F0EDF9;
+    color: #33266A;
+
+    border-radius: 22px;
+
+    font-size: 35px;
+}
+
+/* JUDUL */
+
+.recommendation-modal-content h2 {
+    margin: 0 0 12px;
+
+    color: #33266A;
+
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+/* DESKRIPSI */
+
+.recommendation-modal-content > p {
+    margin: 0 auto;
+
+    max-width: 430px;
+
+    color: #71819F;
+
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+.recommendation-modal-content .recommendation-description {
+    margin-top: 5px;
+    margin-bottom: 30px;
+}
+
+/* FOOTER POP UP */
+
+.recommendation-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin: 0 -35px;
+
+    padding: 20px 25px;
+
+    border-top: 1px solid #EDF0F5;
+
+    background: #FFFFFF;
+}
+
+/* TOMBOL BATAL DAN KIRIM */
+
+.btn-recommendation-cancel,
+.btn-recommendation-confirm {
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 22px;
+
+    border-radius: 11px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+}
+
+/* BATAL */
+
+.btn-recommendation-cancel {
+    min-width: 105px;
+
+    color: #667A9B;
+    background: #FFFFFF;
+
+    border: 1px solid #D6DFED;
+}
+
+.btn-recommendation-cancel:hover {
+    background: #F5F7FA;
+}
+
+/* YA, KIRIM REKOMENDASI */
+
+.btn-recommendation-confirm {
+    min-width: 205px;
+
+    color: #FFFFFF;
+    background: #911E3F;
+
+    border: 1px solid #911E3F;
+}
+
+.btn-recommendation-confirm:hover {
+    background: #761630;
+    border-color: #761630;
+}
+
+/* IKON TOMBOL */
+
+.btn-recommendation-confirm i {
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 600px) {
+
+    .recommendation-modal-content {
+        padding: 25px 20px 0;
+    }
+
+    .recommendation-modal-content h2 {
+        font-size: 19px;
+    }
+
+    .recommendation-modal-content > p {
+        font-size: 12px;
+    }
+
+    .recommendation-modal-footer {
+        margin: 0 -20px;
+
+        padding: 16px;
+
+        flex-direction: column;
+    }
+
+    .btn-recommendation-cancel,
+    .btn-recommendation-confirm {
+        width: 100%;
+    }
+
+}
+
+/* =========================================
+   POP UP KONFIRMASI KEPUTUSAN
+========================================= */
+
+/* Memastikan tombol Konfirmasi sebagai link */
+.btn-confirm {
+    text-decoration: none;
+}
+
+/* Warna ikon khusus konfirmasi */
+#modal-konfirmasi .recommendation-icon {
+    background: #F0EDF9;
+    color: #33266A;
+}
+
+/* Warna label konfirmasi */
+#modal-konfirmasi .recommendation-label {
+    background: #F0EDF9;
+    color: #33266A;
 }

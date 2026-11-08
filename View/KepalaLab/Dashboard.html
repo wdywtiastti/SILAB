@@ -61,6 +61,10 @@
                 Penyelesaian Konflik
             </a>
 
+            <a href="manajemen_algoritma.html" class="nav-link">
+                Manajemen Algoritma
+            </a>
+
             <a href="manajemen_user.html" class="nav-link">
                 Manajemen User
             </a>
@@ -291,11 +295,24 @@
 
         <section class="dashboard-content">
 
-
-            <!-- TABEL JADWAL -->
-
+        <!-- TABEL JADWAL -->
             <article class="schedule-panel">
 
+                <!-- KONTROL HALAMAN -->
+                <input
+                    type="radio"
+                    name="schedule-page"
+                    id="schedule-page-1"
+                    checked
+                >
+
+                <input
+                    type="radio"
+                    name="schedule-page"
+                    id="schedule-page-2"
+                >
+
+                <!-- HEADER PANEL -->
                 <div class="panel-header">
 
                     <div class="panel-title">
@@ -306,10 +323,7 @@
 
                         <div>
                             <h3>Jadwal & Penggunaan Hari Ini</h3>
-
-                            <p>
-                                Ruang Laboratorium Rekayasa Perangkat Lunak (36 PC)
-                            </p>
+                            <p>Ruang Laboratorium Rekayasa Perangkat Lunak (36 PC)</p>
                         </div>
 
                     </div>
@@ -321,30 +335,25 @@
 
                 </div>
 
-
                 <!-- TABEL -->
-
                 <div class="table-wrapper">
 
                     <table class="schedule-table">
 
                         <thead>
-
                             <tr>
                                 <th>WAKTU</th>
                                 <th>KEGIATAN & PEMOHON</th>
                                 <th>KATEGORI & REQUEST</th>
                                 <th>STATUS</th>
                             </tr>
-
                         </thead>
-
 
                         <tbody>
 
-                            <!-- BARIS 1 -->
+                            <!-- HALAMAN 1: JADWAL 1 -->
 
-                            <tr>
+                            <tr class="schedule-page-1">
 
                                 <td>
                                     <strong>08.00 – 10.30</strong>
@@ -363,17 +372,14 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-active">
-                                        Aktif
-                                    </span>
+                                    <span class="status-active">Aktif</span>
                                 </td>
 
                             </tr>
 
+                            <!-- HALAMAN 1: JADWAL 2 -->
 
-                            <!-- BARIS 2 -->
-
-                            <tr>
+                            <tr class="schedule-page-1">
 
                                 <td>
                                     <strong>10.30 – 12.00</strong>
@@ -392,17 +398,14 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-confirmed">
-                                        Terkonfirmasi
-                                    </span>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
                                 </td>
 
                             </tr>
 
+                            <!-- HALAMAN 1: JADWAL 3 -->
 
-                            <!-- BARIS 3 -->
-
-                            <tr>
+                            <tr class="schedule-page-1">
 
                                 <td>
                                     <strong>13.00 – 15.30</strong>
@@ -421,17 +424,14 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-confirmed">
-                                        Terkonfirmasi
-                                    </span>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
                                 </td>
 
                             </tr>
 
+                            <!-- HALAMAN 1: JADWAL 4 -->
 
-                            <!-- BARIS 4 -->
-
-                            <tr>
+                            <tr class="schedule-page-1">
 
                                 <td>
                                     <strong>16.00 – 18.00</strong>
@@ -450,17 +450,14 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-confirmed">
-                                        Terkonfirmasi
-                                    </span>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
                                 </td>
 
                             </tr>
 
+                            <!-- HALAMAN 1: JADWAL 5 -->
 
-                            <!-- BARIS 5 -->
-
-                            <tr>
+                            <tr class="schedule-page-1">
 
                                 <td>
                                     <strong>19.00 – 21.00</strong>
@@ -478,9 +475,133 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-confirmed">
-                                        Terkonfirmasi
-                                    </span>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
+                                </td>
+
+                            </tr>
+
+
+                            <!-- =================================
+                                HALAMAN 2: JADWAL 6–10
+                                GANTI DATA CONTOH DENGAN DATA ASLI
+                            ================================== -->
+
+                            <tr class="schedule-page-2">
+
+                                <td>
+                                    <strong>Waktu Jadwal 6</strong>
+                                    <small>Sesi Terjadwal</small>
+                                </td>
+
+                                <td>
+                                    <strong>Nama Kegiatan 6</strong>
+                                    <small>Nama Pemohon 6</small>
+                                </td>
+
+                                <td>
+                                    <strong>Kategori</strong>
+                                    <small>Kebutuhan PC : -</small>
+                                    <small>Kebutuhan Kursi : -</small>
+                                </td>
+
+                                <td>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="schedule-page-2">
+
+                                <td>
+                                    <strong>Waktu Jadwal 7</strong>
+                                    <small>Sesi Terjadwal</small>
+                                </td>
+
+                                <td>
+                                    <strong>Nama Kegiatan 7</strong>
+                                    <small>Nama Pemohon 7</small>
+                                </td>
+
+                                <td>
+                                    <strong>Kategori</strong>
+                                    <small>Kebutuhan PC : -</small>
+                                    <small>Kebutuhan Kursi : -</small>
+                                </td>
+
+                                <td>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="schedule-page-2">
+
+                                <td>
+                                    <strong>Waktu Jadwal 8</strong>
+                                    <small>Sesi Terjadwal</small>
+                                </td>
+
+                                <td>
+                                    <strong>Nama Kegiatan 8</strong>
+                                    <small>Nama Pemohon 8</small>
+                                </td>
+
+                                <td>
+                                    <strong>Kategori</strong>
+                                    <small>Kebutuhan PC : -</small>
+                                    <small>Kebutuhan Kursi : -</small>
+                                </td>
+
+                                <td>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="schedule-page-2">
+
+                                <td>
+                                    <strong>Waktu Jadwal 9</strong>
+                                    <small>Sesi Terjadwal</small>
+                                </td>
+
+                                <td>
+                                    <strong>Nama Kegiatan 9</strong>
+                                    <small>Nama Pemohon 9</small>
+                                </td>
+
+                                <td>
+                                    <strong>Kategori</strong>
+                                    <small>Kebutuhan PC : -</small>
+                                    <small>Kebutuhan Kursi : -</small>
+                                </td>
+
+                                <td>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="schedule-page-2">
+
+                                <td>
+                                    <strong>Waktu Jadwal 10</strong>
+                                    <small>Sesi Terjadwal</small>
+                                </td>
+
+                                <td>
+                                    <strong>Nama Kegiatan 10</strong>
+                                    <small>Nama Pemohon 10</small>
+                                </td>
+
+                                <td>
+                                    <strong>Kategori</strong>
+                                    <small>Kebutuhan PC : -</small>
+                                    <small>Kebutuhan Kursi : -</small>
+                                </td>
+
+                                <td>
+                                    <span class="status-confirmed">Terkonfirmasi</span>
                                 </td>
 
                             </tr>
@@ -491,8 +612,58 @@
 
                 </div>
 
-            </article>
+                <!-- PAGINATION -->
+                <div class="schedule-pagination">
 
+                    <!-- INFORMASI DATA -->
+                    <div class="pagination-info">
+
+                        <span class="count-page-1">
+                            Menampilkan <strong>1–5</strong> dari <strong>10</strong> jadwal
+                        </span>
+
+                        <span class="count-page-2">
+                            Menampilkan <strong>6–10</strong> dari <strong>10</strong> jadwal
+                        </span>
+
+                    </div>
+
+                    <!-- NAVIGASI -->
+                    <div class="pagination-controls">
+
+                        <label
+                            for="schedule-page-1"
+                            class="pagination-button pagination-prev"
+                        >
+                            Sebelumnya
+                        </label>
+
+                        <label
+                            for="schedule-page-1"
+                            class="page-number page-one"
+                        >
+                            1
+                        </label>
+
+                        <label
+                            for="schedule-page-2"
+                            class="page-number page-two"
+                        >
+                            2
+                        </label>
+
+                        <label
+                            for="schedule-page-2"
+                            class="pagination-button pagination-next"
+                        >
+                            Berikutnya
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </article>
 
 
             <!-- PANEL SEBELAH KANAN -->

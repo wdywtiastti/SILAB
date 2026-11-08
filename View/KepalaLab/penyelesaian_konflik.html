@@ -54,6 +54,10 @@
                 Penyelesaian Konflik
             </a>
 
+            <a href="manajemen_algoritma.html" class="nav-link">
+                Manajemen Algoritma
+            </a>
+
             <a href="manajemen_user.html" class="nav-link">
                 Manajemen User
             </a>
@@ -492,15 +496,15 @@
                 <!-- TOMBOL AKSI -->
                 <div class="conflict-actions">
 
-                    <button type="button" class="btn-recommendation">
+                    <a href="#modal-kirim-rekomendasi" class="btn-recommendation">
                         <i class="bi bi-envelope"></i>
                         Kirim Rekomendasi Jadwal ke Laboran
-                    </button>
+                    </a>
 
-                    <button type="button" class="btn-confirm">
+                    <a href="#modal-konfirmasi" class="btn-confirm">
                         <i class="bi bi-check2"></i>
                         Konfirmasi
-                    </button>
+                    </a>
 
                 </div>
 
@@ -508,6 +512,110 @@
         </section>
 
     </main>
+
+    <!-- =========================================
+        POP UP KONFIRMASI KIRIM REKOMENDASI
+    ========================================= -->
+
+    <div class="recommendation-modal" id="modal-kirim-rekomendasi">
+
+        <!-- BACKGROUND BLUR -->
+        <a href="#" class="recommendation-backdrop"
+        aria-label="Tutup pop up"></a>
+
+        <!-- KONTEN POP UP -->
+        <div class="recommendation-modal-content">
+
+            <!-- LABEL -->
+            <div class="recommendation-label">
+                <i class="bi bi-circle-fill"></i>
+                KONFIRMASI PENGIRIMAN
+            </div>
+
+            <!-- IKON -->
+            <div class="recommendation-icon">
+                <i class="bi bi-envelope-paper"></i>
+            </div>
+
+            <!-- DESKRIPSI -->
+            <p>
+                Apakah kamu yakin ingin mengirim rekomendasi
+                jadwal kepada Laboran?
+            </p>
+
+            <p class="recommendation-description">
+                Laboran akan menerima rekomendasi jadwal
+                untuk ditinjau dan ditindaklanjuti.
+            </p>
+
+            <!-- TOMBOL AKSI -->
+            <div class="recommendation-modal-footer">
+
+                <a href="#" class="btn-recommendation-cancel">
+                    Batal
+                </a>
+
+                <a href="#" class="btn-recommendation-confirm">
+                    <i class="bi bi-send"></i>
+                    Ya, Kirim Rekomendasi
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================
+        POP UP KONFIRMASI KEPUTUSAN
+    ========================================= -->
+
+    <div class="recommendation-modal" id="modal-konfirmasi">
+
+        <a href="#" class="recommendation-backdrop"
+        aria-label="Tutup pop up"></a>
+
+        <div class="recommendation-modal-content">
+
+            <!-- LABEL -->
+            <div class="recommendation-label">
+                <i class="bi bi-circle-fill"></i>
+                KONFIRMASI KEPUTUSAN
+            </div>
+
+            <!-- IKON -->
+            <div class="recommendation-icon">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+
+            <!-- DESKRIPSI -->
+            <p>
+                Apakah kamu yakin ingin mengonfirmasi keputusan
+                terhadap pengajuan jadwal yang telah dipilih?
+            </p>
+
+            <p class="recommendation-description">
+                Keputusan ini akan menjadi hasil akhir
+                penyelesaian konflik jadwal laboratorium.
+            </p>
+
+            <!-- TOMBOL -->
+            <div class="recommendation-modal-footer">
+
+                <a href="#" class="btn-recommendation-cancel">
+                    Batal
+                </a>
+
+                <a href="#" class="btn-recommendation-confirm">
+                    <i class="bi bi-check2-circle"></i>
+                    Ya, Konfirmasi
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 </html>

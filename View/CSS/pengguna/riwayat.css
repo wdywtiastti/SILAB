@@ -1,7 +1,7 @@
 
 /* ==================================================
    SILAB - RIWAYAT PENGGUNA
-   Konsisten dengan Dashboard Pengguna
+   Konsisten dengan Dashboard SILAB
 ================================================== */
 
 
@@ -12,8 +12,8 @@
 .history-container {
     width: calc(100% - 50px);
     max-width: 1500px;
-
     margin: 18px auto 30px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 
@@ -31,31 +31,24 @@
     align-items: flex-start;
 
     padding: 20px 24px;
+    margin-bottom: 14px;
 
     background: #FFFFFF;
-
     border: 1px solid #E1E1E5;
     border-radius: 17px;
-
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
-
-    margin-bottom: 14px;
 }
-
 
 /* LABEL PORTAL */
 
 .history-portal-label {
     display: inline-flex;
     align-items: center;
-
     gap: 7px;
 
     color: #33266A;
-
     font-size: 10px;
     font-weight: 600;
-
     line-height: 1.5;
 }
 
@@ -63,29 +56,23 @@
     color: #667A9B;
 }
 
-
 /* JUDUL */
 
 .history-welcome-card h2 {
     margin: 9px 0 6px;
 
     color: #33266A;
-
     font-size: 27px;
     font-weight: 800;
-
     line-height: 1.25;
 }
-
 
 /* DESKRIPSI */
 
 .history-welcome-card p {
     color: #667A9B;
-
     font-size: 12px;
     font-weight: 400;
-
     line-height: 1.6;
 }
 
@@ -98,12 +85,10 @@
     width: 100%;
 
     background: #FFFFFF;
-
     border: 1px solid #E1E1E5;
     border-radius: 14px;
 
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
-
     overflow: hidden;
 }
 
@@ -119,26 +104,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     gap: 20px;
 
     padding: 14px 24px;
 }
-
 
 /* JUDUL TABEL */
 
 .history-table-title {
     display: flex;
     align-items: center;
-
     gap: 10px;
 
     color: #202B40;
-
     font-size: 16px;
     font-weight: 700;
-
     line-height: 1.4;
 }
 
@@ -148,10 +128,8 @@
     justify-content: center;
 
     color: #A21D48;
-
     font-size: 22px;
     font-weight: 400;
-
     line-height: 1;
 
     flex-shrink: 0;
@@ -169,39 +147,32 @@
 
     display: flex;
     align-items: center;
-
     gap: 10px;
 
     padding: 0 12px;
 
     background: #F8FAFC;
-
     border: 1px solid #E1E6EF;
     border-radius: 9px;
 }
 
 .history-search i {
     color: #667A9B;
-
     font-size: 16px;
-
     flex-shrink: 0;
 }
 
 .history-search input {
     width: 100%;
     height: 100%;
-
     padding: 0;
 
     color: #202B40;
     background: transparent;
-
     border: none;
     outline: none;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-
+    font-family: inherit;
     font-size: 11px;
     font-weight: 400;
 }
@@ -227,11 +198,9 @@
 
 .history-table {
     width: 100%;
-
     border-collapse: collapse;
     table-layout: fixed;
 }
-
 
 /* LEBAR KOLOM */
 
@@ -260,7 +229,6 @@
     width: 23%;
 }
 
-
 /* HEADER TABEL */
 
 .history-table thead {
@@ -269,32 +237,27 @@
 
 .history-table th {
     height: 48px;
-
     padding: 12px 16px;
 
     color: #465268;
-
     font-size: 10px;
     font-weight: 700;
 
-    text-align: left;
+    text-align: center;
     vertical-align: middle;
-
     white-space: nowrap;
 }
-
 
 /* ISI TABEL */
 
 .history-table td {
     height: 101px;
-
     padding: 18px 16px;
 
     color: #202B40;
-
     font-size: 11px;
 
+    text-align: center;
     vertical-align: middle;
 
     border-bottom: 1px solid #EDF0F5;
@@ -313,12 +276,10 @@
     display: block;
 
     color: #27356F;
-
     font-size: 12px;
     font-weight: 700;
 
     text-align: center;
-
     white-space: nowrap;
 }
 
@@ -330,14 +291,14 @@
 .history-time {
     display: flex;
     align-items: center;
-
+    justify-content: center;
     gap: 5px;
 
     color: #202B40;
-
     font-size: 12px;
     font-weight: 600;
 
+    text-align: center;
     white-space: nowrap;
 }
 
@@ -350,10 +311,10 @@
     margin-top: 3px;
 
     color: #667A9B;
-
     font-size: 10px;
     font-weight: 400;
 
+    text-align: center;
     line-height: 1.45;
 }
 
@@ -366,27 +327,26 @@
     margin-bottom: 5px;
 
     color: #202B40;
-
     font-size: 11px;
     font-weight: 600;
 
+    text-align: center;
     line-height: 1.4;
 }
 
 .history-category {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
 
     padding: 3px 9px;
 
     color: #4D4B80;
     background: #EAE9FF;
-
     border-radius: 20px;
 
     font-size: 9px;
     font-weight: 600;
-
     white-space: nowrap;
 }
 
@@ -399,7 +359,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     gap: 6px;
 
     padding: 5px 11px;
@@ -408,14 +367,12 @@
 
     font-size: 9px;
     font-weight: 600;
-
     white-space: nowrap;
 }
 
 .status-badge i {
     font-size: 7px;
 }
-
 
 /* MENUNGGU */
 
@@ -424,14 +381,12 @@
     background: #FFF0C9;
 }
 
-
 /* DISETUJUI */
 
 .status-approved {
     color: #07875E;
     background: #E4F8EF;
 }
-
 
 /* SELESAI */
 
@@ -449,7 +404,6 @@
     display: block;
 
     color: #667A9B;
-
     font-size: 10px;
     font-weight: 400;
 
@@ -469,7 +423,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     gap: 15px;
 
     padding: 12px 18px;
@@ -479,7 +432,6 @@
 
 .history-panel-footer p {
     color: #5F6675;
-
     font-size: 10px;
     font-weight: 400;
 }
@@ -497,13 +449,11 @@
 .history-pagination {
     display: flex;
     align-items: center;
-
     gap: 5px;
 }
 
 .history-pagination button {
     min-height: 32px;
-
     padding: 6px 13px;
 
     color: #9296A5;
@@ -512,8 +462,7 @@
     border: none;
     border-radius: 7px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-
+    font-family: inherit;
     font-size: 10px;
     font-weight: 500;
 
@@ -529,7 +478,7 @@
     justify-content: center;
 
     color: #FFFFFF;
-    background: #33266A;
+    background: #911E3F;
 
     border-radius: 7px;
 
@@ -551,7 +500,6 @@
     .history-table {
         min-width: 900px;
     }
-
 }
 
 
@@ -582,7 +530,6 @@
     .history-panel-header {
         align-items: flex-start;
         flex-direction: column;
-
         gap: 12px;
 
         padding: 15px;
@@ -607,12 +554,10 @@
     .history-panel-footer {
         align-items: flex-start;
         flex-direction: column;
-
         padding: 14px;
     }
 
     .history-pagination {
         align-self: flex-end;
     }
-
 }

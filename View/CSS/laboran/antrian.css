@@ -1,0 +1,1012 @@
+
+/* =========================================
+   ANTRIAN LABORAN - SILAB
+========================================= */
+
+:root {
+    --primary: #33266A;
+    --maroon: #911E3F;
+    --yellow: #F8B916;
+    --white: #FFFFFF;
+
+    --text: #202B40;
+    --muted: #667A9B;
+
+    --border: #E1E1E5;
+    --background: #F4F5F8;
+
+    --danger: #E34444;
+    --success: #0D8060;
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--background);
+    color: var(--text);
+}
+
+/* =========================================
+   1. CONTAINER & CARD
+========================================= */
+
+.antrian-container {
+    width: calc(100% - 64px);
+    max-width: 1600px;
+    margin: 16px auto 30px;
+}
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+    margin-bottom: 16px;
+}
+
+/* =========================================
+   2. HEADER
+========================================= */
+
+.antrian-header {
+    padding: 17px 22px 19px;
+}
+
+.header-decoration {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.header-decoration span {
+    width: 31px;
+    height: 5px;
+    border-radius: 10px;
+}
+
+.header-decoration span:nth-child(1) {
+    background: var(--maroon);
+}
+
+.header-decoration span:nth-child(2) {
+    background: var(--yellow);
+}
+
+.header-decoration span:nth-child(3) {
+    background: var(--primary);
+}
+
+.header-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 11px;
+}
+
+.header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.purple-tag {
+    color: var(--primary);
+    background: #F0EDFA;
+}
+
+.yellow-tag {
+    color: #805B00;
+    background: #FFF5D8;
+    border: 1px solid #FBE7A8;
+}
+
+.antrian-header h2 {
+    margin-bottom: 6px;
+    color: var(--primary);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.antrian-header > p {
+    max-width: 850px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* =========================================
+   3. TABLE HEADING
+========================================= */
+
+.antrian-table-card {
+    padding: 19px;
+}
+
+.table-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.table-heading h3 {
+    margin-bottom: 5px;
+    color: var(--primary);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.table-heading h3 i {
+    margin-right: 5px;
+}
+
+.table-heading p {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.total-antrian {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    background: #F0EDFA;
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================
+   4. TABEL ANTRIAN
+   Tipografi dan warna mengikuti dashboard
+========================================= */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--white);
+}
+
+.antrian-table {
+    width: 100%;
+    min-width: 1050px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-family: inherit;
+}
+
+.antrian-table th:nth-child(1),
+.antrian-table td:nth-child(1) {
+    width: 10%;
+}
+
+.antrian-table th:nth-child(2),
+.antrian-table td:nth-child(2) {
+    width: 32%;
+}
+
+.antrian-table th:nth-child(3),
+.antrian-table td:nth-child(3) {
+    width: 17%;
+}
+
+.antrian-table th:nth-child(4),
+.antrian-table td:nth-child(4) {
+    width: 13%;
+}
+
+.antrian-table th:nth-child(5),
+.antrian-table td:nth-child(5) {
+    width: 12%;
+}
+
+.antrian-table th:nth-child(6),
+.antrian-table td:nth-child(6) {
+    width: 16%;
+}
+
+.antrian-table th {
+    padding: 13px 10px;
+    background: #FFFFFF;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+
+    text-align: center;
+    vertical-align: middle;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.antrian-table td {
+    padding: 16px 10px;
+    background: #FFFFFF;
+    color: var(--text);
+    border-bottom: 1px solid #ECEEF3;
+
+    text-align: center;
+    vertical-align: middle;
+
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.antrian-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.antrian-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.antrian-table tbody tr:hover td {
+    background: #FAF9FD;
+}
+
+.antrian-table td strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.antrian-table td small {
+    display: block;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   5. REQUEST ID
+========================================= */
+
+.request-id {
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================
+   6. PRIORITAS DAN STATUS
+========================================= */
+
+.priority-badge,
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.p1 {
+    color: var(--maroon);
+    background: #FFF0F2;
+}
+
+.p2 {
+    color: #A66B00;
+    background: #FFF7E4;
+}
+
+.p3 {
+    color: #2862C7;
+    background: #EEF5FF;
+}
+
+.score-text {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700 !important;
+}
+
+.conflict {
+    color: var(--maroon);
+    background: #FFF0F2;
+    border: 1px solid #EBD1DA;
+}
+
+.displaced {
+    color: #A66B00;
+    background: #FFF7E4;
+    border: 1px solid #FBE7A8;
+}
+
+.verify {
+    color: var(--primary);
+    background: #F0EDFA;
+    border: 1px solid #E2DCF6;
+}
+
+/* =========================================
+   7. TOMBOL PERIKSA & PROSES
+========================================= */
+
+.btn-process {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 125px;
+    padding: 9px 12px;
+
+    color: var(--white);
+    background: var(--maroon);
+    border: 1px solid var(--maroon);
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: 0.2s;
+}
+
+.btn-process:hover {
+    background: #911E3F;
+    border-color: #911E3F;
+}
+
+/* =========================================
+   8. PAGINATION
+========================================= */
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-top: 17px;
+    padding: 4px 2px;
+}
+
+.pagination-info {
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.pagination-controls,
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 42px;
+    height: 39px;
+    padding: 0 13px;
+
+    background: var(--white);
+    color: var(--muted);
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.pagination-btn.active {
+    min-width: 42px;
+    padding: 0 13px;
+
+    background: var(--maroon);
+    color: var(--white);
+
+    border-color: var(--maroon);
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+    background: #F9EDF1;
+    color: var(--maroon);
+    border-color: #EBD1DA;
+}
+
+.pagination-btn:disabled {
+    color: #AAB2C0;
+    background: var(--white);
+    border-color: var(--border);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* =========================================
+   9. CATATAN
+========================================= */
+
+.table-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+
+    margin-top: 15px;
+    padding: 11px 13px;
+
+    background: #F8F7FB;
+    border-radius: 8px;
+}
+
+.table-note i {
+    color: var(--yellow);
+    font-size: 13px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.table-note p {
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+/* =========================================
+   10. POPUP REVIEW
+========================================= */
+
+.review-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.review-modal:target {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(24, 27, 40, 0.55);
+    backdrop-filter: blur(4px);
+}
+
+.review-modal-content {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-width: 620px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+
+    padding: 23px;
+
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    overscroll-behavior: contain;
+
+    transform: translateY(12px);
+    transition: transform 0.25s ease;
+}
+
+.review-modal:target .review-modal-content {
+    transform: translateY(0);
+}
+
+/* =========================================
+   11. HEADER POPUP
+========================================= */
+
+.review-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.review-label {
+    display: inline-block;
+    padding: 6px 10px;
+    margin-bottom: 9px;
+
+    background: #F9EDF1;
+    color: var(--maroon);
+
+    border: 1px solid #EBD1DA;
+    border-radius: 6px;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.review-modal-header h3 {
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+
+    color: var(--muted);
+    background: var(--background);
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.modal-close:hover {
+    background: #E9EAF0;
+}
+
+/* =========================================
+   12. KALKULASI MATRIKS
+========================================= */
+
+.calculation-box {
+    padding: 15px;
+    background: #F7F9FC;
+    border: 1px solid #DFE6F0;
+    border-radius: 10px;
+}
+
+.calculation-box > strong {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text);
+    font-size: 12px;
+}
+
+.calculation-box ul {
+    padding-left: 19px;
+}
+
+.calculation-box li {
+    margin-bottom: 8px;
+    color: #354158;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.calculation-result {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 12px;
+    padding-top: 12px;
+
+    border-top: 1px solid #DFE6F0;
+    color: var(--maroon);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.calculation-result i {
+    font-size: 13px;
+}
+
+/* =========================================
+   13. DETAIL PENGAJUAN
+========================================= */
+
+.request-detail-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    padding: 15px;
+
+    background: #F7F9FC;
+    border: 1px solid #DFE6F0;
+    border-radius: 10px;
+}
+
+.detail-item {
+    min-width: 0;
+    padding: 10px;
+
+    background: var(--white);
+    border: 1px solid #E8ECF2;
+    border-radius: 8px;
+}
+
+.detail-item small {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.detail-item strong {
+    display: block;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================
+   14. BENTROK DAN TERGESER
+========================================= */
+
+.collision-box {
+    margin-top: 15px;
+    padding: 15px;
+
+    background: #FBF2F5;
+    border: 1px solid #E8C5D1;
+    border-radius: 10px;
+}
+
+.collision-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 9px;
+
+    color: var(--maroon);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.collision-heading i {
+    font-size: 15px;
+}
+
+.collision-box p {
+    color: #684052;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.displaced-box {
+    background: #FFF9E9;
+    border-color: #F5E2AC;
+}
+
+.displaced-box .collision-heading {
+    color: #946400;
+}
+
+.displaced-box p {
+    color: #755B27;
+}
+
+/* =========================================
+   15. TOMBOL AKSI POPUP
+========================================= */
+
+.collision-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.btn-eskalasi,
+.btn-recommend {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 42px;
+    padding: 10px 22px;
+
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.btn-eskalasi {
+    background: var(--maroon);
+    color: var(--white);
+    border: 1px solid var(--maroon);
+}
+
+.btn-eskalasi:hover {
+    background: #761630;
+}
+
+.btn-recommend {
+    background: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary);
+}
+
+.btn-recommend:hover {
+    background: #251B50;
+}
+
+/* =========================================
+   16. INFORMASI POPUP
+========================================= */
+
+.review-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+
+    margin-top: 15px;
+    padding: 13px;
+
+    color: var(--primary);
+    background: #F0EDFA;
+
+    border: 1px solid #E2DCF6;
+    border-radius: 9px;
+
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.review-information i {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* =========================================
+   17. TOMBOL SETUJUI DAN TOLAK
+========================================= */
+
+.verification-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 17px;
+}
+
+.btn-approve,
+.btn-reject {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 42px;
+    padding: 10px 12px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-approve {
+    background: var(--primary);
+    color: var(--white);
+    border: 1px solid var(--primary);
+}
+
+.btn-approve:hover {
+    background: #251B50;
+}
+
+.btn-reject {
+    background: var(--white);
+    color: var(--maroon);
+    border: 1px solid #E8C5D1;
+}
+
+.btn-reject:hover {
+    background: #FBF2F5;
+}
+
+/* =========================================
+   18. FOOTER POPUP
+========================================= */
+
+.review-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 17px;
+}
+
+.btn-review-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 19px;
+
+    background: var(--background);
+    color: var(--primary);
+
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.btn-review-close:hover {
+    background: #E9EAF0;
+}
+
+/* =========================================
+   19. RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+
+    .antrian-container {
+        width: calc(100% - 40px);
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .antrian-container {
+        width: calc(100% - 24px);
+        margin-top: 12px;
+    }
+
+    .antrian-header h2 {
+        font-size: 21px;
+    }
+
+    .table-heading {
+        flex-direction: column;
+    }
+
+    .antrian-table-card {
+        padding: 14px;
+    }
+
+}
+
+@media (max-width: 550px) {
+
+    .antrian-header {
+        padding: 15px;
+    }
+
+    .antrian-header h2 {
+        font-size: 18px;
+    }
+
+    .antrian-header > p {
+        font-size: 11px;
+    }
+
+    .header-tag {
+        font-size: 9px;
+    }
+
+    .antrian-table-card {
+        padding: 12px;
+    }
+
+    .pagination-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pagination-info {
+        text-align: center;
+    }
+
+    .pagination-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        height: 35px;
+        padding: 0 10px;
+        font-size: 10px;
+    }
+
+    .review-modal {
+        padding: 12px;
+    }
+
+    .review-modal-content {
+        padding: 17px;
+        max-height: 92vh;
+    }
+
+    .review-modal-header h3 {
+        font-size: 14px;
+    }
+
+    .request-detail-box,
+    .verification-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .collision-actions {
+        justify-content: stretch;
+    }
+
+    .collision-actions a {
+        width: 100%;
+    }
+
+    .calculation-result {
+        font-size: 10px;
+    }
+
+}
