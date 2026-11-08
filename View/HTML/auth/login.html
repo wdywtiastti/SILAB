@@ -83,7 +83,8 @@
 
 
                 <!-- FORM LOGIN -->
-                <form class="login-form">
+                <!--bagian ini diubah laili ya-->
+                <form class="login-form" id="loginForm">
 
                     <!-- INPUT NIP/NPM -->
                     <div class="input-group">
@@ -108,12 +109,13 @@
 
                         <i class="bi bi-lock"></i>
 
+                        <!--autocomplete di ubah dari off jadi "current-password - laili"-->
                         <input
                             type="password"
                             id="password"
                             name="password"
                             placeholder="Password"
-                            autocomplete="off"
+                            autocomplete="current-password"
                             required
                         >
 
@@ -131,11 +133,15 @@
 
                     </label>
 
-
+                    <!--penyesuaian rute login - laili-->
+                    <!--Pengalihan akan dilakukan JavaScript berdasarkan hasil pemeriksaan identitas dan password.-->
                     <!-- TOMBOL LOGIN -->
-                    <a href ="../KepalaLab/Dashboard.html"class="btn-login">
+                    <button type="submit" class="btn-login">
                         Login
-                    </a>
+                    </button>
+
+                    <!--PESAN KESALAHAN - laili-->
+                    <p id="loginMessage" role="alert"></p>
 
                 </form>
 
