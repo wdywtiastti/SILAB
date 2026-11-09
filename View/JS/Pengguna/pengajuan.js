@@ -111,8 +111,6 @@ function validateForm(data) {
   return isValid;
 }
 
-
-
 //VALIDASI
 
 // Memvalidasi jumlah PC dan kursi
@@ -256,7 +254,6 @@ function validateBookingTime(data) {
       "waktuSelesai",
       "Peminjaman tidak boleh melewati pergantian tanggal.",
     );
-
     return false;
   }
 
@@ -274,48 +271,41 @@ function validateBookingTime(data) {
       "waktuSelesai",
       "Waktu selesai tidak boleh melewati pukul 22.00 WIT.",
     );
-
     isValid = false;
   }
 
   return isValid;
 }
 
-// Menangani submit formulir
-function handleSubmit(event) {
-  event.preventDefault();
+//Membuat ID pengguna otomatis
+function generateSubmissionId(submissions) {
+  const sekarang = new Date();
 
-  // Bersihkan pesan sebelumnya
-  clearAllFieldErrors();
+  const tahun = sekarang.getFullYear();
+  const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
+  const tanggal = String(sekarang.getDate()).padStart(2, "0");
 
-  feedbackElement.textContent = "";
+  const tanggalID = `${tahun}${bulan}${tanggal}`;
 
-  const data = getFormData();
+  const prefix = `REQ-${tanggalID}-`;
 
-  //Validasi input wajib
-  const requiredValid = validateForm(data);
+  let nomorTerakhir = 0;
 
-  if (!requiredValid) return;
+  submissions.forEach((submission) => {
+    if (!submission.id || !submission.id.startsWith(prefix)) {
+      return;
+    }
 
-  //Validasi jumlah fasilitas
-  const quantityValid = validateQuantity(data);
+    const nomor = Number(submission.id.substring(prefix.length));
 
-  if (!quantityValid) return;
+    if (Number.isInteger(nomor) && nomor > nomorTerakhir) {
+      nomorTerakhir = nomor;
+    }
+  });
 
-  //Validasi kapasitas fisik
-  const capacityValid = validateCapacity(data);
+  const nomorBaru = String(nomorTerakhir + 1).padStart(3, "0");
 
-  if (!capacityValid) return;
-
-  //Validasi tanggal dan waktu
-  const timeValid = validateBookingTime(data);
-
-  if (!timeValid) return;
-
-  // Jika seluruh validasi berhasil
-  showFeedback("Data formulir berhasil melewati validasi.", "success");
-
-  console.log("Data formulir valid:", data);
+  return `${prefix}${nomorBaru}`;
 }
 
 //even listeneer untuk validasi input pc dan jumlah kurasi
@@ -389,4 +379,103 @@ if (peminjamanForm) {
   peminjamanForm.addEventListener("submit", handleSubmit);
 } else {
   console.error("Form peminjaman tidak ditemukan.");
+}
+
+//submit pengajuan
+function handleSubmit(event) {
+  event.preventDefault();
+
+  // Bersihkan pesan sebelumnya
+  clearAllFieldErrors();
+  feedbackElement.textContent = "";
+
+  // Mengambil data formulir
+  const data = getFormData();
+
+  //VALIDASI INPUT WAJIB
+  if (!validateForm(data)) {
+    return;
+  }
+
+  //VALIDASI JUMLAH FASILITAS
+  if (!validateQuantity(data)) {
+    return;
+  }
+
+  //VALIDASI KAPASITAS FISIK
+  if (!validateCapacity(data)) {
+    return;
+  }
+
+  //VALIDASI TANGGAL DAN WAKTU
+  if (!validateBookingTime(data)) {
+    return;
+  }
+
+  //MEMERIKSA SESI PENGGUNA
+  const sesi = sesiSILAB.ambil();
+  if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
+    showFeedback(
+      "Sesi pengguna tidak ditemukan. Silakan login kembali.",
+      "error",
+    );
+    return;
+  }
+
+  //MEMERIKSA LOCAL STORAGE
+  if (!SILABStorage.isAvailable()) {
+    showFeedback("Penyimpanan tidak tersedia. Silakan coba kembali.", "error");
+    return;
+  }
+
+  // Mengambil data pengajuan sebelumnya
+  const submissions = SILABStorage.get(SILABStorage.KEYS.SUBMISSIONS, []);
+  if (!Array.isArray(submissions)) {
+    showFeedback("Data pengajuan sebelumnya tidak valid.", "error");
+    return;
+  }
+
+  //MEMBUAT DATA PENGAJUAN
+  const pengajuanBaru = {
+    id: generateSubmissionId(submissions),
+
+    userIdentifier: sesi.identifier,
+
+    role: sesi.role,
+
+    jumlahPC: Number(data.jumlahPC),
+
+    jumlahKursi: Number(data.jumlahKursi),
+
+    waktuMulai: data.waktuMulai,
+
+    waktuSelesai: data.waktuSelesai,
+
+    kategori: data.kategori,
+
+    namaKegiatan: data.namaKegiatan,
+
+    status: "menunggu_verifikasi",
+
+    createdAt: new Date().toISOString(),
+  };
+
+  //MENYIMPAN DATA PENGAJUAN
+  const berhasil = SILABStorage.set(SILABStorage.KEYS.SUBMISSIONS, [
+    ...submissions,
+    pengajuanBaru,
+  ]);
+
+  if (!berhasil) {
+    showFeedback("Gagal menyimpan pengajuan. Silakan coba kembali.", "error");
+    return;
+  }
+
+  //FEEDBACK KEBERHASILAN
+  showFeedback(
+    `Pengajuan berhasil dikirim. ID: ${pengajuanBaru.id}`,
+    "success",
+  );
+
+  console.log("Pengajuan berhasil disimpan:", pengajuanBaru);
 }
