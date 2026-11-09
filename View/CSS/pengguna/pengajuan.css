@@ -1,136 +1,129 @@
-
 /* ==================================================
    SILAB - PENGAJUAN PEMINJAMAN
    FONT: PLUS JAKARTA SANS
 ================================================== */
-
 
 /* ==================================================
    1. CONTAINER UTAMA
 ================================================== */
 
 .user-application-container {
-    width: calc(100% - 50px);
-    max-width: 1500px;
-    margin: 18px auto 30px;
+  width: calc(100% - 50px);
+  max-width: 1500px;
+  margin: 18px auto 30px;
 }
-
 
 /* ==================================================
    2. JUDUL HALAMAN
 ================================================== */
 
 .application-heading {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .application-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
-    padding: 5px 10px;
+  padding: 5px 10px;
 
-    color: #A27600;
-    background: #FFF3D6;
+  color: #a27600;
+  background: #fff3d6;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    font-size: 10px;
-    font-weight: 600;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .application-label i {
-    font-size: 8px;
+  font-size: 8px;
 }
 
 .application-heading h2 {
-    margin: 9px 0 6px;
+  margin: 9px 0 6px;
 
-    color: #33266A;
+  color: #33266a;
 
-    font-size: 27px;
-    font-weight: 800;
-    line-height: 1.25;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .application-heading p {
-    max-width: 650px;
+  max-width: 650px;
 
-    color: #667A9B;
+  color: #667a9b;
 
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.6;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
 }
-
 
 /* ==================================================
    3. LAYOUT FORM DAN KATEGORI
 ================================================== */
 
 .application-layout {
-    width: 100%;
+  width: 100%;
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        minmax(0, 2fr)
-        minmax(280px, 0.96fr);
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(280px, 0.96fr);
 
-    align-items: start;
-    gap: 24px;
+  align-items: start;
+  gap: 24px;
 }
-
 
 /* ==================================================
    4. FORMULIR
 ================================================== */
 
 .application-form {
-    width: 100%;
-    min-width: 0;
-    min-height: 420px;
+  width: 100%;
+  min-width: 0;
+  min-height: 420px;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    padding: 20px;
+  padding: 20px;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
-
 
 /* GROUP INPUT */
 
 .application-group {
-    width: 100%;
+  width: 100%;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .application-group label {
-    margin-bottom: 7px;
+  margin-bottom: 7px;
 
-    color: #263249;
+  color: #263249;
 
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.4;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .application-group label span {
-    color: #C41E42;
+  color: #c41e42;
 }
-
 
 /* ==================================================
    5. INPUT FORM
@@ -138,56 +131,59 @@
 
 .application-group input,
 .application-select select {
-    width: 100%;
-    height: 36px;
+  width: 100%;
+  height: 36px;
 
-    padding: 0 11px;
+  padding: 0 11px;
 
-    color: #263249;
-    background: #F4F6F9;
+  color: #263249;
+  background: #f4f6f9;
 
-    border: 1px solid transparent;
-    border-radius: 7px;
+  border: 1px solid transparent;
+  border-radius: 7px;
 
-    outline: none;
+  outline: none;
 
-    font-family: inherit;
-    font-size: 11px;
+  font-family: inherit;
+  font-size: 11px;
 
-    transition: 0.2s;
+  transition: 0.2s;
 }
 
 .application-group input:focus,
 .application-select select:focus {
-    background: #FFFFFF;
-    border-color: #33266A;
+  background: #ffffff;
+  border-color: #33266a;
 }
-
 
 /* ==================================================
    6. INPUT WAKTU
 ================================================== */
 
 .application-time-row {
-    width: 100%;
+  width: 100%;
 
-    display: grid;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 15px;
+}
 
-    gap: 15px;
+.application-time-row .application-group {
+  min-width: 0;
+  align-self: start;
+  margin-bottom: 16px;
 }
 
 .application-time-row input {
-    min-width: 0;
+  min-width: 0;
 
-    padding: 0 8px;
+  padding: 0 8px;
 
-    font-size: 10px;
-    color-scheme: light;
+  font-size: 10px;
+  color-scheme: light;
 }
-
 
 /* ==================================================
    7. PEMILIHAN KATEGORI
@@ -195,451 +191,482 @@
 ================================================== */
 
 .application-select {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .category-picker {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
-
 
 /* INPUT KATEGORI */
 
 .category-picker-trigger {
-    width: 100%;
-    height: 36px;
+  width: 100%;
+  height: 36px;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    gap: 9px;
+  gap: 9px;
 
-    padding: 0 12px;
+  padding: 0 12px;
 
-    color: #263249;
-    background: #F4F6F9;
+  color: #263249;
+  background: #f4f6f9;
 
-    border: 1px solid transparent;
-    border-radius: 7px;
+  border: 1px solid transparent;
+  border-radius: 7px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 400;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 400;
 
-    cursor: pointer;
-    list-style: none;
+  cursor: pointer;
+  list-style: none;
 }
 
 .category-picker-trigger::-webkit-details-marker {
-    display: none;
+  display: none;
 }
-
 
 /* IKON KATEGORI */
 
 .category-main-icon {
-    color: #E6AD32;
+  color: #e6ad32;
 
-    font-size: 13px;
-    flex-shrink: 0;
+  font-size: 13px;
+  flex-shrink: 0;
 }
-
 
 /* TEKS KATEGORI */
 
 .category-value {
-    display: none;
-    flex: 1;
-    text-align: left;
+  display: none;
+  flex: 1;
+  text-align: left;
 }
-
 
 /* MENAMPILKAN KATEGORI TERPILIH */
 
-.category-picker:has(#kategori-k2:checked)
-.category-value-k2 {
-    display: inline;
+.category-picker:has(#kategori-k2:checked) .category-value-k2 {
+  display: inline;
 }
 
-.category-picker:has(#kategori-k3:checked)
-.category-value-k3 {
-    display: inline;
+.category-picker:has(#kategori-k3:checked) .category-value-k3 {
+  display: inline;
 }
 
-.category-picker:has(#kategori-k4:checked)
-.category-value-k4 {
-    display: inline;
+.category-picker:has(#kategori-k4:checked) .category-value-k4 {
+  display: inline;
 }
 
-.category-picker:has(#kategori-k5:checked)
-.category-value-k5 {
-    display: inline;
+.category-picker:has(#kategori-k5:checked) .category-value-k5 {
+  display: inline;
 }
-
 
 /* PANAH DROPDOWN */
 
 .category-arrow {
-    margin-left: auto;
+  margin-left: auto;
 
-    color: #667A9B;
-    font-size: 11px;
+  color: #667a9b;
+  font-size: 11px;
 
-    transition: transform 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .category-picker[open] .category-arrow {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
-
 
 /* KOTAK PILIHAN KATEGORI */
 
 .category-picker-options {
-    position: absolute;
+  position: absolute;
 
-    top: calc(100% - 15px);
-    right: 26px;
+  top: calc(100% - 15px);
+  right: 26px;
 
-    z-index: 100;
+  z-index: 100;
 
-    width: 100px;
+  width: 100px;
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 
-    gap: 4px;
+  gap: 4px;
 
-    padding: 6px;
+  padding: 6px;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #D9DCE3;
-    border-radius: 3px;
+  border: 1px solid #d9dce3;
+  border-radius: 3px;
 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
-
 
 /* RADIO DISEMBUNYIKAN */
 
 .category-picker-options input {
-    position: absolute;
+  position: absolute;
 
-    width: 1px;
-    height: 1px;
+  width: 1px;
+  height: 1px;
 
-    opacity: 0;
+  opacity: 0;
 }
-
 
 /* TOMBOL KATEGORI */
 
 .category-picker-options label {
-    min-width: 0;
-    height: 18px;
+  min-width: 0;
+  height: 18px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 2px 4px;
+  padding: 2px 4px;
 
-    color: #263249;
-    background: #FFFFFF;
+  color: #263249;
+  background: #ffffff;
 
-    border: 1px solid #C9CED8;
-    border-radius: 4px;
+  border: 1px solid #c9ced8;
+  border-radius: 4px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 9px;
-    font-weight: 600;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 }
-
 
 /* KATEGORI AKTIF */
 
 .category-picker-options input:checked + label {
-    color: #202B40;
-    background: #F8B916;
+  color: #202b40;
+  background: #f8b916;
 
-    border-color: #F8B916;
+  border-color: #f8b916;
 }
-
 
 /* HOVER KATEGORI */
 
 .category-picker-options label:hover {
-    background: #FFF3D6;
+  background: #fff3d6;
 }
-
 
 /* FOKUS KEYBOARD */
 
 .category-picker-options input:focus-visible + label {
-    outline: 2px solid #33266A;
-    outline-offset: 2px;
+  outline: 2px solid #33266a;
+  outline-offset: 2px;
 }
-
 
 /* ==================================================
    8. INPUT NAMA KEGIATAN
 ================================================== */
 
 .application-input-icon {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .application-input-icon > i {
-    position: absolute;
+  position: absolute;
 
-    top: 50%;
-    left: 12px;
+  top: 50%;
+  left: 12px;
 
-    transform: translateY(-50%);
+  transform: translateY(-50%);
 
-    color: #E6AD32;
+  color: #e6ad32;
 
-    font-size: 13px;
+  font-size: 13px;
 
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .application-input-icon input {
-    padding-left: 36px;
+  padding-left: 36px;
 }
-
 
 /* ==================================================
    9. TOMBOL FORM
 ================================================== */
 
 .application-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 
-    gap: 8px;
+  gap: 8px;
 
-    margin-top: auto;
-    padding-top: 15px;
+  margin-top: auto;
+  padding-top: 15px;
 }
 
 .application-cancel,
 .application-submit {
-    min-height: 37px;
+  min-height: 37px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    gap: 7px;
+  gap: 7px;
 
-    padding: 0 16px;
+  padding: 0 16px;
 
-    color: #34445B;
-    background: #F4F6F9;
+  color: #34445b;
+  background: #f4f6f9;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 7px;
+  border: 1px solid #e1e1e5;
+  border-radius: 7px;
 
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 600;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition: 0.2s;
+  transition: 0.2s;
 }
 
 .application-cancel:hover,
 .application-submit:hover {
-    background: #E9EDF3;
+  background: #e9edf3;
 }
 
 .application-submit i {
-    font-size: 11px;
+  font-size: 11px;
 }
-
 
 /* ==================================================
    10. PESAN VALIDASI
 ================================================== */
 
 .application-feedback {
-    display: none;
+  display: none;
 
-    margin-top: 10px;
+  margin-top: 10px;
 
-    color: #18794E;
+  color: #18794e;
 
-    font-size: 11px;
-    line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .application-feedback.show {
-    display: block;
+  display: block;
 }
 
+/* Pesan tidak ditampilkan jika masih kosong */
+.application-feedback:empty {
+  display: none;
+}
+
+/* Pesan ditampilkan jika sudah memiliki isi */
+.application-feedback:not(:empty) {
+  display: block;
+  margin-top: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Pesan kesalahan */
+.application-feedback.error {
+  color: #b42318;
+  background-color: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+/* Pesan berhasil */
+.application-feedback.success {
+  color: #067647;
+  background-color: #ecfdf3;
+  border: 1px solid #abefc6;
+}
+
+/*Custom Validasi */
+.field-error {
+  display: block;
+
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+
+  margin-top: 5px;
+  margin-bottom: 0;
+
+  overflow-wrap: break-word;
+}
+
+/* Pesan kosong tidak ditampilkan */
+.field-error:empty {
+  display: none;
+}
+
+/* Input tidak valid */
+.application-group input.input-error,
+.category-picker-trigger.input-error {
+  border: 1px solid #dc2626 !important;
+  background-color: #fffafa;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.06);
+}
 
 /* ==================================================
    11. PANEL KATEGORI
 ================================================== */
 
 .application-category {
-    width: 100%;
-    min-height: 190px;
+  width: 100%;
+  min-height: 190px;
 
-    padding: 17px 16px;
+  padding: 17px 16px;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
-
 
 /* HEADER KATEGORI */
 
 .application-category-heading {
-    position: relative;
+  position: relative;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .application-category-heading h3 {
-    color: #33266A;
+  color: #33266a;
 
-    font-size: 27px;
-    font-weight: 800;
-    line-height: 1.3;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .application-category-heading > i {
-    position: absolute;
-    left: 0;
+  position: absolute;
+  left: 0;
 
-    color: #911E3F;
+  color: #911e3f;
 
-    font-size: 14px;
+  font-size: 14px;
 }
-
 
 /* DAFTAR KATEGORI */
 
 .application-category-list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    gap: 7px;
+  gap: 7px;
 }
 
 .application-category-list div {
-    min-height: 35px;
+  min-height: 35px;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    padding: 6px 10px;
+  padding: 6px 10px;
 
-    color: #34445B;
-    background: #F0F4F9;
+  color: #34445b;
+  background: #f0f4f9;
 
-    border-radius: 7px;
+  border-radius: 7px;
 
-    font-size: 10px;
-    font-weight: 500;
+  font-size: 10px;
+  font-weight: 500;
 }
-
 
 /* ==================================================
    12. RESPONSIVE TABLET
 ================================================== */
 
 @media screen and (max-width: 1100px) {
+  .user-application-container {
+    width: calc(100% - 35px);
+  }
 
-    .user-application-container {
-        width: calc(100% - 35px);
-    }
+  .application-layout {
+    grid-template-columns:
+      minmax(0, 1.7fr)
+      minmax(250px, 1fr);
 
-    .application-layout {
-        grid-template-columns:
-            minmax(0, 1.7fr)
-            minmax(250px, 1fr);
-
-        gap: 20px;
-    }
-
+    gap: 20px;
+  }
 }
-
 
 /* ==================================================
    13. RESPONSIVE MOBILE
 ================================================== */
 
 @media screen and (max-width: 700px) {
+  .user-application-container {
+    width: calc(100% - 24px);
+    margin: 12px auto 20px;
+  }
 
-    .user-application-container {
-        width: calc(100% - 24px);
-        margin: 12px auto 20px;
-    }
+  .application-heading h2 {
+    font-size: 22px;
+  }
 
-    .application-heading h2 {
-        font-size: 22px;
-    }
+  .application-heading p {
+    font-size: 10px;
+  }
 
-    .application-heading p {
-        font-size: 10px;
-    }
+  .application-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 
-    .application-layout {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
+  .application-form {
+    min-height: 420px;
+    padding: 15px;
+  }
 
-    .application-form {
-        min-height: 420px;
-        padding: 15px;
-    }
+  .application-time-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 
-    .application-time-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
+  .application-actions {
+    flex-wrap: wrap;
+  }
 
-    .application-actions {
-        flex-wrap: wrap;
-    }
+  .application-cancel {
+    flex: 0.7;
+  }
 
-    .application-cancel {
-        flex: 0.7;
-    }
+  .application-submit {
+    flex: 1.3;
+  }
 
-    .application-submit {
-        flex: 1.3;
-    }
+  .application-category-heading h3 {
+    font-size: 23px;
+  }
 
-    .application-category-heading h3 {
-        font-size: 23px;
-    }
-
-    .category-picker-options {
-        right: 12px;
-    }
-
+  .category-picker-options {
+    right: 12px;
+  }
 }
 
 /* =========================================
@@ -647,41 +674,42 @@
 ========================================= */
 
 .application-cancel {
-    background: #F4F6F9;
-    color: #667A9B;
-    border: 1px solid transparent;
+  background: #f4f6f9;
+  color: #667a9b;
+  border: 1px solid transparent;
 }
 
 /* TOMBOL KIRIM */
 
 .application-submit {
-    background: #F4F6F9;
-    color: #34445B;
-    border: 1px solid transparent;
+  background: #f4f6f9;
+  color: #34445b;
+  border: 1px solid transparent;
 
-    transition: background 0.2s ease,
-                color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 /* SAAT TOMBOL KIRIM DIKLIK */
 
 .application-submit:active,
 .application-submit:focus {
-    background: #911E3F;
-    color: #FFFFFF;
-    border-color: #911E3F;
-    outline: none;
+  background: #911e3f;
+  color: #ffffff;
+  border-color: #911e3f;
+  outline: none;
 }
 
 /* IKON TOMBOL KIRIM */
 
 .application-submit i {
-    color: inherit;
+  color: inherit;
 }
 
 /* HOVER */
 
 .application-submit:hover {
-    background: #911E3F;
-    color: #FFFFFF;
+  background: #911e3f;
+  color: #ffffff;
 }
