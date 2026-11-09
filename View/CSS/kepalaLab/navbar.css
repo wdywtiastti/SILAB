@@ -85,6 +85,7 @@ body {
 
 .brand-info p {
     margin-top: 4px;
+
     color: #555555;
     font-size: 11px;
 }
@@ -118,7 +119,7 @@ body {
     border-radius: 10px;
 
     white-space: nowrap;
-    transition: background-color 0.2s, color 0.2s;
+    transition: 0.2s;
 }
 
 .nav-link:hover {
@@ -137,8 +138,6 @@ body {
 ========================================= */
 
 .navbar-profile {
-    position: relative;
-
     display: flex;
     align-items: center;
     gap: 12px;
@@ -146,21 +145,23 @@ body {
     flex-shrink: 0;
 }
 
-.navbar-profile .profile-info {
+.navbar-profile > .profile-info {
     text-align: right;
 }
 
-.navbar-profile .profile-info h3 {
+.navbar-profile > .profile-info h3 {
     margin: 0;
+
     color: var(--text);
     font-size: 12px;
     font-weight: 700;
 }
 
-.navbar-profile .profile-info p {
+.navbar-profile > .profile-info p {
     margin: 0;
+
     color: var(--text-muted);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 
@@ -173,8 +174,22 @@ body {
     display: inline-block;
 }
 
+/* Menghilangkan marker default */
 
-/* Tombol ikon profil */
+.profile-dropdown summary {
+    list-style: none;
+}
+
+.profile-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+.profile-dropdown summary::marker {
+    content: "";
+}
+
+
+/* TOMBOL PROFIL */
 
 .profile-trigger {
     width: 46px;
@@ -189,30 +204,22 @@ body {
 
     border-radius: 50%;
     cursor: pointer;
-    list-style: none;
 
-    transition: background-color 0.2s, transform 0.2s;
+    transition: 0.2s;
 }
 
 .profile-trigger:hover {
     background-color: #271D52;
-    transform: scale(1.04);
-}
-
-.profile-trigger::-webkit-details-marker {
-    display: none;
-}
-
-.profile-trigger::marker {
-    content: "";
+    transform: scale(1.05);
 }
 
 .profile-trigger i {
     font-size: 22px;
+    font-weight: 400;
 }
 
 
-/* Menu dropdown */
+/* CONTAINER DROPDOWN */
 
 .profile-menu {
     position: absolute;
@@ -234,7 +241,7 @@ body {
 }
 
 
-/* Animasi dropdown */
+/* ANIMASI DROPDOWN */
 
 @keyframes dropdownFade {
     from {
@@ -249,27 +256,48 @@ body {
 }
 
 
-/* Informasi profil dalam dropdown */
+/* INFORMASI KEPALA LAB */
 
-.profile-info-dropdown p {
+.profile-menu .profile-info-dropdown,
+.profile-menu > .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 100%;
+    text-align: left;
+}
+
+.profile-menu .profile-info-dropdown p,
+.profile-menu > .profile-info p {
+    width: 100%;
     margin-bottom: 4px;
 
     color: #263249;
     font-size: 11px;
     font-weight: 700;
+    line-height: 1.5;
+
+    text-align: left;
 }
 
-.profile-info-dropdown span {
+.profile-menu .profile-info-dropdown span,
+.profile-menu > .profile-info span {
     display: block;
+    width: 100%;
 
     color: #475569;
     font-size: 10px;
+    font-weight: 400;
+    line-height: 1.5;
+
+    text-align: left;
 }
 
 
-/* Badge role */
+/* BADGE ROLE */
 
-.profile-role {
+.profile-menu .profile-role {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -286,29 +314,33 @@ body {
     font-weight: 600;
 }
 
-.profile-role i {
+.profile-menu .profile-role i {
     color: #16A34A;
     font-size: 10px;
 }
 
 
-/* Garis pemisah */
+/* GARIS PEMBATAS */
 
-.profile-divider {
+.profile-menu .profile-divider {
+    width: 100%;
     height: 1px;
+
     margin: 12px 0;
 
     background-color: #EDF0F5;
 }
 
 
-/* Tombol logout */
+/* TOMBOL LOGOUT */
 
-.logout-link {
+.profile-menu .logout-link {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 7px;
 
+    width: 100%;
     padding: 6px 4px;
 
     color: var(--maroon);
@@ -321,13 +353,13 @@ body {
     transition: 0.2s;
 }
 
-.logout-link:hover {
-    padding-left: 8px;
+.profile-menu .logout-link:hover {
     color: #761630;
     background-color: #FFF5F7;
+    padding-left: 8px;
 }
 
-.logout-link i {
+.profile-menu .logout-link i {
     font-size: 13px;
 }
 
@@ -382,11 +414,8 @@ body {
         gap: 7px;
     }
 
-    .navbar-profile .profile-info h3 {
-        font-size: 9px;
-    }
-
-    .navbar-profile .profile-info p {
+    .navbar-profile > .profile-info h3,
+    .navbar-profile > .profile-info p {
         font-size: 9px;
     }
 
@@ -408,5 +437,10 @@ body {
     .nav-link {
         padding: 8px 10px;
         font-size: 10px;
+    }
+
+    .profile-menu {
+        width: 230px;
+        padding: 13px;
     }
 }
