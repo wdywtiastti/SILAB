@@ -1,0 +1,1459 @@
+
+/* =========================================================
+   SILAB - MANAJEMEN ALGORITMA
+   KEPALA LAB
+========================================================= */
+
+
+/* =========================================================
+   1. GLOBAL DAN CONTAINER
+========================================================= */
+
+.algorithm-container {
+    width: calc(100% - 60px);
+    max-width: 1500px;
+    margin: 16px auto 30px;
+}
+
+.algorithm-heading,
+.algorithm-panel {
+    background: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 13px;
+}
+
+
+/* =========================================================
+   2. HEADER HALAMAN
+========================================================= */
+
+.algorithm-heading {
+    min-height: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 25px;
+    margin-bottom: 10px;
+}
+
+.algorithm-heading-content {
+    min-width: 0;
+}
+
+.algorithm-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    color: #5145C5;
+    background: #F0EEFF;
+    border-radius: 5px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.algorithm-label i {
+    font-size: 10px;
+}
+
+.algorithm-heading h2 {
+    margin: 8px 0 5px;
+    color: #29234F;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.algorithm-heading p {
+    max-width: 700px;
+    color: #667A9B;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.algorithm-heading-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 11px;
+    color: #52647E;
+    background: #F7F8FB;
+    border: 1px solid #E5E9F0;
+    border-radius: 20px;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   3. INFORMASI SISTEM
+========================================================= */
+
+.algorithm-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 15px;
+    margin-bottom: 11px;
+    background: #F3F1FF;
+    border: 1px solid #E6E1FF;
+    border-radius: 11px;
+}
+
+.information-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6658EA;
+    flex-shrink: 0;
+}
+
+.information-icon i {
+    font-size: 14px;
+}
+
+.information-content h4 {
+    margin-bottom: 4px;
+    color: #39326E;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.information-content p {
+    color: #69639D;
+    font-size: 9px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   4. PANEL UMUM
+========================================================= */
+
+.algorithm-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 17px;
+}
+
+.panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.panel-heading-content {
+    min-width: 0;
+}
+
+.panel-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    margin-bottom: 7px;
+    color: #5145C5;
+    background: #F0EEFF;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.panel-label-blue {
+    color: #3470D9;
+    background: #EDF3FF;
+}
+
+.panel-heading h3 {
+    margin-bottom: 4px;
+    color: #202B40;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.panel-heading p {
+    color: #667A9B;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.panel-heading-icon {
+    width: 33px;
+    height: 33px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #52647E;
+    background: #F6F7FA;
+    border: 1px solid #E8EAF0;
+    border-radius: 9px;
+    flex-shrink: 0;
+}
+
+.panel-heading-icon i {
+    font-size: 13px;
+}
+
+.panel-heading-icon.blue-icon {
+    color: #3470D9;
+    background: #F0F5FF;
+}
+
+
+/* =========================================================
+   5. RULE BASE
+========================================================= */
+
+.rule-base-panel {
+    padding: 18px;
+}
+
+.rule-base-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+}
+
+.rule-base-header h3 {
+    color: #202B40;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.btn-add-rule {
+    min-height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    color: #FFFFFF;
+    background: #33266A;
+    border: 1px solid #33266A;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.btn-add-rule:hover {
+    background: #271D52;
+    border-color: #271D52;
+}
+
+.btn-add-rule i {
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   6. RINGKASAN ATURAN
+========================================================= */
+
+.rule-summary {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.rule-summary-item {
+    min-height: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    color: #52647E;
+    background: #FFFFFF;
+    border: 1px solid #E3E7EF;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.rule-summary-item i {
+    color: #5145C5;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   7. TOOLBAR RULE BASE
+========================================================= */
+
+.rule-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.btn-expand-all {
+    min-height: 27px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 9px;
+    color: #52647E;
+    background: #FFFFFF;
+    border: 1px solid #DCE2EB;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-expand-all:hover {
+    background: #F5F6FA;
+}
+
+
+/* =========================================================
+   8. DAFTAR ATURAN
+========================================================= */
+
+.rule-list {
+    width: 100%;
+    padding: 7px 12px;
+    border: 1px solid #E3E8F0;
+    border-radius: 10px;
+}
+
+.rule-item {
+    width: 100%;
+    border-bottom: 1px solid #EDF0F5;
+}
+
+.rule-item:last-child {
+    border-bottom: none;
+}
+
+.rule-item:not(:last-child) {
+    margin-bottom: 2px;
+}
+
+.rule-item-header {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    list-style: none;
+    cursor: pointer;
+}
+
+.rule-item-header::-webkit-details-marker {
+    display: none;
+}
+
+.rule-item-header::marker {
+    content: "";
+}
+
+.rule-main-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rule-main-info h4 {
+    margin-bottom: 4px;
+    color: #202B40;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.rule-main-info h4 span {
+    margin: 0 3px;
+    color: #A3AAB8;
+}
+
+.rule-main-info p {
+    color: #8291A9;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   9. AKSI ATURAN DAN KRITERIA
+========================================================= */
+
+.rule-actions,
+.criteria-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.rule-chevron {
+    color: #8996AA;
+    font-size: 11px;
+    transition: transform 0.2s;
+}
+
+.rule-item[open] .rule-chevron {
+    transform: rotate(180deg);
+}
+
+.edit-button,
+.delete-button {
+    width: 22px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-button {
+    color: #657A9A;
+}
+
+.delete-button {
+    color: #EF4444;
+}
+
+.edit-button:hover {
+    color: #33266A;
+}
+
+.delete-button:hover {
+    color: #B91C1C;
+}
+
+
+/* =========================================================
+   10. RINCIAN KRITERIA
+========================================================= */
+
+.rule-detail {
+    padding: 3px 0 9px;
+    animation: detailMasuk 0.2s ease;
+}
+
+@keyframes detailMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.criteria-heading {
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    margin-bottom: 7px;
+    border-top: 1px solid #EDF0F5;
+}
+
+.criteria-heading h5 {
+    color: #52647E;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.btn-add-criteria {
+    min-height: 27px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    color: #52647E;
+    background: #FFFFFF;
+    border: 1px solid #DCE2EB;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.btn-add-criteria:hover {
+    color: #33266A;
+    background: #F7F6FC;
+    border-color: #C9C2E7;
+}
+
+.criteria-list {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #E3E8F0;
+    border-radius: 9px;
+}
+
+.criteria-item {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 10px 5px;
+}
+
+.criteria-information {
+    flex: 1;
+    min-width: 0;
+}
+
+.criteria-information strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #263249;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.criteria-information p {
+    color: #8291A9;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.criteria-actions {
+    gap: 9px;
+}
+
+
+/* =========================================================
+   11. GRID PARAMETER DAN PRIORITAS
+========================================================= */
+
+.algorithm-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+    align-items: stretch;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+
+/* =========================================================
+   12. PARAMETER DAN BOBOT
+========================================================= */
+
+.weight-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.weight-panel .panel-heading {
+    margin-bottom: 14px;
+}
+
+.weight-list {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.weight-item {
+    width: 100%;
+    min-width: 0;
+}
+
+.weight-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.weight-heading > div {
+    min-width: 0;
+}
+
+.weight-heading strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #263249;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.weight-heading small {
+    display: block;
+    color: #8791A3;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.weight-value {
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    color: #52647E;
+    background: #F0F2F6;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.weight-slider {
+    width: 100%;
+    height: 4px;
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #E0E6EF;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+.weight-slider::-webkit-slider-thumb {
+    width: 13px;
+    height: 13px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: #911E3F;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px #911E3F;
+}
+
+.weight-slider::-moz-range-thumb {
+    width: 9px;
+    height: 9px;
+    background: #911E3F;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px #911E3F;
+}
+
+.weight-slider:focus {
+    outline: 2px solid rgba(145, 30, 63, 0.15);
+    outline-offset: 4px;
+}
+
+.weight-total {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 11px;
+    margin-top: 14px;
+    background: #F8F7FC;
+    border: 1px solid #EBE8F4;
+    border-radius: 8px;
+}
+
+.weight-total span {
+    color: #52647E;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.weight-total strong {
+    color: #33266A;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.weight-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 11px;
+}
+
+.panel-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    color: #8791A3;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+.weight-footer .panel-note {
+    flex: 1;
+    margin: 0;
+}
+
+.panel-note i {
+    color: #8293B0;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+.btn-save-weight {
+    min-width: 75px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 11px;
+    color: #202B40;
+    background: #F7F8FA;
+    border: 1px solid #E6E8ED;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+.btn-save-weight:hover {
+    background: #E9EAF0;
+}
+
+.weight-panel:has(.weight-slider:focus) .btn-save-weight {
+    color: #FFFFFF;
+    background: #911E3F;
+    border-color: #911E3F;
+}
+
+
+/* =========================================================
+   13. TINGKAT PRIORITAS
+========================================================= */
+
+.priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.priority-item {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 9px;
+    background: #FFFFFF;
+    border: 1px solid #E7EAF0;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.priority-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.priority-code {
+    width: 29px;
+    height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.priority-information {
+    flex: 1;
+    min-width: 0;
+}
+
+.priority-information strong {
+    display: block;
+    color: #263249;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.priority-information small {
+    display: block;
+    margin-top: 3px;
+    color: #8791A3;
+    font-size: 10px;
+}
+
+.priority-level {
+    padding: 4px 7px;
+    color: #667085;
+    background: #F0F1F4;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.priority-one {
+    background: #FFFAF9;
+    border-color: #F5DEDA;
+}
+
+.priority-one .priority-code,
+.priority-one .priority-level {
+    color: #B42318;
+    background: #FCE8E5;
+}
+
+.priority-two {
+    background: #FFFCF5;
+    border-color: #F2E8CF;
+}
+
+.priority-two .priority-code {
+    color: #A66A00;
+    background: #FFF1CC;
+}
+
+.priority-three {
+    background: #F8FAFF;
+    border-color: #E1E8FC;
+}
+
+.priority-three .priority-code {
+    color: #315CCB;
+    background: #E5ECFF;
+}
+
+.priority-four {
+    background: #F8F9FB;
+    border-color: #E5E7EB;
+}
+
+.priority-four .priority-code,
+.priority-four .priority-level {
+    color: #667085;
+    background: #E9ECF1;
+}
+
+
+/* =========================================================
+   14. PERINGATAN PRIORITAS
+========================================================= */
+
+.priority-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+    margin-top: 12px;
+    background: #FFFAEC;
+    border: 1px solid #F5E7B9;
+    border-radius: 8px;
+}
+
+.priority-warning i {
+    color: #C28A0B;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.priority-warning p {
+    color: #876D35;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   15. FOOTNOTE
+========================================================= */
+
+.algorithm-footnote {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 13px;
+    padding: 0 3px;
+    color: #8791A3;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.algorithm-footnote i {
+    color: #8293B0;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   16. SISTEM MODAL
+   Digunakan bersama oleh seluruh popup
+========================================================= */
+
+.modal-toggle {
+    display: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px;
+
+    background: rgba(32, 43, 64, 0.48);
+    backdrop-filter: blur(3px);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: 0.2s;
+}
+
+.modal-toggle:checked + .modal-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* ANIMASI MODAL */
+
+.rule-modal,
+.confirm-modal {
+    transform: translateY(10px) scale(0.98);
+    transition: transform 0.2s ease;
+}
+
+.modal-toggle:checked + .modal-overlay .rule-modal,
+.modal-toggle:checked + .modal-overlay .confirm-modal {
+    transform: translateY(0) scale(1);
+}
+
+
+/* =========================================================
+   17. MODAL FORM TAMBAH DAN EDIT
+========================================================= */
+
+.rule-modal {
+    width: 100%;
+    max-width: 780px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 13px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+}
+
+
+/* HEADER MODAL */
+
+.modal-heading {
+    min-height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+    padding: 13px 19px;
+
+    border-bottom: 1px solid #E1E1E5;
+}
+
+.modal-heading h3 {
+    color: #202B40;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #667085;
+    background: #FFFFFF;
+
+    border: 1px solid #D1D5DB;
+    border-radius: 7px;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.modal-close:hover {
+    color: #FFFFFF;
+    background: #911E3F;
+    border-color: #911E3F;
+}
+
+.modal-close i {
+    font-size: 12px;
+}
+
+
+/* FORM DAN ISI MODAL */
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 19px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 12px;
+}
+
+.form-group {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group label {
+    color: #202B40;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    min-height: 39px;
+    padding: 10px 11px;
+
+    color: #263249;
+    background: #FFFFFF;
+
+    border: 1px solid #D1D7E0;
+    border-radius: 7px;
+
+    outline: none;
+    font-family: inherit;
+    font-size: 11px;
+
+    transition: 0.2s;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #33266A;
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.08);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #94A3B8;
+}
+
+.form-group input[readonly] {
+    color: #667A9B;
+    background: #F4F5F8;
+    cursor: not-allowed;
+}
+
+.form-group small {
+    color: #667A9B;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+/* FOOTER MODAL */
+
+.modal-footer {
+    min-height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 9px;
+    padding: 12px 19px;
+
+    background: #FAFAFB;
+    border-top: 1px solid #E1E1E5;
+}
+
+
+/* TOMBOL MODAL */
+
+.btn-cancel,
+.btn-save-rule,
+.btn-delete-confirm {
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-cancel {
+    color: #475569;
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+}
+
+.btn-cancel:hover {
+    background: #F1F2F5;
+}
+
+.btn-save-rule {
+    color: #FFFFFF;
+    background: #911E3F;
+    border: 1px solid #911E3F;
+}
+
+.btn-save-rule:hover {
+    background: #911E3F;
+}
+
+
+/* =========================================================
+   18. MODAL KONFIRMASI HAPUS
+========================================================= */
+
+.confirm-modal {
+    width: 100%;
+    max-width: 390px;
+
+    padding: 25px 24px 20px;
+
+    background: #FFFFFF;
+    border: 1px solid #E1E1E5;
+    border-radius: 13px;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+
+    text-align: center;
+}
+
+.confirm-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 13px;
+
+    border-radius: 50%;
+}
+
+.delete-icon {
+    color: #D92D20;
+    background: #FEF0EF;
+    border: 1px solid #FEE0DC;
+}
+
+.confirm-icon i {
+    font-size: 21px;
+}
+
+.confirm-modal h3 {
+    margin-bottom: 8px;
+    color: #202B40;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.confirm-modal p {
+    color: #667A9B;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.confirm-footer {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.btn-delete-confirm {
+    color: #FFFFFF;
+    background: #B42318;
+    border: 1px solid #B42318;
+}
+
+.btn-delete-confirm:hover {
+    background: #912018;
+}
+
+
+/* =========================================================
+   19. RESPONSIVE TABLET
+========================================================= */
+
+@media screen and (max-width: 1100px) {
+
+    .algorithm-container {
+        width: calc(100% - 35px);
+    }
+
+    .algorithm-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .algorithm-heading {
+        min-height: 125px;
+    }
+
+}
+
+
+/* =========================================================
+   20. RESPONSIVE MOBILE
+========================================================= */
+
+@media screen and (max-width: 700px) {
+
+    .algorithm-container {
+        width: calc(100% - 24px);
+        margin: 12px auto 20px;
+    }
+
+    .algorithm-heading {
+        min-height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 13px;
+        padding: 16px;
+    }
+
+    .algorithm-heading h2 {
+        font-size: 21px;
+    }
+
+    .algorithm-heading p {
+        font-size: 10px;
+    }
+
+    .algorithm-heading-status {
+        font-size: 8px;
+    }
+
+    .algorithm-information {
+        padding: 11px;
+    }
+
+    .information-content h4 {
+        font-size: 10px;
+    }
+
+    .information-content p {
+        font-size: 9px;
+    }
+
+    .algorithm-panel,
+    .rule-base-panel {
+        padding: 14px;
+    }
+
+    .rule-base-header h3 {
+        font-size: 16px;
+    }
+
+    .btn-add-rule {
+        min-height: 33px;
+        padding: 0 9px;
+        font-size: 10px;
+    }
+
+    .rule-list {
+        padding: 7px 9px;
+    }
+
+    .rule-item-header {
+        gap: 7px;
+    }
+
+    .rule-main-info h4 {
+        font-size: 11px;
+    }
+
+    .rule-main-info p {
+        font-size: 10px;
+    }
+
+    .rule-actions,
+    .criteria-actions {
+        gap: 5px;
+    }
+
+    .criteria-information strong {
+        font-size: 10px;
+    }
+
+    .criteria-information p {
+        font-size: 9px;
+    }
+
+    .criteria-heading h5 {
+        font-size: 10px;
+    }
+
+    .btn-add-criteria {
+        min-height: 25px;
+        padding: 0 7px;
+        font-size: 9px;
+    }
+
+    .algorithm-grid {
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .weight-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .btn-save-weight {
+        width: 100%;
+    }
+
+    .priority-item {
+        min-height: 45px;
+        padding: 7px;
+    }
+
+    .priority-code {
+        width: 27px;
+        height: 27px;
+    }
+
+    .priority-information strong {
+        font-size: 11px;
+    }
+
+    .priority-information small {
+        font-size: 9px;
+    }
+
+    .priority-level {
+        font-size: 8px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .rule-modal {
+        max-width: 100%;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .modal-heading,
+    .modal-footer {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .confirm-modal {
+        max-width: 350px;
+        padding: 22px 17px 18px;
+    }
+
+}
+
+
+/* =========================================================
+   21. RESPONSIVE LAYAR KECIL
+========================================================= */
+
+@media screen and (max-width: 380px) {
+
+    .algorithm-heading h2 {
+        font-size: 19px;
+    }
+
+    .rule-base-header {
+        align-items: flex-start;
+    }
+
+    .rule-actions,
+    .criteria-actions {
+        gap: 4px;
+    }
+
+    .priority-level {
+        display: none;
+    }
+
+    .modal-footer,
+    .confirm-footer {
+        flex-wrap: wrap;
+    }
+
+    .modal-footer > *,
+    .confirm-footer > * {
+        flex: 1;
+    }
+
+}
