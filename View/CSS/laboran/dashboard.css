@@ -1,6 +1,46 @@
-/* =========================================
-   1. CONTAINER DASHBOARD LABORAN
-========================================= */
+
+/* =====================================================
+   SILAB - DASHBOARD LABORAN
+   Warna utama, komponen, tabel, presensi, laporan
+===================================================== */
+
+:root {
+    --silab-maroon: #911E3F;
+    --silab-maroon-dark: #761630;
+    --silab-purple: #33266A;
+    --silab-purple-dark: #271D52;
+    --silab-yellow: #F8B916;
+
+    --silab-text: #263249;
+    --silab-muted: #667A9B;
+    --silab-border: #E1E1E5;
+    --silab-surface: #FFFFFF;
+    --silab-background: #F5F6FA;
+
+    --silab-green: #15803D;
+    --silab-green-bg: #E9F8EE;
+    --silab-red: #B91C1C;
+    --silab-red-bg: #FEE2E2;
+    --silab-warning: #92400E;
+    --silab-warning-bg: #FEF3C7;
+}
+
+/* RESET TERBATAS */
+
+.dashboard-container,
+.dashboard-container *,
+.dashboard-container *::before,
+.dashboard-container *::after,
+.modal-overlay,
+.modal-overlay *,
+.wadah-notifikasi,
+.wadah-notifikasi * {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   1. CONTAINER DAN CARD
+===================================================== */
 
 .dashboard-container {
     width: calc(100% - 50px);
@@ -10,26 +50,20 @@
 
 .card {
     position: relative;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     margin-bottom: 14px;
+    background: var(--silab-surface);
+    border: 1px solid var(--silab-border);
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(35, 35, 65, 0.07);
 }
 
-
-/* =========================================
+/* =====================================================
    2. HEADER DASHBOARD
-========================================= */
+===================================================== */
 
 .dashboard-header {
     position: relative;
-    padding: 16px 20px;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    margin-bottom: 14px;
+    padding: 18px 20px;
 }
 
 .header-decoration {
@@ -45,15 +79,15 @@
 }
 
 .header-decoration span:nth-child(1) {
-    background-color: #911E3F;
+    background: var(--silab-maroon);
 }
 
 .header-decoration span:nth-child(2) {
-    background-color: #F8B916;
+    background: var(--silab-yellow);
 }
 
 .header-decoration span:nth-child(3) {
-    background-color: #33266A;
+    background: var(--silab-purple);
 }
 
 .header-tags {
@@ -75,40 +109,36 @@
 }
 
 .info-tag.tag-panel {
-    background-color: #ECEDF3;
-    color: #33266A;
-}
-
-.info-tag.tag-panel i {
-    font-size: 10px;
+    background: #ECEDF3;
+    color: var(--silab-purple);
 }
 
 .info-tag.tag-fasilitas {
-    background-color: #FEF3C7;
+    background: var(--silab-warning-bg);
     color: #6B4A00;
     border: 1px solid #FBE59A;
 }
 
 .info-tag.tag-fasilitas i {
     color: #D49A06;
-    font-size: 12px;
 }
 
 .dashboard-header h2 {
-    font-size: 27px;
-    font-weight: 800;
-    color: #33266A;
     margin-bottom: 6px;
+    color: var(--silab-purple);
+    font-size: clamp(21px, 2vw, 27px);
+    font-weight: 800;
+    line-height: 1.3;
 }
 
 .dashboard-header p {
     max-width: 600px;
+    color: var(--silab-muted);
     font-size: 12px;
-    line-height: 1.5;
-    color: #667A9B;
+    line-height: 1.6;
 }
 
-/* Badge Otoritas Laboran */
+/* Badge otoritas */
 
 .badge-otoritas {
     position: absolute;
@@ -119,53 +149,50 @@
     align-items: center;
     gap: 6px;
 
-    padding: 10px 16px;
+    padding: 9px 15px;
 
-    background-color: #ECEDF3;
-    color: #33266A;
-
+    color: var(--silab-purple);
+    background: #ECEDF3;
     border: 1px solid #D5D7E3;
     border-radius: 30px;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-
     white-space: nowrap;
+
     cursor: default;
     user-select: none;
 }
 
 .badge-otoritas i {
     font-size: 13px;
-    color: #33266A;
 }
 
-
-/* =========================================
-   3. SESI BERLANGSUNG
-========================================= */
+/* =====================================================
+   3. CARD SESI BERLANGSUNG
+===================================================== */
 
 .sesi-card {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 16px;
 
     min-height: 138px;
-    padding: 16px 20px;
+    padding: 17px 20px;
 }
 
 .sesi-info {
-    flex: 1;
-    min-width: 260px;
+    flex: 1 1 260px;
+    min-width: 0;
 }
 
 .sesi-top {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 12px;
 }
 
@@ -176,9 +203,8 @@
 
     padding: 6px 12px;
 
-    background-color: #FEF3C7;
     color: #6B4A00;
-
+    background: var(--silab-warning-bg);
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
@@ -187,56 +213,58 @@
 }
 
 .badge-sesi i {
-    color: #F8B916;
-    font-size: 10px;
+    color: var(--silab-yellow);
 }
 
 .sesi-jam {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--silab-text);
     font-size: 12px;
     font-weight: 600;
-    color: #263249;
 }
 
 .sesi-info h3 {
+    margin-bottom: 5px;
+    color: var(--silab-purple);
     font-size: 18px;
     font-weight: 800;
-    color: #33266A;
-    margin-bottom: 5px;
+    line-height: 1.4;
 }
 
 .sesi-lokasi {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
-    font-size: 12px;
+
     color: #475569;
+    font-size: 12px;
 }
 
 .sesi-lokasi strong {
-    color: #33266A;
+    color: var(--silab-purple);
 }
 
 .sesi-lokasi i {
-    color: #911E3F;
-    font-size: 13px;
+    color: var(--silab-maroon);
 }
 
-/* Aksi Validasi */
+/* Aksi presensi */
 
 .sesi-aksi {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 12px;
+    max-width: 100%;
 }
 
 .batas-waktu {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 12px;
-    color: #667A9B;
+
+    color: var(--silab-muted);
+    font-size: 11px;
 }
 
 .batas-waktu i {
@@ -246,8 +274,12 @@
 .tombol-validasi {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 9px;
 }
+
+/* =====================================================
+   4. TOMBOL
+===================================================== */
 
 .btn {
     display: inline-flex;
@@ -263,62 +295,117 @@
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
-
     text-decoration: none;
+
     cursor: pointer;
-    transition: 0.2s;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.btn:focus-visible {
+    outline: 3px solid rgba(51, 38, 106, 0.25);
+    outline-offset: 3px;
 }
 
 .btn-hadir {
     min-width: 170px;
-    background-color: #911E3F;
     color: #FFFFFF;
+    background: var(--silab-maroon);
 }
 
-.btn-hadir:hover {
-    background-color: #761630;
+.btn-hadir:hover:not(:disabled) {
+    background: var(--silab-maroon-dark);
+    box-shadow: 0 4px 10px rgba(145, 30, 63, 0.18);
 }
 
 .btn-tidak {
     min-width: 170px;
-    background-color: #F1EDF7;
-    color: #911E3F;
+    color: var(--silab-maroon);
+    background: #F1EDF7;
     border-color: #E9DDEB;
 }
 
-.btn-tidak:hover {
-    background-color: #E8E0F2;
+.btn-tidak:hover:not(:disabled) {
+    background: #E8E0F2;
 }
 
+/* Tombol nonaktif */
 
-/* =========================================
-   4. JADWAL PEMINJAMAN HARI INI
-========================================= */
+.tombol-validasi .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Feedback presensi */
+
+.presensi-feedback {
+    max-width: 100%;
+    margin: 0;
+
+    color: var(--silab-muted);
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: right;
+}
+
+.presensi-feedback[data-jenis="info"],
+.presensi-feedback[data-jenis="siap"] {
+    color: var(--silab-purple);
+}
+
+.presensi-feedback[data-jenis="sukses"] {
+    color: var(--silab-green);
+}
+
+.presensi-feedback[data-jenis="error"] {
+    color: var(--silab-maroon);
+}
+
+/* =====================================================
+   5. JADWAL PEMINJAMAN
+===================================================== */
 
 .jadwal-card {
-    padding: 14px 16px 16px;
+    padding: 15px 16px 16px;
 }
 
 .jadwal-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 12px;
 
     padding: 0 3px;
-    margin-bottom: 14px;
+    margin-bottom: 13px;
 }
 
 .jadwal-head h3 {
+    margin-bottom: 4px;
+    color: var(--silab-purple);
     font-size: 16px;
     font-weight: 800;
-    color: #33266A;
-    margin-bottom: 4px;
 }
 
 .jadwal-head p {
+    color: var(--silab-muted);
     font-size: 10px;
-    color: #667A9B;
+    line-height: 1.5;
 }
 
 .badge-terjadwal {
@@ -328,9 +415,8 @@
 
     padding: 6px 12px;
 
-    background-color: #FEF3C7;
     color: #6B4A00;
-
+    background: var(--silab-warning-bg);
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
@@ -341,37 +427,40 @@
 
 .badge-terjadwal i {
     color: #D49A06;
-    font-size: 11px;
 }
 
-
-/* =========================================
-   5. TABEL JADWAL
-========================================= */
+/* =====================================================
+   6. TABEL JADWAL DESKTOP
+===================================================== */
 
 .tabel-wrapper {
     width: 100%;
     overflow-x: auto;
 
+    background: #FBFBFD;
     border: 1px solid #ECECF1;
     border-radius: 12px;
-
-    background-color: #FBFBFD;
 }
 
 .tabel-jadwal {
     width: 100%;
-    min-width: 860px;
+    min-width: 0;
 }
 
-/* Struktur baris */
+/* Baris tabel */
 
 .tabel-row {
     display: grid;
-    grid-template-columns: 1.15fr 2.2fr 1.1fr 1.1fr;
+
+    grid-template-columns:
+        minmax(110px, 1.15fr)
+        minmax(180px, 2.2fr)
+        minmax(110px, 1.1fr)
+        minmax(120px, 1.1fr);
+
     align-items: center;
 
-    min-height: 67px;
+    min-height: 66px;
     padding: 10px 12px;
 
     border-top: 1px solid #ECECF1;
@@ -380,42 +469,48 @@
 /* Header tabel */
 
 .tabel-row.tabel-header {
-    min-height: 48px;
+    min-height: 46px;
     padding: 10px 12px;
 
     border-top: none;
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 .tabel-header span {
-    font-size: 13px;
-    font-weight: 600;
-    color: #667A9B;
+    color: var(--silab-muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
     text-transform: uppercase;
 }
 
-.tabel-header span {
-    text-align: center;
+/* Highlight sesi aktif */
+
+.tabel-row[data-status="aktif"] {
+    background: #FEF6DC;
 }
 
-/* Baris sesi aktif */
-
-.tabel-row.aktif {
-    background-color: #FEF6DC;
+.tabel-row[data-status="aktif"] .kolom-jam > i {
+    color: var(--silab-maroon);
 }
 
-/* Kolom kategori dan status */
+.tabel-row[data-status="aktif"] .jam-text strong {
+    color: var(--silab-maroon);
+}
+
+/* Perataan kolom */
 
 .tabel-row .kolom-jam,
 .tabel-row .kolom-kegiatan,
 .tabel-row .kolom-kategori,
 .tabel-row .kolom-status {
+    min-width: 0;
     text-align: center;
 }
 
-/* =========================================
-   6. KOLOM JAM
-========================================= */
+/* =====================================================
+   7. KOLOM JAM
+===================================================== */
 
 .kolom-jam {
     display: flex;
@@ -425,76 +520,72 @@
 }
 
 .kolom-jam > i {
-    font-size: 14px;
-    color: #667A9B;
     flex-shrink: 0;
+    color: var(--silab-muted);
+    font-size: 14px;
 }
-
-.tabel-row.aktif .kolom-jam > i {
-    color: #911E3F;
-}
-/* KOLOM JAM / SESI */
 
 .jam-text strong {
     display: block;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.5;
     color: #202B40;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
 }
 
 .jam-text small {
     display: block;
+    margin-top: 2px;
+
+    color: var(--silab-muted);
+
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     line-height: 1.5;
-    color: #667A9B;
-    margin-top: 2px;
 }
 
 .jam-text small.merah {
+    color: var(--silab-maroon);
     font-weight: 700;
-    color: #911E3F;
 }
 
 .jam-text small.ungu {
+    color: var(--silab-purple);
     font-weight: 600;
-    color: #33266A;
 }
 
-.tabel-row.aktif .jam-text strong {
-    color: #911E3F;
-}
-
-/* =========================================
-   7. KOLOM KEGIATAN
-========================================= */
+/* =====================================================
+   8. KOLOM KEGIATAN
+===================================================== */
 
 .kolom-kegiatan strong {
     display: block;
-    font-size: 13px;
+    color: var(--silab-text);
+
+    font-size: 12px;
     font-weight: 600;
     line-height: 1.5;
-    color: #263249;
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .kolom-kegiatan span {
     display: block;
-    font-size: 12px;
+    margin-top: 2px;
+
+    color: var(--silab-muted);
+    font-size: 11px;
     font-weight: 400;
     line-height: 1.5;
-    color: #667A9B;
-    margin-top: 2px;
     text-align: center;
 }
 
-
-/* =========================================
-   8. BADGE KATEGORI
-========================================= */
+/* =====================================================
+   9. BADGE KATEGORI
+===================================================== */
 
 .badge-kategori {
     display: inline-flex;
@@ -502,53 +593,52 @@
     justify-content: center;
     gap: 6px;
 
-    padding: 6px 11px;
+    max-width: 100%;
+    padding: 6px 10px;
 
     border-radius: 20px;
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-
     white-space: nowrap;
 }
 
 .badge-kategori i {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 /* K1 Praktikum */
 
-.badge-kategori.k1 {
-    background-color: #33266A;
+.badge-kategori[data-kategori="K1"] {
     color: #FFFFFF;
+    background: var(--silab-purple);
 }
 
 /* K2 Dosen */
 
-.badge-kategori.k2 {
-    background-color: #E8E8EE;
-    color: #33266A;
+.badge-kategori[data-kategori="K2"] {
+    color: var(--silab-purple);
+    background: #E8E8EE;
 }
 
 /* K4 HMTI */
 
-.badge-kategori.k4 {
-    background-color: #FEF3C7;
+.badge-kategori[data-kategori="K4"] {
     color: #6B4A00;
+    background: var(--silab-warning-bg);
     border: 1px solid #FBE59A;
 }
 
-/* K5 Belajar Mandiri */
+/* K5 Mandiri */
 
-.badge-kategori.k5 {
-    background-color: #F1F5F9;
-    color: #33266A;
+.badge-kategori[data-kategori="K5"] {
+    color: var(--silab-purple);
+    background: #F1F5F9;
 }
 
-
-/* =========================================
-   9. BADGE STATUS
-========================================= */
+/* =====================================================
+   10. BADGE STATUS PRESENSI
+===================================================== */
 
 .badge-status {
     display: inline-flex;
@@ -556,13 +646,14 @@
     justify-content: center;
     gap: 5px;
 
+    max-width: 100%;
     padding: 6px 10px;
 
+    border: 1px solid transparent;
     border-radius: 20px;
 
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-
     white-space: nowrap;
 }
 
@@ -570,28 +661,149 @@
     font-size: 11px;
 }
 
-.badge-status.selesai {
-    background-color: #E9F8EE;
-    color: #15803D;
-    border: 1px solid #BFE8CC;
+/* Selesai digunakan */
+
+.badge-status[data-status="selesai"] {
+    color: var(--silab-green);
+    background: var(--silab-green-bg);
+    border-color: #BFE8CC;
 }
 
-.badge-status.menunggu {
-    background-color: #FEF3C7;
+/* Aktif di laboratorium */
+
+.badge-status[data-status="aktif"] {
+    color: var(--silab-green);
+    background: var(--silab-green-bg);
+    border-color: #BFE8CC;
+}
+
+/* Menunggu presensi */
+
+.badge-status[data-status="menunggu"] {
     color: #B45309;
-    border: 1px solid #FBE59A;
+    background: var(--silab-warning-bg);
+    border-color: #FBE59A;
 }
 
+/* Tidak digunakan */
 
-/* =========================================
-   10. UNDUH REKAPAN
-========================================= */
+.badge-status[data-status="tidak-digunakan"] {
+    color: #64748B;
+    background: #F1F5F9;
+    border-color: #E2E8F0;
+}
+
+/* Jadwal kosong */
+
+.jadwal-kosong {
+    padding: 30px 15px;
+    color: var(--silab-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+/* =====================================================
+   11. PAGINATION JADWAL
+===================================================== */
+
+.jadwal-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 14px 8px 2px;
+    margin-top: 2px;
+}
+
+.pagination-info {
+    color: var(--silab-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.pagination-info strong {
+    color: var(--silab-purple);
+    font-weight: 700;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Mendukung class pagination dari dashboard.js */
+
+.pagination-btn,
+.page-btn,
+.page-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 34px;
+    min-height: 32px;
+    padding: 0 10px;
+
+    color: var(--silab-muted);
+    background: #FFFFFF;
+    border: 1px solid var(--silab-border);
+    border-radius: 8px;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+/* Halaman aktif */
+
+.pagination-btn.active,
+.page-number.active {
+    color: #FFFFFF;
+    background: var(--silab-maroon);
+    border-color: var(--silab-maroon);
+}
+
+/* Hover */
+
+.pagination-btn:not(:disabled):not(.active):hover,
+.page-btn:not(:disabled):hover,
+.page-number:not(.active):hover {
+    color: var(--silab-purple);
+    background: #F1EDF7;
+    border-color: var(--silab-purple);
+}
+
+/* Nonaktif */
+
+.pagination-btn:disabled,
+.page-btn:disabled {
+    color: #B8C0CE;
+    background: #F8F9FB;
+    border-color: var(--silab-border);
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   12. UNDUH REKAPAN
+===================================================== */
 
 .unduh-card {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 14px;
 
     padding: 14px 16px;
@@ -601,26 +813,29 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1;
+    min-width: 0;
 }
 
 .unduh-icon {
-    width: 34px;
-    height: 34px;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background-color: #33266A;
-    color: #FFFFFF;
-
-    border-radius: 9px;
-    font-size: 16px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
+
+    color: #FFFFFF;
+    background: var(--silab-purple);
+    border-radius: 9px;
+
+    font-size: 16px;
 }
 
 .unduh-content {
     flex: 1;
+    min-width: 0;
 }
 
 .unduh-judul {
@@ -628,21 +843,21 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+
     margin-bottom: 4px;
 }
 
 .unduh-judul h3 {
+    color: var(--silab-purple);
     font-size: 13px;
     font-weight: 700;
-    color: #33266A;
 }
 
 .badge-rekap {
     padding: 4px 9px;
 
-    background-color: #FEF3C7;
     color: #6B4A00;
-
+    background: var(--silab-warning-bg);
     border: 1px solid #FBE59A;
     border-radius: 20px;
 
@@ -651,45 +866,49 @@
 }
 
 .unduh-text p {
+    color: var(--silab-muted);
     font-size: 11px;
-    color: #667A9B;
+    line-height: 1.5;
 }
-
-/* Tombol unduh */
 
 .unduh-tombol {
     display: flex;
+    flex-wrap: wrap;
     gap: 9px;
 }
 
+/* Tombol PDF */
+
 .btn-pdf {
-    background-color: #FFFFFF;
-    color: #911E3F;
-    border-color: #911E3F;
+    color: var(--silab-maroon);
+    background: #FFFFFF;
+    border-color: var(--silab-maroon);
 }
 
-.btn-pdf:hover {
-    background-color: #FFF5F7;
+.btn-pdf:hover:not(:disabled) {
+    color: #FFFFFF;
+    background: var(--silab-maroon);
 }
+
+/* Tombol Excel */
 
 .btn-excel {
-    background-color: #33266A;
     color: #FFFFFF;
+    background: var(--silab-purple);
 }
 
-.btn-excel:hover {
-    background-color: #271D52;
+.btn-excel:hover:not(:disabled) {
+    background: var(--silab-purple-dark);
 }
 
-
-/* =========================================
-   11. MODAL UNDUH LAPORAN
-========================================= */
+/* =====================================================
+   13. MODAL EKSPOR LAPORAN
+===================================================== */
 
 .modal-overlay {
     position: fixed;
     inset: 0;
-    z-index: 2000;
+    z-index: 3000;
 
     display: none;
     align-items: center;
@@ -697,7 +916,7 @@
 
     padding: 20px;
 
-    background-color: rgba(51, 38, 106, 0.18);
+    background: rgba(35, 29, 65, 0.24);
 
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
@@ -712,23 +931,22 @@
     inset: 0;
 }
 
-/* Kotak modal */
-
 .modal-box {
     position: relative;
+
     width: 100%;
     max-width: 440px;
 
     overflow: hidden;
     padding: 0 20px 20px;
 
-    background-color: #FFFFFF;
+    background: #FFFFFF;
     border-radius: 14px;
 
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
-}
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
 
-/* Garis tiga warna */
+    animation: modalMasuk 0.25s ease both;
+}
 
 .modal-strip {
     display: flex;
@@ -741,18 +959,16 @@
 }
 
 .modal-strip span:nth-child(1) {
-    background-color: #911E3F;
+    background: var(--silab-maroon);
 }
 
 .modal-strip span:nth-child(2) {
-    background-color: #F8B916;
+    background: var(--silab-yellow);
 }
 
 .modal-strip span:nth-child(3) {
-    background-color: #33266A;
+    background: var(--silab-purple);
 }
-
-/* Isi modal */
 
 .modal-tag {
     display: inline-flex;
@@ -760,46 +976,46 @@
     gap: 5px;
 
     padding: 6px 12px;
+    margin-bottom: 10px;
 
-    background-color: #ECEDF3;
-    color: #33266A;
-
+    color: var(--silab-purple);
+    background: #ECEDF3;
     border-radius: 20px;
 
     font-size: 10px;
     font-weight: 700;
-    margin-bottom: 10px;
 }
 
 .modal-box h3 {
+    margin-bottom: 22px;
+
+    color: var(--silab-purple);
     font-size: 19px;
     font-weight: 800;
-    color: #33266A;
-    margin-bottom: 25px;
+    line-height: 1.4;
 }
-
-/* Form tanggal */
 
 .modal-label {
     display: flex;
     align-items: center;
     gap: 5px;
 
+    margin-bottom: 7px;
+
+    color: var(--silab-purple);
     font-size: 11px;
     font-weight: 700;
-    color: #33266A;
-
-    margin-bottom: 7px;
 }
 
 .modal-input {
+    display: block;
     width: 100%;
+
     padding: 10px 12px;
 
-    background-color: #F7F8FA;
     color: #475569;
-
-    border: 1px solid #E1E1E5;
+    background: #F7F8FA;
+    border: 1px solid var(--silab-border);
     border-radius: 8px;
 
     font-family: inherit;
@@ -808,18 +1024,17 @@
 
 .modal-input:focus {
     outline: none;
-    border-color: #33266A;
+    border-color: var(--silab-purple);
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.10);
 }
-
-/* Pembatas */
 
 .modal-divider {
     height: 1px;
-    background-color: #EDF0F5;
     margin: 16px 0;
+    background: #EDF0F5;
 }
 
-/* Tombol modal */
+/* Aksi modal */
 
 .modal-aksi {
     display: grid;
@@ -828,85 +1043,381 @@
 }
 
 .modal-aksi .btn {
-    border-radius: 8px;
     padding: 10px 12px;
+    border-radius: 8px;
     font-size: 11px;
 }
 
+/* Batal */
+
 .btn-batal {
-    background-color: #FFFFFF;
-    color: #263249;
+    color: var(--silab-text);
+    background: #FFFFFF;
     border-color: #D9DCE3;
 }
 
-.btn-batal:hover {
-    background-color: #F5F5F8;
+.btn-batal:hover:not(:disabled) {
+    background: #F5F5F8;
 }
+
+/* Unduh PDF */
 
 .btn-unduh-maroon {
-    background-color: #911E3F;
     color: #FFFFFF;
+    background: var(--silab-maroon);
 }
 
-.btn-unduh-maroon:hover {
-    background-color: #761630;
+.btn-unduh-maroon:hover:not(:disabled) {
+    background: var(--silab-maroon-dark);
 }
+
+/* Unduh Excel */
 
 .btn-unduh-ungu {
-    background-color: #33266A;
     color: #FFFFFF;
+    background: var(--silab-purple);
 }
 
-.btn-unduh-ungu:hover {
-    background-color: #271D52;
+.btn-unduh-ungu:hover:not(:disabled) {
+    background: var(--silab-purple-dark);
 }
 
+/* =====================================================
+   14. NOTIFIKASI TOAST
+===================================================== */
 
-/* =========================================
-   12. RESPONSIVE DASHBOARD
-========================================= */
+.wadah-notifikasi {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    z-index: 4000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    width: min(420px, calc(100% - 32px));
+
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.wadah-notifikasi:empty {
+    display: none;
+}
+
+/* Kartu toast */
+
+.notifikasi-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    padding: 13px 16px;
+
+    color: var(--silab-text);
+    background: #FFFFFF;
+
+    border: 1px solid var(--silab-border);
+    border-left: 5px solid var(--silab-green);
+    border-radius: 12px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.13);
+
+    pointer-events: auto;
+
+    animation:
+        notifikasiMasuk 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Ikon toast */
+
+.notifikasi-ikon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+
+    color: var(--silab-green);
+    background: #DCFCE7;
+    border-radius: 50%;
+
+    font-size: 20px;
+}
+
+/* Isi toast */
+
+.notifikasi-konten {
+    flex: 1;
+    min-width: 0;
+}
+
+.notifikasi-judul {
+    display: block;
+    margin-bottom: 3px;
+
+    color: var(--silab-text);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.notifikasi-pesan {
+    color: var(--silab-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Berhasil */
+
+.notifikasi-toast[data-jenis="sukses"] {
+    border-left-color: #16A34A;
+}
+
+.notifikasi-toast[data-jenis="sukses"] .notifikasi-ikon {
+    color: #15803D;
+    background: #DCFCE7;
+}
+
+/* Tidak hadir */
+
+.notifikasi-toast[data-jenis="tidak-hadir"] {
+    border-left-color: #DC2626;
+}
+
+.notifikasi-toast[data-jenis="tidak-hadir"] .notifikasi-ikon {
+    color: #B91C1C;
+    background: #FEE2E2;
+}
+
+/* Batas waktu habis */
+
+.notifikasi-toast[data-jenis="kedaluwarsa"] {
+    border-left-color: #E5A000;
+}
+
+.notifikasi-toast[data-jenis="kedaluwarsa"] .notifikasi-ikon {
+    color: #92400E;
+    background: #FEF3C7;
+}
+
+/* Ekspor gagal */
+
+.notifikasi-toast[data-jenis="error"] {
+    border-left-color: #DC2626;
+}
+
+.notifikasi-toast[data-jenis="error"] .notifikasi-ikon {
+    color: #B91C1C;
+    background: #FEE2E2;
+}
+
+/* =====================================================
+   15. ANIMASI
+===================================================== */
+
+@keyframes notifikasiMasuk {
+    0% {
+        opacity: 0;
+        transform: translateY(-55px) scale(0.75);
+    }
+
+    65% {
+        opacity: 1;
+        transform: translateY(7px) scale(1.04);
+    }
+
+    85% {
+        transform: translateY(-3px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.notifikasi-toast.is-hilang {
+    animation: notifikasiKeluar 0.25s ease forwards;
+}
+
+@keyframes notifikasiKeluar {
+    to {
+        opacity: 0;
+        transform: translateY(-25px) scale(0.92);
+    }
+}
+
+@keyframes modalMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =====================================================
+   16. RESPONSIVE TABLET
+===================================================== */
 
 @media screen and (max-width: 1100px) {
 
     .dashboard-container {
         width: calc(100% - 36px);
     }
-
-    .sesi-aksi {
-        align-items: flex-end;
-    }
 }
 
-@media screen and (max-width: 900px) {
-
-    .tabel-jadwal {
-        min-width: 860px;
-    }
-}
+/* =====================================================
+   17. RESPONSIVE TABLET KECIL
+===================================================== */
 
 @media screen and (max-width: 800px) {
 
     .dashboard-header {
-        padding: 15px;
+        padding: 16px;
     }
 
     .badge-otoritas {
         position: static;
-        margin-top: 12px;
         width: fit-content;
+        margin-top: 12px;
     }
 
-    .sesi-aksi {
-        width: 100%;
+    /* Presensi */
+
+    .sesi-card {
         align-items: stretch;
     }
 
+    .sesi-info {
+        flex-basis: 100%;
+    }
+
+    .sesi-aksi {
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .presensi-feedback {
+        text-align: left;
+    }
+
     .tombol-validasi {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .tombol-validasi .btn {
         width: 100%;
+        min-width: 0;
+    }
+
+    /* Tabel menjadi kartu */
+
+    .tabel-wrapper {
+        overflow: visible;
+        border: none;
+        background: transparent;
+    }
+
+    .tabel-jadwal {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tabel-row.tabel-header {
+        display: none;
+    }
+
+    .tabel-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+        gap: 14px 10px;
+
+        min-height: auto;
+        padding: 14px;
+
+        background: #FFFFFF;
+        border: 1px solid #ECECF1;
+        border-radius: 12px;
+    }
+
+    .tabel-row[data-status="aktif"] {
+        background: #FEF6DC;
+        border-color: #FBE59A;
+    }
+
+    .tabel-row .kolom-jam,
+    .tabel-row .kolom-kegiatan,
+    .tabel-row .kolom-kategori,
+    .tabel-row .kolom-status {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 0;
+        gap: 5px;
+
+        text-align: center;
+    }
+
+    .kolom-jam > i {
+        margin-bottom: 2px;
+    }
+
+    /* Label informasi */
+
+    .kolom-jam::before,
+    .kolom-kegiatan::before,
+    .kolom-kategori::before,
+    .kolom-status::before {
+        margin-bottom: 3px;
+
+        color: #94A3B8;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-align: center;
+    }
+
+    .kolom-jam::before {
+        content: "JAM / SESI";
+    }
+
+    .kolom-kegiatan::before {
+        content: "KEGIATAN & PEMOHON";
+    }
+
+    .kolom-kategori::before {
+        content: "KATEGORI";
+    }
+
+    .kolom-status::before {
+        content: "STATUS";
+    }
+
+    .badge-kategori,
+    .badge-status {
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+    }
+
+    /* Ekspor */
+
+    .unduh-card {
+        align-items: flex-start;
     }
 
     .unduh-tombol {
@@ -918,15 +1429,23 @@
     }
 }
 
-@media screen and (max-width: 700px) {
+/* =====================================================
+   18. RESPONSIVE MOBILE
+===================================================== */
+
+@media screen and (max-width: 600px) {
 
     .dashboard-container {
         width: calc(100% - 24px);
         margin: 12px auto 20px;
     }
 
+    .dashboard-header {
+        padding: 15px;
+    }
+
     .dashboard-header h2 {
-        font-size: 21px;
+        font-size: 20px;
     }
 
     .dashboard-header p {
@@ -941,43 +1460,18 @@
         font-size: 9px;
     }
 
-    .sesi-info h3 {
-        font-size: 16px;
-    }
-
-    .jadwal-card {
-        padding: 12px;
-    }
-
-    .jadwal-head {
-        flex-wrap: wrap;
-    }
-
-    .jadwal-head h3 {
-        font-size: 15px;
-    }
-
-    .jadwal-head p {
-        font-size: 10px;
-    }
-
-    .tabel-jadwal {
-        min-width: 860px;
-    }
-
-    .unduh-card {
-        align-items: flex-start;
-    }
-
     .badge-otoritas {
         font-size: 10px;
     }
-}
 
-@media screen and (max-width: 600px) {
+    /* Presensi */
 
     .sesi-card {
         padding: 14px;
+    }
+
+    .sesi-info h3 {
+        font-size: 16px;
     }
 
     .sesi-top {
@@ -989,9 +1483,50 @@
     }
 
     .btn {
-        font-size: 11px;
         padding: 10px 12px;
+        font-size: 11px;
     }
+
+    /* Jadwal */
+
+    .jadwal-card {
+        padding: 12px;
+    }
+
+    .jadwal-head {
+        align-items: flex-start;
+    }
+
+    .jadwal-head h3 {
+        font-size: 15px;
+    }
+
+    .jadwal-head p {
+        font-size: 10px;
+    }
+
+    /* Pagination */
+
+    .jadwal-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px 4px 2px;
+    }
+
+    .pagination-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .pagination-btn,
+    .page-btn,
+    .page-number {
+        min-height: 30px;
+        font-size: 10px;
+    }
+
+    /* Ekspor */
 
     .unduh-info {
         align-items: flex-start;
@@ -1004,6 +1539,8 @@
     .unduh-text p {
         font-size: 10px;
     }
+
+    /* Modal */
 
     .modal-box {
         padding: 0 16px 16px;
@@ -1025,102 +1562,43 @@
     .modal-aksi .btn {
         width: 100%;
     }
-}
 
+    /* Toast */
 
-/* =========================================
-   13. PAGINASI JADWAL PEMINJAMAN
-========================================= */
-
-.jadwal-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-
-    padding: 16px 12px 2px;
-    margin-top: 2px;
-}
-
-.pagination-info {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    color: #667A9B;
-}
-
-.pagination-info strong {
-    font-weight: 700;
-    color: #33266A;
-}
-
-.pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-}
-
-.page-btn,
-.page-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-width: 34px;
-    height: 32px;
-    padding: 0 10px;
-
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-
-    border: 1px solid #E1E1E5;
-    border-radius: 8px;
-
-    background-color: #FFFFFF;
-    color: #667A9B;
-
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.page-number.active {
-    background-color: #911E3F;
-    color: #FFFFFF;
-    border-color: #911E3F;
-}
-
-.page-btn:disabled {
-    background-color: #FFFFFF;
-    color: #B8C0CE;
-    border-color: #E1E1E5;
-    cursor: not-allowed;
-}
-
-.page-btn:not(:disabled):hover,
-.page-number:not(.active):hover {
-    background-color: #F1EDF7;
-    color: #33266A;
-    border-color: #33266A;
-}
-
-/* RESPONSIVE PAGINASI */
-
-@media screen and (max-width: 600px) {
-    .jadwal-pagination {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 14px 4px 2px;
+    .wadah-notifikasi {
+        top: 12px;
+        width: calc(100% - 24px);
     }
 
-    .pagination-controls {
-        width: 100%;
-        justify-content: flex-end;
+    .notifikasi-toast {
+        padding: 12px;
     }
 
+    .notifikasi-judul {
+        font-size: 12px;
+    }
+
+    .notifikasi-pesan {
+        font-size: 10px;
+    }
+}
+
+/* =====================================================
+   19. AKSESIBILITAS
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .btn,
+    .pagination-btn,
     .page-btn,
     .page-number {
-        font-size: 10px;
+        transition: none;
+    }
+
+    .notifikasi-toast,
+    .notifikasi-toast.is-hilang,
+    .modal-box {
+        animation: none;
     }
 }

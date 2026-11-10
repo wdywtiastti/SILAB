@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -11,10 +12,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <!-- BOOTSTRAP ICON -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
 
     <!-- CSS -->
     <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
@@ -24,10 +31,7 @@
 
 <body>
 
-    <!-- ==============================
-         NAVBAR
-    ============================== -->
-
+    <!-- NAVBAR -->
     <nav class="navbar">
 
         <div class="navbar-brand">
@@ -45,7 +49,6 @@
 
         </div>
 
-
         <div class="navbar-menu">
 
             <a href="dashboard.html" class="nav-link">
@@ -61,7 +64,6 @@
             </a>
 
         </div>
-
 
         <div class="navbar-profile">
 
@@ -107,15 +109,10 @@
     </nav>
 
 
-    <!-- ==============================
-         KONTEN UTAMA
-    ============================== -->
-
+    <!-- KONTEN UTAMA -->
     <main class="rekomendasi-container">
 
-
         <!-- HEADER HALAMAN -->
-
         <section class="card page-header-card">
 
             <div class="header-decoration">
@@ -138,7 +135,6 @@
 
             </div>
 
-
             <div class="buat-header-content">
 
                 <div>
@@ -153,7 +149,7 @@
 
                 </div>
 
-                <span class="badge-menunggu">
+                <span class="badge-menunggu" id="statusRekomendasi">
                     <i class="bi bi-clock-history"></i>
                     Menunggu Rekomendasi
                 </span>
@@ -164,7 +160,6 @@
 
 
         <!-- RINCIAN JADWAL TERGESER -->
-
         <section class="card">
 
             <div class="card-title">
@@ -177,85 +172,102 @@
 
             </div>
 
-
             <div class="rincian-grid">
 
-
                 <!-- DATA PEMOHON -->
-
                 <div class="rincian-box">
 
                     <small>Data Pemohon</small>
 
-                    <strong>
-                        Djuleha M. Asyik • 07352411038
+                    <strong data-detail="namaPemohon">
+                        Memuat data...
                     </strong>
 
-                    <span class="chip ungu">
-                        <i class="bi bi-circle-fill"></i>
-                        P5 – Belajar Mandiri
-                    </span>
+                    <span
+                        class="detail-waktu"
+                        data-detail="nipNpm"
+                    ></span>
+
+                    <span
+                        class="chip ungu"
+                        data-detail="kategoriPrioritas"
+                    ></span>
+
+                    <span
+                        class="detail-waktu"
+                        data-detail="namaKegiatan"
+                    ></span>
+
+                    <span
+                        class="detail-waktu"
+                        data-detail="kebutuhan"
+                    ></span>
 
                 </div>
 
 
                 <!-- JADWAL SEMULA -->
-
                 <div class="rincian-box">
 
                     <small>Jadwal Semula (Tergeser)</small>
 
-                    <strong>
-                        Rabu, 21 Oktober 2026
+                    <strong data-detail="jadwalAsalTanggal">
+                        Memuat jadwal...
                     </strong>
 
-                    <span class="detail-waktu">
-                        13.00–15.30 WIT
-                    </span>
+                    <span
+                        class="detail-waktu"
+                        data-detail="jadwalAsalJam"
+                    ></span>
 
                     <span class="chip merah">
                         <i class="bi bi-x-circle-fill"></i>
-                        Dibatalkan Sistem
+                        Tergeser oleh Prioritas Lebih Tinggi
                     </span>
 
                 </div>
 
 
-                <!-- ALASAN -->
-
+                <!-- PENGAJUAN PENGGESER -->
                 <div class="rincian-box">
 
                     <small>Pengajuan Prioritas yang Menggeser</small>
 
-                    <strong>
-                        Yasir Muin S.T., M.Kom.
+                    <strong data-detail="namaPenggeser">
+                        Memuat data...
                     </strong>
+
+                    <span
+                        class="detail-waktu"
+                        data-detail="alasan"
+                    ></span>
 
                     <span class="chip kuning">
                         <i class="bi bi-circle-fill"></i>
-                        Kelas Pengganti
+                        Pengajuan Prioritas Lebih Tinggi
                     </span>
 
                 </div>
 
             </div>
 
-
             <div class="catatan-data">
+
                 <i class="bi bi-info-circle-fill"></i>
 
                 <p>
-                    Jadwal alternatif harus diperiksa agar tidak bertabrakan
-                    dengan jadwal yang telah terkonfirmasi dan tetap
-                    memenuhi kebutuhan kapasitas perangkat pemohon.
+                    Jadwal alternatif akan diperiksa terhadap jadwal
+                    peminjaman aktif dan rekomendasi lain. Kebutuhan
+                    kapasitas perangkat juga harus sesuai dengan
+                    fasilitas laboratorium.
                 </p>
+
             </div>
 
         </section>
 
 
         <!-- ALOKASI REKOMENDASI -->
-
         <section class="card">
 
             <div class="card-title-split">
@@ -279,30 +291,29 @@
 
 
             <!-- INFORMASI -->
-
             <div class="aturan-info">
 
                 <i class="bi bi-info-circle-fill"></i>
 
                 <p>
-                    Tentukan waktu alternatif yang tersedia untuk pemohon.
-                    Rekomendasi akan dikirimkan kepada pengguna untuk
-                    dikonfirmasi.
+                    Tentukan waktu alternatif yang tersedia untuk
+                    pemohon. Rekomendasi akan disimpan dan menunggu
+                    konfirmasi dari pengguna selama 24 jam.
                 </p>
 
             </div>
 
 
-            <!-- FORM -->
-
-            <form class="form-rekomendasi" action="#" method="get">
-
+            <!-- FORM REKOMENDASI -->
+            <form
+                id="formRekomendasi"
+                class="form-rekomendasi"
+                novalidate
+            >
 
                 <div class="form-grid">
 
-
                     <!-- WAKTU MULAI -->
-
                     <div class="form-group">
 
                         <label for="waktu-mulai">
@@ -312,7 +323,7 @@
                         <input
                             type="datetime-local"
                             id="waktu-mulai"
-                            name="waktu_mulai"
+                            name="waktuMulai"
                             class="form-input"
                             required
                         >
@@ -321,7 +332,6 @@
 
 
                     <!-- WAKTU SELESAI -->
-
                     <div class="form-group">
 
                         <label for="waktu-selesai">
@@ -331,7 +341,7 @@
                         <input
                             type="datetime-local"
                             id="waktu-selesai"
-                            name="waktu_selesai"
+                            name="waktuSelesai"
                             class="form-input"
                             required
                         >
@@ -340,7 +350,6 @@
 
 
                     <!-- CATATAN -->
-
                     <div class="form-group full">
 
                         <label for="catatan">
@@ -360,8 +369,16 @@
                 </div>
 
 
-                <!-- BATAS KONFIRMASI -->
+                <!-- FEEDBACK VALIDASI -->
+                <p
+                    id="feedbackRekomendasi"
+                    class="rekomendasi-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></p>
 
+
+                <!-- FOOTER FORM -->
                 <div class="footer-aksi">
 
                     <p>
@@ -377,7 +394,6 @@
 
                     </p>
 
-
                     <div class="footer-tombol">
 
                         <a
@@ -387,13 +403,18 @@
                             Batal
                         </a>
 
-
-                        <a
-                            href="rekomendasi_jadwal.html"
+                        <button
+                            type="submit"
                             class="btn btn-kirim"
+                            id="btnKirimRekomendasi"
                         >
-                            Kirim Rekomendasi
-                        </a>
+                            <i class="bi bi-send-fill"></i>
+
+                            <span data-label-submit>
+                                Kirim Rekomendasi
+                            </span>
+
+                        </button>
 
                     </div>
 
@@ -404,6 +425,19 @@
         </section>
 
     </main>
+
+
+    <!-- UTILITAS WAKTU -->
+    <script src="../../JS/laboran/utils/waktu.js"></script>
+
+    <!-- DATA SIMULASI -->
+    <script src="../../JS/laboran/data_uji.js"></script>
+
+    <!-- LAYANAN DATA -->
+    <script src="../../JS/laboran/layanan.js"></script>
+
+    <!-- MODUL BUAT REKOMENDASI -->
+    <script src="../../JS/laboran/buat_rekomendasi.js"></script>
 
 </body>
 </html>
