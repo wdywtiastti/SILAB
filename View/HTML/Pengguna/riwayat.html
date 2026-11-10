@@ -145,47 +145,39 @@
           </table>
         </div>
 
-        
-<!-- FOOTER TABEL -->
+        <!-- FOOTER TABEL -->
 
-<div class="history-panel-footer">
+        <div class="history-panel-footer">
+          <p id="historyInfo">Menampilkan 0 dari 0 pengajuan</p>
 
-    <p id="historyInfo">
-        Menampilkan 0 dari 0 pengajuan
-    </p>
+          <div class="history-pagination">
+            <button
+              type="button"
+              id="prevPage"
+              class="pagination-btn"
+              aria-label="Halaman sebelumnya"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
 
-<div class="history-pagination">
+            <div id="paginationNumbers" class="pagination-numbers"></div>
 
-    <button
-        type="button"
-        id="prevPage"
-        class="pagination-btn"
-        disabled
-    >
-        <i class="bi bi-chevron-left"></i>
-    </button>
-
-    <div id="paginationNumbers" class="pagination-numbers"></div>
-
-    <button
-        type="button"
-        id="nextPage"
-        class="pagination-btn"
-    >
-        <i class="bi bi-chevron-right"></i>
-    </button>
-
-</div>
-
-</div>
-
+            <button
+              type="button"
+              id="nextPage"
+              class="pagination-btn"
+              aria-label="Halaman selanjutnya"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </section>
     </main>
     <!-- JAVASCRIPT -->
     <script src="../../JS/shared/storage.js" defer></script>
     <script src="../../JS/auth/sesi.js" defer></script>
+    <script src="../../JS/auth/keluar.js" defer></script>
     <script src="../../JS/Pengguna/riwayat.js" defer></script>
-    
   </body>
 </html>

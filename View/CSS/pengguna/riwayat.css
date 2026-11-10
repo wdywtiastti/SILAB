@@ -351,7 +351,6 @@
   gap: 6px;
 
   padding: 5px 11px;
-
   border-radius: 20px;
 
   font-size: 9px;
@@ -359,29 +358,72 @@
   white-space: nowrap;
 }
 
-.status-badge i {
-  font-size: 7px;
+.status-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* MENUNGGU */
-
 .status-pending {
   color: #9b6500;
   background: #fff0c9;
 }
 
-/* DISETUJUI */
+.status-pending::before {
+  background: #e99a00;
+}
 
+/* DISETUJUI */
 .status-approved {
   color: #07875e;
   background: #e4f8ef;
 }
 
-/* SELESAI */
+.status-approved::before {
+  background: #10b981;
+}
 
+/* SELESAI DIGUNAKAN */
 .status-completed {
   color: #4d4b80;
   background: #e7e7ff;
+}
+
+.status-completed::before {
+  background: #6366a5;
+}
+
+/* DITOLAK */
+.status-rejected {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+.status-rejected::before {
+  background: #dc2626;
+}
+
+/* DIBATALKAN */
+.status-cancelled {
+  color: #64748b;
+  background: #f1f5f9;
+}
+
+.status-cancelled::before {
+  background: #94a3b8;
+}
+
+/* DIREKOMENDASIKAN */
+.status-recommended {
+  color: #6941c6;
+  background: #f0eaff;
+}
+
+.status-recommended::before {
+  background: #875bf7;
 }
 
 /* ==================================================
@@ -399,78 +441,137 @@
   line-height: 1.5;
 }
 
+
 /* ==================================================
-   12. FOOTER PANEL
+   12. FOOTER PANEL DAN PAGINATION
 ================================================== */
 
 .history-panel-footer {
-  width: 100%;
-  min-height: 68px;
+    width: 100%;
+    min-height: 68px;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
 
-  padding: 12px 18px;
+    padding: 12px 18px;
 
-  background: #f7f9fb;
+    background: #f7f9fb;
+    border-top: 1px solid #e8eaf0;
 }
 
 .history-panel-footer p {
-  color: #5f6675;
-  font-size: 10px;
-  font-weight: 400;
+    margin: 0;
+    color: #64748b;
+    font-size: 11px;
 }
 
 .history-panel-footer strong {
-  color: #202b40;
-  font-weight: 700;
+    color: #27346f;
+    font-weight: 700;
 }
 
-/* ==================================================
-   13. PAGINATION
-================================================== */
+/* CONTAINER PAGINATION */
 
 .history-pagination {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
-.history-pagination button {
-  min-height: 32px;
-  padding: 6px 13px;
+/* TOMBOL NAVIGASI */
 
-  color: #9296a5;
-  background: #eae9ff;
+.pagination-btn {
+    width: 38px;
+    height: 38px;
 
-  border: none;
-  border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 500;
+    border: none;
+    border-radius: 9px;
 
-  cursor: not-allowed;
+    background: #eae9ff;
+    color: #64748b;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: background 0.2s ease;
 }
 
-.history-pagination .current-page {
-  width: 32px;
-  height: 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: #ffffff;
-  background: #911e3f;
-
-  border-radius: 7px;
-
-  font-size: 11px;
-  font-weight: 700;
+.pagination-btn:not(:disabled):hover {
+    background: #dcd9ff;
 }
+
+.pagination-btn:disabled {
+    background: #f1f3f7;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* NOMOR HALAMAN */
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.pagination-number {
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #eae9ff;
+    color: #64748b;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+
+.pagination-number:hover:not(.active) {
+    background: #dcd9ff;
+}
+
+/* HALAMAN AKTIF */
+
+.pagination-number.active {
+    background: #922044;
+    color: #ffffff;
+
+    font-weight: 700;
+
+    box-shadow: 0 3px 8px rgba(146, 32, 68, 0.18);
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 600px) {
+    .history-panel-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .history-pagination {
+        align-self: flex-end;
+    }
+}
+
 
 /* ==================================================
    14. RESPONSIVE TABLET
@@ -597,7 +698,7 @@
   transition: all 0.2s ease;
   cursor: pointer !important;
 }
-    
+
 .pagination-btn {
   padding: 0 12px;
   cursor: pointer;

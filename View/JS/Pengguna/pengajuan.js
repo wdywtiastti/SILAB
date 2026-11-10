@@ -11,6 +11,8 @@ const namaKegiatanInput = document.getElementById("namaKegiatan");
 
 const feedbackElement = document.getElementById("applicationFeedback");
 
+let isSubmitting = false;
+
 //Menampilkan pesan kepada pengguna
 function showFeedback(message, type = "error") {
   feedbackElement.textContent = message;
@@ -292,7 +294,10 @@ function generateSubmissionId(submissions) {
   let nomorTerakhir = 0;
 
   submissions.forEach((submission) => {
-    if (!submission.id || !submission.id.startsWith(prefix)) {
+    if (
+      typeof submission.id !== "string" ||
+      !submission.id.startsWith(prefix)
+    ) {
       return;
     }
 
@@ -385,6 +390,8 @@ if (peminjamanForm) {
 function handleSubmit(event) {
   event.preventDefault();
 
+  if (isSubmitting) return;
+
   // Bersihkan pesan sebelumnya
   clearAllFieldErrors();
   feedbackElement.textContent = "";
@@ -460,22 +467,42 @@ function handleSubmit(event) {
     createdAt: new Date().toISOString(),
   };
 
-  //MENYIMPAN DATA PENGAJUAN
-  const berhasil = SILABStorage.set(SILABStorage.KEYS.SUBMISSIONS, [
-    ...submissions,
-    pengajuanBaru,
-  ]);
+  // Mencegah pengiriman berulang
+  isSubmitting = true;
 
+  const submitButton = peminjamanForm.querySelector('button[type="submit"]');
+
+  submitButton.disabled = true;
+  submitButton.innerHTML = `
+    <span>Mengirim Pengajuan...</span>
+  `;
+
+  // Tambahkan pengajuan baru
+  submissions.push(pengajuanBaru);
+
+  // Simpan ke LocalStorage
+  const berhasil = SILABStorage.set(SILABStorage.KEYS.SUBMISSIONS, submissions);
+
+  // Jika penyimpanan gagal
   if (!berhasil) {
+    isSubmitting = false;
+
+    submitButton.disabled = false;
+    submitButton.innerHTML = `
+      Kirim Pengajuan Peminjaman
+      <i class="bi bi-send"></i>
+    `;
+
     showFeedback("Gagal menyimpan pengajuan. Silakan coba kembali.", "error");
+
     return;
   }
 
-  //FEEDBACK KEBERHASILAN
+  // Jika penyimpanan berhasil
   showFeedback(
     `Pengajuan berhasil dikirim. ID: ${pengajuanBaru.id}`,
     "success",
   );
 
-  console.log("Pengajuan berhasil disimpan:", pengajuanBaru);
+  console.log("Pengajuan berhasil disimpan:", pengajuanBaru); 
 }

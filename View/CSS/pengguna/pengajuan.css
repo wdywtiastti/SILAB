@@ -447,6 +447,11 @@
   font-size: 11px;
 }
 
+.application-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 /* ==================================================
    10. PESAN VALIDASI
 ================================================== */
