@@ -1,14 +1,17 @@
 
-/* =========================================
+/* =====================================================
    ANTRIAN LABORAN - SILAB
-========================================= */
+   Tampilan antrean, detail pengajuan, dan notifikasi
+===================================================== */
 
 :root {
     --primary: #33266A;
+    --primary-dark: #251B50;
     --maroon: #911E3F;
+    --maroon-dark: #761630;
     --yellow: #F8B916;
-    --white: #FFFFFF;
 
+    --white: #FFFFFF;
     --text: #202B40;
     --muted: #667A9B;
 
@@ -17,7 +20,17 @@
 
     --danger: #E34444;
     --success: #0D8060;
+
+    --radius-card: 14px;
+    --radius-small: 9px;
+
+    --shadow-card: 0 2px 8px rgba(25, 30, 50, 0.06);
 }
+
+
+/* =====================================================
+   1. RESET DAN DASAR HALAMAN
+===================================================== */
 
 *,
 *::before,
@@ -33,30 +46,42 @@ body {
     color: var(--text);
 }
 
-/* =========================================
-   1. CONTAINER & CARD
-========================================= */
+body.modal-terbuka {
+    overflow: hidden;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+
+/* =====================================================
+   2. CONTAINER DAN CARD
+===================================================== */
 
 .antrian-container {
-    width: calc(100% - 64px);
-    max-width: 1600px;
-    margin: 16px auto 30px;
+    width: min(1440px, calc(100% - 48px));
+    margin: 22px auto 35px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .card {
     background: var(--white);
     border: 1px solid var(--border);
-    border-radius: 17px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
-    margin-bottom: 16px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
 }
 
-/* =========================================
-   2. HEADER
-========================================= */
+
+/* =====================================================
+   3. HEADER ANTREAN
+===================================================== */
 
 .antrian-header {
-    padding: 17px 22px 19px;
+    padding: 20px 22px;
 }
 
 .header-decoration {
@@ -87,14 +112,14 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 11px;
+    margin-bottom: 12px;
 }
 
 .header-tag {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 7px 12px;
+    padding: 6px 11px;
     border-radius: 20px;
     font-size: 10px;
     font-weight: 700;
@@ -112,40 +137,41 @@ body {
 }
 
 .antrian-header h2 {
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     color: var(--primary);
-    font-size: 24px;
+    font-size: 23px;
     font-weight: 800;
-    line-height: 1.35;
+    line-height: 1.4;
 }
 
 .antrian-header > p {
     max-width: 850px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.7;
 }
 
-/* =========================================
-   3. TABLE HEADING
-========================================= */
+
+/* =====================================================
+   4. KEPALA TABEL ANTREAN
+===================================================== */
 
 .antrian-table-card {
-    padding: 19px;
+    padding: 20px;
 }
 
 .table-heading {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 17px;
 }
 
 .table-heading h3 {
     margin-bottom: 5px;
     color: var(--primary);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
 }
 
@@ -155,7 +181,7 @@ body {
 
 .table-heading p {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.6;
 }
 
@@ -165,53 +191,62 @@ body {
     justify-content: center;
     gap: 7px;
     padding: 8px 13px;
-    background: #F0EDFA;
+
     color: var(--primary);
+    background: #F0EDFA;
+    border: 1px solid #E2DCF6;
     border-radius: 20px;
-    font-size: 11px;
+
+    font-size: 10px;
     font-weight: 700;
     white-space: nowrap;
 }
 
-/* =========================================
-   4. TABEL ANTRIAN
-   Tipografi dan warna mengikuti dashboard
-========================================= */
+
+/* =====================================================
+   5. TABEL ANTREAN DINAMIS
+===================================================== */
 
 .table-responsive {
     width: 100%;
     overflow-x: auto;
+
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: 11px;
-    background: var(--white);
 }
 
 .antrian-table {
     width: 100%;
-    min-width: 1050px;
+    min-width: 900px;
+
     table-layout: fixed;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+
     font-family: inherit;
 }
 
+/* Pembagian lebar kolom */
+
 .antrian-table th:nth-child(1),
 .antrian-table td:nth-child(1) {
-    width: 10%;
+    width: 12%;
 }
 
 .antrian-table th:nth-child(2),
 .antrian-table td:nth-child(2) {
-    width: 32%;
+    width: 27%;
 }
 
 .antrian-table th:nth-child(3),
 .antrian-table td:nth-child(3) {
-    width: 17%;
+    width: 19%;
 }
 
 .antrian-table th:nth-child(4),
 .antrian-table td:nth-child(4) {
-    width: 13%;
+    width: 15%;
 }
 
 .antrian-table th:nth-child(5),
@@ -221,37 +256,42 @@ body {
 
 .antrian-table th:nth-child(6),
 .antrian-table td:nth-child(6) {
-    width: 16%;
+    width: 15%;
 }
+
+/* Judul kolom */
 
 .antrian-table th {
     padding: 13px 10px;
-    background: #FFFFFF;
+
     color: var(--muted);
+    background: #F8F9FC;
+
     border-bottom: 1px solid var(--border);
 
     text-align: center;
     vertical-align: middle;
 
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
     letter-spacing: 0.2px;
-    white-space: nowrap;
     text-transform: uppercase;
 }
 
+/* Isi tabel */
+
 .antrian-table td {
-    padding: 16px 10px;
-    background: #FFFFFF;
+    padding: 14px 10px;
+
     color: var(--text);
+    background: var(--white);
+
     border-bottom: 1px solid #ECEEF3;
 
     text-align: center;
     vertical-align: middle;
 
-    font-family: inherit;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.5;
 }
 
@@ -259,7 +299,9 @@ body {
     border-bottom: none;
 }
 
-.antrian-table tbody tr {
+/* Micro animation baris tabel */
+
+.antrian-table tbody tr td {
     transition: background-color 0.2s ease;
 }
 
@@ -267,75 +309,133 @@ body {
     background: #FAF9FD;
 }
 
+/* Nama kegiatan */
+
 .antrian-table td strong {
     display: block;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
+
     color: var(--text);
-    font-family: inherit;
-    font-size: 12px;
+
+    font-size: 11px;
     font-weight: 700;
     line-height: 1.5;
+
     overflow-wrap: anywhere;
 }
 
+/* Informasi pemohon dan kebutuhan */
+
 .antrian-table td small {
     display: block;
+
     color: var(--muted);
-    font-family: inherit;
-    font-size: 11px;
-    line-height: 1.5;
+
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.6;
 }
 
-/* =========================================
-   5. REQUEST ID
-========================================= */
+
+/* =====================================================
+   6. ID PENGAJUAN
+===================================================== */
 
 .request-id {
+    display: inline-block;
+
+    padding: 5px 8px;
+
     color: var(--primary);
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
+    background: #F0EDFA;
+
+    border: 1px solid #E2DCF6;
+    border-radius: 6px;
+
+    font-size: 10px;
+    font-weight: 800;
     white-space: nowrap;
 }
 
-/* =========================================
-   6. PRIORITAS DAN STATUS
-========================================= */
+
+/* =====================================================
+   7. BADGE PRIORITAS DAN SKOR
+===================================================== */
 
 .priority-badge,
 .status-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 10px;
+
+    padding: 6px 9px;
+
     border-radius: 7px;
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 700;
+
+    font-size: 9px;
+    font-weight: 800;
     white-space: nowrap;
 }
+
+/* Prioritas P1 */
 
 .p1 {
     color: var(--maroon);
     background: #FFF0F2;
+    border: 1px solid #EBD1DA;
 }
 
+/* Prioritas P2 */
+
 .p2 {
-    color: #A66B00;
+    color: #946400;
     background: #FFF7E4;
+    border: 1px solid #FBE7A8;
 }
+
+/* Prioritas P3 */
 
 .p3 {
     color: #2862C7;
     background: #EEF5FF;
+    border: 1px solid #D7E5FA;
 }
+
+/* Prioritas P4 dan P5 */
+
+.p4,
+.p5 {
+    color: #475569;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+}
+
+/* Prioritas yang belum dikenali */
+
+.priority-other,
+.status-other {
+    color: #475569;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+}
+
+/* Informasi skor */
 
 .score-text {
     margin-top: 5px;
+
     color: var(--muted);
-    font-size: 11px;
+
+    font-size: 10px !important;
     font-weight: 700 !important;
 }
+
+
+/* =====================================================
+   8. BADGE STATUS PENGAJUAN
+===================================================== */
+
+/* Bentrok */
 
 .conflict {
     color: var(--maroon);
@@ -343,11 +443,7 @@ body {
     border: 1px solid #EBD1DA;
 }
 
-.displaced {
-    color: #A66B00;
-    background: #FFF7E4;
-    border: 1px solid #FBE7A8;
-}
+/* Menunggu verifikasi */
 
 .verify {
     color: var(--primary);
@@ -355,39 +451,79 @@ body {
     border: 1px solid #E2DCF6;
 }
 
-/* =========================================
-   7. TOMBOL PERIKSA & PROSES
-========================================= */
+/* Tergeser */
+
+.displaced {
+    color: #946400;
+    background: #FFF7E4;
+    border: 1px solid #FBE7A8;
+}
+
+/* Disetujui */
+
+.approved {
+    color: var(--success);
+    background: #E8F7F0;
+    border: 1px solid #C5EBDD;
+}
+
+/* Ditolak */
+
+.rejected {
+    color: var(--danger);
+    background: #FFF0EF;
+    border: 1px solid #F3D0CD;
+}
+
+
+/* =====================================================
+   9. TOMBOL PERIKSA DAN PROSES
+===================================================== */
 
 .btn-process {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 7px;
+
     min-width: 125px;
-    padding: 9px 12px;
+    min-height: 36px;
+    padding: 8px 11px;
 
     color: var(--white);
     background: var(--maroon);
+
     border: 1px solid var(--maroon);
-    border-radius: 9px;
+    border-radius: 8px;
 
     font-family: inherit;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    text-decoration: none;
+
+    cursor: pointer;
     white-space: nowrap;
 
-    transition: 0.2s;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease;
 }
 
 .btn-process:hover {
-    background: #911E3F;
-    border-color: #911E3F;
+    background: var(--maroon-dark);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 12px rgba(145, 30, 63, 0.2);
 }
 
-/* =========================================
-   8. PAGINATION
-========================================= */
+.btn-process:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: none;
+}
+
+
+/* =====================================================
+   10. PAGINATION
+===================================================== */
 
 .pagination-container {
     display: flex;
@@ -396,13 +532,12 @@ body {
     gap: 15px;
 
     margin-top: 17px;
-    padding: 4px 2px;
+    padding: 3px 2px;
 }
 
 .pagination-info {
     color: var(--muted);
-    font-family: inherit;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
 }
 
@@ -410,7 +545,7 @@ body {
 .pagination-numbers {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
 }
 
 .pagination-btn {
@@ -418,72 +553,95 @@ body {
     align-items: center;
     justify-content: center;
 
-    min-width: 42px;
-    height: 39px;
-    padding: 0 13px;
+    min-width: 37px;
+    min-height: 35px;
+    padding: 0 12px;
 
-    background: var(--white);
     color: var(--muted);
+    background: var(--white);
 
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
 
     cursor: pointer;
     white-space: nowrap;
-    text-decoration: none;
 
-    transition: 0.2s;
-}
-
-.pagination-btn.active {
-    min-width: 42px;
-    padding: 0 13px;
-
-    background: var(--maroon);
-    color: var(--white);
-
-    border-color: var(--maroon);
+    transition:
+        transform 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease;
 }
 
 .pagination-btn:hover:not(:disabled):not(.active) {
-    background: #F9EDF1;
     color: var(--maroon);
+    background: #F9EDF1;
     border-color: #EBD1DA;
+    transform: translateY(-2px);
+}
+
+.pagination-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.pagination-btn.active {
+    color: var(--white);
+    background: var(--maroon);
+    border-color: var(--maroon);
 }
 
 .pagination-btn:disabled {
     color: #AAB2C0;
-    background: var(--white);
+    background: #F8F9FB;
     border-color: var(--border);
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.65;
 }
 
-/* =========================================
-   9. CATATAN
-========================================= */
+
+/* =====================================================
+   11. PESAN KOSONG
+===================================================== */
+
+.empty-state {
+    padding: 35px 16px !important;
+
+    color: var(--muted) !important;
+    background: #FAFBFD !important;
+
+    text-align: center !important;
+    font-size: 11px !important;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   12. CATATAN KEWENANGAN LABORAN
+===================================================== */
 
 .table-note {
     display: flex;
     align-items: flex-start;
-    gap: 9px;
+    gap: 10px;
 
-    margin-top: 15px;
-    padding: 11px 13px;
+    margin-top: 16px;
+    padding: 12px 14px;
 
     background: #F8F7FB;
-    border-radius: 8px;
+    border: 1px solid #EAE7F3;
+    border-radius: 9px;
 }
 
 .table-note i {
-    color: var(--yellow);
-    font-size: 13px;
-    margin-top: 2px;
     flex-shrink: 0;
+    margin-top: 2px;
+
+    color: var(--primary);
+    font-size: 13px;
 }
 
 .table-note p {
@@ -492,9 +650,18 @@ body {
     line-height: 1.7;
 }
 
-/* =========================================
-   10. POPUP REVIEW
-========================================= */
+
+/* =====================================================
+   13. MODAL DETAIL PENGAJUAN
+   Menggunakan class .is-open dari antrean.js
+===================================================== */
+
+/* Memastikan modal dan panel tersembunyi benar-benar tidak tampil */
+
+.review-modal[hidden],
+.review-modal [data-panel][hidden] {
+    display: none !important;
+}
 
 .review-modal {
     position: fixed;
@@ -507,161 +674,159 @@ body {
 
     padding: 20px;
 
+    background: transparent;
+
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
 }
 
-.review-modal:target {
+/* Kondisi modal terbuka */
+
+.review-modal.is-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
 }
 
+/* Latar belakang modal */
+
 .modal-backdrop {
     position: absolute;
     inset: 0;
+
+    width: 100%;
+    height: 100%;
+    padding: 0;
+
     background: rgba(24, 27, 40, 0.55);
+    border: none;
+
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
+    cursor: default;
 }
+
+/* Konten modal */
 
 .review-modal-content {
     position: relative;
     z-index: 1;
 
     width: 100%;
-    max-width: 620px;
+    max-width: 650px;
 
-    max-height: 90vh;
+    max-height: calc(100vh - 40px);
     overflow-y: auto;
 
-    padding: 23px;
+    padding: 24px;
 
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 15px;
 
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18);
+
     overscroll-behavior: contain;
 
-    transform: translateY(12px);
-    transition: transform 0.25s ease;
+    transform: translateY(14px) scale(0.98);
+
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.review-modal:target .review-modal-content {
-    transform: translateY(0);
+.review-modal.is-open .review-modal-content {
+    transform: translateY(0) scale(1);
 }
 
-/* =========================================
-   11. HEADER POPUP
-========================================= */
+.review-modal-content:focus {
+    outline: none;
+}
+
+
+/* =====================================================
+   14. HEADER MODAL
+===================================================== */
 
 .review-modal-header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 17px;
+
+    margin-bottom: 18px;
 }
 
 .review-label {
     display: inline-block;
+
     padding: 6px 10px;
     margin-bottom: 9px;
 
-    background: #F9EDF1;
     color: var(--maroon);
+    background: #F9EDF1;
 
     border: 1px solid #EBD1DA;
     border-radius: 6px;
 
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: 0.2px;
 }
 
 .review-modal-header h3 {
-    color: var(--text);
+    color: var(--primary);
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.5;
 }
+
+/* Tombol tutup modal */
 
 .modal-close {
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     flex-shrink: 0;
 
     color: var(--muted);
     background: var(--background);
+
+    border: 1px solid var(--border);
     border-radius: 8px;
-    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        background-color 0.18s ease,
+        color 0.18s ease;
 }
 
 .modal-close:hover {
-    background: #E9EAF0;
-}
-
-/* =========================================
-   12. KALKULASI MATRIKS
-========================================= */
-
-.calculation-box {
-    padding: 15px;
-    background: #F7F9FC;
-    border: 1px solid #DFE6F0;
-    border-radius: 10px;
-}
-
-.calculation-box > strong {
-    display: block;
-    margin-bottom: 10px;
-    color: var(--text);
-    font-size: 12px;
-}
-
-.calculation-box ul {
-    padding-left: 19px;
-}
-
-.calculation-box li {
-    margin-bottom: 8px;
-    color: #354158;
-    font-size: 10px;
-    line-height: 1.6;
-}
-
-.calculation-result {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 7px;
-
-    margin-top: 12px;
-    padding-top: 12px;
-
-    border-top: 1px solid #DFE6F0;
     color: var(--maroon);
-    font-size: 11px;
-    font-weight: 700;
+    background: #F9EDF1;
+    transform: rotate(5deg) scale(1.05);
 }
 
-.calculation-result i {
-    font-size: 13px;
+.modal-close:active {
+    transform: scale(0.94);
 }
 
-/* =========================================
-   13. DETAIL PENGAJUAN
-========================================= */
+
+/* =====================================================
+   15. DETAIL DATA PENGAJUAN
+===================================================== */
 
 .request-detail-box {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
 
     padding: 15px;
@@ -673,7 +838,7 @@ body {
 
 .detail-item {
     min-width: 0;
-    padding: 10px;
+    padding: 11px;
 
     background: var(--white);
     border: 1px solid #E8ECF2;
@@ -683,123 +848,32 @@ body {
 .detail-item small {
     display: block;
     margin-bottom: 6px;
+
     color: var(--muted);
     font-size: 10px;
+    font-weight: 600;
 }
 
 .detail-item strong {
     display: block;
+
     color: var(--text);
     font-size: 11px;
     font-weight: 700;
     line-height: 1.6;
+
     overflow-wrap: anywhere;
 }
 
-/* =========================================
-   14. BENTROK DAN TERGESER
-========================================= */
 
-.collision-box {
-    margin-top: 15px;
-    padding: 15px;
-
-    background: #FBF2F5;
-    border: 1px solid #E8C5D1;
-    border-radius: 10px;
-}
-
-.collision-heading {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 9px;
-
-    color: var(--maroon);
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.collision-heading i {
-    font-size: 15px;
-}
-
-.collision-box p {
-    color: #684052;
-    font-size: 10px;
-    line-height: 1.7;
-}
-
-.displaced-box {
-    background: #FFF9E9;
-    border-color: #F5E2AC;
-}
-
-.displaced-box .collision-heading {
-    color: #946400;
-}
-
-.displaced-box p {
-    color: #755B27;
-}
-
-/* =========================================
-   15. TOMBOL AKSI POPUP
-========================================= */
-
-.collision-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-}
-
-.btn-eskalasi,
-.btn-recommend {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    min-height: 42px;
-    padding: 10px 22px;
-
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-
-    transition: 0.2s;
-}
-
-.btn-eskalasi {
-    background: var(--maroon);
-    color: var(--white);
-    border: 1px solid var(--maroon);
-}
-
-.btn-eskalasi:hover {
-    background: #761630;
-}
-
-.btn-recommend {
-    background: var(--primary);
-    color: var(--white);
-    border: 1px solid var(--primary);
-}
-
-.btn-recommend:hover {
-    background: #251B50;
-}
-
-/* =========================================
-   16. INFORMASI POPUP
-========================================= */
+/* =====================================================
+   16. INFORMASI DAN TINDAKAN MODAL
+===================================================== */
 
 .review-information {
     display: flex;
     align-items: flex-start;
-    gap: 9px;
+    gap: 10px;
 
     margin-top: 15px;
     padding: 13px;
@@ -817,129 +891,332 @@ body {
 .review-information i {
     flex-shrink: 0;
     margin-top: 2px;
+    font-size: 13px;
 }
 
-/* =========================================
-   17. TOMBOL SETUJUI DAN TOLAK
-========================================= */
 
-.verification-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 17px;
+/* =====================================================
+   17. PANEL BENTROK DAN TERGESER
+===================================================== */
+
+.collision-box {
+    margin-top: 15px;
+    padding: 15px;
+
+    background: #FBF2F5;
+    border: 1px solid #E8C5D1;
+    border-radius: 10px;
 }
 
+.collision-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 9px;
+
+    color: var(--maroon);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.collision-heading i {
+    font-size: 15px;
+}
+
+.collision-box p {
+    color: #684052;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+/* Tampilan khusus pengajuan tergeser */
+
+.displaced-box {
+    background: #FFF9E9;
+    border-color: #F5E2AC;
+}
+
+.displaced-box .collision-heading {
+    color: #946400;
+}
+
+.displaced-box p {
+    color: #755B27;
+}
+
+/* Area tombol eskalasi dan rekomendasi */
+
+.collision-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 16px;
+}
+
+
+/* =====================================================
+   18. TOMBOL KEPUTUSAN DAN TINDAKAN
+===================================================== */
+
+.btn-eskalasi,
+.btn-recommend,
 .btn-approve,
 .btn-reject {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 8px;
 
-    min-height: 42px;
-    padding: 10px 12px;
+    min-height: 40px;
+    padding: 10px 17px;
 
     border-radius: 8px;
 
     font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
 
     cursor: pointer;
     text-decoration: none;
-    transition: 0.2s;
+    white-space: nowrap;
+
+    transition:
+        transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+        box-shadow 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease;
 }
 
-.btn-approve {
-    background: var(--primary);
+/* Eskalasi */
+
+.btn-eskalasi {
     color: var(--white);
+    background: var(--maroon);
+    border: 1px solid var(--maroon);
+}
+
+.btn-eskalasi:hover {
+    background: var(--maroon-dark);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 12px rgba(145, 30, 63, 0.2);
+}
+
+/* Rekomendasi jadwal */
+
+.btn-recommend {
+    color: var(--white);
+    background: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.btn-recommend:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 12px rgba(51, 38, 106, 0.2);
+}
+
+/* Setujui */
+
+.btn-approve {
+    color: var(--white);
+    background: var(--primary);
     border: 1px solid var(--primary);
 }
 
 .btn-approve:hover {
-    background: #251B50;
+    background: var(--primary-dark);
+    transform: translateY(-2px) scale(1.02);
 }
 
+/* Tolak */
+
 .btn-reject {
-    background: var(--white);
     color: var(--maroon);
+    background: var(--white);
     border: 1px solid #E8C5D1;
 }
 
 .btn-reject:hover {
     background: #FBF2F5;
+    transform: translateY(-2px) scale(1.02);
 }
 
-/* =========================================
-   18. FOOTER POPUP
-========================================= */
+/* Efek ketika tombol ditekan */
 
-.review-footer {
+.btn-eskalasi:active,
+.btn-recommend:active,
+.btn-approve:active,
+.btn-reject:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: none;
+}
+
+/* Fokus keyboard */
+
+.btn-process:focus-visible,
+.pagination-btn:focus-visible,
+.btn-eskalasi:focus-visible,
+.btn-recommend:focus-visible,
+.btn-approve:focus-visible,
+.btn-reject:focus-visible,
+.modal-close:focus-visible {
+    outline: 3px solid rgba(51, 38, 106, 0.22);
+    outline-offset: 3px;
+}
+
+
+/* =====================================================
+   19. NOTIFIKASI TOAST
+===================================================== */
+
+.wadah-notifikasi {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    z-index: 3000;
+
     display: flex;
-    justify-content: flex-end;
-    margin-top: 17px;
+    flex-direction: column;
+    gap: 10px;
+
+    width: min(420px, calc(100% - 28px));
+
+    transform: translateX(-50%);
+    pointer-events: none;
 }
 
-.btn-review-close {
-    display: inline-flex;
+.notifikasi-toast {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 11px;
 
-    padding: 9px 19px;
+    width: 100%;
+    padding: 12px 15px;
 
-    background: var(--background);
-    color: var(--primary);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--success);
+    border-radius: 11px;
 
-    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(25, 30, 50, 0.14);
+
+    animation: notifikasiMasuk 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+    pointer-events: auto;
+}
+
+.notifikasi-ikon {
+    display: grid;
+    place-items: center;
+
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+
+    color: var(--success);
+    background: #E8F7F0;
+    border-radius: 50%;
+
+    font-size: 16px;
+}
+
+.notifikasi-konten {
+    min-width: 0;
+}
+
+.notifikasi-judul {
+    display: block;
+    margin-bottom: 3px;
+
+    color: var(--text);
     font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-
-    transition: 0.2s;
+    font-weight: 800;
 }
 
-.btn-review-close:hover {
-    background: #E9EAF0;
+.notifikasi-pesan {
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.5;
 }
 
-/* =========================================
-   19. RESPONSIVE
-========================================= */
+/* Notifikasi gagal */
 
-@media (max-width: 1100px) {
+.notifikasi-toast[data-jenis="error"] {
+    border-left-color: var(--danger);
+}
 
-    .antrian-container {
-        width: calc(100% - 40px);
+.notifikasi-toast[data-jenis="error"] .notifikasi-ikon {
+    color: var(--danger);
+    background: #FFF0EF;
+}
+
+/* Animasi keluar */
+
+.notifikasi-toast.is-hilang {
+    animation: notifikasiKeluar 0.22s ease forwards;
+}
+
+@keyframes notifikasiMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-22px) scale(0.96);
     }
 
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
-@media (max-width: 800px) {
+@keyframes notifikasiKeluar {
+    to {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.97);
+    }
+}
+
+
+/* =====================================================
+   20. RESPONSIVE TABLET
+===================================================== */
+
+@media (max-width: 900px) {
 
     .antrian-container {
-        width: calc(100% - 24px);
-        margin-top: 12px;
+        width: calc(100% - 32px);
+        margin-top: 16px;
     }
 
     .antrian-header h2 {
         font-size: 21px;
     }
 
-    .table-heading {
-        flex-direction: column;
+    .antrian-table-card {
+        padding: 16px;
     }
 
-    .antrian-table-card {
-        padding: 14px;
+    .table-heading {
+        align-items: flex-start;
     }
 
 }
 
-@media (max-width: 550px) {
+
+/* =====================================================
+   21. RESPONSIVE MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .antrian-container {
+        width: calc(100% - 22px);
+        margin-top: 12px;
+        gap: 12px;
+    }
 
     .antrian-header {
-        padding: 15px;
+        padding: 16px;
     }
 
     .antrian-header h2 {
@@ -947,7 +1224,7 @@ body {
     }
 
     .antrian-header > p {
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .header-tag {
@@ -955,7 +1232,20 @@ body {
     }
 
     .antrian-table-card {
-        padding: 12px;
+        padding: 13px;
+    }
+
+    .table-heading {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .table-heading h3 {
+        font-size: 14px;
+    }
+
+    .total-antrian {
+        align-self: flex-start;
     }
 
     .pagination-container {
@@ -974,9 +1264,9 @@ body {
     }
 
     .pagination-btn {
-        height: 35px;
+        min-height: 34px;
         padding: 0 10px;
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .review-modal {
@@ -992,7 +1282,11 @@ body {
         font-size: 14px;
     }
 
-    .request-detail-box,
+    .request-detail-box {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+
     .verification-actions {
         grid-template-columns: 1fr;
     }
@@ -1005,8 +1299,27 @@ body {
         width: 100%;
     }
 
-    .calculation-result {
-        font-size: 10px;
+    .btn-approve,
+    .btn-reject {
+        width: 100%;
+    }
+
+}
+
+
+/* =====================================================
+   22. AKSESIBILITAS ANIMASI
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 
 }

@@ -1108,3 +1108,144 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
         width: 100%;
     }
 }
+
+
+/* ANIMASI INTERAKSI TOMBOL */
+.btn-rekomendasi,
+.btn-page,
+.btn-filter {
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease,
+        opacity 0.18s ease;
+}
+
+/* Efek ketika kursor diarahkan */
+.btn-rekomendasi:hover:not([aria-disabled="true"]),
+.btn-page:hover:not(:disabled),
+.btn-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(48, 35, 96, 0.15);
+}
+
+/* Efek ketika tombol ditekan */
+.btn-rekomendasi:active:not([aria-disabled="true"]),
+.btn-page:active:not(:disabled),
+.btn-filter:active {
+    transform: scale(0.96);
+    box-shadow: none;
+}
+
+/* Tombol yang tidak aktif */
+.btn-rekomendasi[aria-disabled="true"],
+.btn-page:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Fokus keyboard */
+.btn-rekomendasi:focus-visible,
+.btn-page:focus-visible,
+.btn-filter:focus-visible {
+    outline: 2px solid var(--maroon);
+    outline-offset: 3px;
+}
+
+/* Mempertahankan susunan baris tabel */
+#tabelBody {
+    display: contents;
+}
+
+/* Tampilan ketika data kosong */
+.tabel-empty {
+    grid-column: 1 / -1;
+    padding: 30px 15px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Menghormati pengaturan pengurangan animasi */
+@media (prefers-reduced-motion: reduce) {
+    .btn-rekomendasi,
+    .btn-page,
+    .btn-filter {
+        transition: none;
+    }
+}
+
+
+/* =========================================
+   FEEDBACK FORM REKOMENDASI
+========================================= */
+
+.rekomendasi-feedback {
+    display: none;
+    margin: 12px 0 0;
+    padding: 11px 14px;
+    border-radius: 9px;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.rekomendasi-feedback[data-jenis] {
+    display: block;
+}
+
+/* Pesan berhasil */
+.rekomendasi-feedback[data-jenis="sukses"] {
+    color: #166534;
+    background: #DCFCE7;
+    border: 1px solid #BBF7D0;
+}
+
+/* Pesan kesalahan */
+.rekomendasi-feedback[data-jenis="error"] {
+    color: #911E3F;
+    background: #FDEEF1;
+    border: 1px solid #F6D3DA;
+}
+
+/* Pesan informasi */
+.rekomendasi-feedback[data-jenis="info"] {
+    color: #33266A;
+    background: #F0EDFA;
+    border: 1px solid #E6E1F2;
+}
+
+/* =========================================
+   KONDISI INPUT NONAKTIF
+========================================= */
+
+.form-input:disabled,
+.form-textarea:disabled {
+    background: #F5F6F9;
+    color: #8992A3;
+    cursor: not-allowed;
+}
+
+/* Tombol kirim nonaktif */
+.btn-kirim:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* =========================================
+   AKSESIBILITAS
+========================================= */
+
+.btn-kirim:focus-visible,
+.form-input:focus-visible,
+.form-textarea:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-kirim {
+        transition: none;
+    }
+}
