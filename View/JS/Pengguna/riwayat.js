@@ -197,16 +197,34 @@ function formatTime(dateValue) {
 
 function getStatusLabel(status) {
   const statusLabels = {
-    menunggu_verifikasi: "Menunggu Verifikasi",
+    menunggu_verifikasi: "Menunggu",
     menunggu: "Menunggu",
+    direkomendasikan: "Direkomendasikan",
     disetujui: "Disetujui",
     ditolak: "Ditolak",
-    direkomendasikan: "Direkomendasikan",
     dibatalkan: "Dibatalkan",
-    selesai: "Selesai",
+    selesai: "Selesai Digunakan",
   };
 
   return statusLabels[status] || status || "Tidak diketahui";
+}
+
+/* =========================================
+   KETERANGAN PENGAJUAN
+========================================= */
+
+function getSubmissionDescription(status) {
+  const descriptions = {
+    menunggu_verifikasi: "Menunggu Konfirmasi",
+    menunggu: "Menunggu Konfirmasi",
+    direkomendasikan: "Rekomendasi Jadwal Diberikan",
+    disetujui: "Permintaan Disetujui",
+    ditolak: "Permintaan Ditolak",
+    dibatalkan: "Pengajuan Dibatalkan",
+    selesai: "Sesi Telah Tervalidasi",
+  };
+
+  return descriptions[status] || "Status Belum Diketahui";
 }
 
 /* =========================================
@@ -267,7 +285,20 @@ function createHistoryRow(data) {
 
   const statusBadge = document.createElement("span");
 
-  statusBadge.className = "status-badge";
+  const statusClasses = {
+    menunggu_verifikasi: "status-pending",
+    menunggu: "status-pending",
+    direkomendasikan: "status-recommended",
+    disetujui: "status-approved",
+    ditolak: "status-rejected",
+    dibatalkan: "status-cancelled",
+    selesai: "status-completed",
+  };
+
+  statusBadge.className = `status-badge ${
+    statusClasses[data.status] || "status-pending"
+  }`;
+
   statusBadge.textContent = getStatusLabel(data.status);
 
   statusCell.appendChild(statusBadge);
@@ -275,7 +306,7 @@ function createHistoryRow(data) {
   // Kolom 5: ID pengajuan
   const actionCell = document.createElement("td");
 
-  actionCell.textContent = data.id ?? "-";
+  actionCell.textContent = getSubmissionDescription(data.status);
 
   row.append(dateCell, timeCell, activityCell, statusCell, actionCell);
 
@@ -283,7 +314,7 @@ function createHistoryRow(data) {
 }
 
 /* =========================================
-   NOMOR HALAMAN OTOMATIS
+   NOMOR HALAMAN COMPACT
 ========================================= */
 
 function renderPaginationNumbers(totalPages) {
@@ -293,44 +324,12 @@ function renderPaginationNumbers(totalPages) {
 
   if (totalPages === 0) return;
 
-  let pages = [];
+  // Menentukan maksimal 3 nomor halaman berurutan
+  const startPage = Math.max(1, Math.min(currentPage - 1, totalPages - 2));
 
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-  } else {
-    pages.push(1);
+  const endPage = Math.min(totalPages, startPage + 2);
 
-    const start = Math.max(2, currentPage - 1);
-    const end = Math.min(totalPages - 1, currentPage + 1);
-
-    if (start > 2) {
-      pages.push("...");
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    if (end < totalPages - 1) {
-      pages.push("...");
-    }
-
-    pages.push(totalPages);
-  }
-
-  pages.forEach((page) => {
-    if (page === "...") {
-      const ellipsis = document.createElement("span");
-
-      ellipsis.className = "pagination-ellipsis";
-      ellipsis.textContent = "...";
-
-      paginationNumbers.appendChild(ellipsis);
-      return;
-    }
-
+  for (let page = startPage; page <= endPage; page++) {
     const button = document.createElement("button");
 
     button.type = "button";
@@ -348,7 +347,7 @@ function renderPaginationNumbers(totalPages) {
     });
 
     paginationNumbers.appendChild(button);
-  });
+  }
 }
 
 /* =========================================
