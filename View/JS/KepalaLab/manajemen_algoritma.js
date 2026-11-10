@@ -200,29 +200,59 @@
   }
 
   // Menampilkan pesan.
+
+  let toastTimer = null;
+
   function showMessage(message, type = "success") {
-    let feedback = document.getElementById("algorithmFeedback");
+    let toast = document.getElementById("algorithmToast");
 
-    if (!feedback) {
-      feedback = document.createElement("p");
+    // Membuat elemen toast jika belum tersedia.
+    if (!toast) {
+      toast = document.createElement("div");
 
-      feedback.id = "algorithmFeedback";
-      feedback.setAttribute("role", "status");
-      feedback.setAttribute("aria-live", "polite");
+      toast.id = "algorithmToast";
+      toast.className = "algorithm-toast";
 
-      feedback.style.cssText =
-        "margin:10px 0 0;font-size:11px;line-height:1.5;";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
 
-      const panel = document.querySelector(".rule-base-panel");
+      const icon = document.createElement("i");
 
-      if (panel) {
-        panel.appendChild(feedback);
-      }
+      icon.className = "toast-icon";
+
+      const text = document.createElement("span");
+
+      text.className = "toast-message";
+
+      toast.append(icon, text);
+
+      document.body.appendChild(toast);
     }
 
-    feedback.textContent = message;
+    // Mengatur tipe pesan.
+    const icon = toast.querySelector(".toast-icon");
+    const text = toast.querySelector(".toast-message");
 
-    feedback.style.color = type === "error" ? "#B42318" : "#07875E";
+    toast.className = `algorithm-toast ${type}`;
+
+    icon.className =
+      type === "error"
+        ? "bi bi-exclamation-circle-fill toast-icon"
+        : "bi bi-check-circle-fill toast-icon";
+
+    text.textContent = message;
+
+    // Memunculkan toast.
+    requestAnimationFrame(() => {
+      toast.classList.add("show");
+    });
+
+    // Mengatur waktu menghilang.
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
   }
 
   function closeModal(toggle) {
@@ -326,16 +356,9 @@
       const main = document.createElement("div");
 
       main.className = "rule-main-info";
-
       const heading = document.createElement("h4");
 
-      heading.append(document.createTextNode(`${rule.id} `));
-
-      const separator = document.createElement("span");
-
-      separator.textContent = "|";
-
-      heading.append(separator, document.createTextNode(` ${rule.name}`));
+      heading.textContent = rule.name;
 
       const description = document.createElement("p");
 
@@ -553,12 +576,6 @@
 
     form.reset();
 
-    const { inputs } = getFormFields(form);
-
-    if (inputs[0]) {
-      inputs[0].value = createId("RB", state.config.rules);
-    }
-
     state.selectedRuleId = null;
 
     openModal(elements.addRuleToggle);
@@ -574,7 +591,6 @@
 
     const { inputs, textareas } = getFormFields(form);
 
-    if (inputs[0]) inputs[0].value = rule.id;
     if (inputs[1]) inputs[1].value = rule.name;
     if (inputs[2]) inputs[2].value = rule.parameter || "";
 
@@ -687,14 +703,11 @@
     const form = getModalForm(elements.addRuleToggle);
 
     const { inputs, textareas } = getFormFields(form);
-
-    const id = inputs[0]?.value || createId("RB", state.config.rules);
-
-    const name = inputs[1]?.value || "";
-
-    const parameter = inputs[2]?.value || "";
-
+    const name = inputs[0]?.value || "";
+    const parameter = inputs[1]?.value || "";
     const description = textareas[0]?.value || "";
+
+    const id = createId("RB", state.config.rules);
 
     const error = validateRuleForm(name, parameter);
 
@@ -737,10 +750,8 @@
 
     const { inputs, textareas } = getFormFields(form);
 
-    const name = inputs[1]?.value || "";
-
-    const parameter = inputs[2]?.value || "";
-
+    const name = inputs[0]?.value || "";
+    const parameter = inputs[1]?.value || "";
     const description = textareas[0]?.value || "";
 
     const error = validateRuleForm(name, parameter);
@@ -938,7 +949,17 @@
   }
 
   // Menyimpan konfigurasi bobot.
+
   function saveWeights() {
+    const total = updateWeightTotal();
+
+    // Validasi total bobot.
+    if (total > 100) {
+      showMessage("Total bobot tidak boleh melebihi 100%.", "error");
+
+      return;
+    }
+
     state.config.weights = {
       jenisKegiatan: Number(elements.weightSliders[0]?.value || 0),
 
@@ -948,8 +969,6 @@
     };
 
     if (saveConfig()) {
-      updateWeightTotal();
-
       showMessage("Konfigurasi bobot berhasil disimpan.");
     }
   }
@@ -1101,3 +1120,66 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+
+function updateWeightTotal() {
+  let total = 0;
+
+  elements.weightSliders.forEach((slider) => {
+    const value = Number(slider.value);
+
+    total += value;
+
+    // Memperbarui angka di samping slider.
+    const valueLabel = slider
+      .closest(".weight-item")
+      ?.querySelector(".weight-value");
+
+    if (valueLabel) {
+      valueLabel.textContent = `${value}%`;
+    }
+  });
+
+  // Memperbarui angka total.
+  if (elements.weightTotal) {
+    elements.weightTotal.textContent = `${total}%`;
+
+    if (total > 100) {
+      elements.weightTotal.style.color = "#DC2626";
+    } else {
+      elements.weightTotal.style.color = "#312E81";
+    }
+  }
+
+  // Membuat elemen peringatan jika belum tersedia.
+  let warning = document.getElementById("weightWarning");
+
+  if (!warning) {
+    warning = document.createElement("p");
+
+    warning.id = "weightWarning";
+
+    warning.style.cssText = `
+            display: none;
+            color: #DC2626;
+            font-size: 11px;
+            margin: 8px 0 0;
+            line-height: 1.5;
+        `;
+
+    elements.weightTotal
+      ?.closest(".weight-total")
+      ?.insertAdjacentElement("afterend", warning);
+  }
+
+  // Menampilkan peringatan.
+  if (total > 100) {
+    warning.textContent =
+      "Total bobot tidak boleh melebihi 100%. Silakan sesuaikan kembali nilai bobot penilaian.";
+
+    warning.style.display = "block";
+  } else {
+    warning.style.display = "none";
+  }
+
+  return total;
+}
