@@ -1,17 +1,14 @@
-
-/**
- * UTILITAS WAKTU SILAB
- * Menyediakan fungsi waktu dan tanggal untuk seluruh modul Laboran.
- * Zona waktu operasional: WIT (Asia/Jayapura).
- */
-
 (function (window) {
     "use strict";
 
+    // Konfigurasi zona waktu operasional SILAB
     const TIME_ZONE = "Asia/Jayapura";
     const OFFSET = "+09:00";
 
-    // Formatter untuk mengambil komponen waktu berdasarkan WIT.
+    const POLA_TANGGAL = /^\d{4}-\d{2}-\d{2}$/;
+    const POLA_JAM = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+
+    // Formatter dibuat sekali agar tidak berulang setiap pemanggilan
     const formatterWIT = new Intl.DateTimeFormat("en-GB", {
         timeZone: TIME_ZONE,
         year: "numeric",
@@ -23,42 +20,92 @@
         hourCycle: "h23"
     });
 
-    // Mengambil komponen tanggal dan waktu dalam zona WIT.
+    const formatterTanggal = new Intl.DateTimeFormat("id-ID", {
+        timeZone: TIME_ZONE,
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+
+    // Mengubah nilai menjadi objek Date yang valid
+    function keTanggal(nilai) {
+        if (
+            nilai === null ||
+            nilai === undefined ||
+            nilai === ""
+        ) {
+            return null;
+        }
+
+        try {
+            const tanggal = nilai instanceof Date
+                ? new Date(nilai.getTime())
+                : new Date(nilai);
+
+            return Number.isNaN(tanggal.getTime())
+                ? null
+                : tanggal;
+
+        } catch {
+            return null;
+        }
+    }
+
+    // Menyeragamkan angka menjadi dua digit
+    function duaDigit(nilai) {
+        return String(nilai).padStart(2, "0");
+    }
+
+    // Mengambil komponen tanggal dan waktu berdasarkan WIT
     function getWITParts(date = new Date()) {
+        const tanggal = keTanggal(date);
+
+        if (!tanggal) return null;
+
         return Object.fromEntries(
-            formatterWIT.formatToParts(date)
+            formatterWIT.formatToParts(tanggal)
                 .filter(part => part.type !== "literal")
                 .map(part => [part.type, Number(part.value)])
         );
     }
 
-    // Menghasilkan tanggal hari ini dalam format YYYY-MM-DD.
+    // Menghasilkan tanggal hari ini dalam format YYYY-MM-DD
     function tanggalHariIni(date = new Date()) {
         const p = getWITParts(date);
 
-        return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`;
+        if (!p) return "-";
+
+        return `${p.year}-${duaDigit(p.month)}-${duaDigit(p.day)}`;
     }
 
-    // Menghasilkan jam sekarang dalam format HH:mm.
+    // Menghasilkan jam sekarang dalam format HH:mm
     function jamSekarang(date = new Date()) {
         const p = getWITParts(date);
 
-        return `${String(p.hour).padStart(2, "0")}:${String(p.minute).padStart(2, "0")}`;
+        if (!p) return "-";
+
+        return `${duaDigit(p.hour)}:${duaDigit(p.minute)}`;
     }
 
-    // Mengubah tanggal dan jam WIT menjadi objek Date.
+    // Mengubah tanggal dan jam WIT menjadi objek Date
     function parseWaktu(tanggal, jam) {
         if (
-            !/^\d{4}-\d{2}-\d{2}$/.test(tanggal) ||
-            !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(jam)
+            typeof tanggal !== "string" ||
+            typeof jam !== "string" ||
+            !POLA_TANGGAL.test(tanggal) ||
+            !POLA_JAM.test(jam)
         ) {
             return null;
         }
 
         const [tahun, bulan, hari] = tanggal.split("-").map(Number);
-        const pemeriksaan = new Date(Date.UTC(tahun, bulan - 1, hari));
 
-        // Memastikan tanggal benar dan tidak mengalami rollover.
+        // Memastikan tanggal benar dan tidak mengalami rollover
+        const pemeriksaan = new Date(0);
+
+        pemeriksaan.setUTCHours(0, 0, 0, 0);
+        pemeriksaan.setUTCFullYear(tahun, bulan - 1, hari);
+
         if (
             pemeriksaan.getUTCFullYear() !== tahun ||
             pemeriksaan.getUTCMonth() !== bulan - 1 ||
@@ -67,59 +114,53 @@
             return null;
         }
 
-        const hasil = new Date(`${tanggal}T${jam}:00${OFFSET}`);
-
-        return Number.isNaN(hasil.getTime()) ? null : hasil;
+        return keTanggal(`${tanggal}T${jam}:00${OFFSET}`);
     }
 
-    // Memformat tanggal menjadi format Indonesia.
+    // Memformat tanggal menjadi format Indonesia
     function formatTanggal(tanggal) {
-        const date = /^\d{4}-\d{2}-\d{2}$/.test(tanggal)
+        const hasil = (
+            typeof tanggal === "string" &&
+            POLA_TANGGAL.test(tanggal)
+        )
             ? parseWaktu(tanggal, "00:00")
-            : new Date(tanggal);
+            : keTanggal(tanggal);
 
-        if (!date || Number.isNaN(date.getTime())) {
-            return "-";
-        }
+        if (!hasil) return "-";
 
-        return new Intl.DateTimeFormat("id-ID", {
-            timeZone: TIME_ZONE,
-            day: "2-digit",
-            month: "long",
-            year: "numeric"
-        }).format(date);
+        return formatterTanggal.format(hasil);
     }
 
-    // Mengubah format jam HH:mm menjadi HH.mm.
+    // Mengubah format jam HH:mm menjadi HH.mm
     function formatJam(jam) {
-        if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(jam)) {
+        if (
+            typeof jam !== "string" ||
+            !POLA_JAM.test(jam)
+        ) {
             return "-";
         }
 
         return jam.replace(":", ".");
     }
 
-    // Membentuk rentang waktu peminjaman.
+    // Membentuk rentang waktu peminjaman
     function formatRentangJam(mulai, selesai) {
         return `${formatJam(mulai)} - ${formatJam(selesai)} WIT`;
     }
 
-    // Menghitung selisih waktu dalam menit.
+    // Menghitung selisih dua waktu dalam menit
     function selisihMenit(waktuAwal, waktuAkhir = new Date()) {
-        const awal = new Date(waktuAwal);
-        const akhir = new Date(waktuAkhir);
+        const awal = keTanggal(waktuAwal);
+        const akhir = keTanggal(waktuAkhir);
 
-        if (
-            Number.isNaN(awal.getTime()) ||
-            Number.isNaN(akhir.getTime())
-        ) {
-            return null;
-        }
+        if (!awal || !akhir) return null;
 
-        return Math.floor((akhir - awal) / 60000);
+        return Math.floor(
+            (akhir.getTime() - awal.getTime()) / 60000
+        );
     }
 
-    // Memeriksa validitas rentang waktu peminjaman.
+    // Memeriksa validitas rentang waktu peminjaman
     function validasiRentang(tanggal, mulai, selesai) {
         const waktuMulai = parseWaktu(tanggal, mulai);
         const waktuSelesai = parseWaktu(tanggal, selesai);
@@ -145,19 +186,25 @@
         };
     }
 
-    // Memeriksa apakah sesi sedang berlangsung.
-    function sesiBerlangsung(tanggal, mulai, selesai, sekarang = new Date()) {
+    // Memeriksa apakah sesi sedang berlangsung
+    function sesiBerlangsung(
+        tanggal,
+        mulai,
+        selesai,
+        sekarang = new Date()
+    ) {
         const rentang = validasiRentang(tanggal, mulai, selesai);
+        const waktuSekarang = keTanggal(sekarang);
 
-        if (!rentang.valid) {
-            return false;
-        }
+        if (!rentang.valid || !waktuSekarang) return false;
 
-        return sekarang >= rentang.mulai &&
-            sekarang < rentang.selesai;
+        const timestamp = waktuSekarang.getTime();
+
+        return timestamp >= rentang.mulai.getTime() &&
+            timestamp < rentang.selesai.getTime();
     }
 
-    // Menyediakan seluruh fungsi waktu untuk modul lain.
+    // Menyediakan fungsi waktu untuk seluruh modul SILAB
     window.SILABWaktu = Object.freeze({
         TIME_ZONE,
         tanggalHariIni,

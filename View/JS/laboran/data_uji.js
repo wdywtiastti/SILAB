@@ -2,23 +2,22 @@
 /**
  * DATA UJI SILAB
  * Menyediakan data simulasi untuk seluruh modul Laboran.
- * Data ini hanya digunakan sebelum backend PHP tersedia.
+ * Digunakan sementara sebelum backend PHP tersedia.
  */
 
 (function (window) {
     "use strict";
 
-    // Membuat tanggal hari ini dalam format YYYY-MM-DD.
-    function tanggalHariIni() {
-        const now = new Date();
-        const tahun = now.getFullYear();
-        const bulan = String(now.getMonth() + 1).padStart(2, "0");
-        const tanggal = String(now.getDate()).padStart(2, "0");
-
-        return `${tahun}-${bulan}-${tanggal}`;
+    // Memastikan utilitas waktu sudah tersedia.
+    if (!window.SILABWaktu?.tanggalHariIni) {
+        console.error(
+            "SILAB: waktu.js harus dimuat sebelum data_uji.js."
+        );
+        return;
     }
 
-    const tanggal = tanggalHariIni();
+    // Menggunakan satu sumber waktu untuk seluruh modul.
+    const tanggal = window.SILABWaktu.tanggalHariIni();
 
     // Data jadwal peminjaman laboratorium.
     const bookings = [
@@ -258,7 +257,7 @@
     // Data rekomendasi yang sudah dikirim kepada pengguna.
     const rekomendasi = [];
 
-    // Menyediakan seluruh data awal untuk layanan.
+    // Satu sumber data awal untuk seluruh modul Laboran.
     window.SILAB_DATA_SEED = {
         bookings,
         antrean,

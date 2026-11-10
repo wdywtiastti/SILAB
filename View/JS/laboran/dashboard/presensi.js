@@ -1,224 +1,321 @@
 
-/**
- * PRESENSI LABORAN SILAB
- * Mengatur card sesi aktif dan validasi kehadiran pengguna.
- */
-
 (function (window, document) {
     "use strict";
 
-    const service = window.SILABService;
     const waktu = window.SILABWaktu;
+    const layanan = window.SILABService;
+    const wadahPresensi = document.getElementById("wadahPresensi");
+    const wadahNotifikasi = document.getElementById("wadahNotifikasi");
 
-    const BATAS_PRESENSI = 15;
-    const INTERVAL_PEMERIKSAAN = 5000;
+    const BATAS_VALIDASI = 15;
+    const DURASI_NOTIFIKASI = 3500;
 
-    const card = document.querySelector(".sesi-card");
+    // Pengaturan pesan notifikasi.
+    const PESAN_NOTIFIKASI = {
+        digunakan: {
+            jenis: "sukses",
+            judul: "Presensi Dikonfirmasi",
+            pesan: "Pengguna berhasil divalidasi hadir. Laboratorium digunakan.",
+            ikon: "bi-check-circle-fill"
+        },
 
-    if (!service || !waktu || !card) {
-        console.error("SILAB: dependensi atau elemen presensi tidak ditemukan.");
-        return;
-    }
+        tidak_digunakan: {
+            jenis: "tidak-hadir",
+            judul: "Pengguna Tidak Hadir",
+            pesan: "Presensi dicatat tidak digunakan. Slot laboratorium dibuka.",
+            ikon: "bi-x-circle-fill"
+        },
 
-    const elemen = {
-        judul: card.querySelector(".sesi-info h3"),
-        jam: card.querySelector(".sesi-jam"),
-        pemohon: card.querySelector(".sesi-lokasi strong"),
-        tombolHadir: card.querySelector(".btn-hadir"),
-        tombolTidak: card.querySelector(".btn-tidak"),
-        aksi: card.querySelector(".tombol-validasi")
+        kedaluwarsa: {
+            jenis: "kedaluwarsa",
+            judul: "Batas Presensi Habis",
+            pesan: "Tidak ada validasi dalam 15 menit. Slot laboratorium dibuka otomatis.",
+            ikon: "bi-clock-fill"
+        }
     };
 
-    let sedangMemperbarui = false;
-
-    // Memeriksa apakah elemen utama tersedia.
-    if (Object.values(elemen).some(item => !item)) {
-        console.error("SILAB: struktur HTML card presensi tidak lengkap.");
+    if (!waktu || !layanan || !wadahPresensi) {
+        console.error("SILAB: Modul presensi gagal dimuat.");
         return;
     }
 
-    // Mengambil waktu mulai dan selesai dari data peminjaman.
-    function getRentang(booking) {
-        return {
-            mulai: waktu.parseWaktu(booking.tanggal, booking.waktuMulai),
-            selesai: waktu.parseWaktu(booking.tanggal, booking.waktuSelesai)
-        };
+    if (!wadahNotifikasi) {
+        console.warn("SILAB: Wadah notifikasi tidak ditemukan.");
     }
 
-    // Mengambil sesi yang sedang berlangsung.
-    function getSesiAktif(sekarang = new Date()) {
-        const tanggal = waktu.tanggalHariIni(sekarang);
+    let sedangMemeriksa = false;
 
-        return service.getAll("bookings")
-            .filter(item => item.tanggal === tanggal)
-            .find(item => {
-                const { mulai, selesai } = getRentang(item);
+    // Menampilkan notifikasi hasil presensi.
+    function tampilkanNotifikasi(status) {
+        const konfigurasi = PESAN_NOTIFIKASI[status];
 
-                return mulai &&
-                    selesai &&
-                    sekarang >= mulai &&
-                    sekarang < selesai &&
-                    !["tidak_digunakan", "selesai_digunakan"].includes(item.status);
-            }) || null;
+        if (!konfigurasi || !wadahNotifikasi) return;
+
+        const toast = document.createElement("div");
+        const ikon = document.createElement("span");
+        const gambarIkon = document.createElement("i");
+        const konten = document.createElement("div");
+        const judul = document.createElement("span");
+        const pesan = document.createElement("span");
+
+        toast.className = "notifikasi-toast";
+        toast.dataset.jenis = konfigurasi.jenis;
+        toast.setAttribute("role", "status");
+
+        ikon.className = "notifikasi-ikon";
+
+        gambarIkon.className = `bi ${konfigurasi.ikon}`;
+        gambarIkon.setAttribute("aria-hidden", "true");
+
+        ikon.append(gambarIkon);
+
+        konten.className = "notifikasi-konten";
+
+        judul.className = "notifikasi-judul";
+        judul.textContent = konfigurasi.judul;
+
+        pesan.className = "notifikasi-pesan";
+        pesan.textContent = konfigurasi.pesan;
+
+        konten.append(judul, pesan);
+        toast.append(ikon, konten);
+
+        wadahNotifikasi.append(toast);
+
+        // Menghilangkan notifikasi secara otomatis.
+        window.setTimeout(() => {
+            toast.classList.add("is-hilang");
+
+            window.setTimeout(() => {
+                toast.remove();
+            }, 300);
+
+        }, DURASI_NOTIFIKASI);
     }
 
-    // Memperbarui status otomatis setelah batas presensi atau sesi berakhir.
-    function perbaruiStatusOtomatis(sekarang) {
-        const tanggal = waktu.tanggalHariIni(sekarang);
-        const bookings = service.getAll("bookings");
+    // Mengambil status akhir presensi.
+    function statusAkhir(booking) {
+        const status = booking.presensi?.status;
 
-        bookings
-            .filter(item => item.tanggal === tanggal)
-            .forEach(item => {
-                const { mulai, selesai } = getRentang(item);
-
-                if (!mulai || !selesai) return;
-
-                const batasAkhir = new Date(
-                    mulai.getTime() + BATAS_PRESENSI * 60000
-                );
-
-                if (
-                    item.status === "terjadwal" &&
-                    sekarang >= batasAkhir
-                ) {
-                    service.updatePresensi(
-                        item.id,
-                        "tidak_digunakan"
-                    );
-                }
-
-                if (
-                    item.status === "digunakan" &&
-                    sekarang >= selesai
-                ) {
-                    service.update("bookings", item.id, {
-                        status: "selesai_digunakan"
-                    });
-                }
-            });
-    }
-
-    // Menampilkan card berdasarkan data sesi aktif.
-    function tampilkanCard(booking) {
-        if (!booking) {
-            card.hidden = true;
-            card.style.display = "none";
-            return;
+        if (["digunakan", "tidak_digunakan"].includes(status)) {
+            return status;
         }
 
-        card.hidden = false;
-        card.style.display = "";
+        return ["digunakan", "tidak_digunakan"].includes(booking.status)
+            ? booking.status
+            : null;
+    }
 
-        elemen.judul.textContent = booking.namaKegiatan;
-        elemen.jam.textContent = waktu.formatRentangJam(
+    // Menampilkan pesan kesalahan validasi.
+    function tampilkanPesan(kartu, pesan, jenis) {
+        const feedback = kartu.querySelector(
+            "[data-presensi-feedback]"
+        );
+
+        if (!feedback) return;
+
+        feedback.textContent = pesan;
+        feedback.dataset.jenis = jenis;
+    }
+
+    // Mengatur kondisi tombol presensi.
+    function aturTombol(kartu, nonaktif) {
+        kartu.querySelectorAll("[data-aksi-presensi]").forEach(
+            tombol => {
+                tombol.disabled = nonaktif;
+            }
+        );
+    }
+
+    // Memeriksa kelayakan validasi presensi.
+    function periksaKelayakan(booking) {
+        if (!booking) {
+            return {
+                boleh: false,
+                pesan: "Data peminjaman tidak ditemukan."
+            };
+        }
+
+        if (statusAkhir(booking)) {
+            return {
+                boleh: false,
+                pesan: "Presensi sesi ini sudah dicatat."
+            };
+        }
+
+        const rentang = waktu.validasiRentang(
+            booking.tanggal,
             booking.waktuMulai,
             booking.waktuSelesai
         );
-        elemen.pemohon.textContent = booking.namaPemohon;
 
-        const sudahHadir = booking.status === "digunakan";
-
-        elemen.aksi.hidden = sudahHadir;
-
-        // Menampilkan status hadir setelah validasi berhasil.
-        let badge = card.querySelector(".status-presensi");
-
-        if (sudahHadir && !badge) {
-            badge = document.createElement("span");
-            badge.className = "badge-status selesai status-presensi";
-            badge.textContent = "Presensi Hadir Tercatat";
-            elemen.aksi.parentElement.appendChild(badge);
-        } else if (!sudahHadir && badge) {
-            badge.remove();
+        if (!rentang.valid) {
+            return {
+                boleh: false,
+                pesan: rentang.pesan
+            };
         }
-    }
 
-    // Memeriksa waktu dan memperbarui tampilan presensi.
-    function refresh(sekarang = new Date()) {
-        if (sedangMemperbarui) return;
-
-        sedangMemperbarui = true;
-
-        try {
-            perbaruiStatusOtomatis(sekarang);
-
-            const booking = getSesiAktif(sekarang);
-            tampilkanCard(booking);
-
-            return booking;
-        } finally {
-            sedangMemperbarui = false;
-        }
-    }
-
-    // Memvalidasi dan menyimpan tindakan presensi Laboran.
-    function validasiPresensi(status) {
         const sekarang = new Date();
-        const booking = getSesiAktif(sekarang);
 
-        if (!booking || booking.status !== "terjadwal") {
-            alert("Tidak ada sesi yang menunggu validasi presensi.");
-            refresh();
-            return;
+        if (sekarang < rentang.mulai) {
+            return {
+                boleh: false,
+                pesan: "Sesi belum dimulai."
+            };
         }
 
-        const { mulai } = getRentang(booking);
-        const batasAkhir = new Date(
-            mulai.getTime() + BATAS_PRESENSI * 60000
-        );
-
-        if (sekarang < mulai || sekarang >= batasAkhir) {
-            refresh();
-            alert("Waktu validasi presensi telah berakhir.");
-            return;
+        if (sekarang >= rentang.selesai) {
+            return {
+                boleh: false,
+                pesan: "Sesi sudah berakhir."
+            };
         }
 
-        if (status === "tidak_digunakan") {
-            const konfirmasi = confirm(
-                "Apakah Anda yakin sesi ini tidak digunakan?"
-            );
+        const batasWaktu = rentang.mulai.getTime() +
+            BATAS_VALIDASI * 60000;
 
-            if (!konfirmasi) return;
+        if (sekarang.getTime() >= batasWaktu) {
+            return {
+                boleh: false,
+                kedaluwarsa: true,
+                pesan: "Batas validasi 15 menit telah berakhir."
+            };
         }
+
+        return {
+            boleh: true,
+            pesan: "Presensi dapat dicatat."
+        };
+    }
+
+    // Menutup slot otomatis jika 15 menit berlalu tanpa validasi.
+    function periksaPresensiKedaluwarsa() {
+        if (sedangMemeriksa) return;
+
+        sedangMemeriksa = true;
 
         try {
-            service.updatePresensi(booking.id, status);
-            refresh();
+            const sekarang = new Date();
+            const data = layanan.getAll("bookings");
 
-            alert(
-                status === "digunakan"
-                    ? "Presensi berhasil dicatat."
-                    : "Sesi berhasil ditandai tidak digunakan."
-            );
+            data.forEach(booking => {
+                if (statusAkhir(booking)) return;
+
+                const rentang = waktu.validasiRentang(
+                    booking.tanggal,
+                    booking.waktuMulai,
+                    booking.waktuSelesai
+                );
+
+                if (!rentang.valid) return;
+
+                const batasWaktu = rentang.mulai.getTime() +
+                    BATAS_VALIDASI * 60000;
+
+                if (sekarang.getTime() < batasWaktu) return;
+
+                try {
+                    layanan.updatePresensi(
+                        booking.id,
+                        "tidak_digunakan"
+                    );
+
+                    tampilkanNotifikasi("kedaluwarsa");
+
+                } catch (error) {
+                    console.error(
+                        `SILAB: Gagal memperbarui presensi ${booking.id}.`,
+                        error
+                    );
+                }
+            });
+
         } catch (error) {
-            console.error("Gagal memperbarui presensi:", error);
-            alert("Terjadi kesalahan saat menyimpan presensi.");
+            console.error("SILAB: Pemeriksaan presensi gagal.", error);
+
+        } finally {
+            sedangMemeriksa = false;
         }
     }
 
-    // Menghubungkan tombol dengan proses validasi.
-    elemen.tombolHadir.addEventListener("click", event => {
+    // Menangani klik tombol presensi.
+    wadahPresensi.addEventListener("click", function (event) {
+        const tombol = event.target.closest("[data-aksi-presensi]");
+
+        if (!tombol || !wadahPresensi.contains(tombol)) return;
+
         event.preventDefault();
-        validasiPresensi("digunakan");
+
+        if (tombol.disabled) return;
+
+        const kartu = tombol.closest(".sesi-card");
+        const bookingId = kartu?.dataset.bookingId;
+        const status = tombol.dataset.aksiPresensi;
+
+        if (
+            !kartu ||
+            !bookingId ||
+            !["digunakan", "tidak_digunakan"].includes(status)
+        ) {
+            return;
+        }
+
+        const booking = layanan.getById("bookings", bookingId);
+        const hasil = periksaKelayakan(booking);
+
+        if (!hasil.boleh) {
+            if (hasil.kedaluwarsa && booking) {
+                periksaPresensiKedaluwarsa();
+                return;
+            }
+
+            tampilkanPesan(kartu, hasil.pesan, "error");
+            aturTombol(kartu, true);
+
+            return;
+        }
+
+        // Mencegah tombol diproses lebih dari satu kali.
+        aturTombol(kartu, true);
+
+        try {
+            layanan.updatePresensi(bookingId, status);
+
+            tampilkanNotifikasi(status);
+
+        } catch (error) {
+            tampilkanPesan(
+                kartu,
+                error.message || "Presensi gagal disimpan.",
+                "error"
+            );
+
+            aturTombol(kartu, false);
+
+            console.error("SILAB Presensi:", error);
+        }
     });
 
-    elemen.tombolTidak.addEventListener("click", event => {
-        event.preventDefault();
-        validasiPresensi("tidak_digunakan");
+    // Memeriksa presensi ketika data berubah.
+    window.addEventListener(
+        "silab:data-changed",
+        periksaPresensiKedaluwarsa
+    );
+
+    // Memeriksa ulang ketika halaman dibuka kembali.
+    document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+            periksaPresensiKedaluwarsa();
+        }
     });
 
-    // Memperbarui card ketika data berubah dari modul lain.
-    window.addEventListener("silab:data-changed", () => refresh());
+    // Memeriksa batas presensi setiap satu detik.
+    window.setInterval(periksaPresensiKedaluwarsa, 1000);
 
-    // Menjalankan pemeriksaan waktu secara berkala.
-    refresh();
-    window.setInterval(() => refresh(), INTERVAL_PEMERIKSAAN);
+    // Menjalankan pemeriksaan pertama.
+    periksaPresensiKedaluwarsa();
 
-    // Menyediakan fungsi pemeriksaan untuk pengujian.
-    window.SILABPresensi = Object.freeze({
-        refresh,
-        getSesiAktif
-    });
+    console.log("SILAB: Modul presensi berhasil dimuat.");
 
 })(window, document);
