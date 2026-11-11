@@ -42,10 +42,10 @@ body {
 /* BACKGROUND LABORATORIUM */
 
 .visual-background {
-  position: absolute;
+    position: absolute;
 
-  top: 0;
-  left: 0;
+    top: 0;
+    left: 0;
 
   width: 100%;
   height: 100%;
@@ -55,19 +55,20 @@ body {
   object-fit: cover;
   object-position: center;
 
-  filter: blur(4px);
+    filter: blur(4px);
 
-  transform: scale(1.04);
+    transform: scale(1.04);
 
   z-index: 0;
   pointer-events: none;
 }
 
+
 /* IDENTITAS SILAB */
 
 .brand {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
 
   display: flex;
   align-items: center;
@@ -84,8 +85,8 @@ body {
   width: 95px;
   height: 95px;
 
-  object-fit: contain;
-  flex-shrink: 0;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 /* TEKS IDENTITAS */
@@ -94,14 +95,14 @@ body {
   font-size: 38px;
   font-weight: 800;
 
-  margin-bottom: 2px;
+    margin-bottom: 2px;
 }
 
 .brand-text p {
   font-size: 18px;
   font-weight: 600;
 
-  line-height: 1.4;
+    line-height: 1.4;
 }
 
 /* =========================================

@@ -1,746 +1,1260 @@
 
 /**
  * MODUL REKOMENDASI JADWAL SILAB
- * Mengelola pengajuan tergeser, statistik, pencarian,
- * filter, dan pagination berdasarkan data antrean.
+ *
+ * Mengelola:
+ * 1. Data pengguna tergeser.
+ * 2. Status menunggu rekomendasi.
+ * 3. Status rekomendasi dikirim.
+ * 4. Pencarian dan filter.
+ * 5. Pagination.
+ * 6. Statistik rekomendasi.
+ * 7. Navigasi buat dan edit rekomendasi.
+ * 8. Pembatalan rekomendasi maksimal 24 jam.
  */
 
 (function (window, document) {
     "use strict";
 
+    // =====================================================
+    // 1. KONFIGURASI
+    // =====================================================
+
     const layanan = window.SILABService;
 
-    // Elemen halaman.
-    const el = {
-        tabel: document.getElementById("tabelBody"),
-        template: document.getElementById("templateBarisTergeser"),
-        pencarian: document.querySelector("[data-cari-kasus]"),
-        filter: document.querySelector("[data-filter-kasus]"),
-        infoPagination: document.querySelector("[data-info-pagination]"),
-        pagination: document.querySelector("[data-pagination-buttons]")
-    };
+    const PER_HALAMAN = 5;
 
-    // KONFIGURASI
-    const PER_HALAMAN = 10;
+    const HALAMAN_BUAT = "buat_rekomendasi.html";
 
-    const STATUS_KASUS = [
-        "tergeser",
+    const STATUS_AKTIF = [
+        "menunggu_rekomendasi",
         "rekomendasi_dikirim"
     ];
 
-    const STATUS_REKOMENDASI_BELUM_SELESAI = [
-        "draft",
-        "belum_dikirim",
-        "dibatalkan",
-        "ditolak",
-        "kedaluwarsa",
-        "expired",
-        "rejected",
-        "cancelled"
-    ];
+    const PRIORITAS = {
+        P1: 1,
+        P2: 2,
+        P3: 3,
+        P4: 4,
+        P5: 5
+    };
 
-    let semuaKasus = [];
-    let semuaRekomendasi = [];
+    // =====================================================
+    // 2. ELEMEN HTML
+    // =====================================================
 
-    let halamanAktif = 1;
-    let filterAktif = "semua";
-    let kataKunci = "";
+    const el = {
+        tabel: document.getElementById("tabelBody"),
 
-    // Membaca ID pengajuan dari halaman sebelumnya.
-    const parameterURL = new URLSearchParams(
-        window.location.search
-    );
+        template: document.getElementById(
+            "templateBarisTergeser"
+        ),
 
-    const pengajuanTerpilih =
-        parameterURL.get("pengajuan") ||
-        parameterURL.get("kasusId");
+        pencarian: document.querySelector(
+            "[data-cari-kasus]"
+        ),
 
-    let sorotanSudahDilakukan = false;
+        filter: document.querySelector(
+            "[data-filter-kasus]"
+        ),
 
-    // Memastikan seluruh elemen tersedia.
-    if (
-        !layanan ||
-        Object.values(el).some(elemen => !elemen)
-    ) {
+        infoPagination: document.querySelector(
+            "[data-info-pagination]"
+        ),
+
+        tombolPagination: document.querySelector(
+            "[data-pagination-buttons]"
+        ),
+
+        total: document.querySelector(
+            '[data-stat="total"]'
+        ),
+
+        sumber: document.querySelector(
+            '[data-stat="sumber"]'
+        ),
+
+        kategori: document.querySelector(
+            '[data-stat="kategori"]'
+        ),
+
+        kategoriDetail: document.querySelector(
+            '[data-stat="kategori-detail"]'
+        ),
+
+        pending: document.querySelector(
+            '[data-stat="pending"]'
+        ),
+
+        selesai: document.querySelector(
+            '[data-stat="selesai"]'
+        )
+    };
+
+    // =====================================================
+    // 3. VALIDASI AWAL
+    // =====================================================
+
+    if (!layanan) {
         console.error(
-            "SILAB: Layanan atau elemen halaman rekomendasi belum tersedia."
+            "SILAB: layanan.js belum dimuat."
         );
-
         return;
     }
 
-
-    // NORMALISASI DATA
-    function normalisasi(nilai) {
-        return String(nilai || "").trim().toLowerCase();
-    }
-
-
-    // MENGAMBIL URUTAN PRIORITAS
-    function urutanPrioritas(nilai) {
-        const angka = Number(
-            String(nilai || "").replace(/\D/g, "")
+    if (
+        typeof layanan.getRekomendasiAktif !== "function" ||
+        typeof layanan.batalkanRekomendasi !== "function"
+    ) {
+        console.error(
+            "SILAB: Fungsi rekomendasi pada layanan.js belum tersedia."
         );
-
-        return Number.isFinite(angka) && angka > 0
-            ? angka
-            : 99;
+        return;
     }
 
-
-    // MENGAMBIL REKOMENDASI TERBARU BERDASARKAN ID PENGAJUAN
-    function cariRekomendasi(pengajuanId) {
-        const hasil = semuaRekomendasi.filter(data => {
-            const idTerkait =
-                data.pengajuanId ??
-                data.idPengajuan ??
-                data.antreanId ??
-                data.kasusId;
-
-            return String(idTerkait) === String(pengajuanId);
-        });
-
-        hasil.sort((a, b) => {
-            const waktuA = Date.parse(a.dibuatPada) || 0;
-            const waktuB = Date.parse(b.dibuatPada) || 0;
-
-            return waktuB - waktuA;
-        });
-
-        return hasil[0] || null;
+    if (
+        !el.tabel ||
+        !el.template ||
+        !el.pencarian ||
+        !el.filter ||
+        !el.infoPagination ||
+        !el.tombolPagination
+    ) {
+        console.error(
+            "SILAB: Struktur HTML rekomendasi belum lengkap."
+        );
+        return;
     }
 
+    // =====================================================
+    // 4. STATE MODUL
+    // =====================================================
 
-    // MEMERIKSA STATUS REKOMENDASI
-    function sudahDirekomendasikan(kasus) {
-        const rekomendasi = cariRekomendasi(kasus.id);
+    let semuaKasus = [];
+    let kasusDitampilkan = [];
 
-        if (!rekomendasi) {
-            return false;
+    let halamanAktif = 1;
+    let hanyaMenunggu = false;
+
+    let kasusPembatalan = null;
+    let timerPembaruan = null;
+
+    // =====================================================
+    // 5. UTILITAS DATA
+    // =====================================================
+
+    function ambilNilai(data, properti, alternatif = null) {
+        if (
+            data &&
+            data[properti] !== undefined &&
+            data[properti] !== null &&
+            data[properti] !== ""
+        ) {
+            return data[properti];
         }
 
-        const status = normalisasi(rekomendasi.status);
+        if (
+            data?.pengajuan &&
+            data.pengajuan[properti] !== undefined &&
+            data.pengajuan[properti] !== null
+        ) {
+            return data.pengajuan[properti];
+        }
 
-        return !STATUS_REKOMENDASI_BELUM_SELESAI.includes(status);
+        return alternatif;
     }
 
+    function formatJam(nilai) {
+        if (!nilai) return "--:--";
 
-    // MENGAMBIL DATA DARI ANTREAN
+        return String(nilai)
+            .slice(0, 5)
+            .replace(":", ".");
+    }
+
+    function formatTanggal(nilai) {
+        if (!nilai) return "Tanggal belum tersedia";
+
+        const cocok = String(nilai).match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+        );
+
+        if (!cocok) return String(nilai);
+
+        const tanggal = new Date(
+            Number(cocok[1]),
+            Number(cocok[2]) - 1,
+            Number(cocok[3])
+        );
+
+        return tanggal.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+    function formatJadwalAsal(kasus) {
+        const jadwal = kasus.jadwalAsal;
+
+        // Mendukung format tanggal ISO pada data lama.
+        if (
+            typeof jadwal === "string" &&
+            jadwal.includes("T")
+        ) {
+            const tanggal = new Date(jadwal);
+
+            if (!Number.isNaN(tanggal.getTime())) {
+                return tanggal.toLocaleString("id-ID", {
+                    timeZone: "Asia/Jayapura",
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hourCycle: "h23"
+                });
+            }
+        }
+
+        const tanggal = kasus.tanggal
+            ? formatTanggal(kasus.tanggal)
+            : kasus.hari || "Hari belum tersedia";
+
+        return (
+            `${tanggal}, ` +
+            `${formatJam(kasus.waktuMulai)}–` +
+            `${formatJam(kasus.waktuSelesai)}`
+        );
+    }
+
+    function formatPrioritas(kasus) {
+        const kategori = ambilNilai(kasus, "kategori", "");
+        const prioritas = ambilNilai(kasus, "prioritas", "");
+
+        return [kategori, prioritas]
+            .filter(Boolean)
+            .join(" • ") || "Belum diklasifikasi";
+    }
+
+    function ambilIdPengajuan(kasus) {
+        return kasus.pengajuanId ||
+            kasus.pengajuan?.id ||
+            kasus.id;
+    }
+
+    function ambilStatus(kasus) {
+        return String(kasus.status || "").toLowerCase();
+    }
+
+    function ambilBatasWaktu(kasus) {
+        const batas = kasus.kedaluwarsaPada ||
+            kasus.batasEditPada;
+
+        if (batas) {
+            const waktu = Date.parse(batas);
+
+            return Number.isFinite(waktu)
+                ? waktu
+                : null;
+        }
+
+        const waktuKirim = kasus.dikirimPada ||
+            kasus.waktuDikirim;
+
+        if (waktuKirim) {
+            const waktu = Date.parse(waktuKirim);
+
+            return Number.isFinite(waktu)
+                ? waktu + (24 * 60 * 60 * 1000)
+                : null;
+        }
+
+        return null;
+    }
+
+    function hitungSisaWaktu(kasus) {
+        const batas = ambilBatasWaktu(kasus);
+
+        if (!batas) {
+            return {
+                aktif: false,
+                teks: "Batas waktu 24 jam belum tercatat"
+            };
+        }
+
+        const sisa = batas - Date.now();
+
+        if (sisa <= 0) {
+            return {
+                aktif: false,
+                teks: "Batas waktu 24 jam telah berakhir"
+            };
+        }
+
+        const jam = Math.floor(
+            sisa / (60 * 60 * 1000)
+        );
+
+        const menit = Math.floor(
+            (sisa % (60 * 60 * 1000)) /
+            (60 * 1000)
+        );
+
+        return {
+            aktif: true,
+            teks: `Sisa waktu edit: ${jam} jam ${menit} menit`
+        };
+    }
+
+    // =====================================================
+    // 6. PEMBUAT ELEMEN
+    // =====================================================
+
+    function buatElemen(tag, kelas, teks) {
+        const elemen = document.createElement(tag);
+
+        if (kelas) {
+            elemen.className = kelas;
+        }
+
+        if (teks !== undefined && teks !== null) {
+            elemen.textContent = String(teks);
+        }
+
+        return elemen;
+    }
+
+    function isiField(akar, pemilih, nilai) {
+        const target = akar.querySelector(pemilih);
+
+        if (target) {
+            target.textContent =
+                nilai === null ||
+                nilai === undefined ||
+                nilai === ""
+                    ? "—"
+                    : String(nilai);
+        }
+    }
+
+    function buatBadgeStatus(status) {
+        const informasi = status === "menunggu_rekomendasi"
+            ? {
+                label: "Menunggu Rekomendasi",
+                kelas: "status-menunggu"
+            }
+            : {
+                label: "Rekomendasi Dikirim",
+                kelas: "status-dikirim"
+            };
+
+        return buatElemen(
+            "span",
+            `badge-status-rekomendasi ${informasi.kelas}`,
+            informasi.label
+        );
+    }
+
+    // =====================================================
+    // 7. NAVIGASI FORMULIR
+    // =====================================================
+
+    function buatURLFormulir(kasus, mode) {
+        const url = new URL(
+            HALAMAN_BUAT,
+            window.location.href
+        );
+
+        url.searchParams.set(
+            "pengajuan",
+            ambilIdPengajuan(kasus)
+        );
+
+        url.searchParams.set(
+            "kasus",
+            kasus.id
+        );
+
+        url.searchParams.set(
+            "mode",
+            mode
+        );
+
+        return url.href;
+    }
+
+    // =====================================================
+    // 8. TOMBOL AKSI
+    // =====================================================
+
+    function buatAksi(kasus) {
+        const wadah = buatElemen(
+            "div",
+            "kolom-aksi-inner"
+        );
+
+        const status = ambilStatus(kasus);
+
+        // Kasus belum memiliki rekomendasi.
+        if (status === "menunggu_rekomendasi") {
+            const tombol = buatElemen(
+                "a",
+                "btn-rekomendasi",
+                "Beri Rekomendasi"
+            );
+
+            tombol.href = buatURLFormulir(
+                kasus,
+                "buat"
+            );
+
+            wadah.append(tombol);
+
+            return wadah;
+        }
+
+        // Rekomendasi sudah dikirim.
+        if (status === "rekomendasi_dikirim") {
+            const sisa = hitungSisaWaktu(kasus);
+
+            if (sisa.aktif) {
+                const tombolEdit = buatElemen(
+                    "a",
+                    "btn-rekomendasi btn-edit-rekomendasi",
+                    "Edit"
+                );
+
+                tombolEdit.href = buatURLFormulir(
+                    kasus,
+                    "edit"
+                );
+
+                const tombolBatal = buatElemen(
+                    "button",
+                    "btn-rekomendasi btn-batal-rekomendasi",
+                    "Batalkan"
+                );
+
+                tombolBatal.type = "button";
+                tombolBatal.dataset.aksi = "batalkan";
+                tombolBatal.dataset.id = kasus.id;
+
+                wadah.append(
+                    tombolEdit,
+                    tombolBatal
+                );
+
+            } else {
+                const informasi = buatElemen(
+                    "span",
+                    "batas-waktu-berakhir",
+                    "Masa edit 24 jam berakhir"
+                );
+
+                wadah.append(informasi);
+            }
+        }
+
+        return wadah;
+    }
+
+    // =====================================================
+    // 9. MEMBUAT BARIS PENGGUNA TERGESER
+    // =====================================================
+
+    function buatBaris(kasus) {
+        const fragmen = el.template.content.cloneNode(true);
+
+        const baris = fragmen.querySelector(".tabel-row");
+
+        if (!baris) {
+            return document.createDocumentFragment();
+        }
+
+        baris.dataset.id = kasus.id;
+
+        isiField(
+            baris,
+            '[data-field="namaPemohon"]',
+            ambilNilai(kasus, "namaPemohon", "Nama tidak tersedia")
+        );
+
+        isiField(
+            baris,
+            '[data-field="nipNpm"]',
+            ambilNilai(kasus, "nipNpm", "NIP/NPM tidak tersedia")
+        );
+
+        isiField(
+            baris,
+            '[data-field="jadwalAsal"]',
+            formatJadwalAsal(kasus)
+        );
+
+        isiField(
+            baris,
+            '[data-field="namaKegiatan"]',
+            ambilNilai(kasus, "namaKegiatan", "Kegiatan tidak tersedia")
+        );
+
+        isiField(
+            baris,
+            '[data-field="kebutuhanPC"]',
+            `PC: ${ambilNilai(kasus, "kebutuhanPC", 0)} unit`
+        );
+
+        isiField(
+            baris,
+            '[data-field="kebutuhanKursi"]',
+            `Kursi: ${ambilNilai(kasus, "kebutuhanKursi", 0)} unit`
+        );
+
+        isiField(
+            baris,
+            '[data-field="kategoriPrioritas"]',
+            formatPrioritas(kasus)
+        );
+
+        isiField(
+            baris,
+            '[data-field="alasan"]',
+            kasus.alasan || "Alasan belum tersedia"
+        );
+
+        isiField(
+            baris,
+            '[data-field="namaPenggeser"]',
+            kasus.namaPenggeser
+                ? `Penggeser: ${kasus.namaPenggeser}`
+                : ""
+        );
+
+        // Menambahkan status tanpa mengubah struktur template.
+        const kolomAlasan = baris.querySelector(
+            ".kolom-alasan"
+        );
+
+        if (kolomAlasan) {
+            kolomAlasan.append(
+                buatBadgeStatus(ambilStatus(kasus))
+            );
+        }
+
+        // Menampilkan jadwal alternatif jika rekomendasi sudah dikirim.
+        if (ambilStatus(kasus) === "rekomendasi_dikirim") {
+            const jadwalRekomendasi =
+                kasus.rekomendasiTerbaru;
+
+            const kolomJadwal = baris.querySelector(
+                ".kolom-jadwal"
+            );
+
+            if (
+                kolomJadwal &&
+                jadwalRekomendasi?.waktuMulai &&
+                jadwalRekomendasi?.waktuSelesai
+            ) {
+                kolomJadwal.append(
+                    buatElemen(
+                        "span",
+                        "jadwal-alternatif",
+                        `Alternatif: ${jadwalRekomendasi.waktuMulai}–${jadwalRekomendasi.waktuSelesai}`
+                    )
+                );
+            }
+        }
+
+        // Mengganti tombol berdasarkan status kasus.
+        const kolomAksi = baris.querySelector(".kolom-aksi");
+
+        if (kolomAksi) {
+            kolomAksi.replaceChildren(
+                buatAksi(kasus)
+            );
+        }
+
+        return fragmen;
+    }
+
+    // =====================================================
+    // 10. MENGAMBIL DATA REKOMENDASI
+    // =====================================================
+
     function ambilData() {
         try {
-            semuaKasus = layanan.getAll("antrean")
-                .filter(data =>
-                    STATUS_KASUS.includes(
-                        normalisasi(data.status)
-                    )
-                )
-                .sort((a, b) => {
-                    const bedaPrioritas =
-                        urutanPrioritas(a.prioritas) -
-                        urutanPrioritas(b.prioritas);
+            const data = layanan.getRekomendasiAktif();
 
-                    return bedaPrioritas ||
-                        Number(b.skor || 0) -
-                        Number(a.skor || 0);
-                });
+            if (!Array.isArray(data)) {
+                throw new Error(
+                    "Format data rekomendasi tidak valid."
+                );
+            }
 
-            semuaRekomendasi = layanan.getAll("rekomendasi");
+            semuaKasus = data.filter(kasus =>
+                STATUS_AKTIF.includes(ambilStatus(kasus))
+            );
 
-            perbaruiHalaman();
+            semuaKasus.sort((a, b) => {
+                const prioritasA =
+                    PRIORITAS[
+                        String(a.prioritas || "").toUpperCase()
+                    ] || 99;
+
+                const prioritasB =
+                    PRIORITAS[
+                        String(b.prioritas || "").toUpperCase()
+                    ] || 99;
+
+                return prioritasA - prioritasB ||
+                    String(a.namaPemohon || "").localeCompare(
+                        String(b.namaPemohon || ""),
+                        "id"
+                    );
+            });
 
         } catch (error) {
             console.error(
-                "SILAB Rekomendasi: Gagal mengambil data.",
+                "SILAB: Gagal mengambil data rekomendasi.",
                 error
             );
 
             semuaKasus = [];
-            semuaRekomendasi = [];
 
-            perbaruiHalaman();
+            tampilkanNotifikasi(
+                "Data gagal dimuat",
+                error.message,
+                "error"
+            );
         }
     }
 
+    // =====================================================
+    // 11. STATISTIK
+    // =====================================================
 
-    // MEMPERBARUI STATISTIK
     function perbaruiStatistik() {
         const total = semuaKasus.length;
 
-        const selesai = semuaKasus.filter(
-            sudahDirekomendasikan
+        const menunggu = semuaKasus.filter(
+            kasus =>
+                ambilStatus(kasus) === "menunggu_rekomendasi"
         ).length;
 
-        const pending = total - selesai;
+        const dikirim = semuaKasus.filter(
+            kasus =>
+                ambilStatus(kasus) === "rekomendasi_dikirim"
+        ).length;
 
-        const kelompokKategori = new Map();
+        const kategori = [
+            ...new Set(
+                semuaKasus
+                    .map(kasus =>
+                        ambilNilai(kasus, "kategori")
+                    )
+                    .filter(Boolean)
+            )
+        ];
 
-        semuaKasus.forEach(kasus => {
-            const kategori = kasus.kategori || "-";
-            const prioritas = kasus.prioritas || "-";
+        if (el.total) {
+            el.total.textContent = `${total} Pengguna`;
+        }
 
-            const kunci = `${kategori} • ${prioritas}`;
+        if (el.sumber) {
+            el.sumber.textContent =
+                "Berdasarkan data pengguna tergeser";
+        }
 
-            kelompokKategori.set(
-                kunci,
-                (kelompokKategori.get(kunci) || 0) + 1
-            );
-        });
+        if (el.kategori) {
+            el.kategori.textContent =
+                `${kategori.length} Kategori`;
+        }
 
-        const daftarKategori = [...kelompokKategori.entries()]
-            .map(([nama, jumlah]) => `${nama} (${jumlah})`);
+        if (el.kategoriDetail) {
+            el.kategoriDetail.textContent =
+                kategori.length
+                    ? kategori.join(", ")
+                    : "Belum ada klasifikasi";
+        }
 
-        aturStatistik("total", `${total} Pengguna`);
+        if (el.pending) {
+            el.pending.textContent =
+                `${menunggu} Perlu Solusi Slot`;
+        }
 
-        aturStatistik(
-            "sumber",
-            "Berdasarkan data antrean berstatus tergeser"
-        );
-
-        aturStatistik(
-            "kategori",
-            daftarKategori.length
-                ? daftarKategori.join(", ")
-                : "Belum ada data"
-        );
-
-        aturStatistik(
-            "kategori-detail",
-            `${kelompokKategori.size} kelompok kategori dan prioritas`
-        );
-
-        aturStatistik(
-            "pending",
-            `${pending} Perlu Solusi Slot`
-        );
-
-        aturStatistik(
-            "selesai",
-            `${selesai} Selesai Direkomendasikan`
-        );
-    }
-
-
-    // MENGISI DATA STATISTIK
-    function aturStatistik(nama, nilai) {
-        const elemen = document.querySelector(
-            `[data-stat="${nama}"]`
-        );
-
-        if (elemen) {
-            elemen.textContent = nilai;
+        if (el.selesai) {
+            el.selesai.textContent =
+                `${dikirim} Selesai Direkomendasikan`;
         }
     }
 
+    // =====================================================
+    // 12. PENCARIAN DAN FILTER
+    // =====================================================
 
-    // MEMFORMAT JAM
-    function formatJam(nilai) {
-        return String(nilai || "--:--").replace(":", ".");
-    }
-
-
-    // MEMFORMAT JADWAL ASAL
-    function formatJadwal(kasus) {
-
-        // Mendukung data jadwal dalam format ISO.
-        if (kasus.jadwalAsal) {
-            const tanggal = new Date(kasus.jadwalAsal);
-
-            if (Number.isNaN(tanggal.getTime())) {
-                return "Jadwal asal tidak valid.";
-            }
-
-            const tanggalFormat = new Intl.DateTimeFormat(
-                "id-ID",
-                {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    timeZone: "Asia/Jayapura"
-                }
-            ).format(tanggal);
-
-            const jamFormat = new Intl.DateTimeFormat(
-                "id-ID",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                    timeZone: "Asia/Jayapura"
-                }
-            ).format(tanggal);
-
-            return `${tanggalFormat} • ${jamFormat} WIT`;
-        }
-
-        // Menggunakan data jadwal dari antrean.
-        const hari = kasus.hari || "Hari belum ditentukan";
-
-        if (!kasus.waktuMulai || !kasus.waktuSelesai) {
-            return `${hari} • Waktu belum ditentukan`;
-        }
-
-        return (
-            `${hari}, ${formatJam(kasus.waktuMulai)}–` +
-            `${formatJam(kasus.waktuSelesai)} WIT`
-        );
-    }
-
-
-    // MEMBUAT BARIS TABEL
-    function buatBaris(kasus) {
-        const salinan = el.template.content.cloneNode(true);
-
-        const baris = salinan.querySelector(".tabel-row");
-
-        if (!baris) {
-            console.error(
-                "SILAB: Elemen .tabel-row tidak ditemukan pada template."
-            );
-
-            return salinan;
-        }
-
-        baris.dataset.pengajuanId = String(kasus.id);
-        baris.dataset.kasusId = String(kasus.id);
-
-
-        // MENGISI DATA BARIS
-        function isi(field, nilai) {
-            const elemen = salinan.querySelector(
-                `[data-field="${field}"]`
-            );
-
-            if (elemen) {
-                elemen.textContent =
-                    nilai === null ||
-                    nilai === undefined ||
-                    nilai === ""
-                        ? "—"
-                        : String(nilai);
-            }
-        }
-
-        isi("namaPemohon", kasus.namaPemohon);
-        isi("nipNpm", kasus.nipNpm);
-
-        isi(
-            "jadwalAsal",
-            formatJadwal(kasus)
-        );
-
-        isi("namaKegiatan", kasus.namaKegiatan);
-
-        isi(
-            "kebutuhanPC",
-            `Kebutuhan: ${kasus.kebutuhanPC ?? 0} PC`
-        );
-
-        isi(
-            "kebutuhanKursi",
-            `Kebutuhan: ${kasus.kebutuhanKursi ?? 0} Kursi`
-        );
-
-        isi(
-            "kategoriPrioritas",
-            `${kasus.kategori || "-"} • ${kasus.prioritas || "-"}`
-        );
-
-        isi(
-            "alasan",
-            kasus.alasan ||
-                "Tergeser oleh pengajuan dengan prioritas lebih tinggi."
-        );
-
-        isi(
-            "namaPenggeser",
-            kasus.namaPenggeser
-                ? `Penggeser: ${kasus.namaPenggeser}`
-                : "Penggeser: Belum tercatat"
-        );
-
-
-        // MENGATUR TOMBOL REKOMENDASI
-        const tombol = salinan.querySelector(
-            "[data-aksi-rekomendasi]"
-        );
-
-        const label = salinan.querySelector(
-            "[data-label-aksi]"
-        );
-
-        const selesai = sudahDirekomendasikan(kasus);
-
-        const parameter = new URLSearchParams({
-            pengajuan: String(kasus.id),
-            kasusId: String(kasus.id)
-        });
-
-        if (selesai) {
-            parameter.set("mode", "lihat");
-
-            if (label) {
-                label.textContent = "Lihat Rekomendasi";
-            }
-
-            if (tombol) {
-                tombol.classList.add("sudah-direkomendasikan");
-            }
-
-        } else {
-            if (label) {
-                label.textContent = "Beri Rekomendasi";
-            }
-        }
-
-        if (tombol) {
-            tombol.href =
-                `buat_rekomendasi.html?${parameter.toString()}`;
-
-            tombol.setAttribute(
-                "aria-label",
-                `${selesai ? "Lihat" : "Buat"} rekomendasi untuk ${kasus.namaPemohon || kasus.id}`
-            );
-        }
-
-        return salinan;
-    }
-
-
-    // MEMERIKSA PENCARIAN
-    function cocokPencarian(kasus) {
-        const teks = [
-            kasus.id,
-            kasus.namaPemohon,
-            kasus.nipNpm,
-            kasus.namaKegiatan,
-            kasus.kategori,
-            kasus.prioritas,
-            kasus.hari,
-            kasus.waktuMulai,
-            kasus.waktuSelesai,
-            kasus.alasan,
-            kasus.namaPenggeser
-        ]
-            .join(" ")
+    function filterData() {
+        const kataKunci = el.pencarian.value
+            .trim()
             .toLowerCase();
 
-        return teks.includes(kataKunci);
-    }
+        kasusDitampilkan = semuaKasus.filter(kasus => {
+            const status = ambilStatus(kasus);
 
-
-    // MENERAPKAN FILTER DATA
-    function dapatkanDataTampil() {
-        return semuaKasus.filter(kasus => {
-            const selesai = sudahDirekomendasikan(kasus);
-
-            const cocokFilter =
-                filterAktif === "semua" || !selesai;
-
-            return cocokFilter && cocokPencarian(kasus);
-        });
-    }
-
-
-    // MEMBUAT TOMBOL PAGINATION
-    function buatTombolHalaman(teks, halaman, opsi = {}) {
-        const tombol = document.createElement("button");
-
-        tombol.type = "button";
-        tombol.className = "btn-page";
-        tombol.textContent = teks;
-
-        tombol.dataset.halaman = halaman;
-
-        if (opsi.aktif) {
-            tombol.classList.add("active");
-            tombol.setAttribute("aria-current", "page");
-        }
-
-        if (opsi.nonaktif) {
-            tombol.disabled = true;
-        }
-
-        return tombol;
-    }
-
-
-    // MENAMPILKAN PAGINATION
-    function tampilkanPagination(totalHalaman) {
-        el.pagination.replaceChildren();
-
-        const sebelumnya = buatTombolHalaman(
-            "Sebelumnya",
-            halamanAktif - 1,
-            {
-                nonaktif: halamanAktif === 1
+            if (
+                hanyaMenunggu &&
+                status !== "menunggu_rekomendasi"
+            ) {
+                return false;
             }
-        );
 
-        el.pagination.append(sebelumnya);
+            const nama = String(
+                ambilNilai(kasus, "namaPemohon", "")
+            ).toLowerCase();
 
-        const awal = Math.max(1, halamanAktif - 2);
+            const identifier = String(
+                ambilNilai(kasus, "nipNpm", "")
+            ).toLowerCase();
 
-        const akhir = Math.min(
-            totalHalaman,
-            halamanAktif + 2
-        );
+            const kegiatan = String(
+                ambilNilai(kasus, "namaKegiatan", "")
+            ).toLowerCase();
 
-        if (awal > 1) {
-            el.pagination.append(
-                buatTombolHalaman("1", 1)
+            return (
+                nama.includes(kataKunci) ||
+                identifier.includes(kataKunci) ||
+                kegiatan.includes(kataKunci)
             );
-        }
-
-        if (awal > 2) {
-            const titikAwal = document.createElement("span");
-
-            titikAwal.className = "pagination-dots";
-            titikAwal.textContent = "...";
-
-            el.pagination.append(titikAwal);
-        }
-
-        for (
-            let halaman = awal;
-            halaman <= akhir;
-            halaman++
-        ) {
-            el.pagination.append(
-                buatTombolHalaman(
-                    String(halaman),
-                    halaman,
-                    {
-                        aktif: halaman === halamanAktif
-                    }
-                )
-            );
-        }
-
-        if (akhir < totalHalaman - 1) {
-            const titikAkhir = document.createElement("span");
-
-            titikAkhir.className = "pagination-dots";
-            titikAkhir.textContent = "...";
-
-            el.pagination.append(titikAkhir);
-        }
-
-        if (akhir < totalHalaman) {
-            el.pagination.append(
-                buatTombolHalaman(
-                    String(totalHalaman),
-                    totalHalaman
-                )
-            );
-        }
-
-        const berikutnya = buatTombolHalaman(
-            "Berikutnya",
-            halamanAktif + 1,
-            {
-                nonaktif: halamanAktif === totalHalaman
-            }
-        );
-
-        el.pagination.append(berikutnya);
-    }
-
-
-    // MEMPERBARUI INFORMASI PAGINATION
-    function perbaruiInfoPagination(total, awal, akhir) {
-        el.infoPagination.textContent = total
-            ? `Menampilkan ${awal}–${akhir} dari ${total} kasus`
-            : "Menampilkan 0 dari 0 kasus";
-    }
-
-
-    // MENAMPILKAN DATA TABEL
-    function tampilkanTabel(data) {
-        el.tabel.replaceChildren();
-
-        if (!data.length) {
-            const kosong = document.createElement("div");
-
-            kosong.className = "tabel-row tabel-empty";
-
-            kosong.textContent = kataKunci
-                ? "Tidak ada pengajuan yang sesuai dengan pencarian."
-                : "Belum ada pengajuan tergeser yang perlu ditindaklanjuti.";
-
-            el.tabel.append(kosong);
-
-            return;
-        }
-
-        data.forEach(kasus => {
-            el.tabel.append(buatBaris(kasus));
         });
-    }
-
-
-    // MENYOROT PENGAJUAN YANG DIPILIH
-    function sorotPengajuanTerpilih() {
-        if (
-            !pengajuanTerpilih ||
-            sorotanSudahDilakukan
-        ) {
-            return;
-        }
-
-        const baris = [
-            ...el.tabel.querySelectorAll("[data-pengajuan-id]")
-        ].find(item =>
-            item.dataset.pengajuanId === pengajuanTerpilih
-        );
-
-        if (!baris) {
-            return;
-        }
-
-        sorotanSudahDilakukan = true;
-
-        baris.classList.add("is-terpilih");
-
-        baris.setAttribute("aria-current", "true");
-
-        window.requestAnimationFrame(() => {
-            baris.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-        });
-    }
-
-
-    // MEMPERBARUI SELURUH HALAMAN
-    function perbaruiHalaman() {
-        perbaruiStatistik();
-
-        const dataTampil = dapatkanDataTampil();
-
-        const totalData = dataTampil.length;
 
         const totalHalaman = Math.max(
             1,
-            Math.ceil(totalData / PER_HALAMAN)
+            Math.ceil(kasusDitampilkan.length / PER_HALAMAN)
         );
-
-
-        // Membuka halaman yang memuat pengajuan pilihan.
-        if (
-            pengajuanTerpilih &&
-            !sorotanSudahDilakukan
-        ) {
-            const indexTerpilih = dataTampil.findIndex(
-                kasus =>
-                    String(kasus.id) === pengajuanTerpilih
-            );
-
-            if (indexTerpilih !== -1) {
-                halamanAktif =
-                    Math.floor(indexTerpilih / PER_HALAMAN) + 1;
-            }
-        }
 
         halamanAktif = Math.min(
             halamanAktif,
             totalHalaman
         );
-
-        const awalIndex =
-            (halamanAktif - 1) * PER_HALAMAN;
-
-        const dataHalaman = dataTampil.slice(
-            awalIndex,
-            awalIndex + PER_HALAMAN
-        );
-
-        const nomorAwal = totalData
-            ? awalIndex + 1
-            : 0;
-
-        const nomorAkhir = Math.min(
-            awalIndex + PER_HALAMAN,
-            totalData
-        );
-
-        tampilkanTabel(dataHalaman);
-
-        perbaruiInfoPagination(
-            totalData,
-            nomorAwal,
-            nomorAkhir
-        );
-
-        tampilkanPagination(totalHalaman);
-
-        sorotPengajuanTerpilih();
     }
 
+    // =====================================================
+    // 13. PAGINATION
+    // =====================================================
 
-    // MENANGANI PENCARIAN
-    el.pencarian.addEventListener("input", function () {
-        kataKunci = this.value.trim().toLowerCase();
+    function tampilkanPagination() {
+        const total = kasusDitampilkan.length;
 
-        halamanAktif = 1;
-
-        perbaruiHalaman();
-    });
-
-
-    // MENANGANI FILTER
-    el.filter.addEventListener("click", function () {
-        filterAktif = filterAktif === "semua"
-            ? "menunggu"
-            : "semua";
-
-        halamanAktif = 1;
-
-        const sedangMenunggu = filterAktif === "menunggu";
-
-        this.setAttribute(
-            "aria-pressed",
-            String(sedangMenunggu)
+        const totalHalaman = Math.ceil(
+            total / PER_HALAMAN
         );
 
-        this.innerHTML = sedangMenunggu
+        el.tombolPagination.replaceChildren();
+
+        if (!total) {
+            el.infoPagination.textContent =
+                "Belum ada kasus yang sesuai.";
+
+            return;
+        }
+
+        const awal =
+            (halamanAktif - 1) * PER_HALAMAN + 1;
+
+        const akhir = Math.min(
+            halamanAktif * PER_HALAMAN,
+            total
+        );
+
+        el.infoPagination.textContent =
+            `Menampilkan ${awal}–${akhir} dari ${total} kasus`;
+
+        // Tombol sebelumnya.
+        const sebelumnya = buatElemen(
+            "button",
+            "pagination-btn",
+            "‹"
+        );
+
+        sebelumnya.type = "button";
+        sebelumnya.disabled = halamanAktif === 1;
+        sebelumnya.dataset.halaman = halamanAktif - 1;
+
+        el.tombolPagination.append(sebelumnya);
+
+        // Nomor halaman.
+        for (
+            let nomor = 1;
+            nomor <= totalHalaman;
+            nomor++
+        ) {
+            const tombol = buatElemen(
+                "button",
+                `pagination-btn${nomor === halamanAktif ? " active" : ""}`,
+                nomor
+            );
+
+            tombol.type = "button";
+            tombol.dataset.halaman = nomor;
+
+            if (nomor === halamanAktif) {
+                tombol.setAttribute("aria-current", "page");
+            }
+
+            el.tombolPagination.append(tombol);
+        }
+
+        // Tombol berikutnya.
+        const berikutnya = buatElemen(
+            "button",
+            "pagination-btn",
+            "›"
+        );
+
+        berikutnya.type = "button";
+        berikutnya.disabled =
+            halamanAktif === totalHalaman;
+
+        berikutnya.dataset.halaman = halamanAktif + 1;
+
+        el.tombolPagination.append(berikutnya);
+    }
+
+    // =====================================================
+    // 14. TAMPILKAN DATA
+    // =====================================================
+
+    function tampilkanRekomendasi() {
+        ambilData();
+
+        perbaruiStatistik();
+
+        filterData();
+
+        el.tabel.replaceChildren();
+
+        if (!kasusDitampilkan.length) {
+            const kosong = buatElemen(
+                "div",
+                "empty-state",
+                "Belum ada kasus pengguna tergeser yang perlu ditindaklanjuti."
+            );
+
+            kosong.setAttribute("role", "status");
+
+            el.tabel.append(kosong);
+
+        } else {
+            const awal =
+                (halamanAktif - 1) * PER_HALAMAN;
+
+            const dataHalaman = kasusDitampilkan.slice(
+                awal,
+                awal + PER_HALAMAN
+            );
+
+            const fragmen =
+                document.createDocumentFragment();
+
+            dataHalaman.forEach(kasus => {
+                fragmen.append(
+                    buatBaris(kasus)
+                );
+            });
+
+            el.tabel.append(fragmen);
+        }
+
+        tampilkanPagination();
+    }
+
+    // =====================================================
+    // 15. DIALOG PEMBATALAN
+    // =====================================================
+
+    function buatDialogPembatalan() {
+        let dialog = document.getElementById(
+            "dialogBatalRekomendasi"
+        );
+
+        if (dialog) return dialog;
+
+        dialog = document.createElement("dialog");
+        dialog.id = "dialogBatalRekomendasi";
+        dialog.className = "dialog-batal-rekomendasi";
+
+        const form = document.createElement("form");
+        form.className = "form-batal-rekomendasi";
+
+        const judul = buatElemen(
+            "h3",
+            "",
+            "Batalkan Rekomendasi"
+        );
+
+        const keterangan = buatElemen(
+            "p",
+            "",
+            "Kasus akan kembali ke status menunggu rekomendasi. Riwayat rekomendasi tetap disimpan."
+        );
+
+        const label = buatElemen(
+            "label",
+            "",
+            "Alasan Pembatalan"
+        );
+
+        label.htmlFor = "alasanBatalRekomendasi";
+
+        const textarea = document.createElement("textarea");
+        textarea.id = "alasanBatalRekomendasi";
+        textarea.name = "alasan";
+        textarea.rows = 4;
+        textarea.maxLength = 500;
+        textarea.required = true;
+        textarea.placeholder = "Tuliskan alasan pembatalan...";
+
+        const tombolKembali = buatElemen(
+            "button",
+            "btn-reject",
+            "Kembali"
+        );
+
+        tombolKembali.type = "button";
+        tombolKembali.dataset.tutupDialog = "";
+
+        const tombolKonfirmasi = buatElemen(
+            "button",
+            "btn-recommend",
+            "Konfirmasi Pembatalan"
+        );
+
+        tombolKonfirmasi.type = "submit";
+
+        const aksi = buatElemen(
+            "div",
+            "dialog-rekomendasi-actions"
+        );
+
+        aksi.append(
+            tombolKembali,
+            tombolKonfirmasi
+        );
+
+        form.append(
+            judul,
+            keterangan,
+            label,
+            textarea,
+            aksi
+        );
+
+        dialog.append(form);
+
+        document.body.append(dialog);
+
+        return dialog;
+    }
+
+    function bukaDialogPembatalan(id) {
+        const kasus = semuaKasus.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!kasus) {
+            tampilkanNotifikasi(
+                "Kasus tidak ditemukan",
+                "Data rekomendasi tidak tersedia.",
+                "error"
+            );
+
+            return;
+        }
+
+        const sisa = hitungSisaWaktu(kasus);
+
+        if (
+            ambilStatus(kasus) !== "rekomendasi_dikirim" ||
+            !sisa.aktif
+        ) {
+            tampilkanNotifikasi(
+                "Pembatalan tidak diizinkan",
+                sisa.teks,
+                "error"
+            );
+
+            tampilkanRekomendasi();
+            return;
+        }
+
+        kasusPembatalan = String(kasus.id);
+
+        const dialog = buatDialogPembatalan();
+
+        const textarea = dialog.querySelector(
+            "#alasanBatalRekomendasi"
+        );
+
+        textarea.value = "";
+
+        dialog.showModal();
+
+        textarea.focus();
+    }
+
+    function tutupDialog() {
+        const dialog = document.getElementById(
+            "dialogBatalRekomendasi"
+        );
+
+        if (dialog?.open) {
+            dialog.close();
+        }
+
+        kasusPembatalan = null;
+    }
+
+    function prosesPembatalan(event) {
+        event.preventDefault();
+
+        if (!kasusPembatalan) return;
+
+        const dialog = document.getElementById(
+            "dialogBatalRekomendasi"
+        );
+
+        const textarea = dialog.querySelector(
+            "#alasanBatalRekomendasi"
+        );
+
+        const alasan = textarea.value.trim();
+
+        if (!alasan) {
+            textarea.setCustomValidity(
+                "Alasan pembatalan wajib diisi."
+            );
+
+            textarea.reportValidity();
+            return;
+        }
+
+        textarea.setCustomValidity("");
+
+        const id = kasusPembatalan;
+
+        try {
+            layanan.batalkanRekomendasi(
+                id,
+                alasan
+            );
+
+            tutupDialog();
+
+            tampilkanRekomendasi();
+
+            tampilkanNotifikasi(
+                "Rekomendasi dibatalkan",
+                "Kasus kembali menunggu rekomendasi."
+            );
+
+        } catch (error) {
+            console.error(
+                "SILAB: Pembatalan gagal.",
+                error
+            );
+
+            tampilkanNotifikasi(
+                "Pembatalan gagal",
+                error.message,
+                "error"
+            );
+        }
+    }
+
+    // =====================================================
+    // 16. NOTIFIKASI
+    // =====================================================
+
+    function tampilkanNotifikasi(
+        judul,
+        pesan,
+        jenis = "sukses"
+    ) {
+        let wadah = document.getElementById(
+            "wadahNotifikasi"
+        );
+
+        if (!wadah) {
+            wadah = buatElemen(
+                "div",
+                "wadah-notifikasi"
+            );
+
+            wadah.id = "wadahNotifikasi";
+
+            document.body.append(wadah);
+        }
+
+        const toast = buatElemen(
+            "div",
+            "notifikasi-toast"
+        );
+
+        toast.dataset.jenis = jenis;
+
+        const ikon = document.createElement("i");
+
+        ikon.className = jenis === "error"
+            ? "bi bi-exclamation-circle-fill notifikasi-ikon"
+            : "bi bi-check-circle-fill notifikasi-ikon";
+
+        const konten = buatElemen(
+            "div",
+            "notifikasi-konten"
+        );
+
+        const judulElemen = buatElemen(
+            "strong",
+            "notifikasi-judul",
+            judul
+        );
+
+        const pesanElemen = buatElemen(
+            "p",
+            "notifikasi-pesan",
+            pesan
+        );
+
+        konten.append(
+            judulElemen,
+            pesanElemen
+        );
+
+        toast.append(
+            ikon,
+            konten
+        );
+
+        wadah.append(toast);
+
+        window.setTimeout(() => {
+            toast.classList.add("is-hilang");
+
+            window.setTimeout(
+                () => toast.remove(),
+                250
+            );
+        }, 3200);
+    }
+
+    // =====================================================
+    // 17. EVENT LISTENER
+    // =====================================================
+
+    // Pencarian.
+    el.pencarian.addEventListener("input", () => {
+        halamanAktif = 1;
+        tampilkanRekomendasi();
+    });
+
+    // Filter kasus menunggu rekomendasi.
+    el.filter.addEventListener("click", () => {
+        hanyaMenunggu = !hanyaMenunggu;
+
+        el.filter.setAttribute(
+            "aria-pressed",
+            String(hanyaMenunggu)
+        );
+
+        el.filter.innerHTML = hanyaMenunggu
             ? '<i class="bi bi-hourglass-split"></i> Menunggu Rekomendasi'
             : '<i class="bi bi-people-fill"></i> Semua Tergeser';
 
-        perbaruiHalaman();
+        halamanAktif = 1;
+
+        tampilkanRekomendasi();
     });
 
+    // Pagination.
+    el.tombolPagination.addEventListener(
+        "click",
+        event => {
+            const tombol = event.target.closest(
+                "[data-halaman]"
+            );
 
-    // MENANGANI PERPINDAHAN HALAMAN
-    el.pagination.addEventListener("click", function (event) {
-        const tombol = event.target.closest("[data-halaman]");
+            if (!tombol || tombol.disabled) return;
 
-        if (!tombol || tombol.disabled) {
-            return;
+            halamanAktif = Number(
+                tombol.dataset.halaman
+            );
+
+            tampilkanRekomendasi();
         }
-
-        const halaman = Number(tombol.dataset.halaman);
-
-        if (!Number.isInteger(halaman) || halaman < 1) {
-            return;
-        }
-
-        halamanAktif = halaman;
-
-        perbaruiHalaman();
-    });
-
-
-    // MEMPERBARUI DATA KETIKA ADA PERUBAHAN
-    window.addEventListener(
-        "silab:data-changed",
-        ambilData
     );
 
+    // Pembatalan rekomendasi.
+    el.tabel.addEventListener("click", event => {
+        const tombol = event.target.closest(
+            '[data-aksi="batalkan"]'
+        );
 
-    // MENJALANKAN MODUL
-    ambilData();
+        if (!tombol) return;
+
+        bukaDialogPembatalan(
+            tombol.dataset.id
+        );
+    });
+
+    // Form pembatalan.
+    const dialog = buatDialogPembatalan();
+
+    dialog.addEventListener(
+        "submit",
+        prosesPembatalan
+    );
+
+    dialog.addEventListener("click", event => {
+        if (
+            event.target === dialog ||
+            event.target.closest("[data-tutup-dialog]")
+        ) {
+            tutupDialog();
+        }
+    });
+
+    dialog.addEventListener("cancel", () => {
+        kasusPembatalan = null;
+    });
+
+    // =====================================================
+    // 18. SINKRONISASI DATA
+    // =====================================================
+
+    window.addEventListener(
+        "silab:data-changed",
+        tampilkanRekomendasi
+    );
+
+    // Memperbarui sisa waktu setiap menit.
+    timerPembaruan = window.setInterval(
+        tampilkanRekomendasi,
+        60000
+    );
+
+    window.addEventListener(
+        "pagehide",
+        () => {
+            window.clearInterval(timerPembaruan);
+        },
+        { once: true }
+    );
+
+    // =====================================================
+    // 19. INISIALISASI
+    // =====================================================
+
+    tampilkanRekomendasi();
 
     console.log(
         "SILAB: Modul rekomendasi berhasil dimuat."
