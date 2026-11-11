@@ -10,11 +10,10 @@
 }
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #FFFFFF;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #ffffff;
     color: #000000;
 }
-
 
 /* =========================================
    2. CONTAINER UTAMA
@@ -27,7 +26,6 @@ body {
     min-height: 100vh;
 }
 
-
 /* =========================================
    3. PANEL KIRI
 ========================================= */
@@ -39,9 +37,8 @@ body {
     position: relative;
     overflow: hidden;
 
-    background-color: #33266A;
+    background-color: #33266a;
 }
-
 
 /* BACKGROUND LABORATORIUM */
 
@@ -63,7 +60,6 @@ body {
     z-index: 0;
     pointer-events: none;
 }
-
 
 /* EFEK VIGNETTE GAMBAR */
 
@@ -90,7 +86,6 @@ body {
         );
 }
 
-
 /* IDENTITAS SILAB */
 
 .brand {
@@ -103,9 +98,8 @@ body {
     gap: 15px;
     padding: 35px 40px;
 
-    color: #FFFFFF;
+    color: #ffffff;
 }
-
 
 /* LOGO SILAB */
 
@@ -120,7 +114,6 @@ body {
         0 3px 6px rgba(0, 0, 0, 0.25)
     );
 }
-
 
 /* TEKS IDENTITAS */
 
@@ -146,7 +139,6 @@ body {
         0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-
 /* =========================================
    4. PANEL KANAN LOGIN
 ========================================= */
@@ -159,11 +151,10 @@ body {
     justify-content: center;
     align-items: center;
 
-    background-color: #FFFFFF;
+    background-color: #ffffff;
 
     padding: 40px;
 }
-
 
 /* KONTEN FORM LOGIN */
 
@@ -171,7 +162,6 @@ body {
     width: 100%;
     max-width: 400px;
 }
-
 
 /* =========================================
    5. HEADER LOGIN
@@ -193,7 +183,6 @@ body {
     font-weight: 400;
 }
 
-
 /* =========================================
    6. INPUT FORM
 ========================================= */
@@ -208,32 +197,29 @@ body {
     padding: 0 18px;
     margin-bottom: 42px;
 
-    border: 1px solid #D9D9DF;
+    border: 1px solid #d9d9df;
     border-radius: 15px;
 
-    background-color: #FCFCFD;
+    background-color: #fcfcfd;
 
     transition: border-color 0.2s ease;
 }
 
-
 /* EFEK KETIKA INPUT DIPILIH */
 
 .input-group:focus-within {
-    border-color: #911E3F;
+    border-color: #911e3f;
 }
-
 
 /* IKON INPUT */
 
 .input-group > i {
     font-size: 20px;
-    color: #B8BAC2;
+    color: #b8bac2;
 
     margin-right: 16px;
     flex-shrink: 0;
 }
-
 
 /* KOLOM INPUT */
 
@@ -252,13 +238,11 @@ body {
     font-size: 14px;
 }
 
-
 /* PLACEHOLDER */
 
 .input-group input::placeholder {
-    color: #B8BAC2;
+    color: #b8bac2;
 }
-
 
 /* =========================================
    7. TOMBOL LIHAT PASSWORD
@@ -279,14 +263,13 @@ body {
     border-radius: 8px;
 
     background: transparent;
-    color: #B8BAC2;
+    color: #b8bac2;
 
     cursor: pointer;
     flex-shrink: 0;
 
     transition: 0.2s ease;
 }
-
 
 /* IKON MATA */
 
@@ -297,22 +280,19 @@ body {
     margin: 0;
 }
 
-
 /* EFEK HOVER */
 
 .toggle-password:hover {
-    color: #911E3F;
-    background-color: #F8F0F3;
+    color: #911e3f;
+    background-color: #f8f0f3;
 }
-
 
 /* FOKUS KEYBOARD */
 
 .toggle-password:focus-visible {
-    outline: 2px solid #911E3F;
+    outline: 2px solid #911e3f;
     outline-offset: 2px;
 }
-
 
 /* SEMBUNYIKAN KONTROL PASSWORD BAWAAN BROWSER */
 
@@ -320,7 +300,6 @@ body {
 .input-group input::-ms-clear {
     display: none;
 }
-
 
 /* =========================================
    8. INGAT SAYA
@@ -342,9 +321,8 @@ body {
     width: 21px;
     height: 21px;
 
-    accent-color: #911E3F;
+    accent-color: #911e3f;
 }
-
 
 /* =========================================
    9. BUTTON LOGIN
@@ -359,13 +337,13 @@ body {
 
     padding: 13px;
 
-    background-color: #911E3F;
-    color: #FFFFFF;
+    background-color: #911e3f;
+    color: #ffffff;
 
     border: none;
     border-radius: 10px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 14px;
     font-weight: 700;
 
@@ -373,13 +351,12 @@ body {
     cursor: pointer;
 }
 
-
 /* PESAN KESALAHAN LOGIN */
 
 #loginMessage {
     margin-top: 12px;
 
-    color: #911E3F;
+    color: #911e3f;
 
     font-size: 12px;
     line-height: 1.5;
@@ -390,7 +367,6 @@ body {
 #loginMessage:empty {
     display: none;
 }
-
 
 /* =========================================
    10. FOOTER LOGIN
@@ -413,7 +389,6 @@ body {
     text-decoration: underline;
 }
 
-
 /* =========================================
    11. PANEL REGISTER
 ========================================= */
@@ -426,11 +401,10 @@ body {
     justify-content: center;
     align-items: center;
 
-    background-color: #FFFFFF;
+    background-color: #ffffff;
 
     padding: 35px 40px;
 }
-
 
 /* KONTEN REGISTER */
 
@@ -438,7 +412,6 @@ body {
     width: 100%;
     max-width: 410px;
 }
-
 
 /* =========================================
    12. HEADER REGISTER
@@ -460,7 +433,6 @@ body {
     font-weight: 400;
 }
 
-
 /* =========================================
    13. REGISTER FORM
 ========================================= */
@@ -471,7 +443,6 @@ body {
     margin-bottom: 0;
 }
 
-
 /* =========================================
    14. PESAN KESALAHAN REGISTER
 ========================================= */
@@ -481,13 +452,12 @@ body {
 
     margin: 6px 0 18px;
 
-    color: #B42318;
+    color: #b42318;
 
     font-size: 12px;
     font-weight: 500;
     line-height: 1.5;
 }
-
 
 /* JIKA BELUM ADA PESAN KESALAHAN */
 
@@ -496,32 +466,28 @@ body {
     margin: 0 0 24px;
 }
 
-
 /* BORDER INPUT KETIKA TERJADI KESALAHAN */
 
 .register-form .input-group.is-invalid {
-    border-color: #B42318;
-    background-color: #FFF8F7;
+    border-color: #b42318;
+    background-color: #fff8f7;
 }
-
 
 /* BORDER TETAP MERAH KETIKA INPUT DIPILIH */
 
 .register-form .input-group.is-invalid:focus-within {
-    border-color: #B42318;
+    border-color: #b42318;
 }
-
 
 /* PERSETUJUAN KETIKA BELUM DICENTANG */
 
 .register-form .terms.is-invalid {
-    color: #B42318;
+    color: #b42318;
 }
 
 .register-form .terms.is-invalid input {
-    accent-color: #B42318;
+    accent-color: #b42318;
 }
-
 
 /* =========================================
    15. SYARAT DAN KETENTUAN
@@ -550,7 +516,7 @@ body {
 
     flex-shrink: 0;
 
-    accent-color: #911E3F;
+    accent-color: #911e3f;
 }
 
 .terms a {
@@ -559,7 +525,6 @@ body {
     font-weight: 700;
     text-decoration: underline;
 }
-
 
 /* =========================================
    16. BUTTON DAFTAR
@@ -575,13 +540,13 @@ body {
 
     padding: 0 15px;
 
-    background-color: #911E3F;
-    color: #FFFFFF;
+    background-color: #911e3f;
+    color: #ffffff;
 
     border: none;
     border-radius: 15px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 15px;
     font-weight: 700;
 
@@ -590,7 +555,6 @@ body {
 
     box-sizing: border-box;
 }
-
 
 /* =========================================
    17. FOOTER REGISTER
@@ -613,7 +577,6 @@ body {
     text-decoration: underline;
 }
 
-
 /* =========================================
    18. POP UP PENDAFTARAN BERHASIL
 ========================================= */
@@ -629,19 +592,17 @@ body {
 
     padding: 20px;
 
-    background: rgba(35, 30, 65, 0.40);
+    background: rgba(35, 30, 65, 0.4);
 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
 }
-
 
 /* TAMPIL SAAT DIKLIK */
 
 .register-modal:target {
     display: flex;
 }
-
 
 /* KARTU POP UP */
 
@@ -653,7 +614,7 @@ body {
 
     padding: 38px 35px 30px;
 
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 20px;
 
     display: flex;
@@ -662,13 +623,12 @@ body {
 
     text-align: center;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
 
     box-shadow: 0 20px 60px rgba(35, 30, 65, 0.18);
 
     animation: registerModalShow 0.25s ease;
 }
-
 
 /* ANIMASI MODAL */
 
@@ -684,7 +644,6 @@ body {
     }
 }
 
-
 /* IKON BERHASIL */
 
 .register-success-icon {
@@ -699,38 +658,35 @@ body {
 
     border-radius: 22px;
 
-    background: #F0EDFA;
-    color: #33266A;
+    background: #f0edfa;
+    color: #33266a;
 
     font-size: 36px;
 }
-
 
 /* JUDUL MODAL */
 
 .register-modal-content h2 {
     margin: 0 0 13px;
 
-    color: #33266A;
+    color: #33266a;
 
     font-size: 22px;
     font-weight: 800;
     line-height: 1.4;
 }
 
-
 /* DESKRIPSI MODAL */
 
 .register-modal-content p {
     margin: 0;
 
-    color: #7486A8;
+    color: #7486a8;
 
     font-size: 13px;
     font-weight: 400;
     line-height: 1.8;
 }
-
 
 /* INFORMASI MENUNGGU */
 
@@ -744,13 +700,12 @@ body {
 
     border-radius: 12px;
 
-    background: #F8F6FC;
+    background: #f8f6fc;
     color: #554785;
 
     font-size: 12px;
     line-height: 1.8;
 }
-
 
 /* TOMBOL OK */
 
@@ -764,16 +719,15 @@ body {
 
     border-radius: 12px;
 
-    background: #911E3F;
-    color: #FFFFFF;
+    background: #911e3f;
+    color: #ffffff;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 14px;
     font-weight: 700;
 
     text-decoration: none;
 }
-
 
 /* =========================================
    19. MICRO ANIMATION BUTTON
@@ -790,7 +744,6 @@ body {
         background-color 0.2s ease;
 }
 
-
 /* EFEK HOVER */
 
 .btn-login:hover,
@@ -803,7 +756,6 @@ body {
     box-shadow: 0 6px 14px rgba(145, 30, 63, 0.18);
 }
 
-
 /* EFEK KETIKA DIKLIK */
 
 .btn-login:active,
@@ -814,23 +766,20 @@ body {
     box-shadow: none;
 }
 
-
 /* FOKUS KEYBOARD */
 
 .btn-login:focus-visible,
 .btn-register:focus-visible,
 .btn-register-ok:focus-visible {
-    outline: 2px solid #911E3F;
+    outline: 2px solid #911e3f;
     outline-offset: 3px;
 }
-
 
 /* =========================================
    20. RESPONSIVE TABLET
 ========================================= */
 
 @media screen and (max-width: 900px) {
-
     .visual-panel {
         width: 40%;
     }
@@ -875,16 +824,13 @@ body {
     .register-form .error-message:empty {
         margin-bottom: 20px;
     }
-
 }
-
 
 /* =========================================
    21. RESPONSIVE MOBILE
 ========================================= */
 
 @media screen and (max-width: 600px) {
-
     .login-container,
     .register-container {
         flex-direction: column;
@@ -979,16 +925,13 @@ body {
     .register-footer {
         margin-top: 28px;
     }
-
 }
-
 
 /* =========================================
    22. RESPONSIVE POP UP
 ========================================= */
 
 @media screen and (max-width: 480px) {
-
     .register-modal-content {
         padding: 30px 22px 24px;
         border-radius: 18px;
@@ -1008,16 +951,13 @@ body {
 
         font-size: 32px;
     }
-
 }
-
 
 /* =========================================
    23. REDUKSI ANIMASI
 ========================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
     .btn-login,
     .btn-register,
     .btn-register-ok,
@@ -1034,4 +974,124 @@ body {
     .btn-register-ok:active {
         transform: none;
     }
+}
+
+/* =========================================
+   24. MODAL INFORMASI STATUS AKUN
+========================================= */
+
+/* KARTU STATUS AKUN */
+
+.account-status-modal {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px 28px;
+
+    background: #ffffff;
+    border-radius: 16px;
+
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.16);
+}
+
+/* OVERLAY STATUS AKUN */
+
+.account-status-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+/* SEMBUNYIKAN OVERLAY JIKA HIDDEN */
+
+.account-status-overlay[hidden] {
+    display: none;
+}
+
+/* IKON STATUS */
+
+.account-status-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    font-size: 34px;
+}
+
+/* STATUS MENUNGGU */
+
+.account-status-icon.waiting {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* STATUS DITOLAK */
+
+.account-status-icon.rejected {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* STATUS NONAKTIF */
+
+.account-status-icon.inactive {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* JUDUL STATUS */
+
+.account-status-modal h2 {
+    margin: 0 0 12px;
+    font-size: 21px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* DESKRIPSI STATUS */
+
+.account-status-modal p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #64748b;
+}
+
+/* TOMBOL TUTUP */
+
+.account-status-close {
+    width: 100%;
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.account-status-close:hover {
+    background: #1d4ed8;
+}
+
+.account-status-close:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
 }

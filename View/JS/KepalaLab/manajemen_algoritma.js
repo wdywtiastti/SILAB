@@ -555,15 +555,47 @@
   }
 
   // Menghitung total bobot.
-  function updateWeightTotal() {
-    const total = elements.weightSliders.reduce(
-      (sum, slider) => sum + Number(slider.value || 0),
-      0,
-    );
 
-    if (elements.weightTotal) {
-      elements.weightTotal.textContent = `${total}%`;
+  function updateWeightTotal() {
+    let total = 0;
+
+    elements.weightSliders.forEach((slider) => {
+      const value = Number(slider.value);
+
+      total += value;
+
+      const weightItem = slider.closest(".weight-item");
+
+      const valueLabel = weightItem?.querySelector(".weight-value");
+
+      if (valueLabel) {
+        valueLabel.textContent = `${value}%`;
+      }
+    });
+
+    const totalContainer = document.querySelector(".weight-total");
+
+    const totalLabel = totalContainer?.querySelector("strong");
+
+    if (totalLabel) {
+      totalLabel.textContent = `${total}%`;
+
+      totalLabel.classList.toggle("weight-over-limit", total > 100);
     }
+
+    let warning = document.getElementById("weightWarning");
+
+    if (!warning) {
+      warning = document.createElement("p");
+      warning.id = "weightWarning";
+
+      totalContainer?.insertAdjacentElement("afterend", warning);
+    }
+
+    warning.textContent =
+      "Total bobot tidak boleh melebihi 100%. Silakan sesuaikan kembali nilai bobot penilaian.";
+
+    warning.style.display = total > 100 ? "block" : "none";
 
     return total;
   }

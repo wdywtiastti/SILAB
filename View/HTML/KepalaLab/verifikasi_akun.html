@@ -1,587 +1,210 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verifikasi Akun | SILAB</title>
 
     <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
 
     <!-- Navbar -->
-    <link rel="stylesheet" href="../../CSS/kepalalab/navbar.css">
+    <link rel="stylesheet" href="../../CSS/kepalalab/navbar.css" />
 
     <!-- CSS Halaman -->
-    <link rel="stylesheet" href="../../CSS/kepalaLab/verifikasi_akun.css">
-</head>
+    <link rel="stylesheet" href="../../CSS/kepalaLab/verifikasi_akun.css" />
+  </head>
 
-<body>
-
-  <!-- =====================================
+  <body>
+    <!-- =====================================
         NAVBAR
     ===================================== -->
 
     <header class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="../../Assets/Logo_RPL.svg"
+          alt="Logo SILAB"
+          class="navbar-logo"
+        />
 
-        <div class="navbar-brand">
-            <img
-                src="../../Assets/Logo_RPL.svg"
-                alt="Logo SILAB"
-                class="navbar-logo"
-            >
+        <div class="brand-info">
+          <h1>SILAB</h1>
+          <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+      </div>
 
-            <div class="brand-info">
-                <h1>SILAB</h1>
-                <p>Teknik Informatika - Universitas Khairun</p>
-            </div>
+      <nav class="navbar-menu">
+        <a href="Dashboard.html" class="nav-link"> Dashboard Kepala Lab </a>
+
+        <a href="penyelesaian_konflik.html" class="nav-link">
+          Penyelesaian Konflik
+        </a>
+
+        <a href="manajemen_algoritma.html" class="nav-link">
+          Manajemen Algoritma
+        </a>
+
+        <a href="manajemen_user.html" class="nav-link active">
+          Manajemen User
+        </a>
+      </nav>
+
+      <div class="navbar-profile">
+        <div class="profile-info">
+          <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
+          <p>Kepala Lab</p>
         </div>
 
-        <nav class="navbar-menu">
+        <details class="profile-dropdown">
+          <summary class="profile-trigger">
+            <i class="bi bi-person"></i>
+          </summary>
 
-            <a href="Dashboard.html" class="nav-link">
-                Dashboard Kepala Lab
-            </a>
-
-            <a href="penyelesaian_konflik.html" class="nav-link">
-                Penyelesaian Konflik
-            </a>
-
-            <a href="manajemen_algoritma.html" class="nav-link">
-                Manajemen Algoritma
-            </a>
-
-            <a href="manajemen_user.html" class="nav-link active">
-                Manajemen User
-            </a>
-
-        </nav>
-
-        <div class="navbar-profile">
-
+          <div class="profile-menu">
             <div class="profile-info">
-                <h3>Ir. Abdul Mubarak S.Kom., M.T.IPM.</h3>
-                <p>Kepala Lab</p>
+              <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
+              <span>NIP : XXXXXXXX</span>
+
+              <div class="profile-role">
+                <i class="bi bi-shield-check"></i>
+                Kepala Lab RPL
+              </div>
             </div>
 
-            <details class="profile-dropdown">
-                <summary class="profile-trigger">
-                    <i class="bi bi-person"></i>
-                </summary>
+            <div class="profile-divider"></div>
 
-                <div class="profile-menu">
-
-                    <div class="profile-info">
-                        <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
-                        <span>NIP : XXXXXXXX</span>
-
-                        <div class="profile-role">
-                            <i class="bi bi-shield-check"></i>
-                            Kepala Lab RPL
-                        </div>
-                    </div>
-
-                    <div class="profile-divider"></div>
-
-                    <a href="../auth/login.html" class="logout-link">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Keluar / Logout
-                    </a>
-
-                </div>
-            </details>
-
-        </div>
-
+            <a href="../auth/login.html" class="logout-link">
+              <i class="bi bi-box-arrow-right"></i>
+              Keluar / Logout
+            </a>
+          </div>
+        </details>
+      </div>
     </header>
 
     <!-- KONTEN UTAMA -->
     <main class="verification-page">
+      <!-- KEMBALI -->
+      <a href="manajemen_user.html" class="back-link">
+        <i class="bi bi-chevron-left"></i>
+        Kembali
+      </a>
 
-        <!-- KEMBALI -->
-        <a href="manajemen_user.html" class="back-link">
-            <i class="bi bi-chevron-left"></i>
-            Kembali
-        </a>
+      <!-- HEADER HALAMAN -->
+      <section class="verification-header">
+        <div class="header-decoration">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
+        <div class="header-content">
+          <div class="header-left">
+            <div class="header-badges">
+              <span class="header-badge primary-badge">
+                <i class="bi bi-circle-fill"></i>
+                MANAJEMEN PENGGUNA
+              </span>
 
-        <!-- HEADER HALAMAN -->
-        <section class="verification-header">
-
-            <div class="header-decoration">
-                <span></span>
-                <span></span>
-                <span></span>
+              <span class="header-badge muted-badge">
+                <i class="bi bi-circle-fill"></i>
+                VERIFIKASI AKUN
+              </span>
             </div>
 
-            <div class="header-content">
+            <h1>Verifikasi Akun Baru</h1>
 
-                <div class="header-left">
+            <p>
+              Tinjau dan verifikasi pengajuan pendaftaran akun baru mahasiswa,
+              dosen, atau laboran untuk akses sistem SILAB RPL.
+            </p>
+          </div>
 
-                    <div class="header-badges">
-                        <span class="header-badge primary-badge">
-                            <i class="bi bi-circle-fill"></i>
-                            MANAJEMEN PENGGUNA
-                        </span>
-
-                        <span class="header-badge muted-badge">
-                            <i class="bi bi-circle-fill"></i>
-                            VERIFIKASI AKUN
-                        </span>
-                    </div>
-
-                    <h1>Verifikasi Akun Baru</h1>
-
-                    <p>
-                        Tinjau dan verifikasi pengajuan pendaftaran akun baru
-                        mahasiswa, dosen, atau laboran untuk akses sistem SILAB RPL.
-                    </p>
-
-                </div>
-
-                <div class="waiting-summary">
-
-                    <div class="waiting-icon">
-                        <i class="bi bi-clipboard-check"></i>
-                    </div>
-
-                    <div>
-                        <strong>4</strong>
-                        <span>Permintaan Menunggu</span>
-                    </div>
-
-                </div>
-
+          <div class="waiting-summary">
+            <div class="waiting-icon">
+              <i class="bi bi-clipboard-check"></i>
             </div>
 
-        </section>
-
-
-        <!-- TABEL VERIFIKASI -->
-        <section class="verification-table-card">
-
-            <!-- TOOLBAR -->
-            <div class="table-toolbar">
-
-                <div class="verification-filter">
-                    <i class="bi bi-people-fill"></i>
-                    Permintaan Verifikasi (20)
-                </div>
-
-                <div class="search-box">
-                    <i class="bi bi-search"></i>
-
-                    <input
-                        type="text"
-                        placeholder="Cari nama atau NIDN / NIM..."
-                    >
-                </div>
-
+            <div>
+              <strong id="waiting-count">0</strong>
+              <span>Permintaan Menunggu</span>
             </div>
+          </div>
+        </div>
+      </section>
 
+      <!-- TABEL VERIFIKASI -->
+      <section class="verification-table-card">
 
-            <!-- TABEL -->
-            <div class="table-responsive">
-
-                <table class="verification-table">
-
-                    <thead>
-                        <tr>
-                            <th class="name-column">NAMA PENGGUNA</th>
-                            <th>NIP / NIM</th>
-                            <th>STATUS AKUN</th>
-                            <th>AKSI</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar purple">DH</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar maroon">FA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar purple">DA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar purple">DA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar maroon">MF</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar maroon">FA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar purple">DA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar purple">DA</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>
-                                <div class="user-info">
-                                    <div class="user-avatar maroon">MF</div>
-                                    <div class="user-detail">
-                                        <strong>BLABLA</strong>
-                                        <span>PULUPULUUU</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>0015067801</td>
-
-                            <td>
-                                <span class="status-waiting">
-                                    <i class="bi bi-circle-fill"></i>
-                                    Menunggu Verifikasi
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="action-buttons">
-
-                                    <!-- TOMBOL VERIFIKASI -->
-                                    <label for="modal-verifikasi" class="approve-btn" aria-label="Verifikasi akun">
-                                        <i class="bi bi-check-lg"></i>
-                                    </label>
-
-                                    <!-- TOMBOL TOLAK -->
-                                    <label for="modal-tolak" class="reject-btn" aria-label="Tolak akun">
-                                        <i class="bi bi-trash3"></i>
-                                    </label>
-
-                                </div>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <!-- PAGINATION -->
-            <div class="table-pagination">
-
-                <p>
-                    Menampilkan <strong>10</strong> dari
-                    <strong>20</strong> akun pengguna aktif
-                </p>
-
-                <div class="pagination-buttons">
-
-                    <button type="button" class="page-btn disabled">
-                        Sebelumnya
-                    </button>
-
-                    <button type="button" class="page-btn active">
-                        1
-                    </button>
-
-                    <button type="button" class="page-btn">
-                        2
-                    </button>
-
-                    <button type="button" class="page-btn">
-                        3
-                    </button>
-
-                    <button type="button" class="page-btn">
-                        Berikutnya
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
+
+    <!-- TOOLBAR -->
+    <div class="table-toolbar">
+
+        <div class="verification-filter">
+            <i class="bi bi-people-fill"></i>
+            <span id="verification-total">
+                Permintaan Verifikasi (0)
+            </span>
+        </div>
+
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+
+            <input
+                type="text"
+                id="search-verification"
+                placeholder="Cari nama atau NIDN / NIM..."
+            >
+        </div>
+
+    </div>
+
+    <!-- TABEL -->
+    <div class="table-responsive">
+
+        <table class="verification-table">
+
+            <thead>
+                <tr>
+                    <th class="name-column">NAMA PENGGUNA</th>
+                    <th>NIP / NIM</th>
+                    <th>STATUS AKUN</th>
+                    <th>AKSI</th>
+                </tr>
+            </thead>
+
+            <tbody id="verification-table-body">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="table-pagination">
+
+        <p id="verification-info">
+            Menampilkan 0 dari 0 akun menunggu verifikasi
+        </p>
+
+        <div
+            class="pagination-buttons"
+            id="verification-pagination">
+        </div>
+
+    </div>
+
+</section>
 
     </main>
 
@@ -589,96 +212,96 @@
         MODAL KONFIRMASI VERIFIKASI AKUN
     ========================================= -->
 
-    <input type="checkbox" id="modal-verifikasi" class="verification-modal-toggle">
+    <input
+      type="checkbox"
+      id="modal-verifikasi"
+      class="verification-modal-toggle"
+    />
 
     <div class="verification-modal-overlay">
+      <div class="verification-modal verifikasi-modal">
+        <div class="verification-modal-content">
+          <span class="modal-badge-verifikasi">
+            <i class="bi bi-circle-fill"></i>
+            KONFIRMASI VERIFIKASI
+          </span>
 
-        <div class="verification-modal verifikasi-modal">
+          <div class="modal-icon-verifikasi">
+            <i class="bi bi-person-check"></i>
+          </div>
 
-            <div class="verification-modal-content">
+          <h2>Verifikasi Akun Pengguna?</h2>
 
-                <span class="modal-badge-verifikasi">
-                    <i class="bi bi-circle-fill"></i>
-                    KONFIRMASI VERIFIKASI
-                </span>
-
-                <div class="modal-icon-verifikasi">
-                    <i class="bi bi-person-check"></i>
-                </div>
-
-                <h2>Verifikasi Akun Pengguna?</h2>
-
-                <p>
-                    Apakah kamu yakin ingin menyetujui akun pengguna ini?
-                    Pengguna akan mendapatkan akses ke sistem SILAB.
-                </p>
-
-            </div>
-
-            <div class="verification-modal-footer">
-
-                <label for="modal-verifikasi" class="modal-btn-cancel">
-                    Batal
-                </label>
-
-                <label for="modal-verifikasi" class="modal-btn-approve">
-                    <i class="bi bi-check-circle"></i>
-                    Ya, Verifikasi Akun
-                </label>
-
-            </div>
-
+          <p>
+            Apakah kamu yakin ingin menyetujui akun pengguna ini? Pengguna akan
+            mendapatkan akses ke sistem SILAB.
+          </p>
         </div>
 
-    </div>
+        <div class="verification-modal-footer">
+          <label for="modal-verifikasi" class="modal-btn-cancel"> Batal </label>
 
+<button type="button" id="confirm-approve" class="modal-btn-approve">
+    <i class="bi bi-check-circle"></i>
+    Ya, Verifikasi Akun
+</button>
+        </div>
+      </div>
+    </div>
 
     <!-- =========================================
         MODAL KONFIRMASI TOLAK AKUN
     ========================================= -->
 
-    <input type="checkbox" id="modal-tolak" class="verification-modal-toggle">
+    <input type="checkbox" id="modal-tolak" class="verification-modal-toggle" />
 
     <div class="verification-modal-overlay">
+      <div class="verification-modal tolak-modal">
+        <div class="verification-modal-content">
+          <span class="modal-badge-tolak">
+            <i class="bi bi-circle-fill"></i>
+            KONFIRMASI PENOLAKAN
+          </span>
 
-        <div class="verification-modal tolak-modal">
+          <div class="modal-icon-tolak">
+            <i class="bi bi-trash3"></i>
+          </div>
 
-            <div class="verification-modal-content">
+          <h2>Tolak Pengajuan Akun?</h2>
 
-                <span class="modal-badge-tolak">
-                    <i class="bi bi-circle-fill"></i>
-                    KONFIRMASI PENOLAKAN
-                </span>
-
-                <div class="modal-icon-tolak">
-                    <i class="bi bi-trash3"></i>
-                </div>
-
-                <h2>Tolak Pengajuan Akun?</h2>
-
-                <p>
-                    Apakah kamu yakin ingin menolak verifikasi akun pengguna ini?
-                    Pengajuan yang ditolak tidak akan mendapatkan akses ke sistem SILAB.
-                </p>
-
-            </div>
-
-            <div class="verification-modal-footer">
-
-                <label for="modal-tolak" class="modal-btn-cancel">
-                    Batal
-                </label>
-
-                <label for="modal-tolak" class="modal-btn-reject">
-                    <i class="bi bi-trash3"></i>
-                    Ya, Tolak Akun
-                </label>
-
-            </div>
-
+          <p>
+            Apakah kamu yakin ingin menolak verifikasi akun pengguna ini?
+            Pengajuan yang ditolak tidak akan mendapatkan akses ke sistem SILAB.
+          </p>
         </div>
 
+        <div class="verification-modal-footer">
+          <label for="modal-tolak" class="modal-btn-cancel"> Batal </label>
+<button type="button" id="confirm-reject" class="modal-btn-reject">
+    <i class="bi bi-trash3"></i>
+    Ya, Tolak Akun
+</button>
+
+<div class="rejection-field">
+    <label for="rejection-reason">Alasan Penolakan</label>
+
+    <textarea
+        id="rejection-reason"
+        rows="3"
+        placeholder="Tuliskan alasan penolakan akun..."
+        aria-describedby="rejection-error"
+    ></textarea>
+
+    <small id="rejection-error" class="field-error" role="alert"></small>
+</div>
+        </div>
+      </div>
     </div>
 
-</body>
+    <!-- STORAGE -->
+<script src="../../JS/shared/storage.js" defer></script>
+
+<!-- VERIFIKASI AKUN -->
+<script src="../../JS/kepalaLab/verifikasi_akun.js" defer></script>
+  </body>
 </html>
