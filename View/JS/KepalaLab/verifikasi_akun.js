@@ -353,21 +353,38 @@
     elements.rejectionReason.removeAttribute("aria-invalid");
     elements.rejectionError.textContent = "";
   }
-
   function openVerificationModal(userId, action) {
-    const user = state.users.find((item) => item.id === userId);
+    // Cari akun yang statusnya menunggu verifikasi
+    const user = state.users.find(
+      (item) =>
+        String(item.id) === String(userId) &&
+        item.status === "menunggu_verifikasi",
+    );
 
-    if (!user || user.status !== "") {
-      alert("Akun tidak tersedia untuk diverifikasi.");
+    if (!user) {
+      showToast("Akun tidak tersedia atau sudah diverifikasi.", "error");
+
+      loadUsers();
+      renderSummary();
+      renderUsers();
+      return;
+    }
+
+    if (!["approve", "reject"].includes(action)) {
+      showToast("Aksi verifikasi tidak dikenali.", "error");
       return;
     }
 
     closeModals();
-    state.selectedUserId = userId;
 
-    if (action === "approve") {
+    state.selectedUserId = user.id;
+
+    // Tampilkan modal konfirmasi SILAB
+    if (action === "approve" && elements.approveModal) {
       elements.approveModal.checked = true;
-    } else if (action === "reject") {
+    }
+
+    if (action === "reject" && elements.rejectModal) {
       elements.rejectModal.checked = true;
     }
   }
@@ -375,12 +392,11 @@
   // =========================================
   // 13. MENYIMPAN KEPUTUSAN VERIFIKASI
   // =========================================
-
   function processVerification(action) {
     const userId = state.selectedUserId;
 
     if (!userId) {
-      alert("Tidak ada akun yang dipilih.");
+      showToast("Tidak ada akun yang dipilih.", "error");
       return;
     }
 
@@ -390,6 +406,7 @@
 
     let alasanPenolakan = null;
 
+    // Validasi alasan penolakan
     if (action === "reject") {
       alasanPenolakan = elements.rejectionReason.value.trim();
 
@@ -403,18 +420,26 @@
       }
     }
 
-    // Ambil ulang data terbaru sebelum mengubah status.
+    // Ambil data terbaru dari LocalStorage
     const users = SILABStorage.get(SILABStorage.KEYS.USERS, null);
 
     if (!Array.isArray(users)) {
-      alert("Data pengguna tidak dapat dibaca.");
+      showToast("Data pengguna tidak dapat dibaca.", "error");
       return;
     }
 
-    const userIndex = users.findIndex((user) => user.id === userId);
+    // Cari akun berdasarkan ID dan status
+    const userIndex = users.findIndex(
+      (user) =>
+        String(user.id) === String(userId) &&
+        user.status === "menunggu_verifikasi",
+    );
 
-    if (userIndex === -1 || users[userIndex].status !== "menunggu_verifikasi") {
-      alert("Status akun sudah berubah atau akun tidak ditemukan.");
+    if (userIndex === -1) {
+      showToast(
+        "Status akun sudah berubah atau akun tidak ditemukan.",
+        "error",
+      );
 
       closeModals();
       loadUsers();
@@ -423,8 +448,10 @@
       return;
     }
 
+    // Tentukan status baru
     const statusBaru = action === "approve" ? "aktif" : "ditolak";
 
+    // Perbarui akun yang dipilih
     const updatedUsers = users.map((user, index) => {
       if (index !== userIndex) {
         return user;
@@ -438,6 +465,7 @@
       };
     });
 
+    // Simpan ke LocalStorage
     const berhasil = SILABStorage.set(SILABStorage.KEYS.USERS, updatedUsers);
 
     if (!berhasil) {
@@ -445,12 +473,15 @@
       return;
     }
 
+    // Tutup modal
     closeModals();
 
+    // Perbarui tampilan
     loadUsers();
     renderSummary();
     renderUsers();
 
+    // Tampilkan notifikasi
     showToast(
       action === "approve"
         ? "Akun berhasil diverifikasi."
