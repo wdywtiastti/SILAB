@@ -31,7 +31,10 @@
 
 <body>
 
-    <!-- NAVBAR -->
+    <!-- ==========================================
+         NAVBAR
+    =========================================== -->
+
     <nav class="navbar">
 
         <div class="navbar-brand">
@@ -49,6 +52,7 @@
 
         </div>
 
+
         <div class="navbar-menu">
 
             <a href="dashboard.html" class="nav-link">
@@ -59,11 +63,16 @@
                 Antrian
             </a>
 
-            <a href="rekomendasi_jadwal.html" class="nav-link active">
+            <a
+                href="rekomendasi_jadwal.html"
+                class="nav-link active"
+                aria-current="page"
+            >
                 Rekomendasi Jadwal
             </a>
 
         </div>
+
 
         <div class="navbar-profile">
 
@@ -109,10 +118,15 @@
     </nav>
 
 
-    <!-- KONTEN UTAMA -->
+    <!-- ==========================================
+         KONTEN UTAMA
+    =========================================== -->
+
     <main class="rekomendasi-container">
 
+
         <!-- HEADER HALAMAN -->
+
         <section class="card page-header-card">
 
             <div class="header-decoration">
@@ -135,6 +149,7 @@
 
             </div>
 
+
             <div class="buat-header-content">
 
                 <div>
@@ -149,7 +164,10 @@
 
                 </div>
 
-                <span class="badge-menunggu" id="statusRekomendasi">
+                <span
+                    class="badge-menunggu"
+                    id="statusRekomendasi"
+                >
                     <i class="bi bi-clock-history"></i>
                     Menunggu Rekomendasi
                 </span>
@@ -159,7 +177,11 @@
         </section>
 
 
-        <!-- RINCIAN JADWAL TERGESER -->
+
+        <!-- ======================================
+             RINCIAN JADWAL TERGESER
+        ======================================= -->
+
         <section class="card">
 
             <div class="card-title">
@@ -172,9 +194,12 @@
 
             </div>
 
+
             <div class="rincian-grid">
 
+
                 <!-- DATA PEMOHON -->
+
                 <div class="rincian-box">
 
                     <small>Data Pemohon</small>
@@ -206,7 +231,8 @@
                 </div>
 
 
-                <!-- JADWAL SEMULA -->
+                <!-- JADWAL ASAL -->
+
                 <div class="rincian-box">
 
                     <small>Jadwal Semula (Tergeser)</small>
@@ -221,14 +247,18 @@
                     ></span>
 
                     <span class="chip merah">
+
                         <i class="bi bi-x-circle-fill"></i>
+
                         Tergeser oleh Prioritas Lebih Tinggi
+
                     </span>
 
                 </div>
 
 
                 <!-- PENGAJUAN PENGGESER -->
+
                 <div class="rincian-box">
 
                     <small>Pengajuan Prioritas yang Menggeser</small>
@@ -243,13 +273,19 @@
                     ></span>
 
                     <span class="chip kuning">
+
                         <i class="bi bi-circle-fill"></i>
+
                         Pengajuan Prioritas Lebih Tinggi
+
                     </span>
 
                 </div>
 
             </div>
+
+
+            <!-- INFORMASI -->
 
             <div class="catatan-data">
 
@@ -267,8 +303,13 @@
         </section>
 
 
-        <!-- ALOKASI REKOMENDASI -->
+
+        <!-- ======================================
+             FORM REKOMENDASI
+        ======================================= -->
+
         <section class="card">
+
 
             <div class="card-title-split">
 
@@ -290,7 +331,9 @@
             </div>
 
 
+
             <!-- INFORMASI -->
+
             <div class="aturan-info">
 
                 <i class="bi bi-info-circle-fill"></i>
@@ -304,16 +347,21 @@
             </div>
 
 
-            <!-- FORM REKOMENDASI -->
+
+            <!-- FORM -->
+
             <form
                 id="formRekomendasi"
                 class="form-rekomendasi"
                 novalidate
             >
 
+
                 <div class="form-grid">
 
+
                     <!-- WAKTU MULAI -->
+
                     <div class="form-group">
 
                         <label for="waktu-mulai">
@@ -326,12 +374,21 @@
                             name="waktuMulai"
                             class="form-input"
                             required
+                            aria-describedby="errorWaktuMulai"
                         >
+
+                        <small
+                            id="errorWaktuMulai"
+                            class="field-error"
+                            aria-live="polite"
+                        ></small>
 
                     </div>
 
 
+
                     <!-- WAKTU SELESAI -->
+
                     <div class="form-group">
 
                         <label for="waktu-selesai">
@@ -344,12 +401,21 @@
                             name="waktuSelesai"
                             class="form-input"
                             required
+                            aria-describedby="errorWaktuSelesai"
                         >
+
+                        <small
+                            id="errorWaktuSelesai"
+                            class="field-error"
+                            aria-live="polite"
+                        ></small>
 
                     </div>
 
 
+
                     <!-- CATATAN -->
+
                     <div class="form-group full">
 
                         <label for="catatan">
@@ -369,7 +435,9 @@
                 </div>
 
 
-                <!-- FEEDBACK VALIDASI -->
+
+                <!-- FEEDBACK UMUM -->
+
                 <p
                     id="feedbackRekomendasi"
                     class="rekomendasi-feedback"
@@ -378,7 +446,9 @@
                 ></p>
 
 
+
                 <!-- FOOTER FORM -->
+
                 <div class="footer-aksi">
 
                     <p>
@@ -394,6 +464,7 @@
 
                     </p>
 
+
                     <div class="footer-tombol">
 
                         <a
@@ -403,11 +474,13 @@
                             Batal
                         </a>
 
+
                         <button
                             type="submit"
                             class="btn btn-kirim"
                             id="btnKirimRekomendasi"
                         >
+
                             <i class="bi bi-send-fill"></i>
 
                             <span data-label-submit>
@@ -426,6 +499,14 @@
 
     </main>
 
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+    =========================================== -->
+
+    <!-- SHARED STORAGE -->
+    <script src="../../JS/shared/storage.js"></script>
 
     <!-- UTILITAS WAKTU -->
     <script src="../../JS/laboran/utils/waktu.js"></script>
