@@ -24,7 +24,6 @@
     };
 
     const PER_HALAMAN = 5;
-    const STATUS_AKHIR = ["disetujui", "ditolak"];
 
     // Informasi kelas prioritas.
     const PRIORITAS = {
@@ -35,13 +34,16 @@
         P5: { label: "P5", kelas: "p5", urutan: 5 }
     };
 
-    // Informasi status pengajuan.
+    // Status yang digunakan pada antrean aktif.
     const STATUS = {
-        bentrok: { label: "Bentrok", kelas: "conflict" },
-        verifikasi: { label: "Verifikasi", kelas: "verify" },
-        tergeser: { label: "Tergeser", kelas: "displaced" },
-        disetujui: { label: "Disetujui", kelas: "approved" },
-        ditolak: { label: "Ditolak", kelas: "rejected" }
+        bentrok: {
+            label: "Bentrok",
+            kelas: "conflict"
+        },
+        verifikasi: {
+            label: "Verifikasi",
+            kelas: "verify"
+        }
     };
 
     let dataAntrean = [];
@@ -50,9 +52,13 @@
     let timerModal = null;
 
     // Memastikan layanan dan elemen halaman tersedia.
-    if (!layanan || Object.values(el).some(item => !item)) {
+    if (
+        !layanan ||
+        typeof layanan.getAntreanAktif !== "function" ||
+        Object.values(el).some(item => !item)
+    ) {
         console.error(
-            "SILAB: Layanan atau elemen modul antrean belum tersedia."
+            "SILAB: Layanan antrean atau elemen halaman belum tersedia. Periksa layanan.js dan HTML."
         );
         return;
     }
@@ -64,7 +70,11 @@
 
     // Menggabungkan hari dan rentang waktu pengajuan.
     function formatWaktu(data) {
-        if (!data.hari || !data.waktuMulai || !data.waktuSelesai) {
+        if (
+            !data.hari ||
+            !data.waktuMulai ||
+            !data.waktuSelesai
+        ) {
             return "Waktu belum ditentukan";
         }
 
@@ -106,32 +116,22 @@
         const kode = String(nilai || "").toLowerCase();
 
         return STATUS[kode] || {
-            label: kode
-                ? kode.replaceAll("_", " ").replace(
-                    /\b\w/g,
-                    huruf => huruf.toUpperCase()
-                )
-                : "Belum ditentukan",
+            label: "Belum ditentukan",
             kelas: "status-other"
         };
     }
 
-    // Mengurutkan berdasarkan prioritas, kemudian skor tertinggi.
+    // Mengambil hanya antrean aktif dari layanan data.
+    // Status tergeser dan rekomendasi tidak akan ditampilkan.
     function ambilAntreanAktif() {
-        return layanan.getAll("antrean")
-            .filter(data =>
-                !STATUS_AKHIR.includes(
-                    String(data.status || "").toLowerCase()
-                )
-            )
-            .sort((a, b) => {
-                const bedaPrioritas =
-                    infoPrioritas(a.prioritas).urutan -
-                    infoPrioritas(b.prioritas).urutan;
+        return layanan.getAntreanAktif().sort((a, b) => {
+            const bedaPrioritas =
+                infoPrioritas(a.prioritas).urutan -
+                infoPrioritas(b.prioritas).urutan;
 
-                return bedaPrioritas ||
-                    Number(b.skor || 0) - Number(a.skor || 0);
-            });
+            return bedaPrioritas ||
+                Number(b.skor || 0) - Number(a.skor || 0);
+        });
     }
 
     // Mengisi teks tanpa memasukkan HTML dari data pengguna.
@@ -140,7 +140,9 @@
 
         if (target) {
             target.textContent =
-                nilai === null || nilai === undefined || nilai === ""
+                nilai === null ||
+                nilai === undefined ||
+                nilai === ""
                     ? "—"
                     : String(nilai);
         }
@@ -217,7 +219,13 @@
             infoStatus(data.status)
         );
 
-        baris.querySelector("[data-aksi-detail]").dataset.id = data.id;
+        const tombolDetail = baris.querySelector(
+            "[data-aksi-detail]"
+        );
+
+        if (tombolDetail) {
+            tombolDetail.dataset.id = data.id;
+        }
 
         return baris;
     }
@@ -226,7 +234,11 @@
     function tampilkanNomorHalaman(totalHalaman) {
         el.nomorHalaman.replaceChildren();
 
-        for (let nomor = 1; nomor <= totalHalaman; nomor += 1) {
+        for (
+            let nomor = 1;
+            nomor <= totalHalaman;
+            nomor += 1
+        ) {
             const tombol = document.createElement("button");
 
             tombol.type = "button";
@@ -244,60 +256,7 @@
         }
     }
 
-    // Memperbarui tabel dan pagination.
-    function tampilkanAntrean() {
-        try {
-            dataAntrean = ambilAntreanAktif();
-
-        } catch (error) {
-            console.error("SILAB: Gagal mengambil data antrean.", error);
-
-            dataAntrean = [];
-            tampilkanPesanKosong("Data antrean gagal dimuat.");
-        }
-
-        const total = dataAntrean.length;
-
-        const totalHalaman = Math.max(
-            1,
-            Math.ceil(total / PER_HALAMAN)
-        );
-
-        halamanAktif = Math.min(halamanAktif, totalHalaman);
-
-        el.tabel.replaceChildren();
-
-        if (!total) {
-            tampilkanPesanKosong(
-                "Belum ada pengajuan yang perlu diproses."
-            );
-
-        } else {
-            const awal = (halamanAktif - 1) * PER_HALAMAN;
-
-            const fragmen = document.createDocumentFragment();
-
-            dataAntrean
-                .slice(awal, awal + PER_HALAMAN)
-                .forEach(data => fragmen.append(buatBaris(data)));
-
-            el.tabel.append(fragmen);
-        }
-
-        el.total.textContent = `${total} Pengajuan`;
-
-        el.infoHalaman.textContent = total
-            ? `Menampilkan ${(halamanAktif - 1) * PER_HALAMAN + 1}–${Math.min(halamanAktif * PER_HALAMAN, total)} dari ${total} pengajuan`
-            : "Belum ada pengajuan aktif";
-
-        tampilkanNomorHalaman(total ? totalHalaman : 0);
-
-        el.sebelumnya.disabled = halamanAktif <= 1 || !total;
-        el.berikutnya.disabled =
-            halamanAktif >= totalHalaman || !total;
-    }
-
-    // Menampilkan pesan ketika antrean kosong atau gagal dimuat.
+    // Menampilkan pesan ketika antrean kosong.
     function tampilkanPesanKosong(pesan) {
         const baris = document.createElement("tr");
         const sel = document.createElement("td");
@@ -308,6 +267,78 @@
 
         baris.append(sel);
         el.tabel.append(baris);
+    }
+
+    // Memperbarui tabel dan pagination.
+    function tampilkanAntrean() {
+        let pesanKosong =
+            "Belum ada pengajuan yang perlu diproses.";
+
+        try {
+            dataAntrean = ambilAntreanAktif();
+
+        } catch (error) {
+            console.error(
+                "SILAB: Gagal mengambil data antrean.",
+                error
+            );
+
+            dataAntrean = [];
+            pesanKosong = "Data antrean gagal dimuat.";
+        }
+
+        const total = dataAntrean.length;
+
+        const totalHalaman = Math.max(
+            1,
+            Math.ceil(total / PER_HALAMAN)
+        );
+
+        halamanAktif = Math.min(
+            halamanAktif,
+            totalHalaman
+        );
+
+        el.tabel.replaceChildren();
+
+        if (!total) {
+            tampilkanPesanKosong(pesanKosong);
+
+        } else {
+            const awal =
+                (halamanAktif - 1) * PER_HALAMAN;
+
+            const fragmen =
+                document.createDocumentFragment();
+
+            dataAntrean
+                .slice(awal, awal + PER_HALAMAN)
+                .forEach(data => {
+                    fragmen.append(buatBaris(data));
+                });
+
+            el.tabel.append(fragmen);
+        }
+
+        // Memperbarui jumlah pengajuan aktif.
+        el.total.textContent = `${total} Pengajuan`;
+
+        // Memperbarui informasi pagination.
+        el.infoHalaman = el.infoHalaman;
+
+        el.infoHalaman.textContent = total
+            ? `Menampilkan ${(halamanAktif - 1) * PER_HALAMAN + 1}–${Math.min(halamanAktif * PER_HALAMAN, total)} dari ${total} pengajuan`
+            : "Belum ada pengajuan aktif";
+
+        tampilkanNomorHalaman(
+            total ? totalHalaman : 0
+        );
+
+        el.sebelumnya.disabled =
+            halamanAktif <= 1 || !total;
+
+        el.berikutnya.disabled =
+            halamanAktif >= totalHalaman || !total;
     }
 
     // Mengisi detail pengajuan pada modal.
@@ -386,49 +417,32 @@
             infoStatus(data.status)
         );
 
-        // Menampilkan panel sesuai status pengajuan.
+        // Menampilkan panel sesuai status aktif.
         const status = String(data.status || "").toLowerCase();
 
-        const panel = [
-            "bentrok",
-            "tergeser",
-            "verifikasi"
-        ].includes(status) ? status : "lainnya";
-
         el.modal.querySelectorAll("[data-panel]").forEach(item => {
-            item.hidden = item.dataset.panel !== panel;
+            item.hidden = item.dataset.panel !== status;
         });
 
+        // Menampilkan keterangan bentrok.
         isiTeks(
             el.modal,
             '[data-field="pesan-bentrok"]',
             `Pengajuan #${data.id} terindikasi mengalami bentrok pada ${formatWaktu(data)}. Laboran dapat meneruskan kasus ini kepada Kepala Lab untuk ditinjau.`
         );
-
-        isiTeks(
-            el.modal,
-            '[data-field="pesan-tergeser"]',
-            `Pengajuan #${data.id} berstatus tergeser. Buka halaman rekomendasi untuk menyiapkan alternatif jadwal bagi pemohon.`
-        );
-
-        const tautan = el.modal.querySelector(
-            "[data-tautan-rekomendasi]"
-        );
-
-        if (tautan) {
-            tautan.href =
-                `rekomendasi_jadwal.html?pengajuan=${encodeURIComponent(data.id)}`;
-        }
     }
 
-    // Membuka modal berdasarkan ID pengajuan.
+    // Membuka modal berdasarkan ID pengajuan aktif.
     function bukaModal(id) {
-        const data = layanan.getById("antrean", id);
+        // Hanya mencari data yang masih berada di antrean aktif.
+        const data = layanan.getAntreanAktif().find(
+            item => String(item.id) === String(id)
+        );
 
         if (!data) {
             tampilkanNotifikasi(
                 "Data tidak ditemukan",
-                "Pengajuan sudah tidak tersedia.",
+                "Pengajuan sudah tidak berada dalam antrean aktif.",
                 "error"
             );
 
@@ -459,6 +473,7 @@
     // Menutup modal setelah animasi selesai.
     function tutupModal() {
         el.modal.classList.remove("is-open");
+
         el.modal.setAttribute("aria-hidden", "true");
 
         document.body.classList.remove("modal-terbuka");
@@ -472,7 +487,11 @@
     }
 
     // Menampilkan notifikasi hasil tindakan Laboran.
-    function tampilkanNotifikasi(judul, pesan, jenis = "sukses") {
+    function tampilkanNotifikasi(
+        judul,
+        pesan,
+        jenis = "sukses"
+    ) {
         if (!el.notifikasi) {
             return;
         }
@@ -505,7 +524,10 @@
         window.setTimeout(() => {
             toast.classList.add("is-hilang");
 
-            window.setTimeout(() => toast.remove(), 250);
+            window.setTimeout(
+                () => toast.remove(),
+                250
+            );
         }, 3200);
     }
 
@@ -518,7 +540,10 @@
             return;
         }
 
-        const data = layanan.getById("antrean", idTerpilih);
+        const data = layanan.getById(
+            "antrean",
+            idTerpilih
+        );
 
         if (
             !data ||
@@ -576,9 +601,14 @@
 
     // Menangani klik tombol detail pengajuan.
     el.tabel.addEventListener("click", event => {
-        const tombol = event.target.closest("[data-aksi-detail]");
+        const tombol = event.target.closest(
+            "[data-aksi-detail]"
+        );
 
-        if (tombol && el.tabel.contains(tombol)) {
+        if (
+            tombol &&
+            el.tabel.contains(tombol)
+        ) {
             bukaModal(tombol.dataset.id);
         }
     });
@@ -604,10 +634,15 @@
 
     // Navigasi melalui nomor halaman.
     el.nomorHalaman.addEventListener("click", event => {
-        const tombol = event.target.closest("[data-halaman]");
+        const tombol = event.target.closest(
+            "[data-halaman]"
+        );
 
         if (tombol) {
-            halamanAktif = Number(tombol.dataset.halaman);
+            halamanAktif = Number(
+                tombol.dataset.halaman
+            );
+
             tampilkanAntrean();
         }
     });
@@ -619,16 +654,23 @@
             return;
         }
 
-        const tombol = event.target.closest("[data-keputusan]");
+        const tombol = event.target.closest(
+            "[data-keputusan]"
+        );
 
         if (tombol) {
-            prosesVerifikasi(tombol.dataset.keputusan);
+            prosesVerifikasi(
+                tombol.dataset.keputusan
+            );
         }
     });
 
     // Menutup modal dengan tombol Escape.
     document.addEventListener("keydown", event => {
-        if (event.key === "Escape" && !el.modal.hidden) {
+        if (
+            event.key === "Escape" &&
+            !el.modal.hidden
+        ) {
             tutupModal();
         }
     });
@@ -636,12 +678,17 @@
     // Memperbarui antrean jika data berubah.
     window.addEventListener(
         "silab:data-changed",
-        tampilkanAntrean
+        () => {
+            halamanAktif = 1;
+            tampilkanAntrean();
+        }
     );
 
     // Menampilkan data antrean saat halaman dibuka.
     tampilkanAntrean();
 
-    console.log("SILAB: Modul antrean berhasil dimuat.");
+    console.log(
+        "SILAB: Modul antrean berhasil dimuat."
+    );
 
 })(window, document);

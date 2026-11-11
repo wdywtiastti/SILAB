@@ -1,49 +1,87 @@
 
+/**
+ * MODUL BUAT REKOMENDASI SILAB
+ *
+ * Mengelola:
+ * 1. Pengambilan data kasus tergeser.
+ * 2. Penampilan detail pengajuan.
+ * 3. Validasi jadwal alternatif.
+ * 4. Pengiriman rekomendasi.
+ * 5. Pengeditan rekomendasi dalam batas 24 jam.
+ * 6. Penampilan rekomendasi yang sudah dikirim.
+ * 7. Navigasi kembali ke daftar rekomendasi.
+ *
+ * Seluruh pengelolaan data dilakukan melalui SILABService.
+ */
+
 (function (window, document) {
     "use strict";
 
+
+    // =====================================================
+    // 1. KONFIGURASI DAN ELEMEN HALAMAN
+    // =====================================================
+
     const layanan = window.SILABService;
 
-    const parameter = new URLSearchParams(window.location.search);
-    const kasusId =
-    parameter.get("pengajuan") ||
-    parameter.get("kasusId");
-    const modeLihat = parameter.get("mode") === "lihat";
+    const parameter = new URLSearchParams(
+        window.location.search
+    );
+
+    const idReferensi =
+        parameter.get("pengajuan") ||
+        parameter.get("kasusId");
+
+    const mode = parameter.get("mode") || "buat";
+
+    const modeEdit = mode === "edit";
+    const modeLihat = mode === "lihat";
 
     const form = document.getElementById("formRekomendasi");
+
     const inputMulai = document.getElementById("waktu-mulai");
     const inputSelesai = document.getElementById("waktu-selesai");
     const inputCatatan = document.getElementById("catatan");
 
     const feedback = document.getElementById("feedbackRekomendasi");
-    const tombolKirim = document.getElementById("btnKirimRekomendasi");
-    const statusHalaman = document.getElementById("statusRekomendasi");
 
-    // KONFIGURASI
-    const KAPASITAS_PC = 36;
-    const KAPASITAS_KURSI = 36;
-    const BATAS_KONFIRMASI = 24 * 60 * 60 * 1000;
+    const tombolKirim = document.getElementById(
+        "btnKirimRekomendasi"
+    );
 
-    const STATUS_MENUNGGU = "tergeser";
+    const statusHalaman = document.getElementById(
+        "statusRekomendasi"
+    );
+
+
+    // =====================================================
+    // 2. KONSTANTA STATUS
+    // =====================================================
+
+    const STATUS_MENUNGGU = "menunggu_rekomendasi";
+
     const STATUS_TERKIRIM = "rekomendasi_dikirim";
 
-    const STATUS_NONAKTIF = [
-        "dibatalkan",
+    const STATUS_AKHIR = [
+        "diterima",
         "ditolak",
-        "tidak_digunakan",
-        "tergeser",
-        "selesai",
         "kedaluwarsa",
-        "expired",
-        "rejected",
-        "cancelled"
+        "dibatalkan"
     ];
 
+    const ZONA_WIT = 9 * 60 * 60 * 1000;
+
     let kasusAktif = null;
+    let rekomendasiAktif = null;
+
     let sedangMenyimpan = false;
+    let selesaiDisimpan = false;
 
 
-    // MEMERIKSA KETERSEDIAAN MODUL
+    // =====================================================
+    // 3. PEMERIKSAAN KOMPONEN
+    // =====================================================
+
     if (
         !layanan ||
         !form ||
@@ -54,25 +92,44 @@
         !tombolKirim ||
         !statusHalaman
     ) {
-        console.error("SILAB: Modul rekomendasi gagal dimuat.");
+        console.error(
+            "SILAB: Elemen halaman atau layanan rekomendasi tidak tersedia."
+        );
+
+        return;
+    }
+
+    if (
+        typeof layanan.getKasusTergeserById !== "function" ||
+        typeof layanan.kirimRekomendasi !== "function" ||
+        typeof layanan.editRekomendasi !== "function"
+    ) {
+        console.error(
+            "SILAB: Layanan rekomendasi belum menggunakan versi terbaru."
+        );
+
         return;
     }
 
 
-    // MENAMPILKAN PESAN
+    // =====================================================
+    // 4. UTILITAS TAMPILAN
+    // =====================================================
+
+    // Menampilkan pesan informasi.
     function tampilkanPesan(pesan, jenis = "info") {
         feedback.textContent = pesan;
         feedback.dataset.jenis = jenis;
     }
 
 
-    // MENGUBAH STATUS HALAMAN
+    // Mengubah status halaman.
     function ubahStatusHalaman(teks) {
         statusHalaman.textContent = teks;
     }
 
 
-    // MENGUBAH LABEL TOMBOL
+    // Mengubah label tombol utama.
     function ubahLabelTombol(teks) {
         const label = tombolKirim.querySelector(
             "[data-label-submit]"
@@ -80,11 +137,13 @@
 
         if (label) {
             label.textContent = teks;
+        } else {
+            tombolKirim.textContent = teks;
         }
     }
 
 
-    // MENGATUR KONDISI FORM
+    // Mengatur kondisi formulir.
     function aturForm(nonaktif) {
         inputMulai.disabled = nonaktif;
         inputSelesai.disabled = nonaktif;
@@ -93,89 +152,168 @@
     }
 
 
-    // MENGISI RINCIAN KASUS
+    // Mengisi detail pengajuan.
     function isiRincian(kunci, nilai) {
         const elemen = document.querySelector(
             `[data-detail="${kunci}"]`
         );
 
         if (elemen) {
-            elemen.textContent = nilai || "-";
+            elemen.textContent =
+                nilai === null ||
+                nilai === undefined ||
+                nilai === ""
+                    ? "-"
+                    : String(nilai);
         }
     }
 
 
-    // MEMFORMAT JAM
+    // =====================================================
+    // 5. UTILITAS FORMAT WAKTU
+    // =====================================================
+
+    // Mengubah jam menjadi format tampilan.
     function formatJam(jam) {
         if (!jam) {
             return "-";
         }
 
-        return String(jam).replace(":", ".");
+        return String(jam).slice(0, 5).replace(":", ".");
     }
 
 
-    // MEMFORMAT JADWAL ASAL
+    // Mengubah tanggal menjadi format Indonesia.
+    function formatTanggal(tanggal) {
+        const cocok = /^(\d{4})-(\d{2})-(\d{2})$/.exec(
+            String(tanggal || "")
+        );
+
+        if (!cocok) {
+            return "Tanggal belum tersedia";
+        }
+
+        const nilai = new Date(
+            Number(cocok[1]),
+            Number(cocok[2]) - 1,
+            Number(cocok[3])
+        );
+
+        return new Intl.DateTimeFormat("id-ID", {
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }).format(nilai);
+    }
+
+
+    // Mengubah waktu datetime-local menjadi timestamp WIT.
+    function parsingWIT(nilai) {
+        if (typeof nilai !== "string") {
+            return NaN;
+        }
+
+        const cocok = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/.exec(
+            nilai
+        );
+
+        if (!cocok) {
+            return NaN;
+        }
+
+        const waktu = Date.parse(
+            `${cocok[1]}T${cocok[2]}:00+09:00`
+        );
+
+        if (!Number.isFinite(waktu)) {
+            return NaN;
+        }
+
+        const hasil = new Date(
+            waktu + ZONA_WIT
+        ).toISOString().slice(0, 16);
+
+        return hasil === nilai ? waktu : NaN;
+    }
+
+
+    // Mengambil waktu sekarang berdasarkan WIT.
+    function waktuSekarangWIT() {
+        return new Date(
+            Date.now() + ZONA_WIT
+        ).toISOString().slice(0, 16);
+    }
+
+
+    // Mengambil nilai datetime-local dari rekomendasi lama.
+    function ambilNilaiWaktu(rekomendasi, jenis) {
+        const kunci = jenis === "mulai"
+            ? "waktuMulai"
+            : "waktuSelesai";
+
+        const alternatif = jenis === "mulai"
+            ? "mulaiLokal"
+            : "selesaiLokal";
+
+        const nilai = rekomendasi[kunci] ||
+            rekomendasi[alternatif];
+
+        if (
+            typeof nilai === "string" &&
+            /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(nilai)
+        ) {
+            return nilai.slice(0, 16);
+        }
+
+        if (
+            typeof nilai === "string" &&
+            /^\d{2}:\d{2}/.test(nilai) &&
+            rekomendasi.tanggal
+        ) {
+            return `${rekomendasi.tanggal}T${nilai.slice(0, 5)}`;
+        }
+
+        return "";
+    }
+
+
+    // =====================================================
+    // 6. MENAMPILKAN JADWAL ASAL
+    // =====================================================
+
     function formatJadwalAsal(kasus) {
-        let tanggal = "Tanggal belum tersedia";
-        let jam = "-";
+        let tanggal = kasus.tanggal || "";
+        let jamMulai = kasus.waktuMulai || "";
+        let jamSelesai = kasus.waktuSelesai || "";
 
         if (kasus.jadwalAsal) {
             const cocok = String(kasus.jadwalAsal).match(
-                /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/
+                /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/
             );
 
             if (cocok) {
-                const tanggalAsal = new Date(
-                    Number(cocok[1]),
-                    Number(cocok[2]) - 1,
-                    Number(cocok[3])
-                );
-
-                tanggal = new Intl.DateTimeFormat("id-ID", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric"
-                }).format(tanggalAsal);
-
-                jam = `${cocok[4]}.${cocok[5]} WIT`;
+                tanggal = cocok[1];
+                jamMulai = cocok[2];
             }
-        } else if (kasus.tanggal) {
-            const bagian = String(kasus.tanggal).split("-");
-
-            if (bagian.length === 3) {
-                const tanggalAsal = new Date(
-                    Number(bagian[0]),
-                    Number(bagian[1]) - 1,
-                    Number(bagian[2])
-                );
-
-                tanggal = new Intl.DateTimeFormat("id-ID", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric"
-                }).format(tanggalAsal);
-            }
-        } else if (kasus.hari) {
-            tanggal = kasus.hari;
-        }
-
-        if (kasus.waktuMulai && kasus.waktuSelesai) {
-            jam =
-                `${formatJam(kasus.waktuMulai)}–` +
-                `${formatJam(kasus.waktuSelesai)} WIT`;
         }
 
         return {
-            tanggal,
-            jam
+            tanggal: formatTanggal(tanggal),
+
+            jam: jamMulai && jamSelesai
+                ? `${formatJam(jamMulai)}–${formatJam(jamSelesai)} WIT`
+                : jamMulai
+                    ? `${formatJam(jamMulai)} WIT`
+                    : "-"
         };
     }
 
 
-    // MENAMPILKAN DATA PENGAJUAN
+    // =====================================================
+    // 7. MENAMPILKAN DETAIL KASUS
+    // =====================================================
+
     function tampilkanKasus(kasus) {
         const jadwal = formatJadwalAsal(kasus);
 
@@ -216,289 +354,155 @@
 
         isiRincian(
             "namaPenggeser",
-            kasus.namaPenggeser || "Tidak tercatat pada data antrean."
+            kasus.namaPenggeser ||
+                "Informasi penggeser belum tersedia."
         );
 
         isiRincian(
             "alasan",
-            kasus.alasan || "Informasi alasan pergeseran belum tersedia."
+            kasus.alasan ||
+                "Informasi alasan pergeseran belum tersedia."
         );
     }
 
 
-    // MEMBUAT RENTANG WAKTU
-    function buatRentang(tanggal, mulai, selesai) {
-        if (!tanggal || !mulai || !selesai) {
-            return null;
+    // =====================================================
+    // 8. MENGAMBIL REKOMENDASI TERBARU
+    // =====================================================
+
+    function ambilRekomendasiTerbaru(kasus) {
+        if (kasus.rekomendasiTerbaru) {
+            return kasus.rekomendasiTerbaru;
         }
 
-        const waktuMulai = new Date(`${tanggal}T${mulai}`);
-        const waktuSelesai = new Date(`${tanggal}T${selesai}`);
+        const daftar = layanan.getAll("rekomendasi");
 
-        if (
-            Number.isNaN(waktuMulai.getTime()) ||
-            Number.isNaN(waktuSelesai.getTime())
-        ) {
-            return null;
-        }
-
-        if (waktuSelesai <= waktuMulai) {
-            waktuSelesai.setDate(
-                waktuSelesai.getDate() + 1
-            );
-        }
-
-        return {
-            mulai: waktuMulai,
-            selesai: waktuSelesai
-        };
-    }
-
-
-    // MENGAMBIL RENTANG WAKTU DATA
-    function ambilRentang(item) {
-        if (item.mulai && item.selesai) {
-            const mulai = new Date(item.mulai);
-            const selesai = new Date(item.selesai);
-
-            if (
-                !Number.isNaN(mulai.getTime()) &&
-                !Number.isNaN(selesai.getTime())
-            ) {
-                return {
-                    mulai,
-                    selesai
-                };
-            }
-        }
-
-        return buatRentang(
-            item.tanggal,
-            item.waktuMulai,
-            item.waktuSelesai
+        const hasil = daftar.filter(item =>
+            [
+                item.caseId,
+                item.kasusId,
+                item.pengajuanId,
+                item.antreanId
+            ].some(id =>
+                id !== undefined &&
+                id !== null &&
+                (
+                    String(id) === String(kasus.id) ||
+                    String(id) === String(kasus.pengajuanId)
+                )
+            )
         );
-    }
 
-
-    // MEMERIKSA BENTROK JADWAL
-    function terjadiBentrok(rentangBaru, rentangLama) {
-        return (
-            rentangBaru.mulai < rentangLama.selesai &&
-            rentangBaru.selesai > rentangLama.mulai
+        hasil.sort((a, b) =>
+            (
+                Date.parse(b.dikirimPada || b.dibuatPada) || 0
+            ) -
+            (
+                Date.parse(a.dikirimPada || a.dibuatPada) || 0
+            )
         );
+
+        return hasil[0] || null;
     }
 
 
-    // MEMERIKSA STATUS REKOMENDASI
-    function rekomendasiMasihAktif(rekomendasi) {
+    // =====================================================
+    // 9. MENAMPILKAN REKOMENDASI TERSIMPAN
+    // =====================================================
+
+    function tampilkanRekomendasiTersimpan(rekomendasi) {
+        const mulai = ambilNilaiWaktu(
+            rekomendasi,
+            "mulai"
+        );
+
+        const selesai = ambilNilaiWaktu(
+            rekomendasi,
+            "selesai"
+        );
+
+        inputMulai.value = mulai;
+        inputSelesai.value = selesai;
+        inputCatatan.value = rekomendasi.catatan || "";
+
         const status = String(
-            rekomendasi.status || "menunggu_konfirmasi"
+            rekomendasi.status || ""
         ).toLowerCase();
 
-        if (STATUS_NONAKTIF.includes(status)) {
-            return false;
-        }
-
-        if (
-            status === "menunggu_konfirmasi" &&
-            rekomendasi.batasKonfirmasi
-        ) {
-            const batas = new Date(
-                rekomendasi.batasKonfirmasi
-            );
-
-            if (
-                !Number.isNaN(batas.getTime()) &&
-                batas <= new Date()
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    // MENCARI BENTROK JADWAL
-    function cariBentrok(rentangBaru) {
-
-        // Memeriksa jadwal peminjaman.
-        const bookings = layanan.getAll("bookings");
-
-        for (const booking of bookings) {
-            const status = String(
-                booking.status || ""
-            ).toLowerCase();
-
-            if (
-                STATUS_NONAKTIF.includes(status) ||
-                booking.presensi?.status === "tidak_digunakan"
-            ) {
-                continue;
-            }
-
-            const rentangLama = ambilRentang(booking);
-
-            if (
-                rentangLama &&
-                terjadiBentrok(rentangBaru, rentangLama)
-            ) {
-                return (
-                    `Jadwal bertabrakan dengan kegiatan ` +
-                    `"${booking.namaKegiatan || "Peminjaman lain"}".`
-                );
-            }
-        }
-
-
-        // Memeriksa rekomendasi yang masih aktif.
-        const daftarRekomendasi = layanan.getAll("rekomendasi");
-
-        for (const rekomendasi of daftarRekomendasi) {
-            if (!rekomendasiMasihAktif(rekomendasi)) {
-                continue;
-            }
-
-            const rentangLama = ambilRentang(rekomendasi);
-
-            if (
-                rentangLama &&
-                terjadiBentrok(rentangBaru, rentangLama)
-            ) {
-                return (
-                    "Jadwal bertabrakan dengan rekomendasi " +
-                    "yang masih aktif untuk pengguna lain."
-                );
-            }
-        }
-
-        return null;
-    }
-
-
-    // MEMERIKSA KAPASITAS LABORATORIUM
-    function periksaKapasitas(kasus) {
-        const jumlahPC = Number(kasus.kebutuhanPC);
-        const jumlahKursi = Number(kasus.kebutuhanKursi);
-
-        if (
-            !Number.isFinite(jumlahPC) ||
-            !Number.isFinite(jumlahKursi) ||
-            jumlahPC < 0 ||
-            jumlahKursi < 0
-        ) {
-            return "Data kebutuhan kapasitas tidak valid.";
-        }
-
-        if (jumlahPC > KAPASITAS_PC) {
-            return (
-                `Kebutuhan ${jumlahPC} PC melebihi ` +
-                `kapasitas laboratorium (${KAPASITAS_PC} PC).`
-            );
-        }
-
-        if (jumlahKursi > KAPASITAS_KURSI) {
-            return (
-                `Kebutuhan ${jumlahKursi} kursi melebihi ` +
-                `kapasitas laboratorium (${KAPASITAS_KURSI} kursi).`
-            );
-        }
-
-        return null;
-    }
-
-
-    // VALIDASI FORM REKOMENDASI
-    function validasiForm() {
-        const nilaiMulai = inputMulai.value;
-        const nilaiSelesai = inputSelesai.value;
-
-        if (!nilaiMulai || !nilaiSelesai) {
-            return {
-                valid: false,
-                pesan: "Waktu mulai dan waktu selesai wajib diisi."
-            };
-        }
-
-        const mulai = new Date(nilaiMulai);
-        const selesai = new Date(nilaiSelesai);
-
-        if (
-            Number.isNaN(mulai.getTime()) ||
-            Number.isNaN(selesai.getTime())
-        ) {
-            return {
-                valid: false,
-                pesan: "Format tanggal atau waktu tidak valid."
-            };
-        }
-
-        if (mulai <= new Date()) {
-            return {
-                valid: false,
-                pesan: "Jadwal pengganti harus berada pada waktu mendatang."
-            };
-        }
-
-        if (selesai <= mulai) {
-            return {
-                valid: false,
-                pesan: "Waktu selesai harus lebih besar dari waktu mulai."
-            };
-        }
-
-
-        // Memeriksa kapasitas.
-        const kesalahanKapasitas = periksaKapasitas(kasusAktif);
-
-        if (kesalahanKapasitas) {
-            return {
-                valid: false,
-                pesan: kesalahanKapasitas
-            };
-        }
-
-
-        // Memeriksa bentrok.
-        const rentangBaru = {
-            mulai,
-            selesai
+        const keterangan = {
+            rekomendasi_dikirim: "Rekomendasi Telah Dikirim",
+            diterima: "Rekomendasi Diterima",
+            ditolak: "Rekomendasi Ditolak",
+            kedaluwarsa: "Rekomendasi Kedaluwarsa",
+            dibatalkan: "Rekomendasi Dibatalkan"
         };
 
-        const kesalahanBentrok = cariBentrok(rentangBaru);
+        ubahStatusHalaman(
+            keterangan[status] || "Rekomendasi Tersimpan"
+        );
 
-        if (kesalahanBentrok) {
-            return {
-                valid: false,
-                pesan: kesalahanBentrok
-            };
+        const batas =
+            rekomendasi.kedaluwarsaPada ||
+            rekomendasi.expiresAt ||
+            rekomendasi.batasRespons;
+
+        if (batas) {
+            const tanggalBatas = new Date(batas);
+
+            tampilkanPesan(
+                `Batas konfirmasi pengguna: ${tanggalBatas.toLocaleString("id-ID", {
+                    timeZone: "Asia/Jayapura"
+                })}.`,
+                "sukses"
+            );
+        } else {
+            tampilkanPesan(
+                "Data rekomendasi berhasil dimuat.",
+                "sukses"
+            );
         }
-
-        return {
-            valid: true,
-            mulai,
-            selesai
-        };
     }
 
 
-    // MENGATUR BATAS WAKTU INPUT
+    // =====================================================
+    // 10. MENGATUR TOMBOL KEMBALI
+    // =====================================================
+
+    function ubahMenjadiTombolKembali() {
+        selesaiDisimpan = true;
+
+        tombolKirim.type = "button";
+        tombolKirim.disabled = false;
+
+        ubahLabelTombol(
+            "Kembali ke Daftar Rekomendasi"
+        );
+
+        tombolKirim.addEventListener(
+            "click",
+            kembaliKeDaftar,
+            { once: true }
+        );
+    }
+
+
+    function kembaliKeDaftar() {
+        window.location.href = "rekomendasi_jadwal.html";
+    }
+
+
+    // =====================================================
+    // 11. MENGATUR BATAS WAKTU INPUT
+    // =====================================================
+
     function aturBatasInput() {
-        const sekarang = new Date();
+        const sekarang = waktuSekarangWIT();
 
-        const waktuLokal = new Date(
-            sekarang.getTime() -
-            sekarang.getTimezoneOffset() * 60000
-        )
-            .toISOString()
-            .slice(0, 16);
-
-        inputMulai.min = waktuLokal;
-        inputSelesai.min = waktuLokal;
+        inputMulai.min = sekarang;
+        inputSelesai.min = sekarang;
     }
 
 
-    // MEMPERBARUI BATAS WAKTU SELESAI
     inputMulai.addEventListener("change", function () {
         inputSelesai.min = this.value;
 
@@ -511,247 +515,301 @@
     });
 
 
-    // MENCARI REKOMENDASI BERDASARKAN ID ANTREAN
-    function ambilRekomendasiKasus(kasus) {
-        const daftar = layanan.getAll("rekomendasi");
+    // =====================================================
+    // 12. VALIDASI FORMULIR
+    // =====================================================
 
-        const hasil = daftar.filter(
-            item => String(item.kasusId) === String(kasus.id)
-        );
+    function validasiForm() {
+        const nilaiMulai = inputMulai.value;
+        const nilaiSelesai = inputSelesai.value;
 
-        hasil.sort((a, b) => {
-            const waktuA = Date.parse(a.dibuatPada) || 0;
-            const waktuB = Date.parse(b.dibuatPada) || 0;
-
-            return waktuB - waktuA;
-        });
-
-        return hasil[0] || null;
-    }
-
-
-    // MEMULIHKAN KASUS YANG REKOMENDASINYA TIDAK AKTIF
-    function pulihkanKasus(kasus, rekomendasi) {
-        if (
-            !rekomendasi ||
-            rekomendasiMasihAktif(rekomendasi) ||
-            kasus.status !== STATUS_TERKIRIM
-        ) {
-            return kasus;
+        if (!nilaiMulai || !nilaiSelesai) {
+            return {
+                valid: false,
+                pesan: "Waktu mulai dan waktu selesai wajib diisi."
+            };
         }
 
-        const batas = new Date(
-            rekomendasi.batasKonfirmasi
-        );
+        const mulai = parsingWIT(nilaiMulai);
+        const selesai = parsingWIT(nilaiSelesai);
 
         if (
-            rekomendasi.status === "menunggu_konfirmasi" &&
-            rekomendasi.batasKonfirmasi &&
-            !Number.isNaN(batas.getTime()) &&
-            batas <= new Date()
+            !Number.isFinite(mulai) ||
+            !Number.isFinite(selesai)
         ) {
-            layanan.update("rekomendasi", rekomendasi.id, {
-                status: "kedaluwarsa"
-            });
+            return {
+                valid: false,
+                pesan: "Format tanggal atau waktu tidak valid."
+            };
         }
 
-        layanan.update("antrean", kasus.id, {
-            status: STATUS_MENUNGGU,
-            rekomendasiId: null,
-            batasKonfirmasi: null
-        });
+        if (mulai <= Date.now()) {
+            return {
+                valid: false,
+                pesan: "Jadwal rekomendasi harus berada di masa mendatang."
+            };
+        }
 
-        return layanan.getById("antrean", kasus.id);
-    }
+        if (selesai <= mulai) {
+            return {
+                valid: false,
+                pesan: "Waktu selesai harus lebih besar dari waktu mulai."
+            };
+        }
 
-
-    // MENAMPILKAN REKOMENDASI YANG SUDAH TERSIMPAN
-    function tampilkanRekomendasiTersimpan(rekomendasi) {
-        const mulaiLokal =
-            rekomendasi.mulaiLokal ||
-            `${rekomendasi.tanggal}T${rekomendasi.waktuMulai}`;
-
-        const selesaiLokal =
-            rekomendasi.selesaiLokal ||
-            `${rekomendasi.tanggal}T${rekomendasi.waktuSelesai}`;
-
-        inputMulai.value = mulaiLokal;
-        inputSelesai.value = selesaiLokal;
-        inputCatatan.value = rekomendasi.catatan || "";
-
-        aturForm(true);
-
-        const status = rekomendasi.status;
-
-        const keterangan = {
-            menunggu_konfirmasi: "Menunggu Konfirmasi Pengguna",
-            diterima: "Rekomendasi Diterima",
-            ditolak: "Rekomendasi Ditolak",
-            kedaluwarsa: "Rekomendasi Kedaluwarsa"
+        return {
+            valid: true,
+            mulai,
+            selesai
         };
-
-        ubahStatusHalaman(
-            keterangan[status] || "Rekomendasi Tersimpan"
-        );
-
-        ubahLabelTombol("Rekomendasi Terkirim");
-
-        if (rekomendasi.batasKonfirmasi) {
-            const batas = new Date(
-                rekomendasi.batasKonfirmasi
-            );
-
-            tampilkanPesan(
-                `Rekomendasi tersimpan. Batas konfirmasi: ${batas.toLocaleString("id-ID")}.`,
-                "sukses"
-            );
-        } else {
-            tampilkanPesan(
-                "Rekomendasi untuk pengajuan ini sudah tersimpan.",
-                "sukses"
-            );
-        }
     }
 
 
-    // MEMUAT DATA PENGAJUAN DARI ANTREAN
+    // =====================================================
+    // 13. MEMUAT DATA KASUS TERGESER
+    // =====================================================
+
     function muatKasus() {
-        if (!kasusId) {
+        if (!idReferensi) {
             aturForm(true);
 
             tampilkanPesan(
-                "ID pengajuan tidak ditemukan. Silakan kembali ke halaman Rekomendasi Jadwal.",
+                "ID kasus tidak ditemukan. Silakan kembali ke daftar rekomendasi.",
                 "error"
             );
 
             return;
         }
 
+        try {
+            // Mengambil kasus melalui layanan data.
+            kasusAktif = layanan.getKasusTergeserById(
+                idReferensi
+            );
 
-        // Mengambil data langsung dari koleksi antrean.
-        kasusAktif = layanan.getById(
-            "antrean",
-            kasusId
-        );
+            if (!kasusAktif) {
+                aturForm(true);
 
-        if (!kasusAktif) {
-            aturForm(true);
+                tampilkanPesan(
+                    `Kasus ${idReferensi} tidak ditemukan.`,
+                    "error"
+                );
+
+                return;
+            }
+
+            tampilkanKasus(kasusAktif);
+
+            rekomendasiAktif =
+                ambilRekomendasiTerbaru(kasusAktif);
+
+            const statusKasus = String(
+                kasusAktif.status || ""
+            ).toLowerCase();
+
+
+            // MODE EDIT REKOMENDASI.
+            if (modeEdit) {
+                if (
+                    statusKasus !== STATUS_TERKIRIM ||
+                    !rekomendasiAktif ||
+                    rekomendasiAktif.status !== STATUS_TERKIRIM
+                ) {
+                    aturForm(true);
+
+                    ubahStatusHalaman("Tidak Dapat Diedit");
+
+                    tampilkanPesan(
+                        "Rekomendasi tidak tersedia untuk diedit atau statusnya sudah berubah.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const batas = Date.parse(
+                    kasusAktif.kedaluwarsaPada ||
+                    rekomendasiAktif.kedaluwarsaPada ||
+                    ""
+                );
+
+                if (
+                    !Number.isFinite(batas) ||
+                    Date.now() >= batas
+                ) {
+                    aturForm(true);
+
+                    ubahStatusHalaman("Batas Edit Berakhir");
+
+                    tampilkanPesan(
+                        "Rekomendasi sudah melewati batas waktu edit 24 jam.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                tampilkanRekomendasiTersimpan(
+                    rekomendasiAktif
+                );
+
+                aturForm(false);
+
+                ubahStatusHalaman("Edit Rekomendasi");
+
+                ubahLabelTombol("Simpan Perubahan");
+
+                aturBatasInput();
+
+                inputMulai.min = waktuSekarangWIT();
+                inputSelesai.min = inputMulai.value ||
+                    waktuSekarangWIT();
+
+                tampilkanPesan(
+                    "Mode edit aktif. Perubahan hanya dapat dilakukan selama rekomendasi masih dalam batas 24 jam.",
+                    "info"
+                );
+
+                return;
+            }
+
+
+            // MODE LIHAT REKOMENDASI.
+            if (modeLihat) {
+                if (!rekomendasiAktif) {
+                    aturForm(true);
+
+                    tampilkanPesan(
+                        "Belum ada rekomendasi untuk kasus ini.",
+                        "info"
+                    );
+
+                    return;
+                }
+
+                tampilkanRekomendasiTersimpan(
+                    rekomendasiAktif
+                );
+
+                aturForm(true);
+
+                ubahLabelTombol("Kembali ke Daftar Rekomendasi");
+
+                tombolKirim.disabled = false;
+                tombolKirim.type = "button";
+
+                tombolKirim.addEventListener(
+                    "click",
+                    kembaliKeDaftar
+                );
+
+                return;
+            }
+
+
+            // KASUS SUDAH MEMILIKI REKOMENDASI AKTIF.
+            if (
+                statusKasus === STATUS_TERKIRIM &&
+                rekomendasiAktif
+            ) {
+                tampilkanRekomendasiTersimpan(
+                    rekomendasiAktif
+                );
+
+                aturForm(true);
+
+                ubahStatusHalaman("Rekomendasi Telah Dikirim");
+
+                tombolKirim.type = "button";
+                tombolKirim.disabled = false;
+
+                ubahLabelTombol(
+                    "Kembali ke Daftar Rekomendasi"
+                );
+
+                tombolKirim.addEventListener(
+                    "click",
+                    kembaliKeDaftar
+                );
+
+                return;
+            }
+
+
+            // HANYA KASUS MENUNGGU REKOMENDASI YANG DAPAT DIPROSES.
+            if (statusKasus !== STATUS_MENUNGGU) {
+                aturForm(true);
+
+                ubahStatusHalaman("Tidak Dapat Diproses");
+
+                tampilkanPesan(
+                    "Kasus ini tidak sedang menunggu rekomendasi atau sudah diproses.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // MODE BUAT REKOMENDASI BARU.
+            aturForm(false);
+            aturBatasInput();
+
+            ubahStatusHalaman("Menunggu Rekomendasi");
+
+            ubahLabelTombol("Kirim Rekomendasi");
 
             tampilkanPesan(
-                `Pengajuan ${kasusId} tidak ditemukan dalam antrean.`,
-                "error"
-            );
-
-            console.error(
-                "SILAB: ID pengajuan tidak ditemukan:",
-                kasusId
-            );
-
-            return;
-        }
-
-
-        // Menampilkan detail pengajuan.
-        tampilkanKasus(kasusAktif);
-
-
-        // Memeriksa rekomendasi sebelumnya.
-        let rekomendasiTersimpan = ambilRekomendasiKasus(
-            kasusAktif
-        );
-
-
-        // Memulihkan kasus jika rekomendasi lama sudah tidak aktif.
-        kasusAktif = pulihkanKasus(
-            kasusAktif,
-            rekomendasiTersimpan
-        );
-
-        rekomendasiTersimpan = ambilRekomendasiKasus(
-            kasusAktif
-        );
-
-
-        // Jika masih ada rekomendasi aktif, tampilkan dalam mode baca.
-        if (
-            rekomendasiTersimpan &&
-            rekomendasiMasihAktif(rekomendasiTersimpan)
-        ) {
-            tampilkanRekomendasiTersimpan(
-                rekomendasiTersimpan
-            );
-
-            return;
-        }
-
-
-        // Mode melihat tidak mengizinkan perubahan.
-        if (modeLihat) {
-            aturForm(true);
-
-            ubahStatusHalaman("Mode Lihat");
-
-            tampilkanPesan(
-                "Belum ada rekomendasi aktif untuk pengajuan ini.",
+                `Data kasus ${kasusAktif.id} berhasil dimuat. Silakan tentukan jadwal alternatif.`,
                 "info"
             );
 
-            return;
-        }
-
-
-        // Hanya kasus tergeser yang dapat diberi rekomendasi.
-        if (kasusAktif.status !== STATUS_MENUNGGU) {
-            aturForm(true);
-
-            ubahStatusHalaman("Tidak Dapat Diubah");
-
-            tampilkanPesan(
-                "Pengajuan ini tidak sedang berstatus tergeser atau sudah diproses.",
-                "error"
+            console.log(
+                "SILAB: Kasus tergeser berhasil dimuat.",
+                kasusAktif.id
             );
 
-            return;
+        } catch (error) {
+            console.error(
+                "SILAB: Gagal memuat kasus.",
+                error
+            );
+
+            aturForm(true);
+
+            tampilkanPesan(
+                error.message || "Gagal mengambil data kasus.",
+                "error"
+            );
         }
-
-
-        aturBatasInput();
-
-        ubahStatusHalaman("Menunggu Rekomendasi");
-
-        tampilkanPesan(
-            `Data pengajuan ${kasusAktif.id} berhasil dimuat. Silakan tentukan jadwal pengganti.`,
-            "info"
-        );
-
-        console.log(
-            "SILAB: Data rekomendasi berhasil dimuat.",
-            kasusAktif.id
-        );
     }
 
 
-    // MENYIMPAN REKOMENDASI
+    // =====================================================
+    // 14. MENYIMPAN REKOMENDASI
+    // =====================================================
+
     function simpanRekomendasi(event) {
         event.preventDefault();
+
+        if (selesaiDisimpan) {
+            kembaliKeDaftar();
+            return;
+        }
 
         if (sedangMenyimpan || !kasusAktif) {
             return;
         }
 
+        // Memeriksa ulang data kasus terbaru.
+        const kasusTerbaru =
+            layanan.getKasusTergeserById(
+                kasusAktif.id
+            );
 
-        // Memeriksa ulang status pengajuan.
-        const kasusTerbaru = layanan.getById(
-            "antrean",
-            kasusId
-        );
-
-        if (
-            !kasusTerbaru ||
-            kasusTerbaru.status !== STATUS_MENUNGGU
-        ) {
+        if (!kasusTerbaru) {
             tampilkanPesan(
-                "Status pengajuan sudah berubah. Silakan muat ulang halaman.",
+                "Kasus tergeser tidak lagi tersedia.",
                 "error"
             );
 
@@ -759,27 +817,6 @@
             return;
         }
 
-
-        // Mencegah rekomendasi ganda.
-        const rekomendasiSebelumnya = ambilRekomendasiKasus(
-            kasusTerbaru
-        );
-
-        if (
-            rekomendasiSebelumnya &&
-            rekomendasiMasihAktif(rekomendasiSebelumnya)
-        ) {
-            tampilkanPesan(
-                "Pengajuan ini sudah memiliki rekomendasi yang masih aktif.",
-                "error"
-            );
-
-            aturForm(true);
-            return;
-        }
-
-
-        // Memvalidasi jadwal.
         const hasilValidasi = validasiForm();
 
         if (!hasilValidasi.valid) {
@@ -791,134 +828,99 @@
             return;
         }
 
-
-        sedangMenyimpan = true;
-        tombolKirim.disabled = true;
-
-        ubahLabelTombol("Menyimpan...");
-
-
-        const sekarang = new Date();
-
-        const idRekomendasi = `REK-${Date.now()}`;
-
-        const batasKonfirmasi = new Date(
-            sekarang.getTime() + BATAS_KONFIRMASI
-        );
-
-        const nilaiMulai = inputMulai.value;
-        const nilaiSelesai = inputSelesai.value;
-
-
-        // Menyusun data rekomendasi.
-        const dataRekomendasi = {
-            id: idRekomendasi,
-
-            // Hubungan dengan pengajuan antrean.
-            kasusId: kasusTerbaru.id,
-            antreanId: kasusTerbaru.id,
-
-            userId: kasusTerbaru.userId || null,
-
-            namaPemohon: kasusTerbaru.namaPemohon,
-            nipNpm: kasusTerbaru.nipNpm,
-
-            namaKegiatan: kasusTerbaru.namaKegiatan,
-
-            kategori: kasusTerbaru.kategori,
-            prioritas: kasusTerbaru.prioritas,
-
-            // Jadwal alternatif.
-            tanggal: nilaiMulai.slice(0, 10),
-
-            waktuMulai: nilaiMulai.slice(11, 16),
-            waktuSelesai: nilaiSelesai.slice(11, 16),
-
-            mulaiLokal: nilaiMulai,
-            selesaiLokal: nilaiSelesai,
-
-            mulai: hasilValidasi.mulai.toISOString(),
-            selesai: hasilValidasi.selesai.toISOString(),
-
-            // Kebutuhan pengguna.
-            kebutuhanPC: kasusTerbaru.kebutuhanPC,
-            kebutuhanKursi: kasusTerbaru.kebutuhanKursi,
-
-            catatan: inputCatatan.value.trim(),
-
-            // Status konfirmasi.
-            status: "menunggu_konfirmasi",
-
-            dibuatPada: sekarang.toISOString(),
-
-            batasKonfirmasi: batasKonfirmasi.toISOString()
+        const detail = {
+            waktuMulai: inputMulai.value,
+            waktuSelesai: inputSelesai.value,
+            catatan: inputCatatan.value.trim()
         };
 
+        sedangMenyimpan = true;
 
-        let rekomendasiTersimpan = false;
+        tombolKirim.disabled = true;
+
+        ubahLabelTombol(
+            modeEdit
+                ? "Menyimpan Perubahan..."
+                : "Mengirim Rekomendasi..."
+        );
 
         try {
+            let hasil;
 
-            // Menyimpan rekomendasi.
-            layanan.tambah(
-                "rekomendasi",
-                dataRekomendasi
+            if (modeEdit) {
+                // Mengedit rekomendasi yang sudah dikirim.
+                hasil = layanan.editRekomendasi(
+                    kasusAktif.id,
+                    detail
+                );
+
+            } else {
+                // Mengirim rekomendasi baru.
+                hasil = layanan.kirimRekomendasi(
+                    kasusAktif.id,
+                    detail
+                );
+            }
+
+            if (!hasil) {
+                throw new Error(
+                    "Layanan tidak mengembalikan data rekomendasi."
+                );
+            }
+
+            kasusAktif = hasil;
+
+            rekomendasiAktif =
+                hasil.rekomendasiTerbaru ||
+                ambilRekomendasiTerbaru(hasil);
+
+            // Mengunci formulir setelah berhasil disimpan.
+            aturForm(true);
+
+            ubahStatusHalaman(
+                modeEdit
+                    ? "Perubahan Berhasil Disimpan"
+                    : "Rekomendasi Berhasil Dikirim"
             );
 
-            rekomendasiTersimpan = true;
-
-
-            // Memperbarui status pengajuan antrean.
-            layanan.update(
-                "antrean",
-                kasusTerbaru.id,
-                {
-                    status: STATUS_TERKIRIM,
-
-                    rekomendasiId: idRekomendasi,
-
-                    tanggalRekomendasi: sekarang.toISOString(),
-
-                    batasKonfirmasi: batasKonfirmasi.toISOString()
-                }
+            tampilkanPesan(
+                modeEdit
+                    ? "Perubahan rekomendasi berhasil disimpan. Batas waktu 24 jam tidak diperpanjang."
+                    : "Rekomendasi berhasil dikirim dan tersimpan. Kasus tetap berada dalam daftar rekomendasi.",
+                "sukses"
             );
 
-
-            // Memperbarui tampilan halaman.
-            tampilkanRekomendasiTersimpan(
-                dataRekomendasi
-            );
+            // Tombol kirim berubah menjadi tombol kembali.
+            ubahMenjadiTombolKembali();
 
             console.log(
-                "SILAB: Rekomendasi berhasil dikirim.",
+                modeEdit
+                    ? "SILAB: Rekomendasi berhasil diedit."
+                    : "SILAB: Rekomendasi berhasil dikirim.",
                 {
-                    pengajuan: kasusTerbaru.id,
-                    rekomendasi: idRekomendasi
+                    kasus: kasusAktif.id,
+                    rekomendasi: rekomendasiAktif?.id
                 }
             );
 
         } catch (error) {
-
-            // Menghapus data jika pembaruan antrean gagal.
-            if (rekomendasiTersimpan) {
-                layanan.hapus(
-                    "rekomendasi",
-                    idRekomendasi
-                );
-            }
+            console.error(
+                "SILAB: Gagal menyimpan rekomendasi.",
+                error
+            );
 
             tampilkanPesan(
-                error.message || "Rekomendasi gagal disimpan.",
+                error.message ||
+                    "Terjadi kesalahan saat menyimpan rekomendasi.",
                 "error"
             );
 
-            ubahLabelTombol("Kirim Rekomendasi");
-
             tombolKirim.disabled = false;
 
-            console.error(
-                "SILAB Rekomendasi:",
-                error
+            ubahLabelTombol(
+                modeEdit
+                    ? "Simpan Perubahan"
+                    : "Kirim Rekomendasi"
             );
 
         } finally {
@@ -927,35 +929,52 @@
     }
 
 
-    // MENANGANI PENGIRIMAN FORM
+    // =====================================================
+    // 15. EVENT FORM
+    // =====================================================
+
     form.addEventListener(
         "submit",
         simpanRekomendasi
     );
 
 
-    // MENGHAPUS PESAN ERROR KETIKA INPUT DIPERBAIKI
+    // Menghapus pesan error ketika input diperbaiki.
     [
         inputMulai,
         inputSelesai,
         inputCatatan
     ].forEach(input => {
-
         input.addEventListener("input", function () {
             if (feedback.dataset.jenis === "error") {
                 feedback.textContent = "";
                 delete feedback.dataset.jenis;
             }
         });
-
     });
 
 
-    // MENJALANKAN MODUL
+    // Tombol kembali tambahan jika tersedia pada HTML.
+    const tombolKembali = document.querySelector(
+        "[data-kembali-rekomendasi]"
+    );
+
+    if (tombolKembali) {
+        tombolKembali.addEventListener(
+            "click",
+            kembaliKeDaftar
+        );
+    }
+
+
+    // =====================================================
+    // 16. MENJALANKAN MODUL
+    // =====================================================
+
     muatKasus();
 
     console.log(
-        "SILAB: Modul buat rekomendasi berhasil dimuat."
+        "SILAB: Modul buat rekomendasi berhasil diinisialisasi."
     );
 
 })(window, document);
