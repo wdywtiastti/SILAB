@@ -1,22 +1,21 @@
-
 /* =========================================
    1. CONTAINER PENYELESAIAN KONFLIK
 ========================================= */
 
 .conflict-container {
-    width: calc(100% - 50px);
-    max-width: 1500px;
-    margin: 7px auto 25px;
-    padding: 0;
-    min-height: calc(100vh - 72px);
-    font-size: 14px;
-    box-sizing: border-box;
+  width: calc(100% - 50px);
+  max-width: 1500px;
+  margin: 7px auto 25px;
+  padding: 0;
+  min-height: calc(100vh - 72px);
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 .conflict-container *,
 .conflict-container *::before,
 .conflict-container *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* =========================================
@@ -24,149 +23,149 @@
 ========================================= */
 
 .conflict-hero {
-    position: relative;
-    width: 100%;
-    padding: 16px 20px;
-    background: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-    margin-bottom: 14px;
+  position: relative;
+  width: 100%;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  margin-bottom: 14px;
 }
 
 .hero-decoration {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .hero-decoration span {
-    width: 30px;
-    height: 5px;
-    border-radius: 10px;
+  width: 30px;
+  height: 5px;
+  border-radius: 10px;
 }
 
 .hero-decoration span:nth-child(1) {
-    background: #911E3F;
+  background: #911e3f;
 }
 
 .hero-decoration span:nth-child(2) {
-    background: #F8B916;
+  background: #f8b916;
 }
 
 .hero-decoration span:nth-child(3) {
-    background: #33266A;
+  background: #33266a;
 }
 
 .hero-content {
-    display: block;
-    width: 100%;
+  display: block;
+  width: 100%;
 }
 
 .hero-left {
-    width: 100%;
-    max-width: calc(100% - 320px);
-    min-width: 0;
+  width: 100%;
+  max-width: calc(100% - 320px);
+  min-width: 0;
 }
 
 .hero-badges {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .badge-conflict,
 .badge-info {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 1px solid #DCE2EF;
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.4;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid #dce2ef;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .badge-conflict {
-    color: #A21D45;
-    background: #FFF0F3;
-    border-color: #F9D7E0;
+  color: #a21d45;
+  background: #fff0f3;
+  border-color: #f9d7e0;
 }
 
 .badge-conflict i {
-    font-size: 9px;
+  font-size: 9px;
 }
 
 .badge-info {
-    color: #33266A;
-    background: #FFFFFF;
+  color: #33266a;
+  background: #ffffff;
 }
 
 .hero-left h2 {
-    font-size: 27px;
-    font-weight: 800;
-    line-height: 1.3;
-    color: #33266A;
-    margin: 0 0 6px;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #33266a;
+  margin: 0 0 6px;
 }
 
 .hero-left p {
-    font-size: 12px;
-    line-height: 1.5;
-    color: #667A9B;
-    margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #667a9b;
+  margin: 0;
 }
 
 /* JADWAL OPERASIONAL */
 
 .operational-info {
-    position: absolute;
-    top: 42px;
-    right: 18px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    width: 270px;
-    min-width: 270px;
-    padding: 10px 12px;
-    background: #F7F9FC;
-    border: 1px solid #E4EAF2;
-    border-radius: 11px;
+  position: absolute;
+  top: 42px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 270px;
+  min-width: 270px;
+  padding: 10px 12px;
+  background: #f7f9fc;
+  border: 1px solid #e4eaf2;
+  border-radius: 11px;
 }
 
 .operational-icon {
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFFFFF;
-    border: 1px solid #E0E6F0;
-    border-radius: 8px;
-    color: #33266A;
-    font-size: 17px;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e0e6f0;
+  border-radius: 8px;
+  color: #33266a;
+  font-size: 17px;
 }
 
 .operational-info div:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .operational-info span {
-    font-size: 9px;
-    color: #667A9B;
-    font-weight: 600;
+  font-size: 9px;
+  color: #667a9b;
+  font-weight: 600;
 }
 
 .operational-info strong {
-    font-size: 10px;
-    color: #33266A;
+  font-size: 10px;
+  color: #33266a;
 }
 
 /* =========================================
@@ -174,91 +173,91 @@
 ========================================= */
 
 .conflict-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .stat-card {
-    position: relative;
-    min-height: 120px;
-    padding: 20px 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    overflow: hidden;
+  position: relative;
+  min-height: 120px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .stat-content {
-    min-width: 0;
+  min-width: 0;
 }
 
 .stat-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #71819F;
-    margin-bottom: 7px;
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #71819f;
+  margin-bottom: 7px;
 }
 
 .stat-content h3 {
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.2;
-    color: #33266A;
-    margin-bottom: 5px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #33266a;
+  margin-bottom: 5px;
 }
 
 .stat-content p {
-    font-size: 12px;
-    color: #911E3F;
+  font-size: 12px;
+  color: #911e3f;
 }
 
 .stat-content p i {
-    font-size: 9px;
-    margin-right: 4px;
+  font-size: 9px;
+  margin-right: 4px;
 }
 
 .stat-icon {
-    width: 48px;
-    height: 48px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 11px;
-    font-size: 21px;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: 21px;
 }
 
 .stat-total .stat-icon {
-    background: #FFF0F2;
-    color: #B51F45;
-    border: 1px solid #F9D5DE;
+  background: #fff0f2;
+  color: #b51f45;
+  border: 1px solid #f9d5de;
 }
 
 .stat-sop .stat-icon {
-    background: #F0F2FF;
-    color: #33266A;
-    border: 1px solid #DDE2FF;
+  background: #f0f2ff;
+  color: #33266a;
+  border: 1px solid #dde2ff;
 }
 
 .stat-collision .stat-icon {
-    background: #FFF9E9;
-    color: #E99A00;
-    border: 1px solid #FFE8A8;
+  background: #fff9e9;
+  color: #e99a00;
+  border: 1px solid #ffe8a8;
 }
 
 .stat-sop .stat-content p {
-    color: #33266A;
+  color: #33266a;
 }
 
 .stat-collision .stat-content p {
-    color: #DB8200;
+  color: #db8200;
 }
 
 /* =========================================
@@ -266,41 +265,41 @@
 ========================================= */
 
 .conflict-section {
-    width: 100%;
+  width: 100%;
 }
 
 .conflict-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .conflict-section-header h3 {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 18px;
-    font-weight: 700;
-    color: #33266A;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #33266a;
 }
 
 .conflict-section-header h3 span {
-    width: 4px;
-    height: 22px;
-    border-radius: 5px;
-    background: #33266A;
+  width: 4px;
+  height: 22px;
+  border-radius: 5px;
+  background: #33266a;
 }
 
 .sop-label {
-    padding: 7px 13px;
-    background: #FFFFFF;
-    border: 1px solid #E1E6EF;
-    border-radius: 20px;
-    color: #71819F;
-    font-size: 12px;
-    white-space: nowrap;
+  padding: 7px 13px;
+  background: #ffffff;
+  border: 1px solid #e1e6ef;
+  border-radius: 20px;
+  color: #71819f;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 /* =========================================
@@ -308,12 +307,12 @@
 ========================================= */
 
 .conflict-table-card {
-    width: 100%;
-    background: #FFFFFF;
-    border: 1px solid #E1E6EF;
-    border-radius: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.07);
-    overflow: hidden;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e1e6ef;
+  border-radius: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
 }
 
 /* =========================================
@@ -321,73 +320,73 @@
 ========================================= */
 
 .session-header {
-    min-height: 52px;
-    padding: 11px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    background: #FBFCFE;
-    border-bottom: 1px solid #EDF0F5;
+  min-height: 52px;
+  padding: 11px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fbfcfe;
+  border-bottom: 1px solid #edf0f5;
 }
 
 .session-info {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 9px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
 }
 
 .session-time,
 .session-period,
 .case-number {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
 }
 
 .session-time {
-    padding: 7px 12px;
-    border: 1px solid #DFE5EF;
-    border-radius: 20px;
-    background: #FFFFFF;
-    color: #263249;
+  padding: 7px 12px;
+  border: 1px solid #dfe5ef;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #263249;
 }
 
 .session-time i {
-    color: #33266A;
+  color: #33266a;
 }
 
 .session-period {
-    padding: 7px 12px;
-    border: 1px solid #FFE0A1;
-    border-radius: 20px;
-    background: #FFF8E9;
-    color: #B96B00;
-    font-weight: 700;
+  padding: 7px 12px;
+  border: 1px solid #ffe0a1;
+  border-radius: 20px;
+  background: #fff8e9;
+  color: #b96b00;
+  font-weight: 700;
 }
 
 .case-number {
-    color: #71819F;
+  color: #71819f;
 }
 
 .decision-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 13px;
-    border-radius: 20px;
-    border: 1px solid #FAD5DD;
-    background: #FFF1F4;
-    color: #A21D45;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 20px;
+  border: 1px solid #fad5dd;
+  background: #fff1f4;
+  color: #a21d45;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .decision-status i {
-    font-size: 9px;
+  font-size: 9px;
 }
 
 /* =========================================
@@ -395,159 +394,159 @@
 ========================================= */
 
 .conflict-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    background: #FFFFFF;
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
 }
 
 .conflict-table {
-    width: 100%;
-    min-width: 950px;
-    border-collapse: collapse;
-    table-layout: fixed;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 /* LEBAR KOLOM */
 
 .conflict-table th:nth-child(1),
 .conflict-table td:nth-child(1) {
-    width: 15%;
+  width: 15%;
 }
 
 .conflict-table th:nth-child(2),
 .conflict-table td:nth-child(2) {
-    width: 9%;
+  width: 9%;
 }
 
 .conflict-table th:nth-child(3),
 .conflict-table td:nth-child(3) {
-    width: 18%;
+  width: 18%;
 }
 
 .conflict-table th:nth-child(4),
 .conflict-table td:nth-child(4) {
-    width: 25%;
+  width: 25%;
 }
 
 .conflict-table th:nth-child(5),
 .conflict-table td:nth-child(5) {
-    width: 15%;
+  width: 15%;
 }
 
 .conflict-table th:nth-child(6),
 .conflict-table td:nth-child(6) {
-    width: 18%;
+  width: 18%;
 }
 
 /* HEADER TABEL */
 
 .conflict-table thead th {
-    height: 58px;
-    padding: 13px 12px;
-    background: #F5F7FB;
-    color: #667A9B;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    vertical-align: middle;
-    white-space: normal;
-    border-bottom: 1px solid #EDF0F5;
+  height: 58px;
+  padding: 13px 12px;
+  background: #f5f7fb;
+  color: #667a9b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  border-bottom: 1px solid #edf0f5;
 }
 
 /* ISI TABEL */
 
 .conflict-table tbody tr {
-    background: #FFFFFF;
-    transition: background 0.2s;
+  background: #ffffff;
+  transition: background 0.2s;
 }
 
 .conflict-table tbody tr:hover {
-    background: #F8F9FC;
+  background: #f8f9fc;
 }
 
 .conflict-table tbody td {
-    padding: 15px 12px;
-    color: #202B40;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.5;
-    text-align: center;
-    vertical-align: middle;
-    border-bottom: 1px solid #EDF0F5;
+  padding: 15px 12px;
+  color: #202b40;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #edf0f5;
 }
 
 /* TANGGAL DAN JAM */
 
 .conflict-table tbody td:first-child strong,
 .conflict-table tbody td:first-child span {
-    display: block;
-    text-align: center;
+  display: block;
+  text-align: center;
 }
 
 .conflict-table tbody td:first-child strong {
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .conflict-table tbody td:first-child span {
-    color: #667A9B;
-    font-size: 12px;
+  color: #667a9b;
+  font-size: 12px;
 }
 
 /* NAMA PEMOHON DAN KEGIATAN */
 
 .conflict-table tbody td:nth-child(3),
 .conflict-table tbody td:nth-child(4) {
-    text-align: center;
-    padding-left: 12px;
-    padding-right: 12px;
+  text-align: center;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .conflict-table tbody td:nth-child(3) strong,
 .conflict-table tbody td:nth-child(4) strong {
-    display: block;
-    font-weight: 600;
-    text-align: center;
+  display: block;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* KATEGORI */
 
 .category-badge {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 40px;
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 40px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .category-k2 {
-    color: #3730A3;
-    background: #EEF0FF;
-    border: 1px solid #D9DEFF;
+  color: #3730a3;
+  background: #eef0ff;
+  border: 1px solid #d9deff;
 }
 
 .category-k3 {
-    color: #9333EA;
-    background: #FAF0FF;
-    border: 1px solid #EFD5FF;
+  color: #9333ea;
+  background: #faf0ff;
+  border: 1px solid #efd5ff;
 }
 
 .category-k4 {
-    color: #E11D48;
-    background: #FFF0F2;
-    border: 1px solid #FFD5DE;
+  color: #e11d48;
+  background: #fff0f2;
+  border: 1px solid #ffd5de;
 }
 
 .category-k5 {
-    color: #475569;
-    background: #F1F5F9;
-    border: 1px solid #E2E8F0;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
 }
 
 /* =========================================
@@ -555,67 +554,67 @@
 ========================================= */
 
 .conflict-table .btn-select {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 
-    padding: 8px 13px;
+  padding: 8px 13px;
 
-    background: #FFFFFF;
-    color: #33266A;
+  background: #ffffff;
+  color: #33266a;
 
-    border: 1px solid #D6DFED;
-    border-radius: 22px;
+  border: 1px solid #d6dfed;
+  border-radius: 22px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
 
-    white-space: nowrap;
-    cursor: pointer;
-    transition: 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .conflict-table .btn-select input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
 
 .conflict-table .btn-select i {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .conflict-table .btn-select:hover {
-    background: #f492aec6;
-    border-color: #911E3F;
+  background: #f492aec6;
+  border-color: #911e3f;
 }
 
 /* BARIS YANG DIPILIH BERUBAH HIJAU */
 
 .conflict-table tbody tr:has(.btn-select input:checked),
 .conflict-table tbody tr:has(.btn-select input:checked):hover {
-    background: #DCFCE7;
+  background: #dcfce7;
 }
 
 /* TOMBOL TERPILIH BERUBAH HIJAU */
 
 .conflict-table tbody tr:has(.btn-select input:checked) .btn-select {
-    background: #911E3F;
-    color: #FFFFFF;
-    border-color: #911E3F;
+  background: #911e3f;
+  color: #ffffff;
+  border-color: #911e3f;
 }
 
 .conflict-table tbody tr:has(.btn-select input:checked) .btn-select:hover {
-    background: #911E3F;
-    border-color: #911E3F;
+  background: #911e3f;
+  border-color: #911e3f;
 }
 
 .conflict-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 /* =========================================
@@ -623,52 +622,52 @@
 ========================================= */
 
 .table-footer {
-    min-height: 48px;
-    padding: 11px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    background: #FFFFFF;
+  min-height: 48px;
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #ffffff;
 }
 
 .table-information {
-    font-size: 13px;
-    color: #71819F;
+  font-size: 13px;
+  color: #71819f;
 }
 
 .table-information strong {
-    color: #263249;
+  color: #263249;
 }
 
 /* PAGINATION */
 
 .pagination {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .pagination button {
-    padding: 8px 12px;
-    background: #FFFFFF;
-    border: 1px solid #E1E6EF;
-    border-radius: 6px;
-    color: #71819F;
-    font-family: inherit;
-    font-size: 12px;
-    cursor: pointer;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e1e6ef;
+  border-radius: 6px;
+  color: #71819f;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .pagination button:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .pagination .page-active {
-    background: #911E3F;
-    color: #FFFFFF;
-    border-color: #911E3F;
+  background: #911e3f;
+  color: #ffffff;
+  border-color: #911e3f;
 }
 
 /* =========================================
@@ -676,71 +675,69 @@
 ========================================= */
 
 .conflict-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 9px;
-    padding: 0 16px 15px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 9px;
+  padding: 0 16px 15px;
 }
 
 .btn-recommendation,
 .btn-confirm {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 
-    padding: 10px 15px;
+  padding: 10px 15px;
 
-    border-radius: 20px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
 
-    cursor: pointer;
-    transition: 0.2s;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 /* TOMBOL KIRIM REKOMENDASI */
 
 .btn-recommendation {
-    color: #354763;
-    background: #FFFFFF;
-    border: 1px solid #D7E0EC;
-    text-decoration: none;
+  color: #354763;
+  background: #ffffff;
+  border: 1px solid #d7e0ec;
+  text-decoration: none;
 }
 
 .btn-recommendation:hover {
-    background: #F1F3F9;
+  background: #f1f3f9;
 }
 
 /* KONFIRMASI - KONDISI AWAL */
 
 .btn-confirm {
-    color: #354763;
-    background: #FFFFFF;
-    border: 1px solid #D7E0EC;
+  color: #354763;
+  background: #ffffff;
+  border: 1px solid #d7e0ec;
 }
 
 .btn-confirm:hover {
-    background: #F1F3F9;
+  background: #f1f3f9;
 }
 
 /* KONFIRMASI - SETELAH PENGAJUAN DIPILIH */
 
-.conflict-container:has(
-    .conflict-table .btn-select input[type="radio"]:checked
-) .btn-confirm {
-    color: #FFFFFF;
-    background: #911E3F;
-    border-color: #911E3F;
+.conflict-container:has(.conflict-table .btn-select input[type="radio"]:checked)
+  .btn-confirm {
+  color: #ffffff;
+  background: #911e3f;
+  border-color: #911e3f;
 }
 
-.conflict-container:has(
-    .conflict-table .btn-select input[type="radio"]:checked
-) .btn-confirm:hover {
-    background: #761630;
-    border-color: #761630;
+.conflict-container:has(.conflict-table .btn-select input[type="radio"]:checked)
+  .btn-confirm:hover {
+  background: #761630;
+  border-color: #761630;
 }
 
 /* =========================================
@@ -748,23 +745,22 @@
 ========================================= */
 
 @media screen and (max-width: 1100px) {
+  .conflict-container {
+    width: calc(100% - 40px);
+  }
 
-    .conflict-container {
-        width: calc(100% - 40px);
-    }
+  .hero-left {
+    max-width: calc(100% - 270px);
+  }
 
-    .hero-left {
-        max-width: calc(100% - 270px);
-    }
+  .operational-info {
+    min-width: 250px;
+    right: 16px;
+  }
 
-    .operational-info {
-        min-width: 250px;
-        right: 16px;
-    }
-
-    .conflict-stats {
-        gap: 14px;
-    }
+  .conflict-stats {
+    gap: 14px;
+  }
 }
 
 /* =========================================
@@ -772,83 +768,81 @@
 ========================================= */
 
 @media screen and (max-width: 700px) {
+  .conflict-container {
+    width: calc(100% - 24px);
+    margin: 12px auto 25px;
+  }
 
-    .conflict-container {
-        width: calc(100% - 24px);
-        margin: 12px auto 25px;
-    }
+  .conflict-hero {
+    padding: 15px;
+  }
 
-    .conflict-hero {
-        padding: 15px;
-    }
+  .hero-left {
+    max-width: 100%;
+  }
 
-    .hero-left {
-        max-width: 100%;
-    }
+  .hero-left h2 {
+    font-size: 22px;
+  }
 
-    .hero-left h2 {
-        font-size: 22px;
-    }
+  .hero-left p {
+    font-size: 11px;
+  }
 
-    .hero-left p {
-        font-size: 11px;
-    }
+  .badge-conflict,
+  .badge-info {
+    font-size: 9px;
+    white-space: normal;
+  }
 
-    .badge-conflict,
-    .badge-info {
-        font-size: 9px;
-        white-space: normal;
-    }
+  .operational-info {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    margin-top: 14px;
+    padding: 10px;
+  }
 
-    .operational-info {
-        position: static;
-        width: 100%;
-        min-width: 0;
-        margin-top: 14px;
-        padding: 10px;
-    }
+  .conflict-stats {
+    grid-template-columns: 1fr;
+  }
 
-    .conflict-stats {
-        grid-template-columns: 1fr;
-    }
+  .stat-card {
+    min-height: 105px;
+  }
 
-    .stat-card {
-        min-height: 105px;
-    }
+  .conflict-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .conflict-section-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .conflict-section-header h3 {
+    font-size: 15px;
+  }
 
-    .conflict-section-header h3 {
-        font-size: 15px;
-    }
+  .session-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .session-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .table-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .table-footer {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .conflict-actions {
+    flex-wrap: wrap;
+  }
 
-    .conflict-actions {
-        flex-wrap: wrap;
-    }
+  .btn-recommendation,
+  .btn-confirm {
+    flex: 1;
+  }
 
-    .btn-recommendation,
-    .btn-confirm {
-        flex: 1;
-    }
-
-    .conflict-table {
-        min-width: 950px;
-    }
+  .conflict-table {
+    min-width: 950px;
+  }
 }
-
 
 /* =========================================
    13. POP UP KONFIRMASI KIRIM REKOMENDASI
@@ -857,243 +851,241 @@
 /* CONTAINER MODAL */
 
 .recommendation-modal {
-    position: fixed;
-    inset: 0;
+  position: fixed;
+  inset: 0;
 
-    display: none;
-    justify-content: center;
-    align-items: center;
+  display: none;
+  justify-content: center;
+  align-items: center;
 
-    padding: 20px;
+  padding: 20px;
 
-    z-index: 9999;
+  z-index: 9999;
 }
 
 /* MODAL MUNCUL KETIKA DIKLIK */
 
 .recommendation-modal:target {
-    display: flex;
+  display: flex;
 }
 
 /* BACKGROUND BLUR */
 
 .recommendation-backdrop {
-    position: absolute;
-    inset: 0;
+  position: absolute;
+  inset: 0;
 
-    background: rgba(51, 38, 106, 0.35);
+  background: rgba(51, 38, 106, 0.35);
 
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 /* KOTAK POP UP */
 
 .recommendation-modal-content {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 
-    width: 100%;
-    max-width: 560px;
+  width: 100%;
+  max-width: 560px;
 
-    padding: 32px 35px 0;
+  padding: 32px 35px 0;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border-radius: 18px;
+  border-radius: 18px;
 
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
 
-    text-align: center;
+  text-align: center;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 
-    overflow: hidden;
+  overflow: hidden;
 }
 
 /* LABEL KONFIRMASI */
 
 .recommendation-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
-    padding: 8px 16px;
+  padding: 8px 16px;
 
-    background: #FFF0F3;
-    color: #911E3F;
+  background: #fff0f3;
+  color: #911e3f;
 
-    border-radius: 30px;
+  border-radius: 30px;
 
-    font-size: 11px;
-    font-weight: 700;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .recommendation-label i {
-    font-size: 9px;
+  font-size: 9px;
 }
 
 /* IKON */
 
 .recommendation-icon {
-    width: 80px;
-    height: 80px;
+  width: 80px;
+  height: 80px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    margin: 25px auto;
+  margin: 25px auto;
 
-    background: #F0EDF9;
-    color: #33266A;
+  background: #f0edf9;
+  color: #33266a;
 
-    border-radius: 22px;
+  border-radius: 22px;
 
-    font-size: 35px;
+  font-size: 35px;
 }
 
 /* JUDUL */
 
 .recommendation-modal-content h2 {
-    margin: 0 0 12px;
+  margin: 0 0 12px;
 
-    color: #33266A;
+  color: #33266a;
 
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1.4;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 /* DESKRIPSI */
 
 .recommendation-modal-content > p {
-    margin: 0 auto;
+  margin: 0 auto;
 
-    max-width: 430px;
+  max-width: 430px;
 
-    color: #71819F;
+  color: #71819f;
 
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.8;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.8;
 }
 
 .recommendation-modal-content .recommendation-description {
-    margin-top: 5px;
-    margin-bottom: 30px;
+  margin-top: 5px;
+  margin-bottom: 30px;
 }
 
 /* FOOTER POP UP */
 
 .recommendation-modal-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    gap: 12px;
+  gap: 12px;
 
-    margin: 0 -35px;
+  margin: 0 -35px;
 
-    padding: 20px 25px;
+  padding: 20px 25px;
 
-    border-top: 1px solid #EDF0F5;
+  border-top: 1px solid #edf0f5;
 
-    background: #FFFFFF;
+  background: #ffffff;
 }
 
 /* TOMBOL BATAL DAN KIRIM */
 
 .btn-recommendation-cancel,
 .btn-recommendation-confirm {
-    min-height: 48px;
+  min-height: 48px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    gap: 8px;
+  gap: 8px;
 
-    padding: 0 22px;
+  padding: 0 22px;
 
-    border-radius: 11px;
+  border-radius: 11px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 /* BATAL */
 
 .btn-recommendation-cancel {
-    min-width: 105px;
+  min-width: 105px;
 
-    color: #667A9B;
-    background: #FFFFFF;
+  color: #667a9b;
+  background: #ffffff;
 
-    border: 1px solid #D6DFED;
+  border: 1px solid #d6dfed;
 }
 
 .btn-recommendation-cancel:hover {
-    background: #F5F7FA;
+  background: #f5f7fa;
 }
 
 /* YA, KIRIM REKOMENDASI */
 
 .btn-recommendation-confirm {
-    min-width: 205px;
+  min-width: 205px;
 
-    color: #FFFFFF;
-    background: #911E3F;
+  color: #ffffff;
+  background: #911e3f;
 
-    border: 1px solid #911E3F;
+  border: 1px solid #911e3f;
 }
 
 .btn-recommendation-confirm:hover {
-    background: #761630;
-    border-color: #761630;
+  background: #761630;
+  border-color: #761630;
 }
 
 /* IKON TOMBOL */
 
 .btn-recommendation-confirm i {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 /* RESPONSIVE */
 
 @media screen and (max-width: 600px) {
+  .recommendation-modal-content {
+    padding: 25px 20px 0;
+  }
 
-    .recommendation-modal-content {
-        padding: 25px 20px 0;
-    }
+  .recommendation-modal-content h2 {
+    font-size: 19px;
+  }
 
-    .recommendation-modal-content h2 {
-        font-size: 19px;
-    }
+  .recommendation-modal-content > p {
+    font-size: 12px;
+  }
 
-    .recommendation-modal-content > p {
-        font-size: 12px;
-    }
+  .recommendation-modal-footer {
+    margin: 0 -20px;
 
-    .recommendation-modal-footer {
-        margin: 0 -20px;
+    padding: 16px;
 
-        padding: 16px;
+    flex-direction: column;
+  }
 
-        flex-direction: column;
-    }
-
-    .btn-recommendation-cancel,
-    .btn-recommendation-confirm {
-        width: 100%;
-    }
-
+  .btn-recommendation-cancel,
+  .btn-recommendation-confirm {
+    width: 100%;
+  }
 }
 
 /* =========================================
@@ -1102,17 +1094,924 @@
 
 /* Memastikan tombol Konfirmasi sebagai link */
 .btn-confirm {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 /* Warna ikon khusus konfirmasi */
 #modal-konfirmasi .recommendation-icon {
-    background: #F0EDF9;
-    color: #33266A;
+  background: #f0edf9;
+  color: #33266a;
 }
 
 /* Warna label konfirmasi */
 #modal-konfirmasi .recommendation-label {
-    background: #F0EDF9;
-    color: #33266A;
+  background: #f0edf9;
+  color: #33266a;
+}
+
+/* =========================================
+   SILAB - TAMPILAN SESI KONFLIK DINAMIS
+========================================= */
+
+.conflict-summary-line {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 16px 0 20px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.conflict-summary-line strong {
+  color: #34256f;
+  font-weight: 700;
+}
+
+.conflict-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.dynamic-conflict-card {
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* HEADER SESI */
+
+.dynamic-conflict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #f8f9fe;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dynamic-conflict-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+
+.dynamic-conflict-time {
+  margin: 0 0 8px;
+  color: #34256f;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.dynamic-conflict-location {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.dynamic-conflict-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 13px;
+  border-radius: 20px;
+  background: #fff4e5;
+  color: #b45309;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dynamic-conflict-status.resolved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* INFORMASI PENGAJUAN */
+
+.dynamic-conflict-description {
+  padding: 15px 24px;
+  font-size: 13px;
+  color: #475569;
+}
+
+/* TABEL */
+
+.dynamic-conflict-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.dynamic-conflict-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+}
+
+.dynamic-conflict-table thead {
+  background: #f8fafc;
+}
+
+.dynamic-conflict-table th {
+  padding: 15px 18px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dynamic-conflict-table td {
+  padding: 16px 18px;
+  border-top: 1px solid #eef2f7;
+  color: #334155;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.dynamic-conflict-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* FOOTER */
+
+.dynamic-conflict-footer {
+  padding: 16px 24px;
+  background: #ffffff;
+  border-top: 1px solid #eef2f7;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* TAMPILAN KOSONG */
+
+.dynamic-conflict-empty {
+  padding: 60px 24px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.dynamic-conflict-empty h3 {
+  margin: 0 0 8px;
+  color: #334155;
+}
+
+.dynamic-conflict-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+  .dynamic-conflict-header {
+    padding: 16px;
+  }
+
+  .dynamic-conflict-time {
+    font-size: 18px;
+  }
+
+  .dynamic-conflict-description,
+  .dynamic-conflict-footer {
+    padding: 12px 16px;
+  }
+}
+
+/* =========================================
+   ACCORDION SESI KONFLIK
+========================================= */
+
+.conflict-accordion-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 16px 0;
+}
+
+.toggle-all-conflicts {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid #dce3ef;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #405685;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toggle-all-conflicts:hover {
+  background: #f4f6fd;
+}
+
+.toggle-all-conflicts:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.conflict-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+  padding: 20px 24px;
+  border: none;
+  background: #ffffff;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.conflict-accordion-trigger:hover {
+  background: #f9faff;
+}
+
+.conflict-accordion-trigger:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: -3px;
+}
+
+.conflict-accordion-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.conflict-accordion-actions > i {
+  color: #8090ac;
+  font-size: 15px;
+}
+
+.conflict-accordion-content {
+  border-top: 1px solid #e5eaf2;
+}
+
+.conflict-accordion-content[hidden] {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .conflict-accordion-trigger {
+    padding: 16px;
+  }
+
+  .conflict-accordion-actions {
+    gap: 8px;
+  }
+}
+
+/* =========================================
+   PAGINATION PER SESI KONFLIK
+========================================= */
+
+.conflict-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 16px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e5eaf2;
+}
+
+.conflict-pagination-info {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.conflict-pagination-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.conflict-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 33px;
+  height: 33px;
+  padding: 0 9px;
+
+  border: 1px solid #dce3ef;
+  border-radius: 7px;
+  background: #ffffff;
+
+  color: #475569;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.conflict-page-btn:hover:not(:disabled) {
+  background: #f1f0fb;
+  border-color: #a99bd6;
+}
+
+.conflict-page-btn.active {
+  background: #34256f;
+  border-color: #34256f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.conflict-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.conflict-page-btn:focus-visible {
+  outline: 2px solid #8674ca;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .conflict-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+}
+
+/* =========================================
+   BARIS JADWAL DAPAT DIKLIK
+========================================= */
+
+.clickable-submission-row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.clickable-submission-row:hover {
+  background: #f1f0fb;
+}
+
+.clickable-submission-row:focus-visible {
+  outline: 2px solid #7663b5;
+  outline-offset: -2px;
+}
+
+/* =========================================
+   POPUP DETAIL PEMINJAMAN
+========================================= */
+
+.submission-detail-modal[hidden] {
+  display: none;
+}
+
+.submission-detail-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.submission-detail-dialog {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.submission-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+
+  padding: 22px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.submission-detail-header h3 {
+  margin: 0 0 6px;
+  color: #34256f;
+  font-size: 19px;
+}
+
+.submission-detail-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.close-detail-modal {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 7px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.submission-detail-body {
+  padding: 24px;
+}
+
+.detail-borrower {
+  padding: 17px;
+  background: #f8f7fd;
+  border-radius: 11px;
+  margin-bottom: 22px;
+}
+
+.detail-borrower span,
+.detail-score span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.detail-borrower h4 {
+  margin: 0 0 6px;
+  color: #34256f;
+  font-size: 17px;
+}
+
+.detail-borrower p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.detail-section h4 {
+  margin: 0 0 14px;
+  color: #334155;
+  font-size: 14px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 15px;
+  border: 1px solid #e5eaf2;
+  border-radius: 10px;
+}
+
+.detail-item span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.detail-item strong {
+  color: #334155;
+  font-size: 15px;
+}
+
+.detail-score {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #e5eaf2;
+  border-radius: 11px;
+  background: #f8fafc;
+}
+
+.detail-score strong {
+  display: block;
+  color: #34256f;
+  font-size: 30px;
+}
+
+.detail-score p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.submission-detail-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-close-detail {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #34256f;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 500px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submission-detail-body {
+    padding: 17px;
+  }
+}
+
+/* =========================================
+   TOMBOL PILIH JADWAL KEPALA LAB
+========================================= */
+
+.btn-select-conflict {
+  min-width: 110px;
+  padding: 8px 13px;
+
+  border: 1px solid #34256f;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #34256f;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-select-conflict:hover:not(:disabled) {
+  background: #f1effb;
+}
+
+.btn-select-conflict.selected {
+  background: #34256f;
+  border-color: #34256f;
+  color: #ffffff;
+}
+
+.btn-select-conflict:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dynamic-conflict-table th:last-child,
+.dynamic-conflict-table td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* =========================================
+   KEPUTUSAN KEPALA LABORATORIUM
+========================================= */
+
+.conflict-decision-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 16px 24px;
+  border-top: 1px solid #e5eaf2;
+  background: #ffffff;
+}
+
+.conflict-selection-info {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.conflict-decision-button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+
+  background: #34256f;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.conflict-decision-button:hover:not(:disabled) {
+  background: #49368f;
+}
+
+.conflict-decision-button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.btn-select-conflict {
+  min-width: 110px;
+  padding: 8px 12px;
+  border: 1px solid #34256f;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #34256f;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-select-conflict.selected {
+  background: #34256f;
+  color: #ffffff;
+}
+
+.btn-select-conflict:hover:not(:disabled) {
+  background: #f1effb;
+}
+
+.dynamic-conflict-table th:last-child,
+.dynamic-conflict-table td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* =========================================
+   MODAL KONFIRMASI KEPUTUSAN SILAB
+========================================= */
+
+.decision-confirm-modal[hidden] {
+  display: none;
+}
+
+.decision-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.decision-confirm-dialog {
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+
+  background: #ffffff;
+  border-radius: 15px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+  animation: decisionModalIn 0.2s ease;
+}
+
+@keyframes decisionModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* HEADER */
+
+.decision-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #e5eaf2;
+}
+
+.decision-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+
+  border-radius: 11px;
+  background: #eeecf8;
+  color: #34256f;
+
+  font-size: 21px;
+}
+
+.decision-modal-heading {
+  flex: 1;
+}
+
+.decision-modal-heading h3 {
+  margin: 0 0 5px;
+  color: #34256f;
+  font-size: 17px;
+}
+
+.decision-modal-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.decision-modal-close {
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* BODY */
+
+.decision-modal-body {
+  padding: 23px 24px;
+}
+
+.decision-selected-info {
+  padding: 17px;
+
+  border: 1px solid #e5eaf2;
+  border-radius: 10px;
+
+  background: #f8f7fd;
+}
+
+.decision-selected-info span {
+  display: block;
+  margin-bottom: 9px;
+
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.decision-selected-info h4 {
+  margin: 0 0 6px;
+  color: #34256f;
+  font-size: 16px;
+}
+
+.decision-selected-info p {
+  margin: 4px 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* DAMPAK KEPUTUSAN */
+
+.decision-impact {
+  margin-top: 20px;
+}
+
+.decision-impact h4 {
+  margin: 0 0 12px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.decision-impact-row {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 11px 0;
+  border-bottom: 1px solid #eef2f7;
+
+  color: #475569;
+  font-size: 12px;
+}
+
+.decision-impact-row strong {
+  color: #34256f;
+  font-size: 14px;
+}
+
+/* PERINGATAN */
+
+.decision-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  margin-top: 18px;
+  padding: 13px;
+
+  border: 1px solid #f3dfb6;
+  border-radius: 9px;
+
+  background: #fffaf0;
+  color: #a16207;
+}
+
+.decision-warning i {
+  margin-top: 2px;
+}
+
+.decision-warning p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* FOOTER */
+
+.decision-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  padding: 17px 24px;
+
+  border-top: 1px solid #e5eaf2;
+}
+
+.btn-cancel-decision,
+.btn-confirm-decision {
+  padding: 10px 15px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.btn-cancel-decision {
+  border: 1px solid #dce3ef;
+  background: #ffffff;
+  color: #475569;
+}
+
+.btn-confirm-decision {
+  border: none;
+  background: #34256f;
+  color: #ffffff;
+}
+
+.btn-confirm-decision:hover:not(:disabled) {
+  background: #49368f;
+}
+
+.btn-confirm-decision:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+  .decision-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel-decision,
+  .btn-confirm-decision {
+    width: 100%;
+  }
 }

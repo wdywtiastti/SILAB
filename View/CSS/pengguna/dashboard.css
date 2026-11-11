@@ -1,590 +1,640 @@
-
 /* ==================================================
    SILAB - DASHBOARD PENGGUNA
 ================================================== */
-
 
 /* ==================================================
    1. CONTAINER UTAMA
 ================================================== */
 
 .user-dashboard-container {
-    width: calc(100% - 50px);
-    max-width: 1500px;
+  width: calc(100% - 50px);
+  max-width: 1500px;
 
-    margin: 18px auto 30px;
+  margin: 18px auto 30px;
 }
-
 
 /* ==================================================
    2. HEADER DASHBOARD
 ================================================== */
 
 .user-welcome-card {
-    position: relative;
+  position: relative;
 
-    width: 100%;
-    min-height: 140px;
+  width: 100%;
+  min-height: 140px;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    padding: 20px 24px;
+  padding: 20px 24px;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
-
 
 /* LABEL */
 
 .user-portal-label {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 
-    gap: 6px;
+  gap: 6px;
 
-    padding: 5px 10px;
+  padding: 5px 10px;
 
-    color: #33266A;
-    background: #EFECFC;
+  color: #33266a;
+  background: #efecfc;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    font-size: 10px;
-    font-weight: 600;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .user-portal-label i {
-    font-size: 8px;
+  font-size: 8px;
 }
-
 
 /* JUDUL */
 
 .user-welcome-content {
-    width: calc(100% - 300px);
+  width: calc(100% - 300px);
 }
 
 .user-welcome-content h2 {
-    margin: 9px 0 6px;
+  margin: 9px 0 6px;
 
-    color: #33266A;
+  color: #33266a;
 
-    font-size: 27px;
-    font-weight: 800;
-    line-height: 1.25;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .user-welcome-content p {
-    max-width: 750px;
+  max-width: 750px;
 
-    color: #667A9B;
+  color: #667a9b;
 
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.6;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
 }
-
 
 /* TOMBOL PENGAJUAN */
 
 .user-apply-button {
-    position: absolute;
+  position: absolute;
 
-    top: 50%;
-    right: 24px;
+  top: 50%;
+  right: 24px;
 
-    transform: translateY(-50%);
+  transform: translateY(-50%);
 
-    min-height: 42px;
+  min-height: 42px;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    gap: 8px;
+  gap: 8px;
 
-    padding: 10px 17px;
+  padding: 10px 17px;
 
-    color: #FFFFFF;
-    background: #911E3F;
+  color: #ffffff;
+  background: #911e3f;
 
-    border-radius: 8px;
+  border-radius: 8px;
 
-    font-size: 11px;
-    font-weight: 700;
+  font-size: 11px;
+  font-weight: 700;
 
-    text-decoration: none;
+  text-decoration: none;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
 
-    transition: 0.2s;
+  transition: 0.2s;
 }
 
 .user-apply-button:hover {
-    background: #761630;
+  background: #761630;
 }
 
 .user-apply-button i {
-    font-size: 13px;
+  font-size: 13px;
 }
-
 
 /* ==================================================
    3. PANEL JADWAL
 ================================================== */
 
 .user-schedule-panel {
-    width: 100%;
-    min-height: 425px;
+  width: 100%;
+  min-height: 425px;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 
-    overflow: visible;
+  overflow: visible;
 }
-
 
 /* HEADER JADWAL */
 
 .user-schedule-header {
-    width: 100%;
-    min-height: 78px;
+  width: 100%;
+  min-height: 78px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    gap: 15px;
+  gap: 15px;
 
-    padding: 15px 25px;
+  padding: 15px 25px;
 }
 
 .user-schedule-header h3 {
-    color: #202B40;
+  color: #202b40;
 
-    font-size: 16px;
-    font-weight: 800;
-    line-height: 1.4;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 .user-schedule-header h3 span {
-    margin: 0 3px;
-    color: #667A9B;
+  margin: 0 3px;
+  color: #667a9b;
 }
-
 
 /* LIVE */
 
 .user-live-status {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 
-    gap: 7px;
+  gap: 7px;
 
-    padding: 6px 12px;
+  padding: 6px 12px;
 
-    color: #33266A;
-    background: #EFECFC;
+  color: #33266a;
+  background: #efecfc;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    font-size: 10px;
-    font-weight: 700;
+  font-size: 10px;
+  font-weight: 700;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .user-live-status i {
-    font-size: 8px;
+  font-size: 8px;
 }
-
 
 /* ==================================================
    4. DAFTAR SLOT WAKTU
 ================================================== */
 
 .user-slot-list {
-    width: 100%;
+  width: 100%;
 
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    gap: 8px;
+  gap: 8px;
 
-    padding: 0 15px;
+  padding: 0 15px;
 }
-
 
 /* KARTU SLOT */
 
 .user-slot-card {
-    width: 100%;
-    min-height: 68px;
+  width: 100%;
+  min-height: 68px;
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-        140px
-        minmax(0, 1fr)
-        75px;
+  grid-template-columns:
+    140px
+    minmax(0, 1fr)
+    75px;
 
-    align-items: center;
+  align-items: center;
 
-    gap: 12px;
+  gap: 12px;
 
-    padding: 10px 18px;
+  padding: 10px 18px;
 
-    background: #FFFFFF;
+  background: #ffffff;
 
-    border: 1px solid #E1E1E5;
-    border-radius: 11px;
+  border: 1px solid #e1e1e5;
+  border-radius: 11px;
 
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
 }
-
 
 /* WAKTU SLOT */
 
 .user-slot-time {
-    min-height: 43px;
+  min-height: 43px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 6px 10px;
+  padding: 6px 10px;
 
-    color: #911E3F;
-    background: #FFF1F3;
+  color: #911e3f;
+  background: #fff1f3;
 
-    border-radius: 9px;
+  border-radius: 9px;
 
-    font-size: 14px;
-    font-weight: 800;
+  font-size: 14px;
+  font-weight: 800;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
 
 /* DETAIL SLOT */
 
 .user-slot-detail {
-    min-width: 0;
+  min-width: 0;
 }
 
 .user-slot-title {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    flex-wrap: wrap;
-    gap: 7px;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .user-slot-title h4 {
-    color: #202B40;
+  color: #202b40;
 
-    font-size: 13px;
-    font-weight: 700;
+  font-size: 13px;
+  font-weight: 700;
 }
-
 
 /* BADGE KEBUTUHAN */
 
 .user-requirement-badge {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 
-    padding: 4px 9px;
+  padding: 4px 9px;
 
-    color: #4D4B80;
-    background: #EAE9FF;
+  color: #4d4b80;
+  background: #eae9ff;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    font-size: 9px;
-    font-weight: 600;
+  font-size: 9px;
+  font-weight: 600;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
 
 /* INFORMASI KELAS */
 
 .user-slot-detail p {
-    margin-top: 6px;
+  margin-top: 6px;
 
-    color: #667A9B;
+  color: #667a9b;
 
-    font-size: 10px;
-    font-weight: 400;
+  font-size: 10px;
+  font-weight: 400;
 
-    line-height: 1.5;
+  line-height: 1.5;
 }
 
 .user-slot-detail p span {
-    margin: 0 3px;
+  margin: 0 3px;
 }
-
 
 /* STATUS SLOT */
 
 .user-slot-status {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .user-status-full {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-    gap: 5px;
+  gap: 5px;
 
-    padding: 7px 11px;
+  padding: 7px 11px;
 
-    color: #9B7100;
-    background: #FFF3D6;
+  color: #9b7100;
+  background: #fff3d6;
 
-    border-radius: 20px;
+  border-radius: 20px;
 
-    font-size: 9px;
-    font-weight: 700;
+  font-size: 9px;
+  font-weight: 700;
 
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .user-status-full i {
-    font-size: 7px;
+  font-size: 7px;
 }
-
 
 /* ==================================================
    5. INFORMASI OPERASIONAL
 ================================================== */
 
 .user-operational-note {
-    flex: 1;
+  flex: 1;
 
-    min-height: 190px;
+  min-height: 190px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 25px 20px;
+  padding: 25px 20px;
 
-    text-align: center;
+  text-align: center;
 }
 
 .user-operational-note p {
-    max-width: 780px;
+  max-width: 780px;
 
-    color: #202B40;
+  color: #202b40;
 
-    font-size: 12px;
-    font-weight: 500;
+  font-size: 12px;
+  font-weight: 500;
 
-    line-height: 1.8;
+  line-height: 1.8;
 }
-
 
 /* ==================================================
    6. RESPONSIVE TABLET
 ================================================== */
 
 @media screen and (max-width: 1100px) {
+  .user-dashboard-container {
+    width: calc(100% - 35px);
+  }
 
-    .user-dashboard-container {
-        width: calc(100% - 35px);
-    }
+  .user-welcome-content {
+    width: calc(100% - 260px);
+  }
 
-    .user-welcome-content {
-        width: calc(100% - 260px);
-    }
+  .user-slot-card {
+    grid-template-columns:
+      120px
+      minmax(0, 1fr)
+      70px;
 
-    .user-slot-card {
-        grid-template-columns:
-            120px
-            minmax(0, 1fr)
-            70px;
-
-        gap: 9px;
-    }
-
+    gap: 9px;
+  }
 }
-
 
 /* ==================================================
    7. RESPONSIVE MOBILE
 ================================================== */
 
 @media screen and (max-width: 700px) {
+  .user-dashboard-container {
+    width: calc(100% - 24px);
+    margin: 12px auto 20px;
+  }
 
-    .user-dashboard-container {
-        width: calc(100% - 24px);
-        margin: 12px auto 20px;
-    }
+  .user-welcome-card {
+    min-height: auto;
 
-    .user-welcome-card {
-        min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+    gap: 15px;
 
-        gap: 15px;
+    padding: 16px;
+  }
 
-        padding: 16px;
-    }
+  .user-welcome-content {
+    width: 100%;
+  }
 
-    .user-welcome-content {
-        width: 100%;
-    }
+  .user-welcome-content h2 {
+    font-size: 22px;
+  }
 
-    .user-welcome-content h2 {
-        font-size: 22px;
-    }
+  .user-welcome-content p {
+    font-size: 10px;
+  }
 
-    .user-welcome-content p {
-        font-size: 10px;
-    }
+  .user-apply-button {
+    position: static;
 
-    .user-apply-button {
-        position: static;
+    width: 100%;
 
-        width: 100%;
+    transform: none;
+  }
 
-        transform: none;
-    }
+  .user-schedule-panel {
+    min-height: 400px;
+  }
 
-    .user-schedule-panel {
-        min-height: 400px;
-    }
+  .user-schedule-header {
+    min-height: 65px;
+    padding: 12px 14px;
+  }
 
-    .user-schedule-header {
-        min-height: 65px;
-        padding: 12px 14px;
-    }
+  .user-schedule-header h3 {
+    font-size: 12px;
+  }
 
-    .user-schedule-header h3 {
-        font-size: 12px;
-    }
+  .user-live-status {
+    padding: 5px 8px;
+    font-size: 9px;
+  }
 
-    .user-live-status {
-        padding: 5px 8px;
-        font-size: 9px;
-    }
+  .user-slot-list {
+    padding: 0 10px;
+  }
 
-    .user-slot-list {
-        padding: 0 10px;
-    }
+  .user-slot-card {
+    grid-template-columns: minmax(0, 1fr) auto;
 
-    .user-slot-card {
-        grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 10px;
+  }
 
-        gap: 9px;
-        padding: 10px;
-    }
+  .user-slot-time {
+    grid-column: 1 / -1;
 
-    .user-slot-time {
-        grid-column: 1 / -1;
+    width: fit-content;
+    min-height: 35px;
 
-        width: fit-content;
-        min-height: 35px;
+    font-size: 12px;
+  }
 
-        font-size: 12px;
-    }
+  .user-slot-detail {
+    grid-column: 1;
+  }
 
-    .user-slot-detail {
-        grid-column: 1;
-    }
+  .user-slot-status {
+    grid-column: 2;
+    grid-row: 2;
+  }
 
-    .user-slot-status {
-        grid-column: 2;
-        grid-row: 2;
-    }
+  .user-slot-title h4 {
+    width: 100%;
+    font-size: 12px;
+  }
 
-    .user-slot-title h4 {
-        width: 100%;
-        font-size: 12px;
-    }
+  .user-requirement-badge {
+    font-size: 8px;
+  }
 
-    .user-requirement-badge {
-        font-size: 8px;
-    }
+  .user-slot-detail p {
+    font-size: 9px;
+  }
 
-    .user-slot-detail p {
-        font-size: 9px;
-    }
+  .user-operational-note {
+    min-height: 160px;
+    padding: 20px 10px;
+  }
 
-    .user-operational-note {
-        min-height: 160px;
-        padding: 20px 10px;
-    }
-
-    .user-operational-note p {
-        font-size: 10px;
-    }
-
+  .user-operational-note p {
+    font-size: 10px;
+  }
 }
 /* LIVE INDICATOR */
 
 .live-indicator {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
 
-    padding: 8px 17px;
+  padding: 8px 17px;
 
-    background: #F0EDFF;
-    color: #33266A;
+  background: #f0edff;
+  color: #33266a;
 
-    border-radius: 30px;
+  border-radius: 30px;
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* TITIK LIVE */
 
 .live-dot {
-    width: 9px;
-    height: 9px;
+  width: 9px;
+  height: 9px;
 
-    display: inline-block;
+  display: inline-block;
 
-    background: #33266A;
-    border-radius: 50%;
+  background: #33266a;
+  border-radius: 50%;
 
-    animation: liveBlink 1.2s ease-in-out infinite;
+  animation: liveBlink 1.2s ease-in-out infinite;
 }
 
 /* KEDIPAN HALUS */
 
 @keyframes liveBlink {
-    0%, 100% {
-        opacity: 1;
-    }
+  0%,
+  100% {
+    opacity: 1;
+  }
 
-    50% {
-        opacity: 0.3;
-    }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* =========================================
+   STATUS JADWAL PENGGUNA
+========================================= */
+
+.user-status-approved,
+.user-status-ongoing,
+.user-status-finished,
+.user-status-invalid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.user-status-approved {
+  color: #18794e;
+  background: #e5f6ec;
+}
+
+.user-status-ongoing {
+  color: #9b7100;
+  background: #fff3d6;
+}
+
+.user-status-finished {
+  color: #667085;
+  background: #f0f1f3;
+}
+
+.user-status-invalid {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+/* =========================================
+   KONDISI KOSONG
+========================================= */
+
+.user-schedule-empty {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 25px;
+  text-align: center;
+}
+
+.user-schedule-empty > i {
+  font-size: 36px;
+  color: #a5a3c7;
+}
+
+.user-schedule-empty h4 {
+  color: #202b40;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.user-schedule-empty p {
+  max-width: 400px;
+  color: #667a9b;
+  font-size: 11px;
+  line-height: 1.7;
 }

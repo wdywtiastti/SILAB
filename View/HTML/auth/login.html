@@ -1,184 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Login | SILAB</title>
 
     <!-- GOOGLE FONT: PLUS JAKARTA SANS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- BOOTSTRAP ICONS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
 
     <!-- CSS AUTHENTICATION -->
-    <link rel="stylesheet" href="../../CSS/auth/auth.css">
+    <link rel="stylesheet" href="../../CSS/auth/auth.css" />
+  </head>
 
-</head>
-
-<body>
-
+  <body>
     <main class="login-container">
-
-        <!-- =================================
+      <!-- =================================
             BAGIAN KIRI: BACKGROUND DAN LOGO
         ================================== -->
 
-        <section class="visual-panel">
+      <section class="visual-panel">
+        <!-- BACKGROUND LABORATORIUM -->
+        <img
+          src="../../Assets/Background.svg"
+          alt=""
+          class="visual-background"
+        />
 
-            <!-- BACKGROUND LABORATORIUM -->
-            <img
-                src="../../Assets/Background.svg"
-                alt=""
-                class="visual-background"
-            >
+        <!-- IDENTITAS SILAB -->
+        <div class="brand">
+          <!-- LOGO -->
+          <img
+            src="../../Assets/Logo_RPL.svg"
+            alt="Logo SILAB"
+            class="brand-logo"
+          />
 
-            <!-- IDENTITAS SILAB -->
-            <div class="brand">
+          <!-- NAMA APLIKASI -->
+          <div class="brand-text">
+            <h1>SILAB</h1>
 
-                <!-- LOGO -->
-                <img
-                    src="../../Assets/Logo_RPL.svg"
-                    alt="Logo SILAB"
-                    class="brand-logo"
-                >
+            <p>Sistem Peminjaman Laboratorium</p>
 
-                <!-- NAMA APLIKASI -->
-                <div class="brand-text">
+            <p>Universitas Khairun</p>
+          </div>
+        </div>
+      </section>
 
-                    <h1>SILAB</h1>
-
-                    <p>Sistem Peminjaman Laboratorium</p>
-
-                    <p>Universitas Khairun</p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
+      <!-- =================================
             BAGIAN KANAN: FORM LOGIN
         ================================== -->
 
-        <section class="form-panel">
+      <section class="form-panel">
+        <div class="form-content">
+          <!-- JUDUL LOGIN -->
+          <header class="form-header">
+            <h2>Selamat Datang!</h2>
 
-            <div class="form-content">
+            <p>Silahkan login untuk melanjutkan</p>
+          </header>
 
-                <!-- JUDUL LOGIN -->
-                <header class="form-header">
+          <!-- FORM LOGIN -->
+          <!--bagian ini diubah laili ya-->
+          <form class="login-form" id="loginForm" novalidate>
+            <!-- INPUT NIP/NPM -->
+            <div class="input-group">
+              <i class="bi bi-person"></i>
 
-                    <h2>Selamat Datang!</h2>
-
-                    <p>Silahkan login untuk melanjutkan</p>
-
-                </header>
-
-
-                <!-- FORM LOGIN -->
-                <!--bagian ini diubah laili ya-->
-                <form class="login-form" id="loginForm" novalidate>
-
-                    <!-- INPUT NIP/NPM -->
-                    <div class="input-group">
-
-                        <i class="bi bi-person"></i>
-
-                        <input
-                            type="text"
-                            name="identifier"
-                            placeholder="NIP/NPM"
-                            inputmode="numeric"
-                            pattern="[0-9]+"
-                            title="NIP/NPM hanya boleh berisi angka."
-                            autocomplete="username"
-                            required
-                        >
-
-                    </div>
-
-                    <!-- INPUT PASSWORD -->
-                    <!--TAMBAHAN: fitur lihat password -laili-->
-                    <div class="input-group">
-
-                        <i class="bi bi-lock"></i>
-
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Password"
-                            autocomplete="current-password"
-                            required
-                        >
-
-                        <!-- Tombol untuk menampilkan atau menyembunyikan password -->
-                        <button
-                            type="button"
-                            class="toggle-password"
-                            data-target="password"
-                            aria-label="Tampilkan password"
-                            aria-controls="password"
-                            aria-pressed="false"
-                        >
-                            <i class="bi bi-eye-slash" aria-hidden="true"></i>
-                        </button>
-
-                    </div>
-
-                    <!-- INGAT SAYA -->
-                    <label class="remember">
-
-                        <input
-                            type="checkbox"
-                            name="remember"
-                        >
-
-                        <span>Ingat Saya</span>
-
-                    </label>
-
-                    <!--penyesuaian rute login - laili-->
-                    <!--Pengalihan akan dilakukan JavaScript berdasarkan hasil pemeriksaan identitas dan password.-->
-                    <!-- TOMBOL LOGIN -->
-                    <button type="submit" class="btn-login">
-                        Login
-                    </button>
-
-                    <!--PESAN KESALAHAN - laili-->
-                    <p id="loginMessage" role="alert"></p>
-
-                </form>
-
-
-                <!-- FOOTER LOGIN -->
-                <div class="form-footer">
-
-                    <p>
-                        Belum punya akun?
-                        <a href="register.html">Daftar di sini</a>
-                    </p>
-
-                </div>
-
+              <input
+                type="text"
+                name="identifier"
+                placeholder="NIP/NPM"
+                inputmode="numeric"
+                pattern="[0-9]+"
+                title="NIP/NPM hanya boleh berisi angka."
+                autocomplete="username"
+                required
+              />
             </div>
 
-        </section>
+            <!-- INPUT PASSWORD -->
+            <!--TAMBAHAN: fitur lihat password -laili-->
+            <div class="input-group">
+              <i class="bi bi-lock"></i>
 
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              />
+
+              <!-- Tombol untuk menampilkan atau menyembunyikan password -->
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="password"
+                aria-label="Tampilkan password"
+                aria-controls="password"
+                aria-pressed="false"
+              >
+                <i class="bi bi-eye-slash" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <!-- INGAT SAYA -->
+            <label class="remember">
+              <input type="checkbox" name="remember" />
+
+              <span>Ingat Saya</span>
+            </label>
+
+            <!--penyesuaian rute login - laili-->
+            <!--Pengalihan akan dilakukan JavaScript berdasarkan hasil pemeriksaan identitas dan password.-->
+            <!-- TOMBOL LOGIN -->
+            <button type="submit" class="btn-login">Login</button>
+            <p id="loginMessage" role="alert" aria-live="polite"></p>
+            <!--PESAN KESALAHAN - laili-->
+            <p id="loginMessage" role="alert"></p>
+          </form>
+
+          <!-- FOOTER LOGIN -->
+          <div class="form-footer">
+            <p>
+              Belum punya akun?
+              <a href="register.html">Daftar di sini</a>
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
 
+    <!-- MODAL STATUS AKUN -->
+    <div
+      id="accountStatusModal"
+      class="account-status-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="accountStatusTitle"
+      aria-describedby="accountStatusDescription"
+      hidden
+    >
+      <div class="account-status-modal">
+        <div id="accountStatusIcon" class="account-status-icon">
+          <i id="accountStatusIconSymbol" class="bi bi-clock-history"></i>
+        </div>
+
+        <h2 id="accountStatusTitle"></h2>
+
+        <p id="accountStatusDescription"></p>
+
+        <button
+          type="button"
+          id="closeAccountStatusModal"
+          class="account-status-close"
+        >
+          Mengerti
+        </button>
+      </div>
+    </div>
+
     <!--Penghubung dengan bagian auth di js -laili-->
+    <script src="../../JS/shared/storage.js"></script>
     <script src="../../JS/auth/sesi.js"></script>
     <script src="../../JS/auth/masuk.js"></script>
     <script src="../../JS/auth/liat_psswd.js"></script>
-
-</body>
-
+  </body>
 </html>

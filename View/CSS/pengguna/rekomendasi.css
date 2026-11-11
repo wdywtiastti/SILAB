@@ -1,4 +1,3 @@
-
 /* ==================================================
    SILAB - REKOMENDASI PENGGUNA
    FONT: PLUS JAKARTA SANS
@@ -6,502 +5,496 @@
 ================================================== */
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
-
 
 /* ==================================================
    1. CONTAINER DAN HEADER
 ================================================== */
 
 .recommendation-container {
-    width: calc(100% - 50px);
-    max-width: 1500px;
-    margin: 18px auto 30px;
+  width: calc(100% - 50px);
+  max-width: 1500px;
+  margin: 18px auto 30px;
 }
 
 .recommendation-welcome,
 .recommendation-panel {
-    width: 100%;
-    background: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 14px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.10);
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 14px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .recommendation-welcome {
-    min-height: 78px;
-    display: flex;
-    align-items: center;
-    padding: 12px 24px;
-    margin-bottom: 14px;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  margin-bottom: 14px;
 }
 
 .recommendation-welcome-content {
-    width: 100%;
+  width: 100%;
 }
 
 .recommendation-welcome h2 {
-    margin: 0 0 5px;
-    color: #33266A;
-    font-size: 25px;
-    font-weight: 800;
-    line-height: 1.25;
+  margin: 0 0 5px;
+  color: #33266a;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .recommendation-welcome p {
-    max-width: 700px;
-    margin: 0;
-    color: #667A9B;
-    font-size: 12px;
-    line-height: 1.6;
+  max-width: 700px;
+  margin: 0;
+  color: #667a9b;
+  font-size: 12px;
+  line-height: 1.6;
 }
-
 
 /* ==================================================
    2. PANEL UTAMA
 ================================================== */
 
 .recommendation-panel {
-    min-height: 500px;
-    padding: 24px 24px 25px;
+  min-height: 500px;
+  padding: 24px 24px 25px;
 }
-
 
 /* ==================================================
    3. HEADER TAWARAN
 ================================================== */
 
 .recommendation-header {
-    width: 100%;
-    min-height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    margin-bottom: 25px;
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .recommendation-heading-left {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
 }
 
 .recommendation-main-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #A21D48;
-    background: #FFF1F3;
-    border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #a21d48;
+  background: #fff1f3;
+  border-radius: 12px;
 }
 
 .recommendation-main-icon i {
-    width: 29px;
-    height: 29px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2.5px solid #A21D48;
-    border-radius: 50%;
-    font-size: 17px;
+  width: 29px;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #a21d48;
+  border-radius: 50%;
+  font-size: 17px;
 }
 
 .recommendation-heading-info {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
 }
 
 .offer-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 10px;
-    color: #806622;
-    background: #FFF2C9;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  color: #806622;
+  background: #fff2c9;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .offer-badge i {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .recommendation-heading-info h3 {
-    margin: 0;
-    color: #202B40;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.4;
+  margin: 0;
+  color: #202b40;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .response-deadline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    flex-shrink: 0;
-    padding: 6px 10px;
-    color: #514A83;
-    background: #F0EDFF;
-    border-radius: 8px;
-    font-size: 9px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  color: #514a83;
+  background: #f0edff;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
 }
-
 
 /* ==================================================
    4. KONTEKS PERMOHONAN
 ================================================== */
 
 .recommendation-context {
-    width: 100%;
-    min-height: 72px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 13px 15px;
-    margin-bottom: 28px;
-    background: #F4F1FF;
-    border: 1px solid #E6E0FC;
-    border-radius: 9px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 15px;
+  margin-bottom: 28px;
+  background: #f4f1ff;
+  border: 1px solid #e6e0fc;
+  border-radius: 9px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .context-icon {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #A21D48;
-    border: 2.5px solid #A21D48;
-    border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #a21d48;
+  border: 2.5px solid #a21d48;
+  border-radius: 50%;
 }
 
 .context-icon span {
-    font-family: Arial, sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .context-content {
-    min-width: 0;
-    flex: 1;
+  min-width: 0;
+  flex: 1;
 }
 
 .context-heading {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 6px;
 }
 
 .context-heading strong {
-    color: #202B40;
-    font-size: 11px;
-    font-weight: 700;
+  color: #202b40;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .context-heading span {
-    padding: 2px 8px;
-    color: #A21D48;
-    background: #FFF1F3;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
+  padding: 2px 8px;
+  color: #a21d48;
+  background: #fff1f3;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .context-content p {
-    margin: 0;
-    color: #667085;
-    font-size: 11px;
-    line-height: 1.7;
+  margin: 0;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.7;
 }
 
 .context-content p strong {
-    color: #394150;
-    font-weight: 700;
+  color: #394150;
+  font-weight: 700;
 }
-
 
 /* ==================================================
    5. GRID KARTU REKOMENDASI
 ================================================== */
 
 .recommendation-options {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 38px;
-    align-items: stretch;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 38px;
+  align-items: stretch;
 }
 
 .recommendation-option {
-    position: relative;
-    display: block;
-    min-width: 0;
-    cursor: pointer;
+  position: relative;
+  display: block;
+  min-width: 0;
+  cursor: pointer;
 }
 
 .recommendation-option input[type="radio"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .recommendation-card {
-    width: 100%;
-    min-height: 231px;
-    display: flex;
-    flex-direction: column;
-    padding: 15px 15px 14px;
-    background: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 12px;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.09);
-    transition: border-color 0.2s ease,
-                box-shadow 0.2s ease;
+  width: 100%;
+  min-height: 231px;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 15px 14px;
+  background: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 12px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.09);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
 
 /* ==================================================
    6. HEADER KARTU
 ================================================== */
 
 .recommendation-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 22px;
 }
 
 .recommendation-type {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 9px;
-    color: #514A83;
-    background: #EFECFF;
-    border-radius: 20px;
-    font-size: 9px;
-    font-weight: 700;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  color: #514a83;
+  background: #efecff;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .recommendation-type i {
-    font-size: 7px;
+  font-size: 7px;
 }
 
 .verification-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: #514A83;
-    font-size: 9px;
-    font-weight: 600;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #514a83;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .verification-label i {
-    font-size: 11px;
+  font-size: 11px;
 }
 
 .independent-label {
-    color: #202B40;
-    font-size: 9px;
-    font-weight: 600;
-    white-space: nowrap;
+  color: #202b40;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
 }
-
 
 /* ==================================================
    7. TANGGAL DAN SESI
 ================================================== */
 
 .recommendation-date {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 5px;
-    color: #33266A;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+  color: #33266a;
 }
 
 .recommendation-date i {
-    flex-shrink: 0;
-    font-size: 15px;
+  flex-shrink: 0;
+  font-size: 15px;
 }
 
 .recommendation-date h3 {
-    margin: 0;
-    color: #33266A;
-    font-size: 15px;
-    font-weight: 800;
-    line-height: 1.4;
+  margin: 0;
+  color: #33266a;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 .recommendation-session {
-    margin: 0 0 8px;
-    color: #202B40;
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 1.5;
+  margin: 0 0 8px;
+  color: #202b40;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
 }
-
 
 /* ==================================================
    8. KETERSEDIAAN
 ================================================== */
 
 .recommendation-availability {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
 }
 
 .availability-icon {
-    width: 14px;
-    height: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #FFFFFF;
-    background: #C8C7FF;
-    border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: #c8c7ff;
+  border-radius: 50%;
 }
 
 .availability-icon i {
-    font-size: 9px;
+  font-size: 9px;
 }
 
 .availability-icon.info {
-    background: #B9B0F7;
+  background: #b9b0f7;
 }
 
 .recommendation-availability p {
-    margin: 0;
-    color: #667085;
-    font-size: 9px;
-    line-height: 1.5;
+  margin: 0;
+  color: #667085;
+  font-size: 9px;
+  line-height: 1.5;
 }
-
 
 /* ==================================================
    9. TOMBOL PEMILIHAN JADWAL
 ================================================== */
 
 .recommendation-button {
-    width: 100%;
-    min-height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: auto;
-    padding: 8px 10px;
-    color: #202B40;
-    background: #FFF1F3;
-    border-radius: 7px;
-    font-size: 10px;
-    font-weight: 700;
-    transition: background 0.2s ease, color 0.2s ease;
+  width: 100%;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  padding: 8px 10px;
+  color: #202b40;
+  background: #fff1f3;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .button-unselected,
 .button-selected {
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .button-unselected {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 .button-selected {
-    display: none;
+  display: none;
 }
 
 .button-unselected i,
 .button-selected i {
-    font-size: 12px;
+  font-size: 12px;
 }
-
 
 /* KONDISI KARTU TERPILIH */
 
 .recommendation-option input:checked ~ .recommendation-card {
-    border-color: #E1DDF0;
+  border-color: #e1ddf0;
 }
 
-.recommendation-option input:checked ~ .recommendation-card .recommendation-button {
-    color: #FFFFFF;
-    background: #911E3F;
+.recommendation-option
+  input:checked
+  ~ .recommendation-card
+  .recommendation-button {
+  color: #ffffff;
+  background: #911e3f;
 }
 
 .recommendation-option input:checked ~ .recommendation-card .button-unselected {
-    display: none;
+  display: none;
 }
 
 .recommendation-option input:checked ~ .recommendation-card .button-selected {
-    display: inline-flex;
+  display: inline-flex;
 }
 
 .recommendation-option input:focus-visible ~ .recommendation-card {
-    outline: 2px solid #33266A;
-    outline-offset: 3px;
+  outline: 2px solid #33266a;
+  outline-offset: 3px;
 }
-
 
 /* ==================================================
    10. TOMBOL TOLAK REKOMENDASI
 ================================================== */
 
 .recommendation-reject {
-    width: fit-content;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 29px;
-    color: #202B40;
-    font-size: 10px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.2s ease;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 29px;
+  color: #202b40;
+  font-size: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .recommendation-reject i {
-    color: #D49A00;
-    font-size: 14px;
+  color: #d49a00;
+  font-size: 14px;
 }
 
 .recommendation-reject:hover {
-    color: #911E3F;
+  color: #911e3f;
 }
-
 
 /* ==================================================
    11. POP UP PENOLAKAN
@@ -510,360 +503,629 @@ body {
 /* Kondisi awal: pop-up tersembunyi */
 
 .reject-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 /* Pop-up muncul ketika tautan #reject-modal diklik */
 
 .reject-modal:target {
-    display: flex;
+  display: flex;
 }
 
 /* BACKDROP BLUR */
 
 .reject-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(39, 35, 68, 0.38);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+  position: absolute;
+  inset: 0;
+  background: rgba(39, 35, 68, 0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 /* KOTAK POP UP */
 
 .reject-modal-content {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 540px;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 32px 35px 0;
-    overflow: hidden;
-    background: #FFFFFF;
-    border-radius: 20px;
-    box-shadow: 0 18px 55px rgba(28, 24, 55, 0.16);
-    text-align: center;
-    animation: rejectModalAppear 0.2s ease-out;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 540px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 35px 0;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 18px 55px rgba(28, 24, 55, 0.16);
+  text-align: center;
+  animation: rejectModalAppear 0.2s ease-out;
 }
 
 /* LABEL POP UP */
 
 .reject-modal-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    padding: 9px 16px;
-    margin-bottom: 26px;
-    color: #A21D48;
-    background: #FFF0F3;
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 16px;
+  margin-bottom: 26px;
+  color: #a21d48;
+  background: #fff0f3;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .reject-modal-label i {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 /* IKON POP UP */
 
 .reject-modal-icon {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 22px;
-    color: #A21D48;
-    background: #FFF0F3;
-    border-radius: 22px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  color: #a21d48;
+  background: #fff0f3;
+  border-radius: 22px;
 }
 
 .reject-modal-icon i {
-    font-size: 37px;
+  font-size: 37px;
 }
 
 /* JUDUL */
 
 .reject-modal-content h2 {
-    margin: 0 0 13px;
-    color: #33266A;
-    font-size: 23px;
-    font-weight: 800;
-    line-height: 1.4;
+  margin: 0 0 13px;
+  color: #33266a;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 /* DESKRIPSI */
 
 .reject-modal-content > p {
-    max-width: 440px;
-    margin: 0;
-    color: #7183A3;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.8;
+  max-width: 440px;
+  margin: 0;
+  color: #7183a3;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.8;
 }
 
 .reject-modal-content .reject-modal-description {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 /* FOOTER TOMBOL */
 
 .reject-modal-footer {
-    width: calc(100% + 70px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    padding: 21px 20px;
-    margin-top: 25px;
-    border-top: 1px solid #E9ECF2;
+  width: calc(100% + 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 21px 20px;
+  margin-top: 25px;
+  border-top: 1px solid #e9ecf2;
 }
 
 /* TOMBOL BATAL DAN KONFIRMASI */
 
 .btn-reject-cancel,
 .btn-reject-confirm {
-    min-height: 49px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 22px;
-    border-radius: 11px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: background 0.2s ease,
-                color 0.2s ease,
-                border-color 0.2s ease;
+  min-height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 22px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .btn-reject-cancel {
-    min-width: 105px;
-    color: #64748B;
-    background: #FFFFFF;
-    border: 1px solid #D4DCEC;
+  min-width: 105px;
+  color: #64748b;
+  background: #ffffff;
+  border: 1px solid #d4dcec;
 }
 
 .btn-reject-cancel:hover {
-    background: #F7F8FC;
+  background: #f7f8fc;
 }
 
 .btn-reject-confirm {
-    min-width: 195px;
-    color: #FFFFFF;
-    background: #911E3F;
-    border: 1px solid #911E3F;
+  min-width: 195px;
+  color: #ffffff;
+  background: #911e3f;
+  border: 1px solid #911e3f;
 }
 
 .btn-reject-confirm:hover {
-    background: #7F1938;
+  background: #7f1938;
 }
 
 .btn-reject-confirm i {
-    font-size: 15px;
+  font-size: 15px;
 }
-
 
 /* ANIMASI */
 
 @keyframes rejectModalAppear {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.98);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
-
 
 /* ==================================================
    12. RESPONSIVE
 ================================================== */
 
 @media screen and (max-width: 1100px) {
+  .recommendation-container {
+    width: calc(100% - 35px);
+  }
 
-    .recommendation-container {
-        width: calc(100% - 35px);
-    }
-
-    .recommendation-options {
-        gap: 20px;
-    }
-
+  .recommendation-options {
+    gap: 20px;
+  }
 }
 
 @media screen and (max-width: 700px) {
+  .recommendation-container {
+    width: calc(100% - 24px);
+    margin: 12px auto 20px;
+  }
 
-    .recommendation-container {
-        width: calc(100% - 24px);
-        margin: 12px auto 20px;
-    }
+  .recommendation-welcome {
+    min-height: auto;
+    padding: 16px;
+  }
 
-    .recommendation-welcome {
-        min-height: auto;
-        padding: 16px;
-    }
+  .recommendation-welcome h2 {
+    font-size: 21px;
+  }
 
-    .recommendation-welcome h2 {
-        font-size: 21px;
-    }
+  .recommendation-welcome p {
+    font-size: 10px;
+  }
 
-    .recommendation-welcome p {
-        font-size: 10px;
-    }
+  .recommendation-panel {
+    min-height: auto;
+    padding: 15px;
+  }
 
-    .recommendation-panel {
-        min-height: auto;
-        padding: 15px;
-    }
+  .recommendation-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
 
-    .recommendation-header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-        margin-bottom: 18px;
-    }
+  .recommendation-main-icon {
+    width: 42px;
+    height: 42px;
+  }
 
-    .recommendation-main-icon {
-        width: 42px;
-        height: 42px;
-    }
+  .recommendation-heading-info h3 {
+    font-size: 11px;
+  }
 
-    .recommendation-heading-info h3 {
-        font-size: 11px;
-    }
+  .response-deadline {
+    margin-left: 53px;
+  }
 
-    .response-deadline {
-        margin-left: 53px;
-    }
+  .recommendation-context {
+    padding: 12px;
+    margin-bottom: 18px;
+  }
 
-    .recommendation-context {
-        padding: 12px;
-        margin-bottom: 18px;
-    }
+  .context-heading {
+    gap: 5px;
+  }
 
-    .context-heading {
-        gap: 5px;
-    }
+  .context-content p {
+    font-size: 9px;
+  }
 
-    .context-content p {
-        font-size: 9px;
-    }
+  .recommendation-options {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 
-    .recommendation-options {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
+  .recommendation-card {
+    min-height: 210px;
+    padding: 14px;
+  }
 
-    .recommendation-card {
-        min-height: 210px;
-        padding: 14px;
-    }
+  .recommendation-card-header {
+    margin-bottom: 18px;
+  }
 
-    .recommendation-card-header {
-        margin-bottom: 18px;
-    }
+  .recommendation-date h3 {
+    font-size: 14px;
+  }
 
-    .recommendation-date h3 {
-        font-size: 14px;
-    }
+  .recommendation-reject {
+    margin-top: 20px;
+    font-size: 9px;
+  }
 
-    .recommendation-reject {
-        margin-top: 20px;
-        font-size: 9px;
-    }
+  .reject-modal-content {
+    max-width: 440px;
+    padding: 26px 20px 0;
+    border-radius: 17px;
+  }
 
-    .reject-modal-content {
-        max-width: 440px;
-        padding: 26px 20px 0;
-        border-radius: 17px;
-    }
+  .reject-modal-label {
+    margin-bottom: 20px;
+    font-size: 10px;
+  }
 
-    .reject-modal-label {
-        margin-bottom: 20px;
-        font-size: 10px;
-    }
+  .reject-modal-icon {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 17px;
+  }
 
-    .reject-modal-icon {
-        width: 65px;
-        height: 65px;
-        margin-bottom: 17px;
-    }
+  .reject-modal-icon i {
+    font-size: 30px;
+  }
 
-    .reject-modal-icon i {
-        font-size: 30px;
-    }
+  .reject-modal-content h2 {
+    font-size: 19px;
+  }
 
-    .reject-modal-content h2 {
-        font-size: 19px;
-    }
+  .reject-modal-content > p {
+    font-size: 11px;
+  }
 
-    .reject-modal-content > p {
-        font-size: 11px;
-    }
+  .reject-modal-footer {
+    width: calc(100% + 40px);
+    gap: 9px;
+    padding: 17px 12px;
+  }
 
-    .reject-modal-footer {
-        width: calc(100% + 40px);
-        gap: 9px;
-        padding: 17px 12px;
-    }
+  .btn-reject-cancel,
+  .btn-reject-confirm {
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
 
-    .btn-reject-cancel,
-    .btn-reject-confirm {
-        min-height: 44px;
-        padding: 0 12px;
-        font-size: 11px;
-    }
+  .btn-reject-cancel {
+    min-width: 80px;
+  }
 
-    .btn-reject-cancel {
-        min-width: 80px;
-    }
-
-    .btn-reject-confirm {
-        min-width: 0;
-    }
-
+  .btn-reject-confirm {
+    min-width: 0;
+  }
 }
 
 @media screen and (max-width: 380px) {
+  .recommendation-type {
+    padding: 4px 7px;
+    font-size: 8px;
+  }
 
-    .recommendation-type {
-        padding: 4px 7px;
-        font-size: 8px;
-    }
+  .recommendation-date h3 {
+    font-size: 12px;
+  }
 
-    .recommendation-date h3 {
-        font-size: 12px;
-    }
+  .verification-label,
+  .independent-label {
+    font-size: 8px;
+  }
 
-    .verification-label,
-    .independent-label {
-        font-size: 8px;
-    }
+  .reject-modal-footer {
+    flex-direction: column-reverse;
+  }
 
-    .reject-modal-footer {
-        flex-direction: column-reverse;
-    }
+  .btn-reject-cancel,
+  .btn-reject-confirm {
+    width: 100%;
+  }
+}
 
-    .btn-reject-cancel,
-    .btn-reject-confirm {
-        width: 100%;
-    }
+/* =========================================
+   SILAB - FINAL AKSI REKOMENDASI
+========================================= */
 
+/* KARTU TERPILIH */
+
+.recommendation-option.is-selected .recommendation-card {
+  border: 2px solid #33266a;
+  background: #f8f7ff;
+  box-shadow: 0 4px 14px rgba(51, 38, 106, 0.12);
+}
+
+.recommendation-option.is-selected .button-unselected {
+  display: none;
+}
+
+.recommendation-option.is-selected .button-selected {
+  display: inline-flex;
+}
+
+/* MODAL PENERIMAAN */
+
+.recommendation-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.recommendation-confirm-modal.show {
+  display: flex;
+}
+
+/* MODAL PENOLAKAN */
+
+.reject-modal.show {
+  display: flex;
+}
+
+/* TOMBOL */
+
+.btn-accept-recommendation:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* NOTIFIKASI */
+
+.recommendation-feedback {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  z-index: 10001;
+  max-width: 350px;
+  padding: 15px 18px;
+  color: #fff;
+  background: #18794e;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: 0.2s;
+}
+
+.recommendation-feedback.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.recommendation-feedback.error {
+  background: #b42318;
+}
+
+/* =========================================
+   PANEL AKSI REKOMENDASI
+========================================= */
+
+.recommendation-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-top: 24px;
+  padding: 20px 22px;
+
+  background: #f8f7fc;
+  border: 1px solid #e5e1f0;
+  border-radius: 12px;
+}
+
+.selected-recommendation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selected-label {
+  font-size: 11px;
+  color: #71809a;
+}
+
+.selected-recommendation-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #33266a;
+}
+
+.selected-recommendation-info small {
+  font-size: 11px;
+  color: #71809a;
+}
+
+.btn-accept-recommendation {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 12px 20px;
+
+  background: #33266a;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-accept-recommendation:hover:not(:disabled) {
+  background: #24194f;
+  transform: translateY(-1px);
+}
+
+.btn-accept-recommendation:disabled {
+  background: #c5c2d3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 600px) {
+  .recommendation-action {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-accept-recommendation {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   MODAL KONFIRMASI
+========================================= */
+
+.recommendation-confirm-modal {
+  position: fixed !important;
+  inset: 0;
+  z-index: 99999;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+.recommendation-confirm-modal.show {
+  display: flex;
+}
+
+.recommendation-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 40, 0.6);
+}
+
+.recommendation-modal-content {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 430px;
+
+  padding: 28px;
+
+  background: #ffffff;
+  border-radius: 16px;
+
+  text-align: center;
+
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-modal-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0 auto 16px;
+
+  color: #33266a;
+  background: #efecfc;
+  border-radius: 50%;
+
+  font-size: 25px;
+}
+
+.recommendation-modal-content h3 {
+  margin-bottom: 10px;
+  color: #202b40;
+  font-size: 17px;
+}
+
+.recommendation-modal-content > p {
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.confirmation-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  margin: 20px 0;
+  padding: 15px;
+
+  background: #f8f7fc;
+  border: 1px solid #e5e1f0;
+  border-radius: 9px;
+}
+
+.recommendation-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.recommendation-modal-actions button {
+  padding: 11px 15px;
+  border: none;
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.btn-modal-cancel {
+  background: #f0f1f3;
+  color: #475467;
+}
+
+.btn-modal-confirm {
+  background: #33266a;
+  color: white;
 }

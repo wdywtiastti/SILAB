@@ -672,6 +672,20 @@
   color: #33266a;
   font-size: 19px;
   font-weight: 800;
+    transition: color 0.2s ease;
+}
+
+/* TOTAL BOBOT MELEBIHI 100% */
+.weight-total strong.weight-over-limit {
+  color: #dc2626;
+}
+
+/* PESAN PERINGATAN */
+#weightWarning {
+  margin: 8px 0 0;
+  color: #dc2626;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .weight-footer {

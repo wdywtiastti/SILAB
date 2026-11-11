@@ -1,462 +1,455 @@
-
 /* =========================================
    1. CONTAINER DASHBOARD
 ========================================= */
 
 .dashboard-container {
-    width: calc(100% - 50px);
-    max-width: 1500px;
-    margin: 7px auto 25px;
+  width: calc(100% - 50px);
+  max-width: 1500px;
+  margin: 7px auto 25px;
 }
-
 
 /* =========================================
    2. HEADER DASHBOARD
 ========================================= */
 
 .dashboard-header {
-    position: relative;
-    padding: 16px 20px;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-    margin-bottom: 14px;
+  position: relative;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  margin-bottom: 14px;
 }
 
 .header-decoration {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .header-decoration span {
-    width: 30px;
-    height: 5px;
-    border-radius: 10px;
+  width: 30px;
+  height: 5px;
+  border-radius: 10px;
 }
 
 .header-decoration span:nth-child(1) {
-    background-color: #911E3F;
+  background-color: #911e3f;
 }
 
 .header-decoration span:nth-child(2) {
-    background-color: #F8B916;
+  background-color: #f8b916;
 }
 
 .header-decoration span:nth-child(3) {
-    background-color: #33266A;
+  background-color: #33266a;
 }
 
 .facility-info {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .info-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border: 1px solid #DCE2EF;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #33266A;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid #dce2ef;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #33266a;
 }
 
 .info-tag i {
-    font-size: 11px;
+  font-size: 11px;
 }
 
 .header-content h2 {
-    font-size: 27px;
-    font-weight: 800;
-    color: #33266A;
-    margin-bottom: 6px;
+  font-size: 27px;
+  font-weight: 800;
+  color: #33266a;
+  margin-bottom: 6px;
 }
 
 .header-content p {
-    font-size: 12px;
-    color: #667A9B;
-    line-height: 1.5;
+  font-size: 12px;
+  color: #667a9b;
+  line-height: 1.5;
 }
 
 .authority-button {
-    position: absolute;
-    right: 18px;
-    top: 45px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 30px;
-    background-color: #911E3F;
-    color: #FFFFFF;
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.15);
+  position: absolute;
+  right: 18px;
+  top: 45px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 30px;
+  background-color: #911e3f;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
-
 
 /* =========================================
    3. KARTU RINGKASAN
 ========================================= */
 
 .summary-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 35px;
-    margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 35px;
+  margin-bottom: 16px;
 }
 
 .summary-card {
-    position: relative;
-    min-height: 150px;
-    padding: 17px 18px;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 16px;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.12);
-    overflow: hidden;
+  position: relative;
+  min-height: 150px;
+  padding: 17px 18px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 16px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
 .summary-card::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 5px;
-    height: 100%;
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
 }
 
 .schedule-card::before {
-    background-color: #33266A;
+  background-color: #33266a;
 }
 
 .booking-card::before {
-    background-color: #F8B916;
+  background-color: #f8b916;
 }
 
 .conflict-card::before {
-    background-color: #911E3F;
+  background-color: #911e3f;
 }
 
 .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-top h3 {
-    font-size: 13px;
-    font-weight: 800;
-    margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 4px;
 }
 
 .schedule-card h3 {
-    color: #33266A;
+  color: #33266a;
 }
 
 .booking-card h3 {
-    color: #C65A00;
+  color: #c65a00;
 }
 
 .conflict-card h3 {
-    color: #A51D45;
+  color: #a51d45;
 }
 
 .card-top p {
-    font-size: 10px;
-    font-weight: 500;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .card-icon {
-    width: 37px;
-    height: 37px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 16px;
+  width: 37px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 16px;
 }
 
 .purple-icon {
-    background-color: #EFECFC;
-    color: #33266A;
+  background-color: #efecfc;
+  color: #33266a;
 }
 
 .yellow-icon {
-    background-color: #FFF3C9;
-    color: #B95A00;
+  background-color: #fff3c9;
+  color: #b95a00;
 }
 
 .red-icon {
-    background-color: #FFE1E3;
-    color: #B01D45;
+  background-color: #ffe1e3;
+  color: #b01d45;
 }
 
 .card-value {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-top: 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .card-value strong {
-    font-size: 27px;
-    font-weight: 800;
-    color: #25264C;
+  font-size: 27px;
+  font-weight: 800;
+  color: #25264c;
 }
 
 .card-value span {
-    font-size: 13px;
-    color: #637796;
+  font-size: 13px;
+  color: #637796;
 }
 
 .conflict-value strong {
-    color: #A51D45;
+  color: #a51d45;
 }
 
 .conflict-value span {
-    font-size: 10px;
-    color: #A51D45;
+  font-size: 10px;
+  color: #a51d45;
 }
 
 .card-description {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: #526481;
-    margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #526481;
+  margin-top: 5px;
 }
 
 .card-description i {
-    font-size: 8px;
-    color: #33266A;
+  font-size: 8px;
+  color: #33266a;
 }
-
 
 /* =========================================
    4. KONTEN DASHBOARD
 ========================================= */
 
 .dashboard-content {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(300px, 0.96fr);
-    gap: 24px;
-    align-items: start;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 0.96fr);
+  gap: 24px;
+  align-items: start;
 }
-
 
 /* =========================================
    5. PANEL JADWAL
 ========================================= */
 
 .schedule-panel {
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.12);
-    overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
 .panel-header {
-    min-height: 78px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 25px;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 25px;
 }
 
 .panel-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .panel-icon {
-    width: 37px;
-    height: 37px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background-color: #EFECFC;
-    color: #33266A;
-    font-size: 17px;
+  width: 37px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: #efecfc;
+  color: #33266a;
+  font-size: 17px;
 }
 
 .panel-title h3 {
-    font-size: 16px;
-    font-weight: 800;
+  font-size: 16px;
+  font-weight: 800;
 }
 
 .panel-title p {
-    font-size: 10px;
-    color: #667A9B;
-    margin-top: 3px;
+  font-size: 10px;
+  color: #667a9b;
+  margin-top: 3px;
 }
 
 .live-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 12px;
-    background-color: #EFECFC;
-    color: #33266A;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background-color: #efecfc;
+  color: #33266a;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .live-dot {
-    width: 8px;
-    height: 8px;
-    flex-shrink: 0;
-    background-color: #33266A;
-    border-radius: 50%;
-    animation: livePulse 1.5s infinite;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  background-color: #33266a;
+  border-radius: 50%;
+  animation: livePulse 1.5s infinite;
 }
 
 @keyframes livePulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-        box-shadow: 0 0 0 0 rgba(51,38,106,0.5);
-    }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(51, 38, 106, 0.5);
+  }
 
-    50% {
-        transform: scale(1.25);
-        opacity: 0.65;
-        box-shadow: 0 0 0 5px rgba(51,38,106,0);
-    }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.65;
+    box-shadow: 0 0 0 5px rgba(51, 38, 106, 0);
+  }
 
-    100% {
-        transform: scale(1);
-        opacity: 1;
-        box-shadow: 0 0 0 0 rgba(51,38,106,0);
-    }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(51, 38, 106, 0);
+  }
 }
-
 
 /* =========================================
    6. TABEL JADWAL
 ========================================= */
 
 .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .schedule-table {
-    width: 100%;
-    min-width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  width: 100%;
+  min-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 /* Lebar setiap kolom */
 
 .schedule-table th,
 .schedule-table td {
-    width: 25%;
-    box-sizing: border-box;
+  width: 25%;
+  box-sizing: border-box;
 }
 
 /* Header tabel */
 
 .schedule-table thead th {
-    height: 58px;
-    padding: 13px 12px;
-    background-color: #FFFFFF;
-    color: #667A9B;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    vertical-align: middle;
-    white-space: normal;
-    border-bottom: 1px solid #EDF0F5;
+  height: 58px;
+  padding: 13px 12px;
+  background-color: #ffffff;
+  color: #667a9b;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  vertical-align: middle;
+  white-space: normal;
+  border-bottom: 1px solid #edf0f5;
 }
 
 /* Baris tabel */
 
 .schedule-table tbody tr {
-    height: 67px;
-    background-color: #FFFFFF;
-    transition: background 0.2s;
+  height: 67px;
+  background-color: #ffffff;
+  transition: background 0.2s;
 }
 
 .schedule-table tbody tr:hover {
-    background-color: #F8F9FC;
+  background-color: #f8f9fc;
 }
 
 /* Isi tabel */
 
 .schedule-table tbody td {
-    height: 67px;
-    padding: 10px 12px;
-    color: #202B40;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.5;
-    text-align: center;
-    vertical-align: middle;
-    border-bottom: 1px solid #EDF0F5;
+  height: 67px;
+  padding: 10px 12px;
+  color: #202b40;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #edf0f5;
 }
 
 /* Judul kegiatan dan waktu */
 
 .schedule-table tbody td strong {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: #263249;
-    text-align: center;
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #263249;
+  text-align: center;
 }
 
 /* Keterangan tambahan */
 
 .schedule-table tbody td small {
-    display: block;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #667A9B;
-    text-align: center;
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #667a9b;
+  text-align: center;
 }
 
 /* Status jadwal */
 
 .status-active {
-    color: #34425C;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
+  color: #34425c;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .status-confirmed {
-    color: #34425C;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: center;
+  color: #34425c;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
 }
 
 .schedule-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
-
 
 /* =========================================
    7. PAGINATION JADWAL
@@ -466,351 +459,351 @@
 
 #schedule-page-1,
 #schedule-page-2 {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Tampilan awal halaman 1 */
 
 .schedule-table tbody tr.schedule-page-1 {
-    display: table-row;
+  display: table-row;
 }
 
 .schedule-table tbody tr.schedule-page-2 {
-    display: none;
+  display: none;
 }
 
 /* Tampilan halaman 2 */
 
-#schedule-page-2:checked ~ .table-wrapper
-.schedule-table tbody tr.schedule-page-1 {
-    display: none;
+#schedule-page-2:checked
+  ~ .table-wrapper
+  .schedule-table
+  tbody
+  tr.schedule-page-1 {
+  display: none;
 }
 
-#schedule-page-2:checked ~ .table-wrapper
-.schedule-table tbody tr.schedule-page-2 {
-    display: table-row;
+#schedule-page-2:checked
+  ~ .table-wrapper
+  .schedule-table
+  tbody
+  tr.schedule-page-2 {
+  display: table-row;
 }
 
 /* Pembungkus pagination */
 
 .schedule-pagination {
-    min-height: 54px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 25px;
-    box-sizing: border-box;
-    border-top: 1px solid #EDF0F5;
-    background-color: #FFFFFF;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 25px;
+  box-sizing: border-box;
+  border-top: 1px solid #edf0f5;
+  background-color: #ffffff;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 /* Informasi jumlah data */
 
 .pagination-info {
-    color: #667A9B;
-    font-size: 10px;
-    font-weight: 500;
+  color: #667a9b;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .pagination-info strong {
-    color: #263249;
-    font-weight: 700;
+  color: #263249;
+  font-weight: 700;
 }
 
 .count-page-2 {
-    display: none;
+  display: none;
 }
 
-#schedule-page-2:checked ~ .schedule-pagination
-.count-page-1 {
-    display: none;
+#schedule-page-2:checked ~ .schedule-pagination .count-page-1 {
+  display: none;
 }
 
-#schedule-page-2:checked ~ .schedule-pagination
-.count-page-2 {
-    display: inline;
+#schedule-page-2:checked ~ .schedule-pagination .count-page-2 {
+  display: inline;
 }
 
 /* Navigasi pagination */
 
 .pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .pagination-button,
 .page-number {
-    min-width: 29px;
-    height: 27px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 9px;
-    border: 1px solid #DCE3EF;
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    color: #667A9B;
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  min-width: 29px;
+  height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border: 1px solid #dce3ef;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #667a9b;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 /* Hover pagination */
 
 .pagination-button:hover,
 .page-number:hover {
-    background-color: #F0EDF9;
-    border-color: #33266A;
-    color: #33266A;
+  background-color: #f0edf9;
+  border-color: #33266a;
+  color: #33266a;
 }
 
 /* Halaman aktif */
 
 #schedule-page-1:checked ~ .schedule-pagination .page-one,
 #schedule-page-2:checked ~ .schedule-pagination .page-two {
-    background-color: #911E3F;
-    border-color: #911E3F;
-    color: #FFFFFF;
-    font-weight: 700;
+  background-color: #911e3f;
+  border-color: #911e3f;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* Tombol sebelumnya nonaktif di halaman 1 */
 
 #schedule-page-1:checked ~ .schedule-pagination .pagination-prev {
-    opacity: 0.5;
-    pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 /* Tombol berikutnya nonaktif di halaman 2 */
 
 #schedule-page-2:checked ~ .schedule-pagination .pagination-next {
-    opacity: 0.5;
-    pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
-
 
 /* =========================================
    8. PANEL KANAN
 ========================================= */
 
 .right-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
 }
-
 
 /* =========================================
    9. PANEL PRIORITAS
 ========================================= */
 
 .priority-panel {
-    padding: 16px;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.12);
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
 }
 
 .right-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 8px 13px;
-    border-bottom: 1px solid #EDF0F5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 13px;
+  border-bottom: 1px solid #edf0f5;
 }
 
 .right-panel-header h3 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .right-panel-header h3 i {
-    color: #33266A;
-    font-size: 16px;
+  color: #33266a;
+  font-size: 16px;
 }
 
 .automatic-label {
-    padding: 6px 10px;
-    border-radius: 8px;
-    background-color: #F1F4F8;
-    color: #667A9B;
-    font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background-color: #f1f4f8;
+  color: #667a9b;
+  font-size: 10px;
 }
 
 .priority-list {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
 }
 
 .priority-item {
-    min-height: 37px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 6px 12px;
-    border-radius: 9px;
-    background-color: #F0F4F9;
+  min-height: 37px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background-color: #f0f4f9;
 }
 
 .priority-badge {
-    width: 22px;
-    height: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 6px;
-    color: #FFFFFF;
-    font-size: 10px;
-    font-weight: 800;
-    flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
 }
 
 .p1 {
-    background-color: #33266A;
+  background-color: #33266a;
 }
 
 .p2 {
-    background-color: #34445B;
+  background-color: #34445b;
 }
 
 .p3 {
-    background-color: #585E9A;
+  background-color: #585e9a;
 }
 
 .p4 {
-    background-color: #F8B916;
-    color: #000000;
+  background-color: #f8b916;
+  color: #000000;
 }
 
 .p5 {
-    background-color: #DCE3EC;
-    color: #34445B;
+  background-color: #dce3ec;
+  color: #34445b;
 }
 
 .priority-item strong {
-    flex: 1;
-    font-size: 10px;
-    font-weight: 600;
+  flex: 1;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .priority-item small {
-    font-size: 9px;
-    color: #667A9B;
-    white-space: nowrap;
+  font-size: 9px;
+  color: #667a9b;
+  white-space: nowrap;
 }
-
 
 /* =========================================
    10. PANEL LAPORAN
 ========================================= */
 
 .report-panel {
-    padding: 17px;
-    background-color: #FFFFFF;
-    border: 1px solid #E1E1E5;
-    border-radius: 17px;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.12);
+  padding: 17px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
 }
 
 .report-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #EDF0F5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #edf0f5;
 }
 
 .report-header h3 {
-    font-size: 12px;
-    font-weight: 800;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .report-header i {
-    font-size: 13px;
-    color: #667A9B;
+  font-size: 13px;
+  color: #667a9b;
 }
 
 .report-panel > p {
-    font-size: 10px;
-    color: #667A9B;
-    text-align: center;
-    margin: 9px 0 14px;
+  font-size: 10px;
+  color: #667a9b;
+  text-align: center;
+  margin: 9px 0 14px;
 }
 
 /* Tombol laporan */
 
 .report-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
 }
 
 .report-button,
 .report-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: #F6F8FC;
-    border: 1px solid #DCE3EF;
-    border-radius: 12px;
-    color: #263249;
-    text-decoration: none;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.2s ease;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #f6f8fc;
+  border: 1px solid #dce3ef;
+  border-radius: 12px;
+  color: #263249;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .report-button {
-    min-height: 37px;
+  min-height: 37px;
 }
 
 .report-btn {
-    height: 42px;
+  height: 42px;
 }
 
 .report-button:hover,
 .report-btn:hover {
-    background-color: #EDF1F8;
-    border-color: #C5D0E0;
+  background-color: #edf1f8;
+  border-color: #c5d0e0;
 }
 
 .report-button:visited,
 .report-btn:visited {
-    color: #263249;
-    text-decoration: none;
+  color: #263249;
+  text-decoration: none;
 }
 
 .pdf-button i,
 .report-btn:first-child i {
-    color: #C41E42;
-    font-size: 15px;
+  color: #c41e42;
+  font-size: 15px;
 }
 
 .excel-button i,
 .report-btn:last-child i {
-    color: #00A878;
-    font-size: 15px;
+  color: #00a878;
+  font-size: 15px;
 }
-
 
 /* =========================================
    11. MODAL UNDUH LAPORAN PDF & EXCEL
@@ -819,328 +812,476 @@
 /* Background modal */
 
 .report-modal {
-    position: fixed;
-    inset: 0;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    z-index: 2000;
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: 2000;
 }
 
 .report-modal:target {
-    display: flex;
+  display: flex;
 }
 
 /* Background blur */
 
 .modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(51,38,106,0.32);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+  position: absolute;
+  inset: 0;
+  background-color: rgba(51, 38, 106, 0.32);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 /* Kotak modal */
 
 .modal-content {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 590px;
-    background-color: #FFFFFF;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 15px 45px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 590px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
 }
 
 /* Garis tiga warna */
 
 .modal-color-line {
-    display: flex;
-    width: 100%;
-    height: 7px;
+  display: flex;
+  width: 100%;
+  height: 7px;
 }
 
 .modal-color-line span {
-    flex: 1;
+  flex: 1;
 }
 
 .modal-color-line span:nth-child(1) {
-    background-color: #911E3F;
+  background-color: #911e3f;
 }
 
 .modal-color-line span:nth-child(2) {
-    background-color: #F8B916;
+  background-color: #f8b916;
 }
 
 .modal-color-line span:nth-child(3) {
-    background-color: #33266A;
+  background-color: #33266a;
 }
 
 /* Isi modal */
 
 .modal-body {
-    padding: 26px 28px 28px;
+  padding: 26px 28px 28px;
 }
 
 .modal-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 5px 11px;
-    background-color: #F0F3F8;
-    color: #33266A;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  background-color: #f0f3f8;
+  color: #33266a;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .modal-body h2 {
-    margin-top: 13px;
-    margin-bottom: 64px;
-    color: #33266A;
-    font-size: 21px;
-    font-weight: 800;
-    line-height: 1.4;
+  margin-top: 13px;
+  margin-bottom: 64px;
+  color: #33266a;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 /* Form laporan */
 
 .report-form {
-    width: 100%;
+  width: 100%;
 }
 
 .date-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .date-group label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #263249;
-    font-size: 11px;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #263249;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .date-group label i {
-    color: #33266A;
-    font-size: 13px;
+  color: #33266a;
+  font-size: 13px;
 }
 
 .date-group input {
-    width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    border: 1px solid #DFE5EF;
-    border-radius: 11px;
-    background-color: #F7F9FC;
-    color: #263249;
-    font-family: inherit;
-    font-size: 12px;
-    outline: none;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #dfe5ef;
+  border-radius: 11px;
+  background-color: #f7f9fc;
+  color: #263249;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
 }
 
 .date-group input:focus {
-    border-color: #33266A;
+  border-color: #33266a;
 }
 
 /* Pembatas modal */
 
 .modal-divider {
-    width: 100%;
-    height: 1px;
-    background-color: #EDF0F5;
-    margin: 20px 0;
+  width: 100%;
+  height: 1px;
+  background-color: #edf0f5;
+  margin: 20px 0;
 }
 
 /* Tombol modal */
 
 .modal-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn-cancel,
 .btn-download {
-    height: 43px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border-radius: 11px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-cancel {
-    flex: 0.65;
-    background-color: #FFFFFF;
-    color: #43516A;
-    border: 1px solid #D3DCEB;
+  flex: 0.65;
+  background-color: #ffffff;
+  color: #43516a;
+  border: 1px solid #d3dceb;
 }
 
 .btn-cancel:hover {
-    background-color: #F5F7FA;
+  background-color: #f5f7fa;
 }
 
 .btn-download {
-    flex: 1.35;
-    border: none;
-    color: #FFFFFF;
-    transition: background-color 0.2s ease;
+  flex: 1.35;
+  border: none;
+  color: #ffffff;
+  transition: background-color 0.2s ease;
 }
 
 .pdf-button {
-    background-color: #911E3F;
+  background-color: #911e3f;
 }
 
 .pdf-button:hover {
-    background-color: #761630;
+  background-color: #761630;
 }
 
 .excel-button {
-    background-color: #33266A;
+  background-color: #33266a;
 }
 
 .excel-button:hover {
-    background-color: #241B50;
+  background-color: #241b50;
 }
-
 
 /* =========================================
    12. RESPONSIVE DASHBOARD
 ========================================= */
 
 @media screen and (max-width: 1100px) {
+  .summary-cards {
+    gap: 15px;
+  }
 
-    .summary-cards {
-        gap: 15px;
-    }
+  .dashboard-content {
+    gap: 20px;
+    grid-template-columns:
+      minmax(0, 1.7fr)
+      minmax(260px, 1fr);
+  }
 
-    .dashboard-content {
-        gap: 20px;
-        grid-template-columns:
-            minmax(0, 1.7fr)
-            minmax(260px, 1fr);
-    }
-
-    .authority-button {
-        position: static;
-        width: fit-content;
-        margin-top: 12px;
-    }
+  .authority-button {
+    position: static;
+    width: fit-content;
+    margin-top: 12px;
+  }
 }
 
 @media screen and (max-width: 900px) {
-
-    .schedule-table {
-        min-width: 720px;
-    }
+  .schedule-table {
+    min-width: 720px;
+  }
 }
 
 @media screen and (max-width: 700px) {
+  .dashboard-container {
+    width: calc(100% - 24px);
+    margin-top: 12px;
+  }
 
-    .dashboard-container {
-        width: calc(100% - 24px);
-        margin-top: 12px;
-    }
+  .dashboard-header {
+    padding: 15px;
+  }
 
-    .dashboard-header {
-        padding: 15px;
-    }
+  .header-content h2 {
+    font-size: 22px;
+  }
 
-    .header-content h2 {
-        font-size: 22px;
-    }
+  .header-content p {
+    font-size: 10px;
+  }
 
-    .header-content p {
-        font-size: 10px;
-    }
+  .facility-info {
+    gap: 5px;
+  }
 
-    .facility-info {
-        gap: 5px;
-    }
+  .info-tag {
+    font-size: 9px;
+  }
 
-    .info-tag {
-        font-size: 9px;
-    }
+  .summary-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
 
-    .summary-cards {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
+  .summary-card {
+    min-height: 140px;
+  }
 
-    .summary-card {
-        min-height: 140px;
-    }
+  .dashboard-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 
-    .dashboard-content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
+  .panel-header {
+    padding: 13px;
+  }
 
-    .panel-header {
-        padding: 13px;
-    }
+  .panel-title h3 {
+    font-size: 12px;
+  }
 
-    .panel-title h3 {
-        font-size: 12px;
-    }
+  .panel-title p {
+    font-size: 9px;
+  }
 
-    .panel-title p {
-        font-size: 9px;
-    }
+  .schedule-table {
+    min-width: 720px;
+  }
 
-    .schedule-table {
-        min-width: 720px;
-    }
+  .right-panel {
+    gap: 15px;
+  }
 
-    .right-panel {
-        gap: 15px;
-    }
-
-    .authority-button {
-        font-size: 10px;
-    }
+  .authority-button {
+    font-size: 10px;
+  }
 }
 
 @media screen and (max-width: 600px) {
+  .schedule-pagination {
+    padding: 12px;
+    flex-wrap: wrap;
+  }
 
-    .schedule-pagination {
-        padding: 12px;
-        flex-wrap: wrap;
-    }
+  .pagination-controls {
+    margin-left: auto;
+  }
 
-    .pagination-controls {
-        margin-left: auto;
-    }
+  .modal-body {
+    padding: 22px 18px;
+  }
 
-    .modal-body {
-        padding: 22px 18px;
-    }
+  .modal-body h2 {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
 
-    .modal-body h2 {
-        font-size: 18px;
-        margin-bottom: 40px;
-    }
+  .modal-actions {
+    flex-direction: column;
+  }
 
-    .modal-actions {
-        flex-direction: column;
-    }
+  .btn-cancel,
+  .btn-download {
+    width: 100%;
+    flex: none;
+  }
+}
 
-    .btn-cancel,
-    .btn-download {
-        width: 100%;
-        flex: none;
-    }
+/* =========================================
+   PERBAIKAN LAYOUT DASHBOARD
+========================================= */
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 24px;
+  width: 100%;
+}
+
+.schedule-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+}
+
+.table-wrapper {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  min-width: 650px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.schedule-table th:nth-child(1),
+.schedule-table td:nth-child(1) {
+  width: 20%;
+}
+
+.schedule-table th:nth-child(2),
+.schedule-table td:nth-child(2) {
+  width: 35%;
+}
+
+.schedule-table th:nth-child(3),
+.schedule-table td:nth-child(3) {
+  width: 25%;
+}
+
+.schedule-table th:nth-child(4),
+.schedule-table td:nth-child(4) {
+  width: 20%;
+}
+
+.schedule-table td {
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.right-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1000px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   PERBAIKAN LAYOUT DASHBOARD SILAB
+========================================= */
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 0.96fr);
+  align-items: start;
+  gap: 24px;
+  width: 100%;
+}
+
+/* PANEL KIRI - JADWAL */
+
+.schedule-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
+  border: 1px solid #e1e1e5;
+  border-radius: 17px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+
+  overflow: hidden;
+}
+
+.table-wrapper {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  min-width: 650px;
+  table-layout: fixed;
+}
+
+/* PANEL KANAN */
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 20px;
+}
+
+/* PRIORITAS DI ATAS */
+
+.priority-panel {
+  width: 100%;
+}
+
+/* DOWNLOAD DI BAWAH PRIORITAS */
+
+.report-panel {
+  width: 100%;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 900px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+
+  .right-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .right-panel {
+    grid-template-columns: 1fr;
+  }
 }
