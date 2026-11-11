@@ -1249,3 +1249,134 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
         transition: none;
     }
 }
+
+
+/* ==========================================
+   VALIDASI FORM REKOMENDASI
+========================================== */
+
+.rekomendasi-feedback {
+    display: none;
+    margin: 12px 0;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.rekomendasi-feedback[data-jenis="error"] {
+    display: block;
+    color: #b4233f;
+    background: #fff0f2;
+    border: 1px solid #f5c2cc;
+}
+
+.rekomendasi-feedback[data-jenis="sukses"] {
+    color: #167447;
+    background: #eaf8f0;
+    border: 1px solid #b8e5ca;
+}
+
+/* Input yang mengalami kesalahan */
+.form-input[aria-invalid="true"] {
+    border-color: #c52b48;
+    background-color: #fff8f9;
+}
+
+/* ==========================================
+   TOAST NOTIFICATION
+========================================== */
+
+.toast-rekomendasi {
+    position: fixed;
+    top: 85px;
+    right: 25px;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 15px 20px;
+
+    color: #167447;
+    background: #ffffff;
+
+    border: 1px solid #b8e5ca;
+    border-left: 4px solid #219653;
+    border-radius: 10px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(25px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s ease;
+}
+
+.toast-rekomendasi i {
+    font-size: 19px;
+    color: #219653;
+}
+
+.toast-rekomendasi.aktif {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* ==========================================
+   TOMBOL KEMBALI
+========================================== */
+
+.btn-kembali {
+    min-width: 130px;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-kembali i {
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .toast-rekomendasi {
+        top: 75px;
+        right: 12px;
+        left: 12px;
+        justify-content: center;
+    }
+}
+
+
+/* VALIDASI INPUT REKOMENDASI */
+
+.field-error {
+    display: none;
+    margin-top: 6px;
+    color: #c52b48;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.field-error.aktif {
+    display: block;
+}
+
+.form-input[aria-invalid="true"] {
+    border: 1px solid #c52b48 !important;
+    background-color: #fff8f9;
+}
+
+.form-input[aria-invalid="true"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(197, 43, 72, 0.10);
+}

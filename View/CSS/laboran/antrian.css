@@ -1323,3 +1323,140 @@ input {
     }
 
 }
+
+
+/* =========================================
+   11. FORM ALASAN PENOLAKAN
+========================================= */
+
+.form-alasan-penolakan {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #F7F9FC;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.form-alasan-penolakan label {
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.form-alasan-penolakan textarea {
+    width: 100%;
+    min-height: 85px;
+    padding: 11px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    outline: none;
+}
+
+.form-alasan-penolakan textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.08);
+}
+
+.alasan-error {
+    color: var(--danger);
+    font-size: 10px;
+}
+
+.btn-konfirmasi-penolakan,
+.btn-batal-penolakan {
+    min-height: 40px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-konfirmasi-penolakan {
+    color: white;
+    background: var(--maroon);
+    border: 1px solid var(--maroon);
+}
+
+.btn-batal-penolakan {
+    color: var(--text);
+    background: white;
+    border: 1px solid var(--border);
+}
+
+/* =========================================
+   12. FEEDBACK AKSI
+========================================= */
+
+.aksi-feedback {
+    margin: 12px 0;
+    padding: 11px 13px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.aksi-feedback.error {
+    color: var(--maroon);
+    background: #FFF0F2;
+    border: 1px solid #EBD1DA;
+}
+
+/* =========================================
+   13. STATUS KEPUTUSAN
+========================================= */
+
+.status-badge.approved {
+    color: #0D8060;
+    background: #E7F6F0;
+    border: 1px solid #BCE6D5;
+}
+
+.status-badge.rejected {
+    color: var(--maroon);
+    background: #FFF0F2;
+    border: 1px solid #EBD1DA;
+}
+
+/* =========================================
+   14. NOTIFIKASI
+========================================= */
+
+.notifikasi-antrean {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 3000;
+
+    padding: 13px 18px;
+
+    color: white;
+    background: var(--primary);
+    border-radius: 9px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    transition: 0.25s ease;
+}
+
+.notifikasi-antrean.aktif {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.form-alasan-penolakan [hidden] {
+    display: none;
+}
