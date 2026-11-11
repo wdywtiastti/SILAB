@@ -475,7 +475,7 @@
         verificationLabel.textContent = `${waitingUsers} Akun`;
       }
     }
-  }F
+  }
 
   // =========================================
   // 10. INFORMASI JUMLAH DATA TABEL
