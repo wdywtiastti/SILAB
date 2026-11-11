@@ -16,51 +16,44 @@
         return;
     }
 
+    // Mengambil tanggal berdasarkan waktu perangkat.
     const tanggalHariIni =
         window.SILABWaktu.tanggalHariIni();
 
-    // Mengubah nama hari menjadi tanggal terdekat.
-    function tanggalUntukHari(namaHari) {
-        const daftarHari = [
-            "Minggu",
-            "Senin",
-            "Selasa",
-            "Rabu",
-            "Kamis",
-            "Jumat",
-            "Sabtu"
-        ];
+    const daftarHari = [
+        "Minggu",
+        "Senin",
+        "Selasa",
+        "Rabu",
+        "Kamis",
+        "Jumat",
+        "Sabtu"
+    ];
 
-        const target = daftarHari.indexOf(namaHari);
-
-        if (target === -1) {
-            return tanggalHariIni;
-        }
-
+    // Mengambil nama hari berdasarkan tanggal.
+    function ambilNamaHari(tanggal) {
         const [tahun, bulan, hari] =
-            tanggalHariIni.split("-").map(Number);
+            tanggal.split("-").map(Number);
 
-        const tanggal = new Date(tahun, bulan - 1, hari);
+        const objekTanggal = new Date(
+            tahun,
+            bulan - 1,
+            hari
+        );
 
-        const selisih =
-            (target - tanggal.getDay() + 7) % 7;
-
-        tanggal.setDate(tanggal.getDate() + selisih);
-
-        const pad = angka =>
-            String(angka).padStart(2, "0");
-
-        return [
-            tanggal.getFullYear(),
-            pad(tanggal.getMonth() + 1),
-            pad(tanggal.getDate())
-        ].join("-");
+        return daftarHari[objekTanggal.getDay()];
     }
+
+    const hariIni = ambilNamaHari(tanggalHariIni);
+
+    // ID booking mengikuti tanggal agar tidak bertabrakan
+    // dengan data booking dari hari sebelumnya.
+    const tanggalId = tanggalHariIni.replaceAll("-", "");
 
     // Data jadwal peminjaman laboratorium.
     const bookings = [
         {
-            id: "BOOK-001",
+            id: `BOOK-${tanggalId}-001`,
             userId: "USR-001",
             namaPemohon: "Syaiful Anwar",
             nipNpm: "0702221001",
@@ -74,10 +67,11 @@
             kebutuhanPC: 36,
             kebutuhanKursi: 36,
             status: "terjadwal",
-            presensi: null
+            presensi: null,
+            sumber: "simulasi"
         },
         {
-            id: "BOOK-002",
+            id: `BOOK-${tanggalId}-002`,
             userId: "USR-002",
             namaPemohon: "HMTI",
             nipNpm: "ORMAWA-HMTI",
@@ -91,10 +85,11 @@
             kebutuhanPC: 36,
             kebutuhanKursi: 36,
             status: "terjadwal",
-            presensi: null
+            presensi: null,
+            sumber: "simulasi"
         },
         {
-            id: "BOOK-003",
+            id: `BOOK-${tanggalId}-003`,
             userId: "USR-003",
             namaPemohon: "Ir. Salkin Luthfi",
             nipNpm: "197804122005011003",
@@ -108,10 +103,11 @@
             kebutuhanPC: 36,
             kebutuhanKursi: 36,
             status: "terjadwal",
-            presensi: null
+            presensi: null,
+            sumber: "simulasi"
         },
         {
-            id: "BOOK-004",
+            id: `BOOK-${tanggalId}-004`,
             userId: "USR-004",
             namaPemohon: "Yasir Muin",
             nipNpm: "197804122005011004",
@@ -125,10 +121,11 @@
             kebutuhanPC: 20,
             kebutuhanKursi: 20,
             status: "terjadwal",
-            presensi: null
+            presensi: null,
+            sumber: "simulasi"
         },
         {
-            id: "BOOK-005",
+            id: `BOOK-${tanggalId}-005`,
             userId: "USR-005",
             namaPemohon: "Muthia Sangadji",
             nipNpm: "0702221045",
@@ -142,21 +139,22 @@
             kebutuhanPC: 1,
             kebutuhanKursi: 1,
             status: "terjadwal",
-            presensi: null
+            presensi: null,
+            sumber: "simulasi"
         }
     ];
 
-    // Seluruh data pengajuan Laboran.
+    // Seluruh data pengajuan simulasi.
+    // Total 8 pengajuan dengan ID unik.
     const antrean = [
         {
-            id: "REQ-101",
-            namaKegiatan:
-                "Matakuliah Pengganti (Pemrograman Web)",
+            id: "REQ-UJI-101",
+            namaKegiatan: "Matakuliah Pengganti (Pemrograman Web)",
             namaPemohon: "Dr. Hendra",
             nipNpm: "0702221001",
             jumlahPeserta: 35,
-            hari: "Kamis",
-            tanggal: tanggalUntukHari("Kamis"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "08:00",
             waktuSelesai: "10:30",
             kategori: "K1",
@@ -165,17 +163,18 @@
             status: "bentrok",
             kebutuhanPC: 35,
             kebutuhanKursi: 35,
-            pengajuanPenggeserId: null
+            pengajuanPenggeserId: null,
+            sumber: "simulasi",
+            arsip: false
         },
         {
-            id: "REQ-102",
-            namaKegiatan:
-                "Rapat Asisten Lab RPL (Persiapan Modul)",
+            id: "REQ-UJI-102",
+            namaKegiatan: "Rapat Asisten Lab RPL (Persiapan Modul)",
             namaPemohon: "Sarah Amelia",
             nipNpm: "0702221012",
             jumlahPeserta: 12,
-            hari: "Rabu",
-            tanggal: tanggalUntukHari("Rabu"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "10:00",
             waktuSelesai: "12:00",
             kategori: "K2",
@@ -184,17 +183,18 @@
             status: "verifikasi",
             kebutuhanPC: 12,
             kebutuhanKursi: 12,
-            pengajuanPenggeserId: null
+            pengajuanPenggeserId: null,
+            sumber: "simulasi",
+            arsip: false
         },
         {
-            id: "REQ-103",
-            namaKegiatan:
-                "Belajar Mandiri (Riset Skripsi AI)",
+            id: "REQ-UJI-103",
+            namaKegiatan: "Belajar Mandiri (Riset Skripsi AI)",
             namaPemohon: "Fajar R.",
             nipNpm: "0702221002",
             jumlahPeserta: 2,
-            hari: "Selasa",
-            tanggal: tanggalUntukHari("Selasa"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "13:00",
             waktuSelesai: "15:30",
             kategori: "K5",
@@ -205,17 +205,18 @@
             kebutuhanKursi: 2,
             pengajuanPenggeserId: null,
             alasanTergeser:
-                "Tergeser oleh pengajuan dengan prioritas lebih tinggi."
+                "Jadwal tergeser akibat pengajuan dengan prioritas lebih tinggi.",
+            sumber: "simulasi",
+            arsip: false
         },
         {
-            id: "REQ-104",
-            namaKegiatan:
-                "Matakuliah Pengganti (Grafika Komputer)",
+            id: "REQ-UJI-104",
+            namaKegiatan: "Matakuliah Pengganti (Grafika Komputer)",
             namaPemohon: "Ibu Rina",
             nipNpm: "0702221013",
             jumlahPeserta: 30,
-            hari: "Kamis",
-            tanggal: tanggalUntukHari("Kamis"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "08:00",
             waktuSelesai: "10:30",
             kategori: "K1",
@@ -224,17 +225,18 @@
             status: "bentrok",
             kebutuhanPC: 30,
             kebutuhanKursi: 30,
-            pengajuanPenggeserId: null
+            pengajuanPenggeserId: null,
+            sumber: "simulasi",
+            arsip: false
         },
         {
-            id: "REQ-105",
-            namaKegiatan:
-                "Rapat Asisten Lab (Pelatihan Asisten Baru)",
+            id: "REQ-UJI-105",
+            namaKegiatan: "Rapat Asisten Lab (Pelatihan Asisten Baru)",
             namaPemohon: "Budi Santoso",
             nipNpm: "0702221014",
             jumlahPeserta: 8,
-            hari: "Jumat",
-            tanggal: tanggalUntukHari("Jumat"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "15:30",
             waktuSelesai: "17:30",
             kategori: "K2",
@@ -243,17 +245,18 @@
             status: "verifikasi",
             kebutuhanPC: 8,
             kebutuhanKursi: 8,
-            pengajuanPenggeserId: null
+            pengajuanPenggeserId: null,
+            sumber: "simulasi",
+            arsip: false
         },
         {
-            id: "REQ-106",
-            namaKegiatan:
-                "Belajar Mandiri (Tugas Kelompok Jaringan)",
+            id: "REQ-UJI-106",
+            namaKegiatan: "Belajar Mandiri (Tugas Kelompok Jaringan)",
             namaPemohon: "Kevin",
             nipNpm: "0702221015",
             jumlahPeserta: 4,
-            hari: "Kamis",
-            tanggal: tanggalUntukHari("Kamis"),
+            hari: hariIni,
+            tanggal: tanggalHariIni,
             waktuMulai: "15:00",
             waktuSelesai: "17:00",
             kategori: "K5",
@@ -262,33 +265,96 @@
             status: "verifikasi",
             kebutuhanPC: 2,
             kebutuhanKursi: 4,
-            pengajuanPenggeserId: null
-        }
-    ];
-
-    // Kasus tergeser yang terhubung dengan pengajuan aslinya.
-    const penggunaTergeser = [
-        {
-            id: "CASE-REQ-103",
-            pengajuanId: "REQ-103",
             pengajuanPenggeserId: null,
-            alasan:
-                "Tergeser oleh pengajuan dengan prioritas lebih tinggi.",
-            status: "menunggu_rekomendasi",
-            dibuatPada: new Date().toISOString(),
+            sumber: "simulasi",
+            arsip: false
+        },
+        {
+            id: "REQ-UJI-107",
+            namaKegiatan: "Pengerjaan Tugas Akhir dan Penelitian",
+            namaPemohon: "Rizky Pratama",
+            nipNpm: "0702221012",
+            jumlahPeserta: 3,
+            hari: hariIni,
+            tanggal: tanggalHariIni,
+            waktuMulai: "13:00",
+            waktuSelesai: "15:30",
+            kategori: "K5",
+            prioritas: "P3",
+            skor: 47.50,
+            status: "tergeser",
+            kebutuhanPC: 2,
+            kebutuhanKursi: 3,
+            pengajuanPenggeserId: null,
+            alasanTergeser:
+                "Jadwal tergeser akibat pengajuan dengan prioritas lebih tinggi.",
+            sumber: "simulasi",
+            arsip: false
+        },
+        {
+            id: "REQ-UJI-108",
+            namaKegiatan: "Belajar Mandiri (Tugas Desain UI/UX)",
+            namaPemohon: "Nadia Putri",
+            nipNpm: "0702221016",
+            jumlahPeserta: 3,
+            hari: hariIni,
+            tanggal: tanggalHariIni,
+            waktuMulai: "17:30",
+            waktuSelesai: "19:00",
+            kategori: "K5",
+            prioritas: "P3",
+            skor: 48.50,
+            status: "verifikasi",
+            kebutuhanPC: 2,
+            kebutuhanKursi: 3,
+            pengajuanPenggeserId: null,
+            sumber: "simulasi",
             arsip: false
         }
     ];
 
-    // Data rekomendasi yang dibuat oleh Laboran.
+    // Dua kasus tergeser yang terhubung dengan pengajuan aslinya.
+    const penggunaTergeser = [
+        {
+            id: "CASE-REQ-UJI-103",
+            pengajuanId: "REQ-UJI-103",
+            pengajuanPenggeserId: null,
+            alasan:
+                "Jadwal tergeser akibat pengajuan dengan prioritas lebih tinggi.",
+            status: "menunggu_rekomendasi",
+            dibuatPada: new Date().toISOString(),
+            arsip: false,
+            sumber: "simulasi"
+        },
+        {
+            id: "CASE-REQ-UJI-107",
+            pengajuanId: "REQ-UJI-107",
+            pengajuanPenggeserId: null,
+            alasan:
+                "Jadwal tergeser akibat pengajuan dengan prioritas lebih tinggi.",
+            status: "menunggu_rekomendasi",
+            dibuatPada: new Date().toISOString(),
+            arsip: false,
+            sumber: "simulasi"
+        }
+    ];
+
+    // Data rekomendasi awal masih kosong.
     const rekomendasi = [];
 
-    // Satu sumber data awal untuk seluruh modul Laboran.
+    // Menyediakan satu sumber data awal untuk Laboran.
     window.SILAB_DATA_SEED = {
         bookings,
         antrean,
         penggunaTergeser,
         rekomendasi
     };
+
+    console.log("SILAB: Data simulasi berhasil disiapkan.", {
+        tanggal: tanggalHariIni,
+        bookings: bookings.length,
+        antrean: antrean.length,
+        penggunaTergeser: penggunaTergeser.length
+    });
 
 })(window);

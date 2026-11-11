@@ -1,40 +1,85 @@
 
 /**
  * MODUL ANTREAN SILAB
- * Mengelola tampilan, pengurutan, pagination,
- * detail pengajuan, dan tindakan verifikasi Laboran.
+ *
+ * Mengelola:
+ * 1. Pengambilan antrean aktif.
+ * 2. Penyaringan status pengajuan.
+ * 3. Pengurutan berdasarkan prioritas dan skor.
+ * 4. Pagination.
+ * 5. Detail pengajuan.
+ * 6. Verifikasi pengajuan.
+ * 7. Notifikasi tindakan Laboran.
+ *
+ * Data dikelola melalui layanan.js.
  */
 
 (function (window, document) {
     "use strict";
 
+
+    // =====================================================
+    // 1. KONFIGURASI DAN ELEMEN HALAMAN
+    // =====================================================
+
     const layanan = window.SILABService;
 
-    // Mengambil elemen yang digunakan modul.
     const el = {
         tabel: document.getElementById("antrianBody"),
         template: document.getElementById("templateBarisAntrian"),
         total: document.getElementById("totalAntrian"),
+
         infoHalaman: document.getElementById("paginationInfo"),
         sebelumnya: document.getElementById("prevPage"),
         berikutnya: document.getElementById("nextPage"),
         nomorHalaman: document.getElementById("paginationNumbers"),
+
         modal: document.getElementById("modalReview"),
         notifikasi: document.getElementById("wadahNotifikasi")
     };
 
     const PER_HALAMAN = 5;
 
-    // Informasi kelas prioritas.
+    const STATUS_ANTREAN_AKTIF = new Set([
+        "verifikasi",
+        "bentrok"
+    ]);
+
+    const STATUS_KEPUTUSAN = new Set([
+        "disetujui",
+        "ditolak"
+    ]);
+
+    // Informasi prioritas pengajuan.
     const PRIORITAS = {
-        P1: { label: "P1 TINGGI", kelas: "p1", urutan: 1 },
-        P2: { label: "P2 SEDANG", kelas: "p2", urutan: 2 },
-        P3: { label: "P3 RENDAH", kelas: "p3", urutan: 3 },
-        P4: { label: "P4", kelas: "p4", urutan: 4 },
-        P5: { label: "P5", kelas: "p5", urutan: 5 }
+        P1: {
+            label: "P1 TINGGI",
+            kelas: "p1",
+            urutan: 1
+        },
+        P2: {
+            label: "P2 SEDANG",
+            kelas: "p2",
+            urutan: 2
+        },
+        P3: {
+            label: "P3 RENDAH",
+            kelas: "p3",
+            urutan: 3
+        },
+        P4: {
+            label: "P4",
+            kelas: "p4",
+            urutan: 4
+        },
+        P5: {
+            label: "P5",
+            kelas: "p5",
+            urutan: 5
+        }
     };
 
-    // Status yang digunakan pada antrean aktif.
+    // Informasi status pengajuan.
     const STATUS = {
         bentrok: {
             label: "Bentrok",
@@ -43,6 +88,14 @@
         verifikasi: {
             label: "Verifikasi",
             kelas: "verify"
+        },
+        disetujui: {
+            label: "Disetujui",
+            kelas: "approved"
+        },
+        ditolak: {
+            label: "Ditolak",
+            kelas: "rejected"
         }
     };
 
@@ -51,46 +104,79 @@
     let idTerpilih = null;
     let timerModal = null;
 
-    // Memastikan layanan dan elemen halaman tersedia.
+
+    // =====================================================
+    // 2. PEMERIKSAAN KOMPONEN
+    // =====================================================
+
+    const elemenWajib = [
+        el.tabel,
+        el.template,
+        el.total,
+        el.infoHalaman,
+        el.sebelumnya,
+        el.berikutnya,
+        el.nomorHalaman,
+        el.modal
+    ];
+
     if (
         !layanan ||
         typeof layanan.getAntreanAktif !== "function" ||
-        Object.values(el).some(item => !item)
+        typeof layanan.getById !== "function" ||
+        typeof layanan.update !== "function" ||
+        elemenWajib.some(item => !item) ||
+        !el.template.content
     ) {
         console.error(
-            "SILAB: Layanan antrean atau elemen halaman belum tersedia. Periksa layanan.js dan HTML."
+            "SILAB: Layanan atau elemen modul antrean belum tersedia."
         );
+
         return;
     }
 
-    // Mengubah format waktu menjadi format tampilan.
+
+    // =====================================================
+    // 3. UTILITAS FORMAT DATA
+    // =====================================================
+
+    // Mengubah format jam.
     function formatJam(nilai) {
         return String(nilai || "--:--").replace(":", ".");
     }
 
-    // Menggabungkan hari dan rentang waktu pengajuan.
+
+    // Menggabungkan hari dan rentang waktu.
     function formatWaktu(data) {
         if (
-            !data.hari ||
             !data.waktuMulai ||
             !data.waktuSelesai
         ) {
             return "Waktu belum ditentukan";
         }
 
-        return `${data.hari}, ${formatJam(data.waktuMulai)}–${formatJam(data.waktuSelesai)}`;
+        const rentang =
+            `${formatJam(data.waktuMulai)}–${formatJam(data.waktuSelesai)}`;
+
+        return data.hari
+            ? `${data.hari}, ${rentang}`
+            : `${data.tanggal || "Tanggal belum ditentukan"}, ${rentang}`;
     }
 
-    // Menampilkan skor menggunakan format angka Indonesia.
-    function formatSkor(nilai) {
-        const angka = Number(nilai);
 
+    // Mengubah skor menjadi format angka Indonesia.
+    function formatSkor(nilai) {
         if (
             nilai === null ||
             nilai === undefined ||
-            nilai === "" ||
-            !Number.isFinite(angka)
+            nilai === ""
         ) {
+            return "Belum tersedia";
+        }
+
+        const angka = Number(nilai);
+
+        if (!Number.isFinite(angka)) {
             return "Belum tersedia";
         }
 
@@ -100,7 +186,8 @@
         });
     }
 
-    // Mengambil informasi kelas prioritas.
+
+    // Mengambil informasi prioritas.
     function infoPrioritas(nilai) {
         const kode = String(nilai || "").toUpperCase();
 
@@ -111,42 +198,81 @@
         };
     }
 
-    // Mengambil informasi status pengajuan.
+
+    // Mengambil informasi status.
     function infoStatus(nilai) {
         const kode = String(nilai || "").toLowerCase();
 
         return STATUS[kode] || {
-            label: "Belum ditentukan",
+            label: kode
+                ? kode.replaceAll("_", " ").replace(
+                    /\b\w/g,
+                    huruf => huruf.toUpperCase()
+                )
+                : "Belum ditentukan",
+
             kelas: "status-other"
         };
     }
 
-    // Mengambil hanya antrean aktif dari layanan data.
-    // Status tergeser dan rekomendasi tidak akan ditampilkan.
-    function ambilAntreanAktif() {
-        return layanan.getAntreanAktif().sort((a, b) => {
-            const bedaPrioritas =
-                infoPrioritas(a.prioritas).urutan -
-                infoPrioritas(b.prioritas).urutan;
 
-            return bedaPrioritas ||
-                Number(b.skor || 0) - Number(a.skor || 0);
-        });
+    // =====================================================
+    // 4. PENGAMBILAN DAN PENGURUTAN ANTREAN
+    // =====================================================
+
+    function ambilAntreanAktif() {
+
+        // Mengambil data melalui layanan.js.
+        // Layanan hanya mengembalikan status verifikasi
+        // dan bentrok.
+
+        return layanan.getAntreanAktif()
+
+            // Pemeriksaan tambahan agar status lain
+            // tidak masuk ke tabel antrean.
+            .filter(data =>
+                STATUS_ANTREAN_AKTIF.has(
+                    String(data.status || "").toLowerCase()
+                )
+            )
+
+            // Mengurutkan prioritas tertinggi terlebih dahulu.
+            .sort((a, b) => {
+                const bedaPrioritas =
+                    infoPrioritas(a.prioritas).urutan -
+                    infoPrioritas(b.prioritas).urutan;
+
+                if (bedaPrioritas !== 0) {
+                    return bedaPrioritas;
+                }
+
+                // Jika prioritas sama, skor tertinggi dahulu.
+                return Number(b.skor || 0) -
+                    Number(a.skor || 0);
+            });
     }
 
-    // Mengisi teks tanpa memasukkan HTML dari data pengguna.
+
+    // =====================================================
+    // 5. UTILITAS TAMPILAN
+    // =====================================================
+
+    // Mengisi teks tanpa memasukkan HTML dari pengguna.
     function isiTeks(akar, pemilih, nilai) {
         const target = akar.querySelector(pemilih);
 
-        if (target) {
-            target.textContent =
-                nilai === null ||
-                nilai === undefined ||
-                nilai === ""
-                    ? "—"
-                    : String(nilai);
+        if (!target) {
+            return;
         }
+
+        target.textContent =
+            nilai === null ||
+            nilai === undefined ||
+            nilai === ""
+                ? "—"
+                : String(nilai);
     }
+
 
     // Mengatur badge prioritas dan status.
     function aturBadge(akar, pemilih, dasar, info) {
@@ -160,7 +286,11 @@
         badge.textContent = info.label;
     }
 
-    // Membuat satu baris tabel dari template HTML.
+
+    // =====================================================
+    // 6. MEMBUAT BARIS TABEL
+    // =====================================================
+
     function buatBaris(data) {
         const baris = el.template.content
             .firstElementChild.cloneNode(true);
@@ -169,42 +299,49 @@
 
         baris.dataset.id = data.id;
 
+        // ID pengajuan.
         isiTeks(
             baris,
             '[data-field="id"]',
             `#${data.id}`
         );
 
+        // Nama kegiatan.
         isiTeks(
             baris,
             '[data-field="nama-kegiatan"]',
             data.namaKegiatan
         );
 
+        // Nama pemohon dan jumlah peserta.
         isiTeks(
             baris,
             '[data-field="pemohon"]',
             `Pemohon: ${data.namaPemohon || "—"} • ${peserta} peserta`
         );
 
+        // Waktu pengajuan.
         isiTeks(
             baris,
             '[data-field="rentang-waktu"]',
             formatWaktu(data)
         );
 
+        // Kebutuhan fasilitas.
         isiTeks(
             baris,
             '[data-field="kebutuhan"]',
             `PC: ${data.kebutuhanPC ?? "—"} • Kursi: ${data.kebutuhanKursi ?? "—"}`
         );
 
+        // Skor klasifikasi.
         isiTeks(
             baris,
             '[data-field="skor"]',
             `Skor: ${formatSkor(data.skor)}`
         );
 
+        // Badge prioritas.
         aturBadge(
             baris,
             '[data-field="prioritas"]',
@@ -212,6 +349,7 @@
             infoPrioritas(data.prioritas)
         );
 
+        // Badge status.
         aturBadge(
             baris,
             '[data-field="status"]',
@@ -219,6 +357,7 @@
             infoStatus(data.status)
         );
 
+        // ID untuk tombol detail.
         const tombolDetail = baris.querySelector(
             "[data-aksi-detail]"
         );
@@ -230,7 +369,11 @@
         return baris;
     }
 
-    // Membuat tombol nomor halaman.
+
+    // =====================================================
+    // 7. PAGINATION
+    // =====================================================
+
     function tampilkanNomorHalaman(totalHalaman) {
         el.nomorHalaman.replaceChildren();
 
@@ -242,38 +385,31 @@
             const tombol = document.createElement("button");
 
             tombol.type = "button";
+
             tombol.className =
                 `pagination-btn${nomor === halamanAktif ? " active" : ""}`;
 
             tombol.textContent = nomor;
+
             tombol.dataset.halaman = nomor;
 
             if (nomor === halamanAktif) {
-                tombol.setAttribute("aria-current", "page");
+                tombol.setAttribute(
+                    "aria-current",
+                    "page"
+                );
             }
 
             el.nomorHalaman.append(tombol);
         }
     }
 
-    // Menampilkan pesan ketika antrean kosong.
-    function tampilkanPesanKosong(pesan) {
-        const baris = document.createElement("tr");
-        const sel = document.createElement("td");
 
-        sel.colSpan = 6;
-        sel.className = "empty-state";
-        sel.textContent = pesan;
+    // =====================================================
+    // 8. MENAMPILKAN ANTREAN
+    // =====================================================
 
-        baris.append(sel);
-        el.tabel.append(baris);
-    }
-
-    // Memperbarui tabel dan pagination.
     function tampilkanAntrean() {
-        let pesanKosong =
-            "Belum ada pengajuan yang perlu diproses.";
-
         try {
             dataAntrean = ambilAntreanAktif();
 
@@ -284,7 +420,16 @@
             );
 
             dataAntrean = [];
-            pesanKosong = "Data antrean gagal dimuat.";
+
+            el.tabel.replaceChildren();
+
+            tampilkanPesanKosong(
+                "Data antrean gagal dimuat."
+            );
+
+            perbaruiPagination(0);
+
+            return;
         }
 
         const total = dataAntrean.length;
@@ -294,6 +439,7 @@
             Math.ceil(total / PER_HALAMAN)
         );
 
+        // Memastikan halaman aktif tidak melebihi jumlah halaman.
         halamanAktif = Math.min(
             halamanAktif,
             totalHalaman
@@ -301,8 +447,10 @@
 
         el.tabel.replaceChildren();
 
-        if (!total) {
-            tampilkanPesanKosong(pesanKosong);
+        if (total === 0) {
+            tampilkanPesanKosong(
+                "Belum ada pengajuan yang perlu diproses."
+            );
 
         } else {
             const awal =
@@ -314,17 +462,16 @@
             dataAntrean
                 .slice(awal, awal + PER_HALAMAN)
                 .forEach(data => {
-                    fragmen.append(buatBaris(data));
+                    fragmen.append(
+                        buatBaris(data)
+                    );
                 });
 
             el.tabel.append(fragmen);
         }
 
-        // Memperbarui jumlah pengajuan aktif.
-        el.total.textContent = `${total} Pengajuan`;
-
-        // Memperbarui informasi pagination.
-        el.infoHalaman = el.infoHalaman;
+        el.total.textContent =
+            `${total} Pengajuan`;
 
         el.infoHalaman.textContent = total
             ? `Menampilkan ${(halamanAktif - 1) * PER_HALAMAN + 1}–${Math.min(halamanAktif * PER_HALAMAN, total)} dari ${total} pengajuan`
@@ -334,15 +481,50 @@
             total ? totalHalaman : 0
         );
 
-        el.sebelumnya.disabled =
-            halamanAktif <= 1 || !total;
-
-        el.berikutnya.disabled =
-            halamanAktif >= totalHalaman || !total;
+        perbaruiPagination(total);
     }
 
-    // Mengisi detail pengajuan pada modal.
+
+    // Mengatur tombol pagination.
+    function perbaruiPagination(total) {
+        const totalHalaman = Math.max(
+            1,
+            Math.ceil(total / PER_HALAMAN)
+        );
+
+        el.sebelumnya.disabled =
+            halamanAktif <= 1 || total === 0;
+
+        el.berikutnya.disabled =
+            halamanAktif >= totalHalaman || total === 0;
+    }
+
+
+    // Menampilkan pesan ketika tabel kosong.
+    function tampilkanPesanKosong(pesan) {
+        const baris = document.createElement("tr");
+
+        const sel = document.createElement("td");
+
+        sel.colSpan = 6;
+
+        sel.className = "empty-state";
+
+        sel.textContent = pesan;
+
+        baris.append(sel);
+
+        el.tabel.append(baris);
+    }
+
+
+    // =====================================================
+    // 9. DETAIL PENGAJUAN
+    // =====================================================
+
     function isiModal(data) {
+
+        // Informasi utama.
         isiTeks(
             el.modal,
             '[data-field="label-id"]',
@@ -403,6 +585,7 @@
             formatSkor(data.skor)
         );
 
+        // Badge prioritas.
         aturBadge(
             el.modal,
             '[data-field="prioritas-detail"]',
@@ -410,6 +593,7 @@
             infoPrioritas(data.prioritas)
         );
 
+        // Badge status.
         aturBadge(
             el.modal,
             '[data-field="status-detail"]',
@@ -418,35 +602,66 @@
         );
 
         // Menampilkan panel sesuai status aktif.
-        const status = String(data.status || "").toLowerCase();
+        const status = String(
+            data.status || ""
+        ).toLowerCase();
 
-        el.modal.querySelectorAll("[data-panel]").forEach(item => {
-            item.hidden = item.dataset.panel !== status;
+        const panel = [
+            "bentrok",
+            "verifikasi"
+        ].includes(status)
+            ? status
+            : "lainnya";
+
+        el.modal.querySelectorAll(
+            "[data-panel]"
+        ).forEach(item => {
+            item.hidden =
+                item.dataset.panel !== panel;
         });
 
-        // Menampilkan keterangan bentrok.
+        // Pesan ketika terjadi bentrok.
         isiTeks(
             el.modal,
             '[data-field="pesan-bentrok"]',
-            `Pengajuan #${data.id} terindikasi mengalami bentrok pada ${formatWaktu(data)}. Laboran dapat meneruskan kasus ini kepada Kepala Lab untuk ditinjau.`
+            `Pengajuan #${data.id} terindikasi mengalami bentrok pada ${formatWaktu(data)}. Laboran perlu menindaklanjuti kasus ini sesuai prosedur pemeriksaan bentrok.`
+        );
+
+        // Pesan verifikasi.
+        isiTeks(
+            el.modal,
+            '[data-field="pesan-verifikasi"]',
+            `Pengajuan #${data.id} sedang menunggu pemeriksaan Laboran. Periksa kelengkapan informasi sebelum memberikan keputusan.`
         );
     }
 
-    // Membuka modal berdasarkan ID pengajuan aktif.
+
+    // =====================================================
+    // 10. MEMBUKA MODAL
+    // =====================================================
+
     function bukaModal(id) {
-        // Hanya mencari data yang masih berada di antrean aktif.
-        const data = layanan.getAntreanAktif().find(
-            item => String(item.id) === String(id)
+        const data = layanan.getById(
+            "antrean",
+            id
         );
 
-        if (!data) {
+        // Memastikan pengajuan masih berada
+        // dalam antrean aktif.
+        if (
+            !data ||
+            !STATUS_ANTREAN_AKTIF.has(
+                String(data.status || "").toLowerCase()
+            )
+        ) {
             tampilkanNotifikasi(
-                "Data tidak ditemukan",
+                "Data tidak tersedia",
                 "Pengajuan sudah tidak berada dalam antrean aktif.",
                 "error"
             );
 
             tampilkanAntrean();
+
             return;
         }
 
@@ -457,9 +672,15 @@
         window.clearTimeout(timerModal);
 
         el.modal.hidden = false;
-        el.modal.setAttribute("aria-hidden", "false");
 
-        document.body.classList.add("modal-terbuka");
+        el.modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-terbuka"
+        );
 
         window.requestAnimationFrame(() => {
             el.modal.classList.add("is-open");
@@ -470,39 +691,67 @@
         });
     }
 
-    // Menutup modal setelah animasi selesai.
+
+    // =====================================================
+    // 11. MENUTUP MODAL
+    // =====================================================
+
     function tutupModal() {
+        if (el.modal.hidden) {
+            return;
+        }
+
         el.modal.classList.remove("is-open");
 
-        el.modal.setAttribute("aria-hidden", "true");
+        el.modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
 
-        document.body.classList.remove("modal-terbuka");
+        document.body.classList.remove(
+            "modal-terbuka"
+        );
 
         window.clearTimeout(timerModal);
 
         timerModal = window.setTimeout(() => {
             el.modal.hidden = true;
+
             idTerpilih = null;
+
         }, 250);
     }
 
-    // Menampilkan notifikasi hasil tindakan Laboran.
+
+    // =====================================================
+    // 12. NOTIFIKASI
+    // =====================================================
+
     function tampilkanNotifikasi(
         judul,
         pesan,
         jenis = "sukses"
     ) {
         if (!el.notifikasi) {
+            console.warn(
+                `SILAB: ${judul} - ${pesan}`
+            );
+
             return;
         }
 
         const toast = document.createElement("div");
+
         const ikon = document.createElement("i");
+
         const konten = document.createElement("div");
+
         const judulToast = document.createElement("strong");
+
         const pesanToast = document.createElement("p");
 
         toast.className = "notifikasi-toast";
+
         toast.dataset.jenis = jenis;
 
         ikon.className = jenis === "error"
@@ -510,32 +759,48 @@
             : "bi bi-check-circle-fill notifikasi-ikon";
 
         konten.className = "notifikasi-konten";
+
         judulToast.className = "notifikasi-judul";
+
         pesanToast.className = "notifikasi-pesan";
 
         judulToast.textContent = judul;
+
         pesanToast.textContent = pesan;
 
-        konten.append(judulToast, pesanToast);
-        toast.append(ikon, konten);
+        konten.append(
+            judulToast,
+            pesanToast
+        );
+
+        toast.append(
+            ikon,
+            konten
+        );
 
         el.notifikasi.append(toast);
 
         window.setTimeout(() => {
             toast.classList.add("is-hilang");
 
-            window.setTimeout(
-                () => toast.remove(),
-                250
-            );
+            window.setTimeout(() => {
+                toast.remove();
+            }, 250);
+
         }, 3200);
     }
 
-    // Menyimpan keputusan verifikasi Laboran.
+
+    // =====================================================
+    // 13. PROSES VERIFIKASI
+    // =====================================================
+
     function prosesVerifikasi(keputusan) {
+
+        // Hanya dua keputusan yang diperbolehkan.
         if (
             !idTerpilih ||
-            !["disetujui", "ditolak"].includes(keputusan)
+            !STATUS_KEPUTUSAN.has(keputusan)
         ) {
             return;
         }
@@ -545,18 +810,22 @@
             idTerpilih
         );
 
+        // Memastikan status masih verifikasi.
         if (
             !data ||
-            String(data.status).toLowerCase() !== "verifikasi"
+            String(data.status).toLowerCase() !==
+                "verifikasi"
         ) {
             tampilkanNotifikasi(
                 "Pengajuan tidak dapat diproses",
-                "Status pengajuan sudah berubah.",
+                "Status pengajuan sudah berubah atau tidak lagi menunggu verifikasi.",
                 "error"
             );
 
             tutupModal();
+
             tampilkanAntrean();
+
             return;
         }
 
@@ -573,118 +842,194 @@
         }
 
         try {
-            layanan.update("antrean", idTerpilih, {
-                status: keputusan,
-                waktuVerifikasi: new Date().toISOString()
-            });
+            // Memperbarui status melalui layanan.js.
+            layanan.update(
+                "antrean",
+                idTerpilih,
+                {
+                    status: keputusan,
 
+                    waktuVerifikasi:
+                        new Date().toISOString()
+                }
+            );
+
+            // Pengajuan otomatis keluar dari antrean aktif.
             tutupModal();
 
             tampilkanNotifikasi(
                 keputusan === "disetujui"
                     ? "Pengajuan disetujui"
                     : "Pengajuan ditolak",
-                `Status ${data.id} diperbarui dan dikeluarkan dari antrean aktif.`
+
+                `Status ${data.id} berhasil diperbarui dan dikeluarkan dari antrean aktif.`
             );
 
+            tampilkanAntrean();
+
         } catch (error) {
-            console.error("SILAB Antrean:", error);
+            console.error(
+                "SILAB Antrean:",
+                error
+            );
 
             tampilkanNotifikasi(
                 "Perubahan gagal disimpan",
+
                 error.message ||
                     "Terjadi kesalahan saat memperbarui pengajuan.",
+
                 "error"
             );
         }
     }
 
-    // Menangani klik tombol detail pengajuan.
-    el.tabel.addEventListener("click", event => {
-        const tombol = event.target.closest(
-            "[data-aksi-detail]"
-        );
 
-        if (
-            tombol &&
-            el.tabel.contains(tombol)
-        ) {
-            bukaModal(tombol.dataset.id);
+    // =====================================================
+    // 14. EVENT TOMBOL DETAIL
+    // =====================================================
+
+    el.tabel.addEventListener(
+        "click",
+        event => {
+            const tombol = event.target.closest(
+                "[data-aksi-detail]"
+            );
+
+            if (
+                tombol &&
+                el.tabel.contains(tombol)
+            ) {
+                bukaModal(tombol.dataset.id);
+            }
         }
-    });
+    );
 
-    // Navigasi halaman sebelumnya.
-    el.sebelumnya.addEventListener("click", () => {
-        if (halamanAktif > 1) {
-            halamanAktif -= 1;
-            tampilkanAntrean();
+
+    // =====================================================
+    // 15. EVENT PAGINATION
+    // =====================================================
+
+    // Halaman sebelumnya.
+    el.sebelumnya.addEventListener(
+        "click",
+        () => {
+            if (halamanAktif > 1) {
+                halamanAktif -= 1;
+
+                tampilkanAntrean();
+            }
         }
-    });
+    );
 
-    // Navigasi halaman berikutnya.
-    el.berikutnya.addEventListener("click", () => {
-        if (
-            halamanAktif <
-            Math.ceil(dataAntrean.length / PER_HALAMAN)
-        ) {
-            halamanAktif += 1;
-            tampilkanAntrean();
+
+    // Halaman berikutnya.
+    el.berikutnya.addEventListener(
+        "click",
+        () => {
+            const totalHalaman = Math.ceil(
+                dataAntrean.length / PER_HALAMAN
+            );
+
+            if (halamanAktif < totalHalaman) {
+                halamanAktif += 1;
+
+                tampilkanAntrean();
+            }
         }
-    });
+    );
 
-    // Navigasi melalui nomor halaman.
-    el.nomorHalaman.addEventListener("click", event => {
-        const tombol = event.target.closest(
-            "[data-halaman]"
-        );
 
-        if (tombol) {
+    // Nomor halaman.
+    el.nomorHalaman.addEventListener(
+        "click",
+        event => {
+            const tombol = event.target.closest(
+                "[data-halaman]"
+            );
+
+            if (!tombol) {
+                return;
+            }
+
             halamanAktif = Number(
                 tombol.dataset.halaman
             );
 
             tampilkanAntrean();
         }
-    });
+    );
 
-    // Menangani tombol keputusan dan penutupan modal.
-    el.modal.addEventListener("click", event => {
-        if (event.target.closest("[data-tutup-modal]")) {
-            tutupModal();
-            return;
-        }
 
-        const tombol = event.target.closest(
-            "[data-keputusan]"
-        );
+    // =====================================================
+    // 16. EVENT MODAL
+    // =====================================================
 
-        if (tombol) {
-            prosesVerifikasi(
-                tombol.dataset.keputusan
+    el.modal.addEventListener(
+        "click",
+        event => {
+
+            // Menutup modal.
+            if (
+                event.target.closest(
+                    "[data-tutup-modal]"
+                )
+            ) {
+                tutupModal();
+
+                return;
+            }
+
+            // Menjalankan keputusan verifikasi.
+            const tombol = event.target.closest(
+                "[data-keputusan]"
             );
-        }
-    });
 
-    // Menutup modal dengan tombol Escape.
-    document.addEventListener("keydown", event => {
-        if (
-            event.key === "Escape" &&
-            !el.modal.hidden
-        ) {
-            tutupModal();
+            if (tombol) {
+                prosesVerifikasi(
+                    tombol.dataset.keputusan
+                );
+            }
         }
-    });
+    );
 
-    // Memperbarui antrean jika data berubah.
+
+    // =====================================================
+    // 17. TOMBOL ESCAPE
+    // =====================================================
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key === "Escape" &&
+                !el.modal.hidden
+            ) {
+                tutupModal();
+            }
+        }
+    );
+
+
+    // =====================================================
+    // 18. SINKRONISASI DATA
+    // =====================================================
+
+    // Memperbarui tampilan ketika layanan.js
+    // mengirimkan pemberitahuan perubahan data.
+
     window.addEventListener(
         "silab:data-changed",
         () => {
-            halamanAktif = 1;
             tampilkanAntrean();
         }
     );
 
-    // Menampilkan data antrean saat halaman dibuka.
+
+    // =====================================================
+    // 19. INISIALISASI MODUL
+    // =====================================================
+
     tampilkanAntrean();
 
     console.log(

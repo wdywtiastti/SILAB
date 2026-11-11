@@ -1,166 +1,279 @@
 
 /**
- * LAYANAN DATA SILAB — LABORAN
+ * LAYANAN DATA SILAB
  *
  * Mengelola:
- * 1. Penyimpanan data simulasi.
- * 2. Pengelolaan antrean pengajuan.
- * 3. Pengelolaan kasus pengguna tergeser.
- * 4. Pengiriman rekomendasi jadwal.
- * 5. Pengeditan rekomendasi dalam batas 24 jam.
- * 6. Pembatalan rekomendasi.
- * 7. Penyimpanan riwayat perubahan.
- * 8. Pemeriksaan kedaluwarsa rekomendasi.
+ * 1. Penyimpanan data simulasi melalui LocalStorage.
+ * 2. Sinkronisasi data antarmodul dan antartab.
+ * 3. Pengelolaan booking dan antrean.
+ * 4. Pengelolaan kasus pengguna tergeser.
+ * 5. Pengiriman rekomendasi jadwal.
+ * 6. Pengeditan rekomendasi maksimal 24 jam.
+ * 7. Pembatalan rekomendasi.
+ * 8. Validasi waktu, kapasitas, dan bentrokan jadwal.
  *
- * Penyimpanan sementara menggunakan localStorage.
- * Integrasi database PHP dilakukan pada tahap backend.
+ * Sumber data awal: data_uji.js
  */
 
 (function (window) {
     "use strict";
 
+
     // =====================================================
-    // 1. KONFIGURASI UTAMA
+    // 1. KONFIGURASI
     // =====================================================
 
-    const DATA_SEED = window.SILAB_DATA_SEED;
     const STORAGE_KEY = "silab_laboran_v1";
 
-    if (!DATA_SEED) {
-        console.error(
-            "SILAB: muat data_uji.js sebelum layanan.js."
-        );
-        return;
-    }
+    const DATA_SEED = window.SILAB_DATA_SEED;
 
-    const KOLEKSI = Object.keys(DATA_SEED);
+    const KOLEKSI = [
+        "bookings",
+        "antrean",
+        "penggunaTergeser",
+        "rekomendasi"
+    ];
 
-    // Status yang tampil pada antrean.
-    const ANTREAN_AKTIF = new Set([
+    const KAPASITAS_PC = 36;
+    const KAPASITAS_KURSI = 36;
+
+    const BATAS_EDIT = 24 * 60 * 60 * 1000;
+
+    const ZONA_WIT = 9 * 60 * 60 * 1000;
+
+    const STATUS_ANTREAN_AKTIF = new Set([
         "verifikasi",
         "bentrok"
     ]);
 
-    // Status yang tampil pada rekomendasi.
-    const REKOMENDASI_AKTIF = new Set([
+    const STATUS_REKOMENDASI_AKTIF = new Set([
         "menunggu_rekomendasi",
         "rekomendasi_dikirim"
     ]);
 
-    // Status akhir rekomendasi.
-    const REKOMENDASI_AKHIR = new Set([
+    const STATUS_REKOMENDASI_AKHIR = new Set([
         "diterima",
         "ditolak",
-        "kedaluwarsa"
+        "kedaluwarsa",
+        "dibatalkan"
     ]);
 
-    // Konfigurasi laboratorium.
-    // Sesuaikan dengan kapasitas dan jam operasional resmi.
-    const KAPASITAS_PC = 36;
-    const KAPASITAS_KURSI = 36;
-
-    const JAM_BUKA = "07:30";
-    const JAM_TUTUP = "18:00";
-
-    // Batas respons pengguna: 24 jam.
-    const BATAS_RESPONS_MS = 24 * 60 * 60 * 1000;
+    const STATUS_JADWAL_AKTIF = new Set([
+        "terjadwal",
+        "disetujui",
+        "dikonfirmasi",
+        "aktif",
+        "approved"
+    ]);
 
     let dataAktif = null;
-    let dataMemori = null;
     let gunakanMemori = false;
+    let dataMemori = null;
 
 
     // =====================================================
-    // 2. UTILITAS DATA
+    // 2. PEMERIKSAAN DATA AWAL
     // =====================================================
 
-    // Membuat salinan agar data asli tidak berubah.
-    function salin(data) {
+    if (!DATA_SEED) {
+        console.error(
+            "SILAB: data_uji.js harus dimuat sebelum layanan.js."
+        );
+
+        return;
+    }
+
+    if (
+        !KOLEKSI.every(koleksi =>
+            Array.isArray(DATA_SEED[koleksi])
+        )
+    ) {
+        console.error(
+            "SILAB: Struktur data simulasi tidak valid."
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // 3. UTILITAS DASAR
+    // =====================================================
+
+    // Membuat salinan data agar sumber asli tidak berubah.
+    function clone(data) {
         return JSON.parse(JSON.stringify(data));
     }
 
-    // Menyeragamkan penulisan status.
-    function statusNormal(status) {
-        const nilai = String(status || "").toLowerCase();
-
-        return ({
-            rekomendasi_terkirim: "rekomendasi_dikirim",
-            menunggu_konfirmasi: "rekomendasi_dikirim"
-        })[nilai] || nilai;
-    }
 
     // Memastikan koleksi tersedia.
-    function validasiKoleksi(nama) {
-        if (!Object.prototype.hasOwnProperty.call(DATA_SEED, nama)) {
+    function validasiKoleksi(koleksi) {
+        if (!KOLEKSI.includes(koleksi)) {
             throw new Error(
-                `Koleksi "${nama}" tidak ditemukan.`
+                `Koleksi "${koleksi}" tidak ditemukan.`
             );
         }
     }
 
-    // Memeriksa struktur penyimpanan.
+
+    // Memeriksa struktur objek penyimpanan.
     function strukturValid(data) {
         return (
-            data &&
+            data !== null &&
             typeof data === "object" &&
-            !Array.isArray(data) &&
-            KOLEKSI.every(
-                nama => Array.isArray(data[nama])
-            )
+            !Array.isArray(data)
         );
     }
 
-    // Mencari kasus berdasarkan ID kasus atau ID pengajuan.
+
+    // Memeriksa apakah ID sudah tersedia.
+    function sudahAda(daftar, id) {
+        return daftar.some(item =>
+            String(item.id) === String(id)
+        );
+    }
+
+
+    // Menggabungkan data simulasi tanpa menimpa data lama.
+    function gabungkanDataAwal(data) {
+        KOLEKSI.forEach(koleksi => {
+            if (!Array.isArray(data[koleksi])) {
+                data[koleksi] = [];
+            }
+
+            DATA_SEED[koleksi].forEach(item => {
+                if (
+                    item.id !== undefined &&
+                    !sudahAda(data[koleksi], item.id)
+                ) {
+                    data[koleksi].push(clone(item));
+                }
+            });
+        });
+
+        return data;
+    }
+
+
+    // =====================================================
+    // 4. PENGELOLAAN KASUS TERGESER
+    // =====================================================
+
+    // Membuat ID kasus tergeser yang unik.
+    function buatIdKasus(pengajuanId, daftarKasus) {
+        const dasar = `CASE-${pengajuanId}`;
+
+        let id = dasar;
+        let nomor = 2;
+
+        while (sudahAda(daftarKasus, id)) {
+            id = `${dasar}-${nomor}`;
+            nomor += 1;
+        }
+
+        return id;
+    }
+
+
+    // Mengambil pengajuan berdasarkan ID.
+    function cariPengajuan(data, id) {
+        if (!id) {
+            return null;
+        }
+
+        return (
+            data.antrean.find(item =>
+                String(item.id) === String(id)
+            ) ||
+            null
+        );
+    }
+
+
+    // Mengambil data booking atau pengajuan penggeser.
+    function cariPenggeser(data, id) {
+        if (!id) {
+            return null;
+        }
+
+        return (
+            data.antrean.find(item =>
+                String(item.id) === String(id)
+            ) ||
+            data.bookings.find(item =>
+                String(item.id) === String(id)
+            ) ||
+            null
+        );
+    }
+
+
+    // Mengambil kasus berdasarkan ID kasus atau ID pengajuan.
     function cariKasus(data, id) {
+        if (!id) {
+            return null;
+        }
+
         return data.penggunaTergeser.find(kasus =>
             String(kasus.id) === String(id) ||
             String(kasus.pengajuanId) === String(id)
-        );
+        ) || null;
     }
 
-    // Mengambil rekomendasi terbaru milik suatu kasus.
-    function cariTerbaru(data, kasus) {
-        const daftar = data.rekomendasi.filter(rec =>
-            [
-                rec.caseId,
-                rec.kasusId,
-                rec.antreanId,
-                rec.pengajuanId,
-                rec.idPengajuan
-            ].some(id =>
-                id !== undefined &&
-                id !== null &&
-                (
-                    String(id) === String(kasus.id) ||
-                    String(id) === String(kasus.pengajuanId)
-                )
+
+    // Membandingkan relasi rekomendasi dengan kasus.
+    function rekomendasiTerhubung(rekomendasi, kasus) {
+        const referensi = [
+            rekomendasi.caseId,
+            rekomendasi.kasusId,
+            rekomendasi.pengajuanId,
+            rekomendasi.antreanId
+        ];
+
+        return referensi.some(id =>
+            id !== undefined &&
+            id !== null &&
+            (
+                String(id) === String(kasus.id) ||
+                String(id) === String(kasus.pengajuanId)
             )
         );
-
-        return daftar[daftar.length - 1] || null;
     }
 
-    // Membuat kasus tergeser jika belum tersedia.
-    function pastikanKasus(data, pengajuan) {
-        let kasus = data.penggunaTergeser.find(
-            item =>
-                String(item.pengajuanId) === String(pengajuan.id)
+
+    // Mengambil rekomendasi terbaru berdasarkan waktu pengiriman.
+    function cariRekomendasiTerbaru(data, kasus) {
+        const daftar = data.rekomendasi.filter(item =>
+            rekomendasiTerhubung(item, kasus)
         );
 
+        daftar.sort((a, b) => {
+            const waktuA = Date.parse(
+                a.dikirimPada || a.dibuatPada || ""
+            ) || 0;
+
+            const waktuB = Date.parse(
+                b.dikirimPada || b.dibuatPada || ""
+            ) || 0;
+
+            return waktuB - waktuA;
+        });
+
+        return daftar[0] || null;
+    }
+
+
+    // Membuat kasus otomatis untuk pengajuan tergeser.
+    function pastikanKasusTergeser(data, pengajuan) {
+        let kasus = cariKasus(data, pengajuan.id);
+
         if (!kasus) {
-            let id = `CASE-${pengajuan.id}`;
-            let urutan = 2;
-
-            while (
-                data.penggunaTergeser.some(
-                    item => item.id === id
-                )
-            ) {
-                id = `CASE-${pengajuan.id}-${urutan++}`;
-            }
-
             kasus = {
-                id,
+                id: buatIdKasus(
+                    pengajuan.id,
+                    data.penggunaTergeser
+                ),
+
                 pengajuanId: pengajuan.id,
 
                 pengajuanPenggeserId:
@@ -168,177 +281,158 @@
 
                 alasan:
                     pengajuan.alasanTergeser ||
-                    "Jadwal asal tergeser.",
+                    "Jadwal tergeser akibat pengajuan dengan prioritas lebih tinggi.",
 
                 status: "menunggu_rekomendasi",
+
                 dibuatPada: new Date().toISOString(),
+
                 arsip: false
             };
 
             data.penggunaTergeser.push(kasus);
+
+        } else {
+            kasus.pengajuanId = pengajuan.id;
+
+            if (
+                pengajuan.pengajuanPenggeserId !== undefined
+            ) {
+                kasus.pengajuanPenggeserId =
+                    pengajuan.pengajuanPenggeserId;
+            }
+
+            if (pengajuan.alasanTergeser) {
+                kasus.alasan = pengajuan.alasanTergeser;
+            }
+
+            const status = String(
+                kasus.status || ""
+            ).toLowerCase();
+
+            kasus.arsip =
+                STATUS_REKOMENDASI_AKHIR.has(status);
         }
 
         return kasus;
     }
 
 
+    // Menyamakan status kasus dengan status rekomendasi.
+    function sinkronkanKasusDenganRekomendasi(data) {
+        data.penggunaTergeser.forEach(kasus => {
+            const pengajuan = cariPengajuan(
+                data,
+                kasus.pengajuanId
+            );
+
+            if (!pengajuan) {
+                kasus.arsip = true;
+                return;
+            }
+
+            if (
+                String(pengajuan.status).toLowerCase() !==
+                "tergeser"
+            ) {
+                kasus.arsip = true;
+                return;
+            }
+
+            const rekomendasi = cariRekomendasiTerbaru(
+                data,
+                kasus
+            );
+
+            if (rekomendasi) {
+                const status = String(
+                    rekomendasi.status || ""
+                ).toLowerCase();
+
+                if (
+                    STATUS_REKOMENDASI_AKTIF.has(status) ||
+                    STATUS_REKOMENDASI_AKHIR.has(status)
+                ) {
+                    kasus.status = status;
+                }
+
+                kasus.rekomendasiId = rekomendasi.id;
+
+                kasus.dikirimPada =
+                    rekomendasi.dikirimPada ||
+                    kasus.dikirimPada;
+
+                kasus.kedaluwarsaPada =
+                    rekomendasi.kedaluwarsaPada ||
+                    rekomendasi.batasEditPada ||
+                    kasus.kedaluwarsaPada;
+            }
+
+            kasus.arsip = STATUS_REKOMENDASI_AKHIR.has(
+                String(kasus.status || "").toLowerCase()
+            );
+        });
+    }
+
+
     // =====================================================
-    // 3. NORMALISASI DATA LAMA
+    // 5. NORMALISASI DATA
     // =====================================================
 
-    function normalisasi(data) {
-        const hasil = salin(data);
+    function normalisasiData(data, gabungkanSeed = false) {
+        const hasil = clone(data);
 
-        // Memastikan semua koleksi tersedia.
-        KOLEKSI.forEach(nama => {
-            if (!Array.isArray(hasil[nama])) {
-                hasil[nama] = salin(DATA_SEED[nama]);
+        KOLEKSI.forEach(koleksi => {
+            if (!Array.isArray(hasil[koleksi])) {
+                hasil[koleksi] = [];
             }
         });
 
-        // Menyeragamkan status antrean.
-        hasil.antrean.forEach(item => {
-            item.status = statusNormal(item.status);
-        });
-
-        // Menyeragamkan status rekomendasi.
-        hasil.rekomendasi.forEach(item => {
-            item.status = statusNormal(item.status);
-        });
-
-        // Memeriksa hubungan kasus dengan pengajuan.
-        hasil.penggunaTergeser.forEach(kasus => {
-        kasus.status = statusNormal(kasus.status);
-
-        // Menyesuaikan status lama dengan standar terbaru.
-        if (kasus.status === "tergeser") {
-            kasus.status = "menunggu_rekomendasi";
+        // Seed hanya digabung ketika inisialisasi atau reset.
+        if (gabungkanSeed) {
+            gabungkanDataAwal(hasil);
         }
 
-            const terhubung = hasil.antrean.some(
-                pengajuan =>
-                    String(pengajuan.id) ===
-                    String(kasus.pengajuanId)
-            );
-
-            kasus.arsip = Boolean(kasus.arsip) || !terhubung;
-        });
-
-        // Membuat kasus untuk pengajuan tergeser.
+        // Memastikan setiap pengajuan tergeser mempunyai kasus.
         hasil.antrean.forEach(pengajuan => {
             if (
-                ["tergeser", "rekomendasi_dikirim"]
-                    .includes(pengajuan.status)
+                String(pengajuan.status).toLowerCase() ===
+                "tergeser"
             ) {
-                const kasus = pastikanKasus(
+                pastikanKasusTergeser(
                     hasil,
                     pengajuan
                 );
-
-                if (
-                    pengajuan.status === "rekomendasi_dikirim" &&
-                    kasus.status === "menunggu_rekomendasi"
-                ) {
-                    kasus.status = "rekomendasi_dikirim";
-                }
             }
         });
 
-        // Menyinkronkan informasi rekomendasi terbaru.
-        hasil.penggunaTergeser.forEach(kasus => {
-            const terbaru = cariTerbaru(hasil, kasus);
-
-            if (
-                terbaru &&
-                kasus.status === "menunggu_rekomendasi" &&
-                statusNormal(terbaru.status) === "rekomendasi_dikirim"
-            ) {
-                kasus.status = "rekomendasi_dikirim";
-                kasus.rekomendasiId = terbaru.id;
-            }
-
-            if (
-                terbaru &&
-                kasus.status === "rekomendasi_dikirim"
-            ) {
-                kasus.rekomendasiId = terbaru.id;
-
-                kasus.dikirimPada ||=
-                    terbaru.dikirimPada ||
-                    terbaru.dibuatPada ||
-                    null;
-
-                kasus.kedaluwarsaPada ||=
-                    terbaru.kedaluwarsaPada ||
-                    terbaru.expiresAt ||
-                    terbaru.batasRespons ||
-                    null;
-            }
-        });
+        sinkronkanKasusDenganRekomendasi(hasil);
 
         return hasil;
     }
 
 
     // =====================================================
-    // 4. PENYIMPANAN DATA
+    // 6. PENYIMPANAN LOCALSTORAGE
     // =====================================================
 
-    // Memberitahukan modul lain ketika data berubah.
-    function beritahu(external = false) {
-        window.dispatchEvent(
-            new CustomEvent("silab:data-changed", {
-                detail: {
-                    data: salin(dataAktif),
-                    external
-                }
-            })
-        );
-    }
-
-    // Menyimpan perubahan ke localStorage.
-    function simpan(data, external = false) {
-        const berikut = normalisasi(data);
-
-        if (!external && !gunakanMemori) {
-            try {
-                window.localStorage.setItem(
-                    STORAGE_KEY,
-                    JSON.stringify(berikut)
-                );
-
-            } catch (error) {
-                gunakanMemori = true;
-
-                console.warn(
-                    "SILAB: localStorage tidak dapat digunakan; beralih ke memori.",
-                    error
-                );
-            }
-        }
-
-        dataAktif = berikut;
-
-        if (gunakanMemori) {
-            dataMemori = salin(berikut);
-        }
-
-        beritahu(external);
-    }
-
-    // Membaca data dari localStorage.
-    function baca() {
+    // Membaca data tersimpan.
+    function bacaPenyimpanan() {
         try {
-            const mentah =
+            const tersimpan =
                 window.localStorage.getItem(STORAGE_KEY);
 
-            return mentah ? JSON.parse(mentah) : null;
+            if (!tersimpan) {
+                return null;
+            }
+
+            return JSON.parse(tersimpan);
 
         } catch (error) {
             gunakanMemori = true;
 
             console.warn(
-                "SILAB: tidak dapat membaca localStorage.",
+                "SILAB: LocalStorage tidak tersedia. Menggunakan penyimpanan memori.",
                 error
             );
 
@@ -347,87 +441,71 @@
     }
 
 
-    // =====================================================
-    // 5. PEMERIKSAAN KEDALUWARSA
-    // =====================================================
-
-    // Mengakhiri rekomendasi ketika batas 24 jam terlampaui.
-    function periksaKedaluwarsa() {
-        const perubahan = salin(dataAktif);
-        let berubah = false;
-
-        const sekarang = Date.now();
-
-        for (const kasus of perubahan.penggunaTergeser) {
-            if (
-                statusNormal(kasus.status) !==
-                "rekomendasi_dikirim"
-            ) {
-                continue;
-            }
-
-            const rec = cariTerbaru(perubahan, kasus);
-
-            const batas =
-                kasus.kedaluwarsaPada ||
-                rec?.kedaluwarsaPada ||
-                rec?.expiresAt ||
-                rec?.batasRespons;
-
-            const nilai = Date.parse(batas || "");
-
-            if (
-                Number.isFinite(nilai) &&
-                sekarang >= nilai
-            ) {
-                kasus.status = "kedaluwarsa";
-                kasus.diperbaruiPada =
-                    new Date().toISOString();
-
-                if (rec) {
-                    rec.status = "kedaluwarsa";
-                    rec.diperbaruiPada =
-                        kasus.diperbaruiPada;
+    // Memberitahukan perubahan kepada modul lain.
+    function beritahuPerubahan(detail = {}) {
+        window.dispatchEvent(
+            new CustomEvent("silab:data-changed", {
+                detail: {
+                    ...detail,
+                    waktuPerubahan: new Date().toISOString()
                 }
+            })
+        );
+    }
 
-                berubah = true;
+
+    // Menyimpan seluruh data.
+    function simpanPenyimpanan(data, detail = {}) {
+        const salinan = clone(data);
+
+        dataAktif = salinan;
+
+        if (gunakanMemori) {
+            dataMemori = clone(salinan);
+
+        } else {
+            try {
+                window.localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(salinan)
+                );
+
+            } catch (error) {
+                gunakanMemori = true;
+                dataMemori = clone(salinan);
+
+                console.warn(
+                    "SILAB: Penyimpanan gagal. Data hanya tersedia selama halaman aktif.",
+                    error
+                );
             }
         }
 
-        if (berubah) {
-            simpan(perubahan);
-        }
+        beritahuPerubahan({
+            data: clone(salinan),
+            ...detail
+        });
     }
 
 
-    // =====================================================
-    // 6. INISIALISASI DATA
-    // =====================================================
-
+    // Memuat data tersimpan atau data simulasi.
     function inisialisasi() {
-        const tersimpan = baca();
+        const tersimpan = bacaPenyimpanan();
 
-        const data = normalisasi(
-            strukturValid(tersimpan)
-                ? tersimpan
-                : DATA_SEED
-        );
+        const data = strukturValid(tersimpan)
+            ? normalisasiData(tersimpan, true)
+            : normalisasiData(DATA_SEED, true);
 
-        dataAktif = data;
+        simpanPenyimpanan(data, {
+            tindakan: "inisialisasi"
+        });
 
-        if (
-            !strukturValid(tersimpan) ||
-            JSON.stringify(tersimpan) !== JSON.stringify(data)
-        ) {
-            simpan(data);
-        }
-
-        periksaKedaluwarsa();
-    }
-
-    function bacaAktif(fungsi) {
-        periksaKedaluwarsa();
-        return fungsi();
+        console.log("SILAB: Data berhasil dimuat.", {
+            bookings: data.bookings.length,
+            antrean: data.antrean.length,
+            penggunaTergeser: data.penggunaTergeser.length,
+            rekomendasi: data.rekomendasi.length
+        });
     }
 
 
@@ -436,160 +514,471 @@
     // =====================================================
 
     function getData() {
-        return bacaAktif(() => salin(dataAktif));
+        return clone(dataAktif);
     }
+
 
     function getAll(koleksi) {
         validasiKoleksi(koleksi);
 
-        return bacaAktif(
-            () => salin(dataAktif[koleksi])
-        );
+        return clone(dataAktif[koleksi]);
     }
+
 
     function getById(koleksi, id) {
         validasiKoleksi(koleksi);
 
-        return bacaAktif(() => {
-            const item = dataAktif[koleksi].find(
-                data => String(data.id) === String(id)
-            );
+        const item = dataAktif[koleksi].find(item =>
+            String(item.id) === String(id)
+        );
 
-            return item ? salin(item) : null;
-        });
+        return item ? clone(item) : null;
     }
 
-    // Antrean hanya menampilkan verifikasi dan bentrok.
+
+    // Mengambil pengajuan yang masih perlu diproses Laboran.
     function getAntreanAktif() {
-        return bacaAktif(() =>
-            salin(
-                dataAktif.antrean.filter(item =>
-                    ANTREAN_AKTIF.has(
-                        statusNormal(item.status)
-                    )
-                )
+        return getAll("antrean").filter(item =>
+            STATUS_ANTREAN_AKTIF.has(
+                String(item.status || "").toLowerCase()
             )
         );
     }
 
-    // Mengambil data pengajuan penggeser.
-    function getPengajuanPenggeser(id) {
-        return bacaAktif(() => {
-            const item =
-                dataAktif.antrean.find(
-                    data => String(data.id) === String(id)
-                ) ||
-                dataAktif.bookings.find(
-                    data => String(data.id) === String(id)
+
+    // Menggabungkan data kasus dengan pengajuan aslinya.
+    function gabungkanDetailKasus(data, kasus) {
+        const pengajuan = cariPengajuan(
+            data,
+            kasus.pengajuanId
+        );
+
+        if (!pengajuan) {
+            return null;
+        }
+
+        const hasil = {
+            ...clone(pengajuan),
+            ...clone(kasus)
+        };
+
+        // ID tetap menggunakan ID kasus tergeser.
+        hasil.id = kasus.id;
+
+        hasil.pengajuanId = pengajuan.id;
+
+        hasil.statusPengajuan = pengajuan.status;
+
+        hasil.pengajuanAsli = clone(pengajuan);
+
+        const penggeserId =
+            kasus.pengajuanPenggeserId ??
+            pengajuan.pengajuanPenggeserId;
+
+        const penggeser = cariPenggeser(
+            data,
+            penggeserId
+        );
+
+        hasil.namaPenggeser = penggeser
+            ? (
+                penggeser.namaPemohon ||
+                penggeser.namaKegiatan ||
+                penggeser.id
+            )
+            : "Informasi penggeser belum tersedia.";
+
+        hasil.alasan =
+            kasus.alasan ||
+            pengajuan.alasanTergeser ||
+            "Informasi alasan pergeseran belum tersedia.";
+
+        const rekomendasi = cariRekomendasiTerbaru(
+            data,
+            kasus
+        );
+
+        hasil.rekomendasiTerbaru = rekomendasi
+            ? clone(rekomendasi)
+            : null;
+
+        hasil.kedaluwarsaPada =
+            kasus.kedaluwarsaPada ||
+            rekomendasi?.kedaluwarsaPada ||
+            rekomendasi?.batasEditPada ||
+            null;
+
+        return hasil;
+    }
+
+
+    // Mengambil kasus tergeser berdasarkan ID.
+    // Bisa menggunakan ID kasus maupun ID pengajuan.
+    function getKasusTergeserById(id) {
+        const kasus = cariKasus(dataAktif, id);
+
+        if (!kasus || kasus.arsip === true) {
+            return null;
+        }
+
+        return gabungkanDetailKasus(
+            dataAktif,
+            kasus
+        );
+    }
+
+
+    // Mengambil seluruh kasus tergeser yang masih aktif.
+    function getKasusTergeserAktif() {
+        return dataAktif.penggunaTergeser
+            .filter(kasus => {
+                const status = String(
+                    kasus.status || ""
+                ).toLowerCase();
+
+                const pengajuan = cariPengajuan(
+                    dataAktif,
+                    kasus.pengajuanId
                 );
 
-            return item ? salin(item) : null;
-        });
+                return (
+                    kasus.arsip !== true &&
+                    STATUS_REKOMENDASI_AKTIF.has(status) &&
+                    pengajuan &&
+                    String(pengajuan.status).toLowerCase() ===
+                        "tergeser"
+                );
+            })
+            .map(kasus =>
+                gabungkanDetailKasus(dataAktif, kasus)
+            )
+            .filter(Boolean)
+            .map(clone);
+    }
+
+
+    // Mengambil rekomendasi berdasarkan kasus.
+    function getRekomendasiByKasusId(id) {
+        const kasus = cariKasus(dataAktif, id);
+
+        if (!kasus) {
+            return null;
+        }
+
+        const rekomendasi = cariRekomendasiTerbaru(
+            dataAktif,
+            kasus
+        );
+
+        return rekomendasi
+            ? clone(rekomendasi)
+            : null;
+    }
+
+
+    // Mengambil data berdasarkan tanggal.
+    // Data tanggal lain tetap dipertahankan.
+    function getRiwayatByTanggal(koleksi, tanggal) {
+        validasiKoleksi(koleksi);
+
+        return getAll(koleksi).filter(item =>
+            String(item.tanggal || "") === String(tanggal)
+        );
     }
 
 
     // =====================================================
-    // 8. PENGAMBILAN DATA KASUS TERGESER
+    // 8. UTILITAS WAKTU WIT
     // =====================================================
 
-    function bentukKasus(data, kasus) {
-        const asal = data.antrean.find(
-            item =>
-                String(item.id) === String(kasus.pengajuanId)
+    // Mengubah datetime-local menjadi timestamp WIT.
+    function parsingWIT(nilai) {
+        if (typeof nilai !== "string") {
+            return NaN;
+        }
+
+        const cocok = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?$/.exec(
+            nilai
         );
 
-        if (!asal) return null;
+        if (!cocok) {
+            return NaN;
+        }
 
-        const terbaru = cariTerbaru(data, kasus);
+        const waktu = Date.parse(
+            `${cocok[1]}T${cocok[2]}:00+09:00`
+        );
 
-        const penggeser =
-            data.antrean.find(
-                item =>
-                    String(item.id) ===
-                    String(kasus.pengajuanPenggeserId)
-            ) ||
-            data.bookings.find(
-                item =>
-                    String(item.id) ===
-                    String(kasus.pengajuanPenggeserId)
-            ) ||
-            null;
+        if (!Number.isFinite(waktu)) {
+            return NaN;
+        }
+
+        const hasil = new Date(
+            waktu + ZONA_WIT
+        ).toISOString().slice(0, 16);
+
+        return hasil === `${cocok[1]}T${cocok[2]}`
+            ? waktu
+            : NaN;
+    }
+
+
+    // Mengambil timestamp jadwal dari data booking/rekomendasi.
+    function parsingWaktuItem(nilai, tanggal) {
+        if (!nilai) {
+            return NaN;
+        }
+
+        const waktu = String(nilai);
+
+        if (/^\d{4}-\d{2}-\d{2}T/.test(waktu)) {
+            const lokal = parsingWIT(
+                waktu.slice(0, 16)
+            );
+
+            if (Number.isFinite(lokal)) {
+                return lokal;
+            }
+
+            // Mendukung data lama yang menyimpan ISO dengan zona waktu.
+            return Date.parse(waktu);
+        }
+
+        if (
+            tanggal &&
+            /^\d{2}:\d{2}/.test(waktu)
+        ) {
+            return parsingWIT(
+                `${tanggal}T${waktu.slice(0, 5)}`
+            );
+        }
+
+        return NaN;
+    }
+
+
+    // Mengambil interval waktu sebuah data.
+    function ambilInterval(item) {
+        const mulai = parsingWaktuItem(
+            item.waktuMulai,
+            item.tanggal
+        );
+
+        const selesai = parsingWaktuItem(
+            item.waktuSelesai,
+            item.tanggal
+        );
+
+        if (
+            !Number.isFinite(mulai) ||
+            !Number.isFinite(selesai) ||
+            selesai <= mulai
+        ) {
+            return null;
+        }
 
         return {
-            ...salin(asal),
-            ...salin(kasus),
-
-            id: kasus.id,
-            kasusId: kasus.id,
-            pengajuanId: asal.id,
-
-            status: statusNormal(kasus.status),
-            statusPengajuan: statusNormal(asal.status),
-
-            pengajuanAsal: salin(asal),
-
-            pengajuanPenggeser:
-                penggeser ? salin(penggeser) : null,
-
-            namaPenggeser:
-                penggeser?.namaPemohon ||
-                penggeser?.dosen ||
-                null,
-
-            rekomendasiTerbaru:
-                terbaru ? salin(terbaru) : null
+            mulai,
+            selesai
         };
     }
 
-    function getKasusTergeser() {
-        return bacaAktif(() =>
-            dataAktif.penggunaTergeser
-                .filter(kasus =>
-                    !kasus.arsip &&
-                    kasus.pengajuanId
-                )
-                .map(kasus =>
-                    bentukKasus(dataAktif, kasus)
-                )
-                .filter(Boolean)
-        );
-    }
 
-    function getKasusTergeserById(id) {
-        return bacaAktif(() => {
-            const kasus = cariKasus(dataAktif, id);
+    // =====================================================
+    // 9. VALIDASI BENTROK JADWAL
+    // =====================================================
 
-            return kasus && !kasus.arsip
-                ? bentukKasus(dataAktif, kasus)
-                : null;
-        });
-    }
+    function cariBentrokJadwal(
+        data,
+        mulai,
+        selesai,
+        rekomendasiDikecualikan = null
+    ) {
+        // Memeriksa booking yang masih aktif.
+        for (const booking of data.bookings) {
+            const status = String(
+                booking.status || "terjadwal"
+            ).toLowerCase();
 
-    // Daftar aktif rekomendasi.
-    function getRekomendasiAktif() {
-        return getKasusTergeser().filter(kasus =>
-            REKOMENDASI_AKTIF.has(
-                statusNormal(kasus.status)
-            )
-        );
-    }
+            if (!STATUS_JADWAL_AKTIF.has(status)) {
+                continue;
+            }
 
-    function getKasusPerluRekomendasi() {
-        return getRekomendasiAktif();
-    }
+            const interval = ambilInterval(booking);
 
-    // Riwayat status akhir.
-    function getRiwayatRekomendasi() {
-        return getKasusTergeser().filter(kasus =>
-            REKOMENDASI_AKHIR.has(
-                statusNormal(kasus.status)
-            )
-        );
+            if (!interval) {
+                continue;
+            }
+
+            const bentrok =
+                mulai < interval.selesai &&
+                selesai > interval.mulai;
+
+            if (bentrok) {
+                return {
+                    jenis: "booking",
+                    id: booking.id,
+                    nama:
+                        booking.namaKegiatan ||
+                        booking.namaPemohon ||
+                        booking.id
+                };
+            }
+        }
+
+        // Memeriksa rekomendasi yang sudah dikirim atau diterima.
+        for (const rekomendasi of data.rekomendasi) {
+            if (
+                String(rekomendasi.id) ===
+                String(rekomendasiDikecualikan)
+            ) {
+                continue;
+            }
+
+            const status = String(
+                rekomendasi.status || ""
+            ).toLowerCase();
+
+            if (
+                ![
+                    "rekomendasi_dikirim",
+                    "diterima"
+                ].includes(status)
+            ) {
+                continue;
+            }
+
+            const interval = ambilInterval(rekomendasi);
+
+            if (!interval) {
+                continue;
+            }
+
+            const bentrok =
+                mulai < interval.selesai &&
+                selesai > interval.mulai;
+
+            if (bentrok) {
+                return {
+                    jenis: "rekomendasi",
+                    id: rekomendasi.id,
+                    nama: rekomendasi.id
+                };
+            }
+        }
+
+        return null;
     }
 
 
     // =====================================================
-    // 9. CRUD DATA UMUM
+    // 10. VALIDASI REKOMENDASI
+    // =====================================================
+
+    function validasiJadwalRekomendasi(
+        kasus,
+        detail,
+        rekomendasiDikecualikan = null
+    ) {
+        if (
+            !detail ||
+            !detail.waktuMulai ||
+            !detail.waktuSelesai
+        ) {
+            return {
+                valid: false,
+                pesan: "Waktu mulai dan selesai wajib diisi."
+            };
+        }
+
+        const mulai = parsingWIT(
+            detail.waktuMulai
+        );
+
+        const selesai = parsingWIT(
+            detail.waktuSelesai
+        );
+
+        if (
+            !Number.isFinite(mulai) ||
+            !Number.isFinite(selesai)
+        ) {
+            return {
+                valid: false,
+                pesan: "Format tanggal atau waktu tidak valid."
+            };
+        }
+
+        if (mulai <= Date.now()) {
+            return {
+                valid: false,
+                pesan: "Jadwal rekomendasi harus berada di masa mendatang."
+            };
+        }
+
+        if (selesai <= mulai) {
+            return {
+                valid: false,
+                pesan: "Waktu selesai harus lebih besar dari waktu mulai."
+            };
+        }
+
+        // Memeriksa kebutuhan fasilitas.
+        const kebutuhanPC = Number(kasus.kebutuhanPC);
+        const kebutuhanKursi = Number(kasus.kebutuhanKursi);
+
+        if (
+            !Number.isInteger(kebutuhanPC) ||
+            !Number.isInteger(kebutuhanKursi) ||
+            kebutuhanPC < 0 ||
+            kebutuhanKursi < 0
+        ) {
+            return {
+                valid: false,
+                pesan: "Data kebutuhan PC atau kursi tidak valid."
+            };
+        }
+
+        if (kebutuhanPC > KAPASITAS_PC) {
+            return {
+                valid: false,
+                pesan: `Kebutuhan PC melebihi kapasitas laboratorium (${KAPASITAS_PC} unit).`
+            };
+        }
+
+        if (kebutuhanKursi > KAPASITAS_KURSI) {
+            return {
+                valid: false,
+                pesan: `Kebutuhan kursi melebihi kapasitas laboratorium (${KAPASITAS_KURSI} unit).`
+            };
+        }
+
+        // Memeriksa bentrokan dengan jadwal aktif.
+        const bentrok = cariBentrokJadwal(
+            dataAktif,
+            mulai,
+            selesai,
+            rekomendasiDikecualikan
+        );
+
+        if (bentrok) {
+            return {
+                valid: false,
+                pesan:
+                    `Jadwal bertabrakan dengan ${bentrok.nama} (${bentrok.id}). Silakan pilih waktu lain.`
+            };
+        }
+
+        return {
+            valid: true,
+            mulai,
+            selesai
+        };
+    }
+
+
+    // =====================================================
+    // 11. MENAMBAHKAN DATA
     // =====================================================
 
     function tambah(koleksi, item) {
@@ -604,29 +993,46 @@
             String(item.id).trim() === ""
         ) {
             throw new Error(
-                "Data wajib mempunyai ID yang valid."
+                "Data wajib memiliki ID yang valid."
             );
         }
 
-        const data = getData();
+        const data = clone(dataAktif);
 
-        if (
-            data[koleksi].some(
-                existing =>
-                    String(existing.id) === String(item.id)
-            )
-        ) {
+        if (sudahAda(data[koleksi], item.id)) {
             throw new Error(
                 `ID "${item.id}" sudah digunakan.`
             );
         }
 
-        data[koleksi].push(salin(item));
+        data[koleksi].push(clone(item));
 
-        simpan(data);
+        if (koleksi === "antrean") {
+            if (
+                String(item.status).toLowerCase() ===
+                "tergeser"
+            ) {
+                pastikanKasusTergeser(data, item);
+            }
+        }
 
-        return salin(item);
+        if (koleksi === "rekomendasi") {
+            sinkronkanKasusDenganRekomendasi(data);
+        }
+
+        simpanPenyimpanan(data, {
+            koleksi,
+            tindakan: "tambah",
+            id: item.id
+        });
+
+        return clone(item);
     }
+
+
+    // =====================================================
+    // 12. MEMPERBARUI DATA
+    // =====================================================
 
     function update(koleksi, id, perubahan) {
         validasiKoleksi(koleksi);
@@ -636,83 +1042,481 @@
             typeof perubahan !== "object" ||
             Array.isArray(perubahan)
         ) {
-            throw new Error("Perubahan data tidak valid.");
-        }
-
-        const data = getData();
-
-        const index = data[koleksi].findIndex(
-            item => String(item.id) === String(id)
-        );
-
-        if (index < 0) {
             throw new Error(
-                `Data "${id}" tidak ditemukan.`
+                "Perubahan data tidak valid."
             );
         }
 
-        const asli = data[koleksi][index];
+        const data = clone(dataAktif);
 
-        data[koleksi][index] = {
-            ...asli,
-            ...salin(perubahan),
-            id: asli.id
-        };
+        const index = data[koleksi].findIndex(item =>
+            String(item.id) === String(id)
+        );
 
-        if (
-            koleksi === "antrean" &&
-            data[koleksi][index].status === "tergeser"
-        ) {
-            pastikanKasus(data, data[koleksi][index]);
+        if (index === -1) {
+            throw new Error(
+                `Data dengan ID "${id}" tidak ditemukan.`
+            );
         }
 
-        simpan(data);
+        const idAsli = data[koleksi][index].id;
 
-        return salin(data[koleksi][index]);
+        data[koleksi][index] = {
+            ...data[koleksi][index],
+            ...clone(perubahan),
+            id: idAsli
+        };
+
+        const itemTerbaru = data[koleksi][index];
+
+        if (koleksi === "antrean") {
+            if (
+                String(itemTerbaru.status).toLowerCase() ===
+                "tergeser"
+            ) {
+                pastikanKasusTergeser(
+                    data,
+                    itemTerbaru
+                );
+
+            } else {
+                data.penggunaTergeser.forEach(kasus => {
+                    if (
+                        String(kasus.pengajuanId) ===
+                        String(id)
+                    ) {
+                        kasus.arsip = true;
+                    }
+                });
+            }
+        }
+
+        if (koleksi === "penggunaTergeser") {
+            const status = String(
+                itemTerbaru.status || ""
+            ).toLowerCase();
+
+            if (STATUS_REKOMENDASI_AKHIR.has(status)) {
+                itemTerbaru.arsip = true;
+
+            } else if (
+                STATUS_REKOMENDASI_AKTIF.has(status)
+            ) {
+                itemTerbaru.arsip = false;
+            }
+        }
+
+        if (koleksi === "rekomendasi") {
+            sinkronkanKasusDenganRekomendasi(data);
+        }
+
+        simpanPenyimpanan(data, {
+            koleksi,
+            tindakan: "update",
+            id
+        });
+
+        return clone(itemTerbaru);
     }
+
+
+    // =====================================================
+    // 13. MENGHAPUS DATA
+    // =====================================================
 
     function hapus(koleksi, id) {
         validasiKoleksi(koleksi);
 
-        const data = getData();
+        const data = clone(dataAktif);
 
-        if (
-            koleksi === "antrean" &&
-            data.penggunaTergeser.some(
-                kasus =>
-                    String(kasus.pengajuanId) === String(id)
-            )
-        ) {
-            throw new Error(
-                "Pengajuan memiliki riwayat kasus dan tidak boleh dihapus."
-            );
-        }
-
-        const jumlahAwal = data[koleksi].length;
-
-        data[koleksi] = data[koleksi].filter(
-            item => String(item.id) !== String(id)
+        const index = data[koleksi].findIndex(item =>
+            String(item.id) === String(id)
         );
 
-        if (jumlahAwal === data[koleksi].length) {
+        if (index === -1) {
             return false;
         }
 
-        simpan(data);
+        data[koleksi].splice(index, 1);
+
+        // Kasus terkait tetap dipertahankan sebagai arsip.
+        if (koleksi === "antrean") {
+            data.penggunaTergeser.forEach(kasus => {
+                if (
+                    String(kasus.pengajuanId) ===
+                    String(id)
+                ) {
+                    kasus.arsip = true;
+                }
+            });
+        }
+
+        if (koleksi === "penggunaTergeser") {
+            data.rekomendasi = data.rekomendasi.filter(
+                rekomendasi =>
+                    String(rekomendasi.caseId) !== String(id) &&
+                    String(rekomendasi.kasusId) !== String(id)
+            );
+        }
+
+        simpanPenyimpanan(data, {
+            koleksi,
+            tindakan: "hapus",
+            id
+        });
 
         return true;
     }
 
-    function reset() {
-        simpan(DATA_SEED);
-        return getData();
+
+    // =====================================================
+    // 14. PENGIRIMAN REKOMENDASI
+    // =====================================================
+
+    function kirimRekomendasi(kasusId, detail) {
+        const data = clone(dataAktif);
+
+        const kasus = cariKasus(data, kasusId);
+
+        if (!kasus || kasus.arsip === true) {
+            throw new Error(
+                "Kasus tergeser tidak ditemukan atau sudah diarsipkan."
+            );
+        }
+
+        if (
+            String(kasus.status).toLowerCase() !==
+            "menunggu_rekomendasi"
+        ) {
+            throw new Error(
+                "Kasus tidak lagi menunggu rekomendasi."
+            );
+        }
+
+        const pengajuan = cariPengajuan(
+            data,
+            kasus.pengajuanId
+        );
+
+        if (
+            !pengajuan ||
+            String(pengajuan.status).toLowerCase() !==
+            "tergeser"
+        ) {
+            throw new Error(
+                "Pengajuan asli tidak tersedia atau statusnya sudah berubah."
+            );
+        }
+
+        // Memastikan belum ada rekomendasi aktif.
+        const rekomendasiLama = cariRekomendasiTerbaru(
+            data,
+            kasus
+        );
+
+        if (
+            rekomendasiLama &&
+            !STATUS_REKOMENDASI_AKHIR.has(
+                String(rekomendasiLama.status).toLowerCase()
+            )
+        ) {
+            throw new Error(
+                "Kasus ini sudah memiliki rekomendasi aktif."
+            );
+        }
+
+        const validasi = validasiJadwalRekomendasi(
+            kasus,
+            detail
+        );
+
+        if (!validasi.valid) {
+            throw new Error(validasi.pesan);
+        }
+
+        const sekarang = new Date();
+
+        const waktuKirim = sekarang.toISOString();
+
+        const kedaluwarsa = new Date(
+            sekarang.getTime() + BATAS_EDIT
+        ).toISOString();
+
+        const rekomendasi = {
+            id: `REC-${kasus.id}-${Date.now()}`,
+
+            caseId: kasus.id,
+            kasusId: kasus.id,
+
+            pengajuanId: pengajuan.id,
+            antreanId: pengajuan.id,
+
+            tanggal: detail.waktuMulai.slice(0, 10),
+
+            waktuMulai: detail.waktuMulai,
+            waktuSelesai: detail.waktuSelesai,
+
+            catatan: String(
+                detail.catatan || ""
+            ).trim(),
+
+            status: "rekomendasi_dikirim",
+
+            dibuatPada: waktuKirim,
+            dikirimPada: waktuKirim,
+            diperbaruiPada: waktuKirim,
+
+            kedaluwarsaPada: kedaluwarsa,
+            batasEditPada: kedaluwarsa
+        };
+
+        data.rekomendasi.push(rekomendasi);
+
+        // Memperbarui status kasus.
+        kasus.status = "rekomendasi_dikirim";
+
+        kasus.rekomendasiId = rekomendasi.id;
+
+        kasus.dikirimPada = waktuKirim;
+
+        kasus.kedaluwarsaPada = kedaluwarsa;
+
+        kasus.diperbaruiPada = waktuKirim;
+
+        kasus.arsip = false;
+
+        simpanPenyimpanan(data, {
+            koleksi: "rekomendasi",
+            tindakan: "kirim",
+            id: rekomendasi.id,
+            kasusId: kasus.id
+        });
+
+        return getKasusTergeserById(kasus.id);
     }
 
-    function updatePresensi(bookingId, status) {
+
+    // =====================================================
+    // 15. PENGEDITAN REKOMENDASI
+    // =====================================================
+
+    function editRekomendasi(kasusId, detail) {
+        const data = clone(dataAktif);
+
+        const kasus = cariKasus(data, kasusId);
+
+        if (!kasus || kasus.arsip === true) {
+            throw new Error(
+                "Kasus tergeser tidak ditemukan."
+            );
+        }
+
         if (
-            !["digunakan", "tidak_digunakan"].includes(status)
+            String(kasus.status).toLowerCase() !==
+            "rekomendasi_dikirim"
         ) {
-            throw new Error("Status presensi tidak valid.");
+            throw new Error(
+                "Status kasus tidak memungkinkan pengeditan."
+            );
+        }
+
+        const rekomendasi = cariRekomendasiTerbaru(
+            data,
+            kasus
+        );
+
+        if (
+            !rekomendasi ||
+            String(rekomendasi.status).toLowerCase() !==
+            "rekomendasi_dikirim"
+        ) {
+            throw new Error(
+                "Rekomendasi aktif tidak ditemukan."
+            );
+        }
+
+        // Batas edit dihitung dari pengiriman pertama.
+        const waktuKirim = Date.parse(
+            rekomendasi.dikirimPada ||
+            kasus.dikirimPada ||
+            ""
+        );
+
+        const batasEdit = Date.parse(
+            rekomendasi.kedaluwarsaPada ||
+            rekomendasi.batasEditPada ||
+            kasus.kedaluwarsaPada ||
+            ""
+        );
+
+        if (
+            !Number.isFinite(waktuKirim) ||
+            !Number.isFinite(batasEdit) ||
+            Date.now() < waktuKirim ||
+            Date.now() >= batasEdit
+        ) {
+            throw new Error(
+                "Batas pengeditan rekomendasi selama 24 jam telah berakhir."
+            );
+        }
+
+        const validasi = validasiJadwalRekomendasi(
+            kasus,
+            detail,
+            rekomendasi.id
+        );
+
+        if (!validasi.valid) {
+            throw new Error(validasi.pesan);
+        }
+
+        const sekarang = new Date().toISOString();
+
+        // Memperbarui rekomendasi yang sama.
+        rekomendasi.tanggal =
+            detail.waktuMulai.slice(0, 10);
+
+        rekomendasi.waktuMulai =
+            detail.waktuMulai;
+
+        rekomendasi.waktuSelesai =
+            detail.waktuSelesai;
+
+        rekomendasi.catatan = String(
+            detail.catatan || ""
+        ).trim();
+
+        rekomendasi.diperbaruiPada = sekarang;
+
+        // dikirimPada dan kedaluwarsaPada tidak berubah.
+        kasus.diperbaruiPada = sekarang;
+
+        kasus.kedaluwarsaPada = new Date(
+            batasEdit
+        ).toISOString();
+
+        simpanPenyimpanan(data, {
+            koleksi: "rekomendasi",
+            tindakan: "edit",
+            id: rekomendasi.id,
+            kasusId: kasus.id
+        });
+
+        return getKasusTergeserById(kasus.id);
+    }
+
+
+    // =====================================================
+    // 16. PEMBATALAN REKOMENDASI
+    // =====================================================
+
+    function batalkanRekomendasi(kasusId) {
+        const data = clone(dataAktif);
+
+        const kasus = cariKasus(data, kasusId);
+
+        if (!kasus) {
+            throw new Error(
+                "Kasus tergeser tidak ditemukan."
+            );
+        }
+
+        const rekomendasi = cariRekomendasiTerbaru(
+            data,
+            kasus
+        );
+
+        if (
+            !rekomendasi ||
+            String(rekomendasi.status).toLowerCase() !==
+            "rekomendasi_dikirim"
+        ) {
+            throw new Error(
+                "Tidak ada rekomendasi aktif yang dapat dibatalkan."
+            );
+        }
+
+        const batasEdit = Date.parse(
+            rekomendasi.kedaluwarsaPada ||
+            rekomendasi.batasEditPada ||
+            ""
+        );
+
+        if (
+            !Number.isFinite(batasEdit) ||
+            Date.now() >= batasEdit
+        ) {
+            throw new Error(
+                "Batas pembatalan rekomendasi selama 24 jam telah berakhir."
+            );
+        }
+
+        const sekarang = new Date().toISOString();
+
+        rekomendasi.status = "dibatalkan";
+
+        rekomendasi.dibatalkanPada = sekarang;
+
+        rekomendasi.diperbaruiPada = sekarang;
+
+        kasus.status = "dibatalkan";
+
+        kasus.dibatalkanPada = sekarang;
+
+        kasus.arsip = true;
+
+        simpanPenyimpanan(data, {
+            koleksi: "rekomendasi",
+            tindakan: "batalkan",
+            id: rekomendasi.id,
+            kasusId: kasus.id
+        });
+
+        return getById(
+            "penggunaTergeser",
+            kasus.id
+        );
+    }
+
+
+    // =====================================================
+    // 17. VALIDASI BATAS EDIT 24 JAM
+    // =====================================================
+
+    function masihDalamWaktuEdit(waktuKirim) {
+        if (!waktuKirim) {
+            return false;
+        }
+
+        const waktu = Date.parse(waktuKirim);
+
+        if (!Number.isFinite(waktu)) {
+            return false;
+        }
+
+        const selisih = Date.now() - waktu;
+
+        return (
+            selisih >= 0 &&
+            selisih < BATAS_EDIT
+        );
+    }
+
+
+    // =====================================================
+    // 18. VALIDASI PRESENSI
+    // =====================================================
+
+    function updatePresensi(bookingId, status) {
+        const statusValid = [
+            "digunakan",
+            "tidak_digunakan"
+        ];
+
+        if (!statusValid.includes(status)) {
+            throw new Error(
+                "Status presensi tidak valid."
+            );
         }
 
         return update("bookings", bookingId, {
@@ -725,662 +1529,183 @@
 
 
     // =====================================================
-    // 10. PENGELOLAAN KASUS TERGESER
+    // 19. RESET DATA SIMULASI
     // =====================================================
 
-    function tandaiTergeser(id, detail = {}) {
-        const data = getData();
-
-        const asal = data.antrean.find(
-            item => String(item.id) === String(id)
+    function reset() {
+        const data = normalisasiData(
+            DATA_SEED,
+            true
         );
 
-        if (!asal) {
-            throw new Error("Pengajuan tidak ditemukan.");
-        }
+        simpanPenyimpanan(data, {
+            tindakan: "reset"
+        });
 
-        const penggeser =
-            detail.pengajuanPenggeserId ??
-            asal.pengajuanPenggeserId ??
-            null;
-
-        if (
-            penggeser &&
-            ![...data.antrean, ...data.bookings].some(
-                item => String(item.id) === String(penggeser)
-            )
-        ) {
-            throw new Error(
-                "Data pengajuan penggeser tidak ditemukan."
-            );
-        }
-
-        asal.status = "tergeser";
-        asal.pengajuanPenggeserId = penggeser;
-
-        asal.alasanTergeser =
-            detail.alasan ||
-            asal.alasanTergeser ||
-            "Jadwal asal tergeser.";
-
-        asal.waktuTergeser =
-            new Date().toISOString();
-
-        const kasus = pastikanKasus(data, asal);
-
-        simpan(data);
-
-        return getKasusTergeserById(kasus.id);
+        return clone(data);
     }
 
 
     // =====================================================
-    // 11. UTILITAS WAKTU WIT
+    // 20. SINKRONISASI ANTARTAB
     // =====================================================
 
-    // Memproses datetime-local sebagai waktu WIT (UTC+09).
-    function parsingWaktuWIT(nilai) {
-        if (typeof nilai !== "string") {
-            return NaN;
-        }
-
-        const cocok =
-            /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?$/
-                .exec(nilai);
-
-        if (cocok) {
-            const tanggal = cocok[1];
-            const jam = cocok[2];
-
-            const iso =
-                `${tanggal}T${jam}:00+09:00`;
-
-            const waktu = Date.parse(iso);
-
-            if (!Number.isFinite(waktu)) {
-                return NaN;
-            }
-
-            const hasil =
-                new Date(waktu).toISOString();
-
-            const balik = new Date(
-                Date.parse(hasil) + 9 * 3600000
-            ).toISOString().slice(0, 16);
-
-            return balik === `${tanggal}T${jam}`
-                ? waktu
-                : NaN;
-        }
-
-        if (!/(Z|[+-]\d{2}:\d{2})$/i.test(nilai)) {
-            return NaN;
-        }
-
-        return Date.parse(nilai);
-    }
-
-    function waktuInputWIT(nilai) {
-        const angka = parsingWaktuWIT(nilai);
-
-        if (!Number.isFinite(angka)) {
-            return null;
-        }
-
-        return new Date(
-            angka + 9 * 3600000
-        ).toISOString().slice(0, 16);
-    }
-
-    function rentang(data) {
-        const mulai =
-            data.waktuMulai || data.waktu_mulai;
-
-        const selesai =
-            data.waktuSelesai || data.waktu_selesai;
-
-        return {
-            awal: parsingWaktuWIT(mulai),
-            akhir: parsingWaktuWIT(selesai)
-        };
-    }
-
-    function tumpangTindih(a, b) {
-        return (
-            a.awal < b.akhir &&
-            b.awal < a.akhir
-        );
-    }
-
-
-    // =====================================================
-    // 12. VALIDASI JADWAL REKOMENDASI
-    // =====================================================
-
-    function validasiJadwal(
-        data,
-        pengajuan,
-        detail,
-        rekomendasiSendiriId = null
-    ) {
-        const hasil = rentang(detail);
-
-        if (
-            !Number.isFinite(hasil.awal) ||
-            !Number.isFinite(hasil.akhir)
-        ) {
-            throw new Error(
-                "Tanggal dan jam rekomendasi tidak valid."
-            );
-        }
-
-        if (hasil.akhir <= hasil.awal) {
-            throw new Error(
-                "Waktu selesai harus lebih besar dari waktu mulai."
-            );
-        }
-
-        if (hasil.awal <= Date.now()) {
-            throw new Error(
-                "Jadwal rekomendasi harus berada di masa mendatang."
-            );
-        }
-
-        const mulaiWIT = waktuInputWIT(
-            detail.waktuMulai || detail.waktu_mulai
-        );
-
-        const selesaiWIT = waktuInputWIT(
-            detail.waktuSelesai || detail.waktu_selesai
-        );
-
-        if (
-            !mulaiWIT ||
-            !selesaiWIT ||
-            mulaiWIT.slice(0, 10) !== selesaiWIT.slice(0, 10) ||
-            mulaiWIT.slice(11) < JAM_BUKA ||
-            selesaiWIT.slice(11) > JAM_TUTUP
-        ) {
-            throw new Error(
-                `Jadwal harus pada satu tanggal, pukul ${JAM_BUKA}–${JAM_TUTUP} WIT.`
-            );
-        }
-
-        const pc = Number(pengajuan.kebutuhanPC);
-        const kursi = Number(pengajuan.kebutuhanKursi);
-
-        if (
-            ![pc, kursi].every(
-                nilai =>
-                    Number.isInteger(nilai) &&
-                    nilai >= 0
-            ) ||
-            pc > KAPASITAS_PC ||
-            kursi > KAPASITAS_KURSI
-        ) {
-            throw new Error(
-                "Kebutuhan melebihi kapasitas laboratorium atau tidak valid."
-            );
-        }
-
-        // Memeriksa bentrok dengan jadwal peminjaman.
-        for (const booking of data.bookings) {
+    window.addEventListener(
+        "storage",
+        function (event) {
             if (
-                [
-                    "dibatalkan",
-                    "tergeser",
-                    "ditolak"
-                ].includes(statusNormal(booking.status)) ||
-                booking.presensi?.status === "tidak_digunakan"
+                event.key !== STORAGE_KEY ||
+                gunakanMemori
             ) {
-                continue;
+                return;
             }
 
-            if (
-                !booking.tanggal ||
-                !booking.waktuMulai ||
-                !booking.waktuSelesai
-            ) {
-                continue;
+            if (event.newValue === null) {
+                console.warn(
+                    "SILAB: Penyimpanan dihapus dari tab lain."
+                );
+
+                return;
             }
 
-            const sibuk = rentang({
-                waktuMulai:
-                    `${booking.tanggal}T${booking.waktuMulai}`,
-                waktuSelesai:
-                    `${booking.tanggal}T${booking.waktuSelesai}`
-            });
+            try {
+                const dataBaru = JSON.parse(
+                    event.newValue
+                );
 
-            if (tumpangTindih(hasil, sibuk)) {
-                throw new Error(
-                    `Jadwal bentrok dengan peminjaman ${booking.id}.`
+                if (!strukturValid(dataBaru)) {
+                    return;
+                }
+
+                dataAktif = normalisasiData(
+                    dataBaru,
+                    false
+                );
+
+                beritahuPerubahan({
+                    data: clone(dataAktif),
+                    external: true,
+                    tindakan: "sinkronisasi"
+                });
+
+            } catch (error) {
+                console.error(
+                    "SILAB: Gagal membaca perubahan penyimpanan.",
+                    error
                 );
             }
         }
-
-        // Memeriksa bentrok dengan rekomendasi lain yang aktif.
-        for (const rec of data.rekomendasi) {
-            if (
-                rec.id === rekomendasiSendiriId ||
-                statusNormal(rec.status) !== "rekomendasi_dikirim"
-            ) {
-                continue;
-            }
-
-            const sibuk = rentang(rec);
-
-            if (
-                Number.isFinite(sibuk.awal) &&
-                Number.isFinite(sibuk.akhir) &&
-                tumpangTindih(hasil, sibuk)
-            ) {
-                throw new Error(
-                    `Jadwal bentrok dengan rekomendasi ${rec.id}.`
-                );
-            }
-        }
-
-        return {
-            awal: hasil.awal,
-            akhir: hasil.akhir
-        };
-    }
+    );
 
 
     // =====================================================
-    // 13. VALIDASI STATUS KASUS
-    // =====================================================
-
-    function validasiKasusBelumDirespons(
-        data,
-        id,
-        status
-    ) {
-        const kasus = cariKasus(data, id);
-
-        if (!kasus || kasus.arsip) {
-            throw new Error(
-                "Kasus tergeser tidak ditemukan."
-            );
-        }
-
-        if (statusNormal(kasus.status) !== status) {
-            throw new Error(
-                `Rekomendasi tidak dapat diproses; status bukan ${status}.`
-            );
-        }
-
-        return kasus;
-    }
-
-    function buatIdRekomendasi(data) {
-        const dasar = `REK-${Date.now()}`;
-
-        let id = dasar;
-        let nomor = 2;
-
-        while (
-            data.rekomendasi.some(
-                rec => rec.id === id
-            )
-        ) {
-            id = `${dasar}-${nomor++}`;
-        }
-
-        return id;
-    }
-
-
-    // =====================================================
-    // 14. MENGIRIM REKOMENDASI
-    // =====================================================
-
-    function kirimRekomendasi(id, detail = {}) {
-        const data = getData();
-
-        const kasus = validasiKasusBelumDirespons(
-            data,
-            id,
-            "menunggu_rekomendasi"
-        );
-
-        const asal = data.antrean.find(
-            item =>
-                String(item.id) === String(kasus.pengajuanId)
-        );
-
-        if (!asal) {
-            throw new Error(
-                "Pengajuan asal tidak ditemukan."
-            );
-        }
-
-        validasiJadwal(data, asal, detail);
-
-        const dikirim = new Date();
-
-        const akhir = new Date(
-            dikirim.getTime() + BATAS_RESPONS_MS
-        );
-
-        const rec = {
-            id: buatIdRekomendasi(data),
-
-            caseId: kasus.id,
-            kasusId: kasus.id,
-
-            pengajuanId: asal.id,
-            antreanId: asal.id,
-
-            waktuMulai:
-                detail.waktuMulai || detail.waktu_mulai,
-
-            waktuSelesai:
-                detail.waktuSelesai || detail.waktu_selesai,
-
-            catatan: String(
-                detail.catatan || ""
-            ).trim(),
-
-            status: "rekomendasi_dikirim",
-
-            dibuatPada: dikirim.toISOString(),
-            dikirimPada: dikirim.toISOString(),
-
-            kedaluwarsaPada: akhir.toISOString(),
-
-            riwayatPerubahan: []
-        };
-
-        data.rekomendasi.push(rec);
-
-        Object.assign(kasus, {
-            status: "rekomendasi_dikirim",
-            rekomendasiId: rec.id,
-            dikirimPada: rec.dikirimPada,
-            kedaluwarsaPada: rec.kedaluwarsaPada
-        });
-
-        simpan(data);
-
-        return getKasusTergeserById(kasus.id);
-    }
-
-
-    // =====================================================
-    // 15. EDIT REKOMENDASI DALAM BATAS 24 JAM
-    // =====================================================
-
-    function editRekomendasi(id, detail = {}) {
-        const data = getData();
-
-        const kasus = validasiKasusBelumDirespons(
-            data,
-            id,
-            "rekomendasi_dikirim"
-        );
-
-        const rec = cariTerbaru(data, kasus);
-
-        if (
-            !rec ||
-            statusNormal(rec.status) !== "rekomendasi_dikirim"
-        ) {
-            throw new Error(
-                "Rekomendasi tidak dapat diedit karena sudah tidak aktif."
-            );
-        }
-
-        const batas = Date.parse(
-            kasus.kedaluwarsaPada ||
-            rec.kedaluwarsaPada ||
-            ""
-        );
-
-        if (
-            !Number.isFinite(batas) ||
-            Date.now() >= batas
-        ) {
-            throw new Error(
-                "Rekomendasi tidak dapat diedit karena batas 24 jam telah berakhir."
-            );
-        }
-
-        const asal = data.antrean.find(
-            item =>
-                String(item.id) === String(kasus.pengajuanId)
-        );
-
-        if (!asal) {
-            throw new Error(
-                "Pengajuan asal tidak ditemukan."
-            );
-        }
-
-        const perubahan = {
-            waktuMulai:
-                detail.waktuMulai || detail.waktu_mulai,
-
-            waktuSelesai:
-                detail.waktuSelesai || detail.waktu_selesai,
-
-            catatan: String(
-                detail.catatan ?? rec.catatan ?? ""
-            ).trim()
-        };
-
-        // Memeriksa ulang bentrok dan kapasitas.
-        validasiJadwal(
-            data,
-            asal,
-            perubahan,
-            rec.id
-        );
-
-        // Menyimpan kondisi rekomendasi sebelum diedit.
-        rec.riwayatPerubahan ||= [];
-
-        rec.riwayatPerubahan.push({
-            waktuMulai: rec.waktuMulai,
-            waktuSelesai: rec.waktuSelesai,
-            catatan: rec.catatan,
-            digantiPada: new Date().toISOString()
-        });
-
-        Object.assign(rec, perubahan, {
-            diperbaruiPada: new Date().toISOString()
-        });
-
-        // Batas waktu tidak diperpanjang.
-        // dikirimPada dan kedaluwarsaPada tetap.
-        kasus.diperbaruiPada = rec.diperbaruiPada;
-
-        simpan(data);
-
-        return getKasusTergeserById(kasus.id);
-    }
-
-
-    // =====================================================
-    // 16. MEMBATALKAN REKOMENDASI
-    // =====================================================
-
-    function batalkanRekomendasi(id, alasan) {
-        const data = getData();
-
-        const kasus = validasiKasusBelumDirespons(
-            data,
-            id,
-            "rekomendasi_dikirim"
-        );
-
-        const rec = cariTerbaru(data, kasus);
-
-        const batas = Date.parse(
-            kasus.kedaluwarsaPada ||
-            rec?.kedaluwarsaPada ||
-            ""
-        );
-
-        if (
-            !rec ||
-            statusNormal(rec.status) !== "rekomendasi_dikirim" ||
-            !Number.isFinite(batas) ||
-            Date.now() >= batas
-        ) {
-            throw new Error(
-                "Rekomendasi tidak dapat dibatalkan karena sudah tidak aktif."
-            );
-        }
-
-        if (!String(alasan || "").trim()) {
-            throw new Error(
-                "Alasan pembatalan wajib diisi."
-            );
-        }
-
-        const sekarang = new Date().toISOString();
-
-        // Menyimpan riwayat pembatalan.
-        Object.assign(rec, {
-            status: "dibatalkan",
-            alasanPembatalan: String(alasan).trim(),
-            dibatalkanPada: sekarang,
-            diperbaruiPada: sekarang
-        });
-
-        // Kasus kembali menunggu rekomendasi baru.
-        Object.assign(kasus, {
-            status: "menunggu_rekomendasi",
-            rekomendasiId: null,
-            dikirimPada: null,
-            kedaluwarsaPada: null,
-            diperbaruiPada: sekarang
-        });
-
-        simpan(data);
-
-        return getKasusTergeserById(kasus.id);
-    }
-
-
-    // =====================================================
-    // 17. MENYIMPAN RESPONS PENGGUNA
-    // =====================================================
-
-    function updateStatusRekomendasi(id, status) {
-        const nilai = statusNormal(status);
-
-        if (!REKOMENDASI_AKHIR.has(nilai)) {
-            throw new Error(
-                "Status respons tidak valid."
-            );
-        }
-
-        const data = getData();
-
-        const kasus = validasiKasusBelumDirespons(
-            data,
-            id,
-            "rekomendasi_dikirim"
-        );
-
-        const rec = cariTerbaru(data, kasus);
-
-        if (!rec) {
-            throw new Error(
-                "Rekomendasi aktif tidak ditemukan."
-            );
-        }
-
-        const sekarang = new Date().toISOString();
-
-        kasus.status = nilai;
-        kasus.diperbaruiPada = sekarang;
-
-        rec.status = nilai;
-        rec.diperbaruiPada = sekarang;
-
-        simpan(data);
-
-        return getKasusTergeserById(kasus.id);
-    }
-
-
-    // =====================================================
-    // 18. SINKRONISASI ANTAR-TAB
-    // =====================================================
-
-    window.addEventListener("storage", event => {
-        if (
-            event.key !== STORAGE_KEY ||
-            gunakanMemori
-        ) {
-            return;
-        }
-
-        try {
-            dataAktif = normalisasi(
-                event.newValue
-                    ? JSON.parse(event.newValue)
-                    : DATA_SEED
-            );
-
-            beritahu(true);
-
-        } catch (error) {
-            console.warn(
-                "SILAB: perubahan dari tab lain tidak valid.",
-                error
-            );
-        }
-    });
-
-
-    // =====================================================
-    // 19. INISIALISASI LAYANAN
+    // 21. INISIALISASI LAYANAN
     // =====================================================
 
     inisialisasi();
 
-    // Menyediakan fungsi untuk seluruh modul Laboran.
+
+// =====================================================
+// MENGAMBIL DATA KASUS UNTUK HALAMAN REKOMENDASI
+// =====================================================
+
+function getRekomendasiAktif() {
+
+    // Mengambil seluruh kasus tergeser yang masih aktif.
+    const daftarKasus = getKasusTergeserAktif();
+
+    return daftarKasus.map(kasus => {
+
+        // Mengambil pengajuan asli berdasarkan relasinya.
+        const pengajuan = getById(
+            "antrean",
+            kasus.pengajuanId
+        );
+
+        // Mengabaikan kasus yang tidak memiliki pengajuan.
+        if (!pengajuan) {
+            return null;
+        }
+
+        // Mengambil riwayat rekomendasi berdasarkan ID kasus.
+        const riwayat = getRekomendasiByKasusId(
+            kasus.id
+        );
+
+        // Mendukung hasil berupa array maupun satu objek.
+        const daftarRekomendasi = Array.isArray(riwayat)
+            ? riwayat
+            : riwayat
+                ? [riwayat]
+                : [];
+
+        // Mengambil rekomendasi terakhir jika tersedia.
+        const rekomendasiTerbaru =
+            kasus.rekomendasiTerbaru ||
+            daftarRekomendasi[
+                daftarRekomendasi.length - 1
+            ] ||
+            null;
+
+        // Menggabungkan data pengajuan dan kasus.
+        return {
+            ...pengajuan,
+            ...kasus,
+
+            // ID kasus tetap digunakan untuk aksi Laboran.
+            id: kasus.id,
+
+            // Mempertahankan relasi pengajuan asli.
+            pengajuanId: pengajuan.id,
+            pengajuan: pengajuan,
+
+            // Menyertakan rekomendasi terakhir.
+            rekomendasiTerbaru
+        };
+    }).filter(Boolean);
+}
+
+
+
+    // =====================================================
+    // 22. PUBLIKASI FUNGSI UNTUK SELURUH MODUL
+    // =====================================================
+
     window.SILABService = Object.freeze({
 
         // Pengambilan data.
         getData,
         getAll,
         getById,
-
-        // Antrean.
         getAntreanAktif,
-        getPengajuanPenggeser,
-
-        // Kasus tergeser.
-        getKasusTergeser,
+        getKasusTergeserAktif,
         getKasusTergeserById,
+        getRekomendasiByKasusId,
         getRekomendasiAktif,
-        getKasusPerluRekomendasi,
-        getRiwayatRekomendasi,
+        getRiwayatByTanggal,
 
-        // CRUD umum.
+        // Pengelolaan data.
         tambah,
         update,
         hapus,
         reset,
+
+        // Presensi.
         updatePresensi,
 
-        // Pengelolaan kasus tergeser.
-        tandaiTergeser,
-
-        // Pengelolaan rekomendasi.
+        // Rekomendasi.
         kirimRekomendasi,
         editRekomendasi,
         batalkanRekomendasi,
-        updateStatusRekomendasi
+
+        // Validasi.
+        validasiJadwalRekomendasi,
+        masihDalamWaktuEdit
     });
 
+
     console.log(
-        "SILAB: Layanan data Laboran berhasil diinisialisasi."
+        "SILAB: Layanan data berhasil dimuat."
     );
 
 })(window);
