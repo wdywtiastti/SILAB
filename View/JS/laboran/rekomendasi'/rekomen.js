@@ -1,4 +1,3 @@
-
 /**
  * MODUL REKOMENDASI JADWAL SILAB
  * Mengelola daftar pengguna yang jadwalnya tergeser.
@@ -25,8 +24,6 @@
     };
 
     const PER_HALAMAN = 10;
-
-    const STATUS_MENUNGGU = "menunggu_rekomendasi";
 
     const STATUS_NONAKTIF = [
         "dibatalkan",
@@ -164,43 +161,14 @@
 
         const pending = total - selesai;
 
-        const kelompokKategori = new Map();
-
-        semuaKasus.forEach(kasus => {
-            const kategori = kasus.kategori || "-";
-            const prioritas = kasus.prioritas || "-";
-
-            const kunci = `${kategori} • ${prioritas}`;
-
-            kelompokKategori.set(
-                kunci,
-                (kelompokKategori.get(kunci) || 0) + 1
-            );
-        });
-
-        const daftarKategori = [
-            ...kelompokKategori.entries()
-        ].map(([nama, jumlah]) => {
-            return `${nama} (${jumlah})`;
-        });
-
-        aturStatistik("total", `${total} Pengguna`);
+        aturStatistik(
+            "total",
+            `${total} Pengguna`
+        );
 
         aturStatistik(
             "sumber",
             "Berdasarkan data pengguna tergeser"
-        );
-
-        aturStatistik(
-            "kategori",
-            daftarKategori.length
-                ? daftarKategori.join(", ")
-                : "Belum ada data"
-        );
-
-        aturStatistik(
-            "kategori-detail",
-            `${kelompokKategori.size} kelompok kategori dan prioritas`
         );
 
         aturStatistik(
@@ -302,23 +270,6 @@
             `Kebutuhan: ${Number(kasus.kebutuhanKursi) || 0} Kursi`
         );
 
-        isi(
-            "kategoriPrioritas",
-            `${kasus.kategori || "-"} • ${kasus.prioritas || "-"}`
-        );
-
-        isi(
-            "alasan",
-            kasus.alasan || "Alasan pergeseran tidak tersedia."
-        );
-
-        isi(
-            "namaPenggeser",
-            kasus.namaPenggeser
-                ? `Penggeser: ${kasus.namaPenggeser}`
-                : "Penggeser belum tercatat"
-        );
-
         // Mengatur tombol rekomendasi.
         const tombol = salinan.querySelector(
             "[data-aksi-rekomendasi]"
@@ -368,11 +319,7 @@
             kasus.id,
             kasus.namaPemohon,
             kasus.nipNpm,
-            kasus.namaKegiatan,
-            kasus.kategori,
-            kasus.prioritas,
-            kasus.alasan,
-            kasus.namaPenggeser
+            kasus.namaKegiatan
         ].join(" ").toLowerCase();
 
         return teks.includes(kataKunci);

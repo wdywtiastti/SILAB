@@ -1159,6 +1159,76 @@
     };
   }
 
+
+  // ==========================================
+  // 19A. VALIDASI MULTI ALTERNATIF JADWAL
+  // ==========================================
+
+  function siapkanAlternatifRekomendasi(
+    kasus,
+    detail,
+    rekomendasiId = null
+  ) {
+    const daftarAlternatif = detail?.alternatifJadwal;
+
+    if (
+      !Array.isArray(daftarAlternatif) ||
+      daftarAlternatif.length < 1 ||
+      daftarAlternatif.length > 2
+    ) {
+      throw new Error(
+        "Rekomendasi harus memiliki satu atau dua alternatif jadwal."
+      );
+    }
+
+    const hasil = daftarAlternatif.map((alternatif, index) => {
+      const jadwal = siapkanJadwalRekomendasi(
+        kasus,
+        alternatif
+      );
+
+      const konflik = cekKonflikRekomendasi(
+        jadwal.data,
+        kasus.pengajuanId,
+        rekomendasiId
+      );
+
+      if (konflik) {
+        throw new Error(
+          `Alternatif ${index + 1} bertabrakan dengan rekomendasi pengguna lain.`
+        );
+      }
+
+      return {
+        ...jadwal.data,
+
+        nomorAlternatif: index + 1,
+
+        mulaiLokal: jadwal.mulaiLokal,
+
+        selesaiLokal: jadwal.selesaiLokal
+      };
+    });
+
+    // Memastikan kedua alternatif tidak saling bertabrakan.
+    if (hasil.length === 2) {
+      const pertama = validasiJadwal(hasil[0]);
+      const kedua = validasiJadwal(hasil[1]);
+
+      if (
+        pertama.mulai < kedua.selesai &&
+        pertama.selesai > kedua.mulai
+      ) {
+        throw new Error(
+          "Alternatif pertama dan kedua tidak boleh memiliki waktu yang bertabrakan."
+        );
+      }
+    }
+
+    return hasil;
+  }
+
+
   // ==========================================
   // 20. PEMERIKSAAN BENTROKAN REKOMENDASI
   // ==========================================
@@ -1266,8 +1336,9 @@
     simpanSemua("conflicts", konflik);
   }
 
+  
   // ==========================================
-  // 23. MENGIRIM REKOMENDASI
+  // 23. MENGIRIM REKOMENDASI MULTI ALTERNATIF
   // ==========================================
 
   function kirimRekomendasi(idKasus, detail) {
@@ -1285,29 +1356,35 @@
 
     if (
       rekomendasiLama &&
-      STATUS_REKOMENDASI_AKTIF.has(String(rekomendasiLama.status).toLowerCase())
+      STATUS_REKOMENDASI_AKTIF.has(
+        String(rekomendasiLama.status).toLowerCase()
+      )
     ) {
-      throw new Error("Kasus ini sudah memiliki rekomendasi aktif.");
-    }
-
-    const statusKasus = String(kasus.status || "").toLowerCase();
-
-    if (statusKasus && !STATUS_TERGESER.has(statusKasus)) {
-      throw new Error("Kasus tidak lagi berada dalam status tergeser.");
-    }
-
-    const jadwal = siapkanJadwalRekomendasi(kasus, detail);
-
-    const konflikRekomendasi = cekKonflikRekomendasi(
-      jadwal.data,
-      kasus.pengajuanId,
-    );
-
-    if (konflikRekomendasi) {
       throw new Error(
-        "Slot tersebut sudah ditawarkan kepada pengguna lain. Silakan pilih waktu berbeda.",
+        "Kasus ini sudah memiliki rekomendasi aktif."
       );
     }
+
+    const statusKasus = String(
+      kasus.status || ""
+    ).toLowerCase();
+
+    if (
+      statusKasus &&
+      !STATUS_TERGESER.has(statusKasus)
+    ) {
+      throw new Error(
+        "Kasus tidak lagi berada dalam status tergeser."
+      );
+    }
+
+    // Validasi seluruh alternatif.
+    const alternatif = siapkanAlternatifRekomendasi(
+      kasus,
+      detail
+    );
+
+    const alternatifUtama = alternatif[0];
 
     const daftar = ambilSemua("recommendations");
 
@@ -1316,11 +1393,13 @@
     const waktuDikirim = sekarang.toISOString();
 
     const kedaluwarsa = new Date(
-      sekarang.getTime() + BATAS_KONFIRMASI,
+      sekarang.getTime() + BATAS_KONFIRMASI
     ).toISOString();
 
     const rekomendasiBaru = {
-      ...jadwal.data,
+      // Data utama mengikuti alternatif pertama
+      // untuk menjaga kompatibilitas modul lama.
+      ...alternatifUtama,
 
       id: buatIdRekomendasi(daftar),
 
@@ -1334,15 +1413,14 @@
 
       bookingId: `BOOK-${kasus.pengajuanId}`,
 
-      waktuMulai: jadwal.data.waktuMulai,
+      // Menyimpan seluruh pilihan jadwal.
+      alternatifJadwal: alternatif,
 
-      waktuSelesai: jadwal.data.waktuSelesai,
+      jumlahAlternatif: alternatif.length,
 
-      mulaiLokal: jadwal.mulaiLokal,
-
-      selesaiLokal: jadwal.selesaiLokal,
-
-      catatan: String(detail.catatan || "").trim(),
+      catatan: String(
+        detail.catatan || ""
+      ).trim(),
 
       status: "rekomendasi_dikirim",
 
@@ -1356,14 +1434,17 @@
 
       batasRespons: kedaluwarsa,
 
-      sumber: "laboran",
+      sumber: "laboran"
     };
 
     daftar.push(rekomendasiBaru);
 
     simpanSemua("recommendations", daftar);
 
-    perbaruiMetadataRekomendasi(kasus, rekomendasiBaru);
+    perbaruiMetadataRekomendasi(
+      kasus,
+      rekomendasiBaru
+    );
 
     beriTahuPerubahan("recommendations", "dikirim");
 
@@ -1380,61 +1461,76 @@
 
       rekomendasiTerbaru: salinData(rekomendasiBaru),
 
-      status: "rekomendasi_dikirim",
+      status: "rekomendasi_dikirim"
     };
   }
 
+
   // ==========================================
-  // 24. EDIT REKOMENDASI
+  // 24. EDIT REKOMENDASI MULTI ALTERNATIF
   // ==========================================
 
   function editRekomendasi(idKasus, detail) {
     const kasus = getKasusTergeserById(idKasus);
 
     if (!kasus) {
-      throw new Error("Data kasus tergeser tidak ditemukan.");
+      throw new Error(
+        "Data kasus tergeser tidak ditemukan."
+      );
     }
 
     const rekomendasiLama = ambilRekomendasiKasus(kasus);
 
     if (!rekomendasiLama) {
-      throw new Error("Rekomendasi yang akan diedit tidak ditemukan.");
+      throw new Error(
+        "Rekomendasi yang akan diedit tidak ditemukan."
+      );
     }
 
     if (
       !STATUS_REKOMENDASI_AKTIF.has(
-        String(rekomendasiLama.status).toLowerCase(),
+        String(rekomendasiLama.status).toLowerCase()
       )
     ) {
-      throw new Error("Rekomendasi sudah tidak dapat diedit.");
+      throw new Error(
+        "Rekomendasi sudah tidak dapat diedit."
+      );
     }
 
-    const batas = ambilBatasRekomendasi(rekomendasiLama);
-
-    if (!Number.isFinite(batas) || Date.now() >= batas) {
-      throw new Error("Batas waktu edit rekomendasi 24 jam sudah berakhir.");
-    }
-
-    const jadwal = siapkanJadwalRekomendasi(kasus, detail);
-
-    const konflikRekomendasi = cekKonflikRekomendasi(
-      jadwal.data,
-      kasus.pengajuanId,
-      rekomendasiLama.id,
+    // Memeriksa batas konfirmasi 24 jam.
+    const batas = ambilBatasRekomendasi(
+      rekomendasiLama
     );
 
-    if (konflikRekomendasi) {
-      throw new Error("Jadwal baru bertabrakan dengan rekomendasi lain.");
+    if (
+      !Number.isFinite(batas) ||
+      Date.now() >= batas
+    ) {
+      throw new Error(
+        "Batas waktu edit rekomendasi 24 jam sudah berakhir."
+      );
     }
+
+    // Validasi ulang seluruh alternatif.
+    const alternatif = siapkanAlternatifRekomendasi(
+      kasus,
+      detail,
+      rekomendasiLama.id
+    );
+
+    const alternatifUtama = alternatif[0];
 
     const daftar = ambilSemua("recommendations");
 
     const index = daftar.findIndex(
-      (item) => String(item.id) === String(rekomendasiLama.id),
+      item =>
+        String(item.id) === String(rekomendasiLama.id)
     );
 
     if (index === -1) {
-      throw new Error("Data rekomendasi tidak ditemukan dalam penyimpanan.");
+      throw new Error(
+        "Data rekomendasi tidak ditemukan dalam penyimpanan."
+      );
     }
 
     const diperbaruiPada = new Date().toISOString();
@@ -1442,36 +1538,49 @@
     const rekomendasiBaru = {
       ...daftar[index],
 
-      ...jadwal.data,
+      // Data utama tetap menggunakan alternatif pertama.
+      ...alternatifUtama,
 
-      waktuMulai: jadwal.data.waktuMulai,
+      // Memperbarui seluruh pilihan.
+      alternatifJadwal: alternatif,
 
-      waktuSelesai: jadwal.data.waktuSelesai,
+      jumlahAlternatif: alternatif.length,
 
-      mulaiLokal: jadwal.mulaiLokal,
-
-      selesaiLokal: jadwal.selesaiLokal,
-
-      catatan: String(detail.catatan || "").trim(),
+      catatan: String(
+        detail.catatan || ""
+      ).trim(),
 
       status: "rekomendasi_dikirim",
 
       diperbaruiPada,
 
-      // Batas konfirmasi tidak diperpanjang.
+      // ID, waktu pengiriman, dan batas konfirmasi tetap.
+      id: rekomendasiLama.id,
+
       dikirimPada: rekomendasiLama.dikirimPada,
 
       kedaluwarsaPada:
         rekomendasiLama.kedaluwarsaPada ||
         rekomendasiLama.expiresAt ||
         rekomendasiLama.batasRespons,
+
+      expiresAt:
+        rekomendasiLama.expiresAt ||
+        rekomendasiLama.kedaluwarsaPada,
+
+      batasRespons:
+        rekomendasiLama.batasRespons ||
+        rekomendasiLama.kedaluwarsaPada
     };
 
     daftar[index] = rekomendasiBaru;
 
     simpanSemua("recommendations", daftar);
 
-    perbaruiMetadataRekomendasi(kasus, rekomendasiBaru);
+    perbaruiMetadataRekomendasi(
+      kasus,
+      rekomendasiBaru
+    );
 
     beriTahuPerubahan("recommendations", "diedit");
 
@@ -1486,9 +1595,11 @@
 
       rekomendasiTerbaru: salinData(rekomendasiBaru),
 
-      status: "rekomendasi_dikirim",
+      status: "rekomendasi_dikirim"
     };
   }
+
+
   // ==========================================
   // 25. PENGELOLAAN KONFLIK KEPALA LAB
   // ==========================================

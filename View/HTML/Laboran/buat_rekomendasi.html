@@ -17,7 +17,7 @@
         rel="stylesheet"
     >
 
-    <!-- BOOTSTRAP ICON -->
+    <!-- BOOTSTRAP ICONS -->
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -31,9 +31,9 @@
 
 <body>
 
-    <!-- ==========================================
-         NAVBAR
-    =========================================== -->
+    <!-- ======================================
+         1. NAVBAR
+    ======================================= -->
 
     <nav class="navbar">
 
@@ -52,7 +52,6 @@
 
         </div>
 
-
         <div class="navbar-menu">
 
             <a href="dashboard.html" class="nav-link">
@@ -60,19 +59,14 @@
             </a>
 
             <a href="antrian.html" class="nav-link">
-                Antrian
+                Antrean
             </a>
 
-            <a
-                href="rekomendasi_jadwal.html"
-                class="nav-link active"
-                aria-current="page"
-            >
+            <a href="rekomendasi_jadwal.html" class="nav-link active">
                 Rekomendasi Jadwal
             </a>
 
         </div>
-
 
         <div class="navbar-profile">
 
@@ -93,7 +87,9 @@
 
                         <p>Satria Dwi Pauwah S.T., M.Kom.</p>
 
-                        <span>NIP: 197804122005011003</span>
+                        <span>
+                            NIP: 197804122005011003
+                        </span>
 
                         <div class="profile-role">
                             <i class="bi bi-check-circle-fill"></i>
@@ -118,43 +114,38 @@
     </nav>
 
 
-    <!-- ==========================================
-         KONTEN UTAMA
-    =========================================== -->
+    <!-- ======================================
+         2. KONTEN UTAMA
+    ======================================= -->
 
     <main class="rekomendasi-container">
 
 
         <!-- HEADER HALAMAN -->
 
-        <section class="card page-header-card">
-
-            <div class="header-decoration">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+        <section class="recommendation-header card">
 
             <div class="header-tags">
 
-                <span class="info-tag tag-disposisi">
-                    <i class="bi bi-circle-fill"></i>
+                <span class="header-tag purple-tag">
+                    <i class="bi bi-shield-check"></i>
                     PANEL OPERASIONAL LABORAN
                 </span>
 
-                <span class="info-tag tag-fasilitas">
+                <span class="header-tag yellow-tag">
                     <i class="bi bi-building"></i>
                     Laboratorium RPL • 36 Workstations
                 </span>
 
             </div>
 
-
-            <div class="buat-header-content">
+            <div class="header-content">
 
                 <div>
 
-                    <h2>Buat Rekomendasi Jadwal Pengganti</h2>
+                    <h2>
+                        Buat Rekomendasi Jadwal Pengganti
+                    </h2>
 
                     <p>
                         Berikan alternatif jadwal bagi pengguna yang
@@ -165,10 +156,9 @@
                 </div>
 
                 <span
-                    class="badge-menunggu"
+                    class="recommendation-status"
                     id="statusRekomendasi"
                 >
-                    <i class="bi bi-clock-history"></i>
                     Menunggu Rekomendasi
                 </span>
 
@@ -177,16 +167,15 @@
         </section>
 
 
+        <!-- ==================================
+             3. RINCIAN JADWAL TERGESER
+        =================================== -->
 
-        <!-- ======================================
-             RINCIAN JADWAL TERGESER
-        ======================================= -->
+        <section class="recommendation-detail card">
 
-        <section class="card">
+            <div class="section-heading">
 
-            <div class="card-title">
-
-                <div class="card-title-icon ungu">
+                <div class="section-icon purple-icon">
                     <i class="bi bi-calendar-x"></i>
                 </div>
 
@@ -195,99 +184,91 @@
             </div>
 
 
-            <div class="rincian-grid">
+            <div class="detail-grid">
 
 
                 <!-- DATA PEMOHON -->
 
-                <div class="rincian-box">
+                <article class="detail-card">
 
                     <small>Data Pemohon</small>
 
                     <strong data-detail="namaPemohon">
-                        Memuat data...
+                        -
                     </strong>
 
-                    <span
-                        class="detail-waktu"
-                        data-detail="nipNpm"
-                    ></span>
+                    <span data-detail="nipNpm">
+                        -
+                    </span>
 
                     <span
-                        class="chip ungu"
+                        class="priority-badge"
                         data-detail="kategoriPrioritas"
-                    ></span>
+                    >
+                        -
+                    </span>
 
-                    <span
-                        class="detail-waktu"
-                        data-detail="namaKegiatan"
-                    ></span>
+                    <p data-detail="namaKegiatan">
+                        -
+                    </p>
 
-                    <span
-                        class="detail-waktu"
-                        data-detail="kebutuhan"
-                    ></span>
+                    <span data-detail="kebutuhan">
+                        -
+                    </span>
 
-                </div>
+                </article>
 
 
                 <!-- JADWAL ASAL -->
 
-                <div class="rincian-box">
+                <article class="detail-card">
 
                     <small>Jadwal Semula (Tergeser)</small>
 
                     <strong data-detail="jadwalAsalTanggal">
-                        Memuat jadwal...
+                        -
                     </strong>
 
-                    <span
-                        class="detail-waktu"
-                        data-detail="jadwalAsalJam"
-                    ></span>
-
-                    <span class="chip merah">
-
-                        <i class="bi bi-x-circle-fill"></i>
-
-                        Tergeser oleh Prioritas Lebih Tinggi
-
+                    <span data-detail="jadwalAsalJam">
+                        -
                     </span>
 
-                </div>
+                    <span class="status-badge displaced">
+                        <i class="bi bi-x-circle-fill"></i>
+                        Tergeser oleh Prioritas Lebih Tinggi
+                    </span>
+
+                </article>
 
 
                 <!-- PENGAJUAN PENGGESER -->
 
-                <div class="rincian-box">
+                <article class="detail-card">
 
                     <small>Pengajuan Prioritas yang Menggeser</small>
 
                     <strong data-detail="namaPenggeser">
-                        Memuat data...
+                        -
                     </strong>
 
-                    <span
-                        class="detail-waktu"
-                        data-detail="alasan"
-                    ></span>
+                    <p data-detail="alasan">
+                        Jadwal tergeser akibat pengajuan
+                        dengan prioritas lebih tinggi.
+                    </p>
 
-                    <span class="chip kuning">
-
+                    <span class="priority-badge yellow-priority">
                         <i class="bi bi-circle-fill"></i>
-
                         Pengajuan Prioritas Lebih Tinggi
-
                     </span>
 
-                </div>
+                </article>
 
             </div>
 
 
             <!-- INFORMASI -->
 
-            <div class="catatan-data">
+            <div class="recommendation-notice">
 
                 <i class="bi bi-info-circle-fill"></i>
 
@@ -303,185 +284,361 @@
         </section>
 
 
+        <!-- ==================================
+             4. FORM REKOMENDASI
+        =================================== -->
 
-        <!-- ======================================
-             FORM REKOMENDASI
-        ======================================= -->
+        <form
+            id="formRekomendasi"
+            class="recommendation-form"
+            novalidate
+        >
 
-        <section class="card">
+
+            <!-- CARD ALOKASI JADWAL -->
+
+            <section class="recommendation-allocation card">
 
 
-            <div class="card-title-split">
+                <!-- JUDUL DAN TOMBOL TAMBAH -->
 
-                <div class="card-title">
+                <div class="section-heading allocation-heading">
 
-                    <div class="card-title-icon maroon">
-                        <i class="bi bi-calendar-plus"></i>
+                    <div class="heading-title">
+
+                        <div class="section-icon red-icon">
+                            <i class="bi bi-calendar-plus"></i>
+                        </div>
+
+                        <h3>
+                            Alokasi Rekomendasi Jadwal Pengganti
+                        </h3>
+
                     </div>
 
-                    <h3>Alokasi Rekomendasi Jadwal Pengganti</h3>
 
-                </div>
+                    <div class="allocation-actions">
 
-                <span class="info-slot">
-                    <i class="bi bi-calendar-check"></i>
-                    Slot Alternatif
-                </span>
+                        <span class="slot-badge">
+                            <i class="bi bi-calendar-check"></i>
+                            Slot Alternatif
+                        </span>
 
-            </div>
-
-
-
-            <!-- INFORMASI -->
-
-            <div class="aturan-info">
-
-                <i class="bi bi-info-circle-fill"></i>
-
-                <p>
-                    Tentukan waktu alternatif yang tersedia untuk
-                    pemohon. Rekomendasi akan disimpan dan menunggu
-                    konfirmasi dari pengguna selama 24 jam.
-                </p>
-
-            </div>
-
-
-
-            <!-- FORM -->
-
-            <form
-                id="formRekomendasi"
-                class="form-rekomendasi"
-                novalidate
-            >
-
-
-                <div class="form-grid">
-
-
-                    <!-- WAKTU MULAI -->
-
-                    <div class="form-group">
-
-                        <label for="waktu-mulai">
-                            Waktu Mulai
-                        </label>
-
-                        <input
-                            type="datetime-local"
-                            id="waktu-mulai"
-                            name="waktuMulai"
-                            class="form-input"
-                            required
-                            aria-describedby="errorWaktuMulai"
+                        <button
+                            type="button"
+                            id="btnTambahAlternatif"
+                            class="btn-tambah-alternatif"
+                            aria-label="Tambah alternatif jadwal"
+                            title="Tambah alternatif jadwal"
                         >
-
-                        <small
-                            id="errorWaktuMulai"
-                            class="field-error"
-                            aria-live="polite"
-                        ></small>
-
-                    </div>
-
-
-
-                    <!-- WAKTU SELESAI -->
-
-                    <div class="form-group">
-
-                        <label for="waktu-selesai">
-                            Waktu Selesai
-                        </label>
-
-                        <input
-                            type="datetime-local"
-                            id="waktu-selesai"
-                            name="waktuSelesai"
-                            class="form-input"
-                            required
-                            aria-describedby="errorWaktuSelesai"
-                        >
-
-                        <small
-                            id="errorWaktuSelesai"
-                            class="field-error"
-                            aria-live="polite"
-                        ></small>
-
-                    </div>
-
-
-
-                    <!-- CATATAN -->
-
-                    <div class="form-group full">
-
-                        <label for="catatan">
-                            Catatan Panduan untuk Pemohon
-                        </label>
-
-                        <textarea
-                            id="catatan"
-                            name="catatan"
-                            class="form-textarea"
-                            rows="4"
-                            placeholder="Tuliskan informasi atau arahan terkait jadwal alternatif yang ditawarkan."
-                        ></textarea>
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
 
                     </div>
 
                 </div>
 
 
+                <!-- INFORMASI SLOT -->
 
-                <!-- FEEDBACK UMUM -->
+                <div class="allocation-notice">
 
-                <p
-                    id="feedbackRekomendasi"
-                    class="rekomendasi-feedback"
-                    role="status"
-                    aria-live="polite"
-                ></p>
-
-
-
-                <!-- FOOTER FORM -->
-
-                <div class="footer-aksi">
+                    <i class="bi bi-info-circle-fill"></i>
 
                     <p>
-
-                        <i class="bi bi-clock-fill"></i>
-
-                        <strong>Batas konfirmasi: 24 jam</strong>
-
-                        <br>
-
-                        Pemohon diberikan waktu untuk menerima
-                        atau menolak rekomendasi jadwal.
-
+                        Tentukan waktu alternatif yang tersedia
+                        untuk pemohon. Kamu dapat memberikan satu
+                        atau dua pilihan jadwal. Rekomendasi akan
+                        menunggu konfirmasi pengguna selama 24 jam.
                     </p>
 
+                </div>
 
-                    <div class="footer-tombol">
+
+                <!-- ==================================
+                     DAFTAR ALTERNATIF
+                =================================== -->
+
+                <div
+                    class="alternative-list"
+                    id="daftarAlternatif"
+                >
+
+                    <!-- ALTERNATIF PERTAMA -->
+
+                    <article class="alternatif-card">
+
+                        <div class="alternative-card-heading">
+
+                            <div class="alternative-title">
+
+                                <span class="alternative-number">
+                                    1
+                                </span>
+
+                                <h4 data-judul-alternatif>
+                                    Alternatif Jadwal 1
+                                </h4>
+
+                            </div>
+
+                            <span class="alternative-label">
+                                Pilihan 1
+                            </span>
+
+                        </div>
+
+
+                        <div class="alternative-input-grid">
+
+
+                            <!-- WAKTU MULAI -->
+
+                            <div class="form-group">
+
+                                <label data-label="waktuMulai">
+                                    Waktu Mulai
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuMulai"
+                                    required
+                                >
+
+                                <small
+                                    class="field-error"
+                                    data-error="waktuMulai"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- WAKTU SELESAI -->
+
+                            <div class="form-group">
+
+                                <label data-label="waktuSelesai">
+                                    Waktu Selesai
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuSelesai"
+                                    required
+                                >
+
+                                <small
+                                    class="field-error"
+                                    data-error="waktuSelesai"
+                                ></small>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- ==================================
+                     TEMPLATE ALTERNATIF KEDUA
+                =================================== -->
+
+                <template id="templateAlternatif">
+
+                    <article class="alternatif-card">
+
+                        <div class="alternative-card-heading">
+
+                            <div class="alternative-title">
+
+                                <span class="alternative-number">
+                                    2
+                                </span>
+
+                                <h4 data-judul-alternatif>
+                                    Alternatif Jadwal 2
+                                </h4>
+
+                            </div>
+
+
+                            <div class="alternative-card-actions">
+
+                                <span class="alternative-label">
+                                    Pilihan 2
+                                </span>
+
+                                <button
+                                    type="button"
+                                    class="btn-hapus-alternatif"
+                                    data-hapus-alternatif
+                                    aria-label="Hapus alternatif jadwal"
+                                    title="Hapus alternatif"
+                                >
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="alternative-input-grid">
+
+
+                            <!-- WAKTU MULAI -->
+
+                            <div class="form-group">
+
+                                <label data-label="waktuMulai">
+                                    Waktu Mulai
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuMulai"
+                                    required
+                                >
+
+                                <small
+                                    class="field-error"
+                                    data-error="waktuMulai"
+                                ></small>
+
+                            </div>
+
+
+                            <!-- WAKTU SELESAI -->
+
+                            <div class="form-group">
+
+                                <label data-label="waktuSelesai">
+                                    Waktu Selesai
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuSelesai"
+                                    required
+                                >
+
+                                <small
+                                    class="field-error"
+                                    data-error="waktuSelesai"
+                                ></small>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </template>
+
+
+                <!-- ==================================
+                     CATATAN PEMOHON
+                =================================== -->
+
+                <div class="form-group note-group">
+
+                    <label for="catatan">
+                        Catatan Panduan untuk Pemohon
+                    </label>
+
+                    <textarea
+                        id="catatan"
+                        name="catatan"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Tuliskan informasi atau arahan terkait jadwal alternatif yang ditawarkan."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- ==================================
+                     FEEDBACK VALIDASI
+                =================================== -->
+
+                <div
+                    id="feedbackRekomendasi"
+                    class="recommendation-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- ==================================
+                     BATAS KONFIRMASI
+                =================================== -->
+
+                <div class="confirmation-notice">
+
+                    <i class="bi bi-clock-history"></i>
+
+                    <div>
+
+                        <strong>
+                            Batas Konfirmasi: 24 Jam
+                        </strong>
+
+                        <p>
+                            Pemohon diberikan waktu untuk menerima
+                            atau menolak rekomendasi jadwal.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================
+                     FOOTER FORM
+                =================================== -->
+
+                <div class="recommendation-footer">
+
+                    <div class="footer-information">
+
+                        <i class="bi bi-info-circle-fill"></i>
+
+                        <div>
+
+                            <strong>
+                                Ketentuan Rekomendasi
+                            </strong>
+
+                            <p>
+                                Rekomendasi akan dikirim kepada
+                                pemohon untuk mendapatkan konfirmasi.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="footer-actions">
 
                         <a
                             href="rekomendasi_jadwal.html"
-                            class="btn btn-batal"
+                            class="btn-batal"
                         >
-                            Batal
+                            <i class="bi bi-arrow-left"></i>
+                            Kembali
                         </a>
-
 
                         <button
                             type="submit"
-                            class="btn btn-kirim"
                             id="btnKirimRekomendasi"
+                            class="btn-kirim-rekomendasi"
                         >
 
-                            <i class="bi bi-send-fill"></i>
+                            <i class="bi bi-send"></i>
 
                             <span data-label-submit>
                                 Kirim Rekomendasi
@@ -493,31 +650,35 @@
 
                 </div>
 
-            </form>
+            </section>
 
-        </section>
+        </form>
 
     </main>
 
 
+    <!-- ======================================
+         5. NOTIFIKASI
+    ======================================= -->
 
-    <!-- ==========================================
-         JAVASCRIPT
-    =========================================== -->
+    <div
+        id="toastRekomendasi"
+        class="toast-rekomendasi"
+        role="status"
+        aria-live="polite"
+    ></div>
 
-    <!-- SHARED STORAGE -->
+
+    <!-- ======================================
+         6. JAVASCRIPT
+    ======================================= -->
+
     <script src="../../JS/shared/storage.js"></script>
 
-    <!-- UTILITAS WAKTU -->
     <script src="../../JS/laboran/utils/waktu.js"></script>
 
-    <!-- DATA SIMULASI -->
-    <script src="../../JS/laboran/data_uji.js"></script>
-
-    <!-- LAYANAN DATA -->
     <script src="../../JS/laboran/layanan.js"></script>
 
-    <!-- MODUL BUAT REKOMENDASI -->
     <script src="../../JS/laboran/rekomendasi'/buat_rekomendasi.js"></script>
 
 </body>
