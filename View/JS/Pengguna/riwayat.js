@@ -15,6 +15,40 @@ const currentPageElement = document.getElementById("currentPage");
 const paginationNumbers = document.getElementById("paginationNumbers");
 
 /* =========================================
+   IDENTITAS NAVBAR PENGGUNA
+========================================= */
+
+function tampilkanIdentitasNavbar() {
+  const sesi = sesiSILAB.ambil();
+
+  if (!sesi || sesi.role !== "pengguna") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  if (!Array.isArray(users)) return null;
+
+  const akun = users.find(
+    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  );
+
+  if (!akun || akun.status !== "aktif") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const navbarName = document.getElementById("userNavbarName");
+  const profileName = document.getElementById("profileUserName");
+
+  if (navbarName) navbarName.textContent = akun.nama;
+  if (profileName) profileName.textContent = akun.nama;
+
+  return akun;
+}
+
+/* =========================================
    KONFIGURASI
 ========================================= */
 
@@ -313,6 +347,34 @@ function createHistoryRow(data) {
   return row;
 }
 
+function tampilkanIdentitasNavbar() {
+  const sesi = sesiSILAB.ambil();
+
+  if (!sesi || sesi.role !== "pengguna") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  const akun = users.find(
+    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  );
+
+  if (!akun || akun.status !== "aktif") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const navbarName = document.getElementById("userNavbarName");
+  const profileName = document.getElementById("profileUserName");
+
+  if (navbarName) navbarName.textContent = akun.nama;
+  if (profileName) profileName.textContent = akun.nama;
+
+  return akun;
+}
+
 /* =========================================
    NOMOR HALAMAN COMPACT
 ========================================= */
@@ -373,6 +435,19 @@ function loadHistory() {
       return;
     }
 
+    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+    const akun = users.find(
+      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+    );
+
+    if (!akun || !akun.id || akun.status !== "aktif") {
+      allUserHistory = [];
+      showEmptyHistory("Identitas akun tidak ditemukan.");
+      currentPage = 1;
+      updatePagination(0, 0, 0);
+      return;
+    }
     const submissions = SILABStorage.get(SILABStorage.KEYS.SUBMISSIONS, []);
 
     if (!Array.isArray(submissions)) {
@@ -385,12 +460,14 @@ function loadHistory() {
 
       return;
     }
-
-    // Filter berdasarkan pengguna login
+    // Filter berdasarkan ID akun yang sedang login
     allUserHistory = submissions.filter((submission) => {
-      return submission && submission.userIdentifier === sesi.identifier;
+      return (
+        submission &&
+        submission.userId &&
+        String(submission.userId) === String(akun.id)
+      );
     });
-
     // Urutkan berdasarkan tanggal terbaru
     allUserHistory.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
@@ -427,6 +504,11 @@ function initHistory() {
     return;
   }
 
+  // Tampilkan nama akun yang sedang login
+  const akunLogin = tampilkanIdentitasNavbar();
+
+  if (!akunLogin) return;
+
   // Event pencarian
   if (historySearch) {
     historySearch.addEventListener("input", searchHistory);
@@ -442,7 +524,7 @@ function initHistory() {
     changePage(1);
   });
 
-  // Muat data satu kali
+  // Muat data riwayat
   loadHistory();
 }
 

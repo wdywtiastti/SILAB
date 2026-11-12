@@ -7,6 +7,44 @@
   "use strict";
 
   // =====================================
+  // IDENTITAS PROFIL PENGGUNA
+  // =====================================
+
+  function tampilkanIdentitasNavbar() {
+    const sesi = sesiSILAB.ambil();
+
+    if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
+      window.location.href = "../auth/login.html";
+      return null;
+    }
+
+    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+    if (!Array.isArray(users)) return null;
+
+    const akun = users.find(
+      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+    );
+
+    if (!akun || akun.status !== "aktif") {
+      window.location.href = "../auth/login.html";
+      return null;
+    }
+
+    const navbarName = document.getElementById("userNavbarName");
+    const profileName = document.getElementById("profileUserName");
+
+    if (navbarName) navbarName.textContent = akun.nama;
+    if (profileName) profileName.textContent = akun.nama;
+
+    return akun;
+  }
+
+  const akunLogin = tampilkanIdentitasNavbar();
+
+  if (!akunLogin) return;
+
+  // =====================================
   // 1. AMBIL ELEMEN HTML
   // =====================================
 

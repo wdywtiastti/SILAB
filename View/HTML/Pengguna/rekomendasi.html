@@ -48,7 +48,9 @@
       </nav>
 
       <div class="navbar-profile">
-        <span class="user-navbar-name">Djuleha M. Asyik</span>
+        <span class="user-navbar-name" id="userNavbarName">
+          Memuat akun...
+        </span>
 
         <details class="profile-dropdown">
           <summary class="profile-trigger">
@@ -57,7 +59,7 @@
 
           <div class="profile-menu">
             <div class="profile-info">
-              <p>Djuleha M. Asyik</p>
+              <p id="profileUserName">Memuat akun...</p>
               <span>Akun Pengguna SILAB</span>
             </div>
 
@@ -314,55 +316,50 @@
 
     <!-- POP UP KONFIRMASI PENERIMAAN -->
     <div class="recommendation-confirm-modal" id="accept-modal">
+      <div class="recommendation-modal-backdrop"></div>
 
-        <div class="recommendation-modal-backdrop"></div>
-
-        <div class="recommendation-modal-content">
-
-            <div class="recommendation-modal-icon">
-                <i class="bi bi-calendar-check"></i>
-            </div>
-
-            <h3>Konfirmasi Pilihan Jadwal</h3>
-
-            <p>
-                Apakah Anda yakin ingin menerima rekomendasi jadwal ini?
-            </p>
-
-            <div class="confirmation-detail">
-                <strong id="confirmation-name"></strong>
-                <span id="confirmation-time"></span>
-            </div>
-
-            <div class="recommendation-modal-actions">
-
-                <button type="button"
-                    class="btn-modal-cancel"
-                    id="btn-cancel-accept">
-                    Periksa Kembali
-                </button>
-
-                <button type="button"
-                    class="btn-modal-confirm"
-                    id="btn-confirm-accept">
-                    Ya, Terima Jadwal
-                </button>
-
-            </div>
+      <div class="recommendation-modal-content">
+        <div class="recommendation-modal-icon">
+          <i class="bi bi-calendar-check"></i>
         </div>
+
+        <h3>Konfirmasi Pilihan Jadwal</h3>
+
+        <p>Apakah Anda yakin ingin menerima rekomendasi jadwal ini?</p>
+
+        <div class="confirmation-detail">
+          <strong id="confirmation-name"></strong>
+          <span id="confirmation-time"></span>
+        </div>
+
+        <div class="recommendation-modal-actions">
+          <button type="button" class="btn-modal-cancel" id="btn-cancel-accept">
+            Periksa Kembali
+          </button>
+
+          <button
+            type="button"
+            class="btn-modal-confirm"
+            id="btn-confirm-accept"
+          >
+            Ya, Terima Jadwal
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- NOTIFIKASI -->
     <div
-        class="recommendation-feedback"
-        id="recommendation-feedback"
-        role="status"
-        aria-live="polite">
-    </div>
+      class="recommendation-feedback"
+      id="recommendation-feedback"
+      role="status"
+      aria-live="polite"
+    ></div>
 
     <!-- JAVASCRIPT -->
-    <script src="../../JS/pengguna/rekomendasi.js"></script>
-
-</body>
+    <script src="../../JS/shared/storage.js" defer></script>
+    <script src="../../JS/auth/sesi.js" defer></script>
+    <script src="../../JS/auth/keluar.js" defer></script>
+    <script src="../../JS/Pengguna/rekomendasi.js" defer></script>
+  </body>
 </html>
-

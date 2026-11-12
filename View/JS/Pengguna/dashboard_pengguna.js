@@ -11,8 +11,39 @@
   // 1. IDENTITAS PENGGUNA
   // =====================================
 
-  const namaPengguna =
-    document.querySelector(".user-navbar-name")?.textContent.trim() || "";
+  function tampilkanIdentitasNavbar() {
+    const sesi = sesiSILAB.ambil();
+
+    if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
+      window.location.href = "../auth/login.html";
+      return null;
+    }
+
+    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+    if (!Array.isArray(users)) return null;
+
+    const akun = users.find(
+      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+    );
+
+    if (!akun || akun.status !== "aktif") {
+      window.location.href = "../auth/login.html";
+      return null;
+    }
+
+    const navbarName = document.getElementById("userNavbarName");
+    const profileName = document.getElementById("profileUserName");
+
+    if (navbarName) navbarName.textContent = akun.nama;
+    if (profileName) profileName.textContent = akun.nama;
+
+    return akun;
+  }
+
+  const akunLogin = tampilkanIdentitasNavbar();
+
+  if (!akunLogin) return;
 
   const slotContainer = document.querySelector("#user-slot-list");
 
@@ -228,39 +259,49 @@
   // 9. FILTER JADWAL PENGGUNA
   // =====================================
 
-  function getJadwalHariIni() {
-    const STATUS_AKTIF = ["disetujui", "terjadwal", "digunakan", "berlangsung"];
 
-    const tanggalHariIni = getTanggalHariIni();
+function getJadwalHariIni() {
+  const STATUS_AKTIF = [
+    "disetujui",
+    "terjadwal",
+    "digunakan",
+    "berlangsung"
+  ];
 
-    if (!window.SILABService) {
-      console.error("SILABService belum tersedia.");
-      return [];
-    }
+  const tanggalHariIni = getTanggalHariIni();
 
-    return SILABService.getAll("bookings")
-      .filter((item) => {
-        const status = String(item.status || "")
-          .toLowerCase()
-          .trim();
-
-        return item.tanggal === tanggalHariIni && STATUS_AKTIF.includes(status);
-      })
-      .map((item) => ({
-        id: item.id,
-        tanggal: item.tanggal,
-        pemohon: item.namaPemohon || item.pemohon || "-",
-        kegiatan: item.namaKegiatan || item.kegiatan || "-",
-        kelas: item.kategori || "Penggunaan Laboratorium",
-        mulai: item.waktuMulai || item.mulai,
-        selesai: item.waktuSelesai || item.selesai,
-        pc: Number(item.kebutuhanPC ?? item.pc ?? 0),
-        kursi: Number(item.kebutuhanKursi ?? item.kursi ?? 0),
-        status: item.status,
-      }))
-      .filter((item) => item.mulai && item.selesai)
-      .sort((a, b) => a.mulai.localeCompare(b.mulai));
+  if (!window.SILABService) {
+    console.error("SILABService belum tersedia.");
+    return [];
   }
+
+  return SILABService.getAll("bookings")
+    .filter((item) => {
+      const status = String(item.status || "")
+        .toLowerCase()
+        .trim();
+
+      return (
+        item.tanggal === tanggalHariIni &&
+        STATUS_AKTIF.includes(status)
+      );
+    })
+    .map((item) => ({
+      id: item.id,
+      tanggal: item.tanggal,
+      pemohon: item.namaPemohon || "-",
+      kegiatan: item.namaKegiatan || "-",
+      kelas: item.kategori || "Penggunaan Laboratorium",
+      mulai: item.waktuMulai,
+      selesai: item.waktuSelesai,
+      pc: Number(item.kebutuhanPC ?? 0),
+      kursi: Number(item.kebutuhanKursi ?? 0),
+      status: item.status
+    }))
+    .filter((item) => item.mulai && item.selesai)
+    .sort((a, b) => a.mulai.localeCompare(b.mulai));
+}
+
 
   // =====================================
   // 10. RENDER SELURUH JADWAL
@@ -415,26 +456,37 @@
   // =====================================
 
   function sinkronkanJadwalPengguna() {
-    renderJadwalHariIni();
+    try {
+      renderJadwalHariIni();
+      console.log(
+        "[SILAB] Jadwal dashboard diperbarui:",
+        new Date().toLocaleTimeString("id-ID"),
+      );
+    } catch (error) {
+      console.error("Gagal memperbarui jadwal:", error);
+    }
   }
 
+  // Pembaruan awal
   sinkronkanJadwalPengguna();
 
+  // Event perubahan data SILAB
   window.addEventListener("silab:data-changed", sinkronkanJadwalPengguna);
 
-  window.addEventListener("storage", (event) => {
-    if (!event.key || event.key.includes("booking")) {
-      sinkronkanJadwalPengguna();
-    }
+  // Perubahan LocalStorage dari tab lain
+  window.addEventListener("storage", () => {
+    sinkronkanJadwalPengguna();
   });
 
+  // Ketika pengguna kembali membuka dashboard
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       sinkronkanJadwalPengguna();
     }
   });
 
-  window.setInterval(sinkronkanJadwalPengguna, 15000);
+  // Pemeriksaan berkala setiap 5 detik
+  const intervalJadwal = window.setInterval(sinkronkanJadwalPengguna, 5000);
 
   console.log("Dashboard Pengguna SILAB berhasil diinisialisasi.");
 })();

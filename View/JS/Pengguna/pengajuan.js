@@ -85,26 +85,25 @@ function getFormData() {
 // =========================================
 
 function getIdentitasPemohon(sesi) {
-  if (!sesi || !sesi.identifier) {
+  if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
     return null;
   }
 
   const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
 
-  if (!Array.isArray(users)) {
-    return null;
-  }
+  if (!Array.isArray(users)) return null;
 
   const user = users.find(
-    (item) => String(item.nipNpm) === String(sesi.identifier),
+    (item) => String(item.nipNpm).trim() === String(sesi.identifier).trim(),
   );
 
-  if (!user || user.status !== "aktif") {
+  if (!user || user.status !== "aktif" || !user.id) {
     return null;
   }
 
   return {
     userId: user.id,
+    userIdentifier: user.nipNpm,
     namaPemohon: user.nama,
     nipNpm: user.nipNpm,
   };
@@ -318,6 +317,62 @@ function validateBookingTime(data) {
   return isValid;
 }
 
+function tampilkanIdentitasNavbar() {
+  const sesi = sesiSILAB.ambil();
+
+  if (!sesi || sesi.role !== "pengguna") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  const akun = users.find(
+    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  );
+
+  if (!akun || akun.status !== "aktif") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const navbarName = document.getElementById("userNavbarName");
+  const profileName = document.getElementById("profileUserName");
+
+  if (navbarName) navbarName.textContent = akun.nama;
+  if (profileName) profileName.textContent = akun.nama;
+
+  return akun;
+}
+
+function tampilkanIdentitasNavbar() {
+  const sesi = sesiSILAB.ambil();
+
+  if (!sesi || sesi.role !== "pengguna") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  const akun = users.find(
+    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  );
+
+  if (!akun || akun.status !== "aktif") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const navbarName = document.getElementById("userNavbarName");
+  const profileName = document.getElementById("profileUserName");
+
+  if (navbarName) navbarName.textContent = akun.nama;
+  if (profileName) profileName.textContent = akun.nama;
+
+  return akun;
+}
+
 //Membuat ID pengguna otomatis
 function generateSubmissionId(submissions) {
   const sekarang = new Date();
@@ -502,11 +557,12 @@ function handleSubmit(event) {
     id: generateSubmissionId(submissions),
 
     // Identitas pengguna
+    // IDENTITAS PEMOHON
     userId: identitas.userId,
-    userIdentifier: sesi.identifier,
+    userIdentifier: identitas.userIdentifier,
     namaPemohon: identitas.namaPemohon,
     nipNpm: identitas.nipNpm,
-    role: sesi.role,
+    role: "pengguna",
 
     // Tanggal peminjaman
     tanggal: data.tanggal,
@@ -568,3 +624,45 @@ function handleSubmit(event) {
 
   console.log("Pengajuan berhasil disimpan:", pengajuanBaru);
 }
+
+/* =========================================
+   IDENTITAS NAVBAR PENGGUNA
+========================================= */
+
+function tampilkanIdentitasNavbar() {
+  const sesi = sesiSILAB.ambil();
+
+  if (!sesi || sesi.role !== "pengguna") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  if (!Array.isArray(users)) return null;
+
+  const akun = users.find(
+    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  );
+
+  if (!akun || akun.status !== "aktif") {
+    window.location.href = "../auth/login.html";
+    return null;
+  }
+
+  const navbarName = document.getElementById("userNavbarName");
+  const profileName = document.getElementById("profileUserName");
+
+  if (navbarName) {
+    navbarName.textContent = akun.nama;
+  }
+
+  if (profileName) {
+    profileName.textContent = akun.nama;
+  }
+
+  return akun;
+}
+
+// Jalankan identitas navbar
+const akunLogin = tampilkanIdentitasNavbar();
