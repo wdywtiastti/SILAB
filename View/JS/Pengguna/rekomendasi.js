@@ -48,10 +48,11 @@
   // 1. AMBIL ELEMEN HTML
   // =====================================
 
-  const radioPilihan = document.querySelectorAll(
-    'input[name="pilihan-jadwal"]',
-  );
+  const optionsContainer = document.querySelector("#recommendation-options");
 
+  function getRadioPilihan() {
+    return document.querySelectorAll('input[name="pilihan-jadwal"]');
+  }
   const btnTerima = document.querySelector("#btn-accept-recommendation");
 
   const namaPilihan = document.querySelector("#selected-schedule-name");
@@ -66,20 +67,24 @@
 
   const feedback = document.querySelector("#recommendation-feedback");
 
-  if (!btnTerima || !modalTerima || radioPilihan.length === 0) {
+  if (!btnTerima || !modalTerima || !optionsContainer) {
     console.error("Elemen rekomendasi belum lengkap. Periksa HTML.");
     return;
   }
+  // =====================================
+  // 2. DATA DUMMY DARI CONSOLE
+  // =====================================
+
+  let dataRekomendasiDummy = [];
 
   // =====================================
-  // 2. STATUS SIMULASI
+  // 2.1 STATUS SIMULASI REKOMENDASI
   // =====================================
 
   const statusRekomendasi = {
     pilihan: null,
     keputusan: "menunggu",
   };
-
   // =====================================
   // 3. MENGAMBIL DETAIL PILIHAN
   // =====================================
@@ -103,6 +108,79 @@
     };
   }
 
+  // =====================================
+  // RENDER KARTU REKOMENDASI DUMMY
+  // =====================================
+
+  function renderRekomendasi() {
+    optionsContainer.replaceChildren();
+
+    if (dataRekomendasiDummy.length === 0) {
+      const kosong = document.createElement("p");
+
+      kosong.textContent = "Belum ada rekomendasi jadwal.";
+
+      optionsContainer.appendChild(kosong);
+
+      return;
+    }
+
+    dataRekomendasiDummy.forEach((item) => {
+      const card = document.createElement("label");
+
+      card.className = "recommendation-option";
+
+      const radio = document.createElement("input");
+
+      radio.type = "radio";
+      radio.name = "pilihan-jadwal";
+      radio.value = item.id;
+
+      const content = document.createElement("div");
+
+      content.className = "recommendation-option-content";
+
+      const tanggal = document.createElement("div");
+
+      tanggal.className = "recommendation-date";
+
+      const judul = document.createElement("h3");
+
+      judul.textContent = item.nama;
+
+      const jenis = document.createElement("span");
+
+      jenis.className = "recommendation-type";
+
+      jenis.textContent = item.jenis;
+
+      tanggal.append(judul, jenis);
+
+      const waktu = document.createElement("div");
+
+      waktu.className = "recommendation-session";
+
+      waktu.textContent = `${item.tanggal} | ${item.waktuMulai} – ${item.waktuSelesai} WIT`;
+
+      const kebutuhan = document.createElement("p");
+
+      kebutuhan.textContent = `Peserta: ${item.jumlahPeserta} | PC: ${item.jumlahPC} | Kursi: ${item.jumlahKursi}`;
+
+      const bentrok = document.createElement("p");
+
+      bentrok.className = "recommendation-conflict-info";
+
+      bentrok.textContent = item.jadwalBentrok
+        ? `Jadwal bentrok: ${item.jadwalBentrok.nama} | ${item.jadwalBentrok.mulai} – ${item.jadwalBentrok.selesai} WIT`
+        : "Tidak ada informasi jadwal bentrok.";
+
+      content.append(tanggal, waktu, kebutuhan, bentrok);
+
+      card.append(radio, content);
+
+      optionsContainer.appendChild(card);
+    });
+  }
   // =====================================
   // 4. NOTIFIKASI
   // =====================================
@@ -145,10 +223,10 @@
     radio.closest(".recommendation-option").classList.add("is-selected");
   }
 
-  radioPilihan.forEach((radio) => {
-    radio.addEventListener("change", () => {
-      pilihJadwal(radio);
-    });
+  optionsContainer.addEventListener("change", (event) => {
+    if (event.target.matches('input[name="pilihan-jadwal"]')) {
+      pilihJadwal(event.target);
+    }
   });
 
   // =====================================
@@ -199,22 +277,32 @@
     .addEventListener("click", () => {
       if (!statusRekomendasi.pilihan) return;
 
+      // Simpan pilihan untuk keperluan simulasi
+      const pilihanDiterima = structuredClone(statusRekomendasi.pilihan);
+
       statusRekomendasi.keputusan = "diterima";
 
+      // Tutup modal
       tutupModal();
 
-      radioPilihan.forEach((radio) => {
-        radio.disabled = true;
-      });
+      // Hapus seluruh tawaran rekomendasi
+      dataRekomendasiDummy = [];
 
+      // Reset pilihan
+      statusRekomendasi.pilihan = null;
+
+      // Render ulang halaman
+      renderRekomendasi();
+
+      // Nonaktifkan tombol
       btnTerima.disabled = true;
-      btnTerima.textContent = "Pilihan Berhasil Dikirim";
 
+      // Tampilkan notifikasi
       tampilkanFeedback(
-        "Pilihan rekomendasi berhasil dikirim. Menunggu konfirmasi sistem.",
+        "Rekomendasi berhasil diterima. Seluruh tawaran jadwal telah ditutup.",
       );
 
-      console.log("Keputusan rekomendasi:", statusRekomendasi);
+      console.log("Rekomendasi diterima:", pilihanDiterima);
     });
 
   // =====================================
@@ -269,7 +357,7 @@
 
       modalTolak.classList.remove("show");
 
-      radioPilihan.forEach((radio) => {
+      getRadioPilihan().forEach((radio) => {
         radio.disabled = true;
       });
 
@@ -284,20 +372,80 @@
   }
 
   // =====================================
-  // 10. API PENGUJIAN CONSOLE
+  // 12. API DATA DUMMY CONSOLE
   // =====================================
 
   window.SILABRekomendasiDemo = {
-    lihat: () => structuredClone(statusRekomendasi),
+    // Memasukkan data dari Console
+    tambah: function (data) {
+      if (!Array.isArray(data) || data.length === 0) {
+        console.error("Data harus berupa array dan tidak boleh kosong.");
+        return false;
+      }
 
-    render: () => {
-      const terpilih = document.querySelector(
-        'input[name="pilihan-jadwal"]:checked',
+      const wajib = [
+        "id",
+        "tanggal",
+        "waktuMulai",
+        "waktuSelesai",
+        "nama",
+        "jenis",
+        "jumlahPC",
+        "jumlahKursi",
+        "jumlahPeserta",
+      ];
+
+      for (const item of data) {
+        if (
+          !item ||
+          !wajib.every((key) => Object.prototype.hasOwnProperty.call(item, key))
+        ) {
+          console.error("Format data tidak lengkap:", item);
+          return false;
+        }
+      }
+
+      dataRekomendasiDummy = structuredClone(data);
+
+      statusRekomendasi.pilihan = null;
+      statusRekomendasi.keputusan = "menunggu";
+
+      btnTerima.disabled = true;
+      btnTerima.textContent = "Terima Rekomendasi";
+
+      renderRekomendasi();
+
+      console.log(
+        "Berhasil menampilkan",
+        data.length,
+        "data dummy rekomendasi.",
       );
 
-      if (terpilih) {
-        pilihJadwal(terpilih);
-      }
+      return true;
+    },
+
+    // Melihat data
+    lihat: function () {
+      return structuredClone(dataRekomendasiDummy);
+    },
+
+    // Melihat keputusan pengguna
+    lihatKeputusan: function () {
+      return structuredClone(statusRekomendasi);
+    },
+
+    // Menghapus data dummy dari tampilan
+    hapus: function () {
+      dataRekomendasiDummy = [];
+
+      statusRekomendasi.pilihan = null;
+      statusRekomendasi.keputusan = "menunggu";
+
+      btnTerima.disabled = true;
+
+      renderRekomendasi();
+
+      console.log("Data dummy berhasil dikosongkan.");
     },
   };
 
