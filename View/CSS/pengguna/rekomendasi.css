@@ -1129,3 +1129,116 @@ body {
   background: #33266a;
   color: white;
 }
+
+/* =========================================
+   PERBAIKAN UI REKOMENDASI PENGGUNA
+========================================= */
+
+#recommendation-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 22px 0;
+}
+
+.recommendation-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid #e4e1f5;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: 0.2s ease;
+  min-width: 0;
+}
+
+.recommendation-option:hover {
+  border-color: #a78bfa;
+  background: #faf9ff;
+  box-shadow: 0 4px 14px rgba(80, 50, 150, 0.07);
+}
+
+.recommendation-option.is-selected {
+  border: 2px solid #982044;
+  background: #fff8fa;
+}
+
+.recommendation-option input[type="radio"] {
+  flex-shrink: 0;
+  margin-top: 5px;
+  accent-color: #982044;
+  width: 17px;
+  height: 17px;
+}
+
+.recommendation-option-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.recommendation-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.recommendation-date h3 {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #25245e;
+  margin: 0;
+}
+
+.recommendation-type {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f0edff;
+  color: #44358c;
+  white-space: nowrap;
+}
+
+.recommendation-session {
+  font-size: 13px;
+  font-weight: 600;
+  color: #33334d;
+  margin-bottom: 10px;
+}
+
+.recommendation-option-content p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #68718a;
+  margin: 5px 0;
+}
+
+.recommendation-conflict-info {
+  padding: 10px 12px;
+  margin-top: 12px !important;
+  border-radius: 8px;
+  background: #fff2f2;
+  color: #a32645 !important;
+  font-size: 12px !important;
+  line-height: 1.6;
+}
+
+#recommendation-options .recommendation-option:has(input:disabled) {
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  #recommendation-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sembunyikan informasi jadwal bentrok */
+.recommendation-conflict-info {
+  display: none !important;
+}
