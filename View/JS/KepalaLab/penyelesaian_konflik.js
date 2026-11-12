@@ -3,121 +3,6 @@
    DATA SEMENTARA (TANPA STORAGE)
 ========================================= */
 
-window.SILABKonflikDemo = (() => {
-  "use strict";
-
-  const konflik = [];
-
-  // =====================================
-  // 1. TAMBAH DATA KONFLIK
-  // =====================================
-
-  function tambah(data) {
-    if (!data || typeof data !== "object" || !Array.isArray(data.pengajuan)) {
-      console.error("Format data konflik tidak valid.");
-      return false;
-    }
-
-    if (konflik.some((item) => item.id === data.id)) {
-      console.error("ID konflik sudah digunakan.");
-      return false;
-    }
-
-    konflik.push(structuredClone(data));
-
-    window.dispatchEvent(new CustomEvent("silab:konflik-demo-berubah"));
-
-    console.log("Konflik sementara berhasil ditambahkan.");
-
-    return true;
-  }
-
-  // =====================================
-  // 2. LIHAT DATA KONFLIK
-  // =====================================
-
-  function lihat() {
-    return structuredClone(konflik);
-  }
-
-  // =====================================
-  // 3. HAPUS SELURUH DATA SEMENTARA
-  // =====================================
-
-  function hapusSemua() {
-    konflik.length = 0;
-
-    window.dispatchEvent(new CustomEvent("silab:konflik-demo-berubah"));
-
-    console.log("Data simulasi konflik dikosongkan.");
-  }
-
-  // =====================================
-  // 4. KEPUTUSAN KEPALA LABORATORIUM
-  // =====================================
-
-  function putuskan(id, selectedId) {
-    const group = konflik.find((item) => item.id === id);
-
-    if (!group) {
-      return {
-        berhasil: false,
-        pesan: "Sesi konflik tidak ditemukan.",
-      };
-    }
-
-    if (group.status === "selesai") {
-      return {
-        berhasil: false,
-        pesan: "Sesi konflik sudah diputuskan.",
-      };
-    }
-
-    if (!selectedId) {
-      return {
-        berhasil: false,
-        pesan: "Pilih satu pengajuan terlebih dahulu.",
-      };
-    }
-
-    const selected = group.pengajuan.find((item) => item.id === selectedId);
-
-    if (!selected) {
-      return {
-        berhasil: false,
-        pesan: "Pengajuan yang dipilih tidak ditemukan.",
-      };
-    }
-
-    // Satu pengajuan dipertahankan.
-    // Sisanya langsung menjadi tergeser.
-    group.pengajuan.forEach((item) => {
-      item.status = item.id === selectedId ? "disetujui" : "tergeser";
-    });
-
-    group.status = "selesai";
-    group.pengajuanTerpilih = selectedId;
-
-    window.dispatchEvent(new CustomEvent("silab:konflik-demo-berubah"));
-
-    return {
-      berhasil: true,
-      pesan: "Keputusan berhasil ditetapkan.",
-    };
-  }
-
-  // =====================================
-  // 4. KEMBALIKAN FUNGSI PUBLIK
-  // =====================================
-
-  return {
-    tambah,
-    lihat,
-    hapusSemua,
-    putuskan,
-  };
-})();
-
 /* =========================================
    SILAB - PERHITUNGAN WAKTU BENTROKAN
 ========================================= */
@@ -198,6 +83,48 @@ window.getGroupTime = function (pengajuan) {
     .map((item) => `${formatTime(item.start)} – ${formatTime(item.end)}`)
     .join(", ");
 };
+
+/* =========================================
+   SILAB - DATA KONFLIK DARI STORAGE
+========================================= */
+
+function ambilDataKonflikKepalaLab() {
+  if (
+    !window.SILABService ||
+    typeof window.SILABService.getKonflik !== "function"
+  ) {
+    console.error("SILABService.getKonflik belum tersedia.");
+    return [];
+  }
+
+  const data = window.SILABService.getKonflik();
+
+  if (!Array.isArray(data)) return [];
+
+  return data
+    .filter(
+      (item) =>
+        item &&
+        item.status === "menunggu_keputusan" &&
+        Array.isArray(item.pengajuan),
+    )
+    .map((item) => ({
+      ...item,
+
+      pengajuan: item.pengajuan.map((p) => ({
+        ...p,
+
+        // Menyesuaikan format data Laboran
+        pemohon: p.pemohon || p.namaPemohon || p.nama || "-",
+
+        kegiatan: p.kegiatan || p.namaKegiatan || "-",
+
+        mulai: p.mulai || p.waktuMulai?.split("T")[1] || "-",
+
+        selesai: p.selesai || p.waktuSelesai?.split("T")[1] || "-",
+      })),
+    }));
+}
 
 /* =========================================
    SILAB - RENDER SESI KONFLIK DINAMIS
@@ -289,35 +216,39 @@ window.getGroupTime = function (pengajuan) {
   }
 
   function confirmConflictDecision() {
-    if (!pendingConflictDecision) return;
-
-    const { groupId, selectedId } = pendingConflictDecision;
-
-    const button = document.getElementById("confirm-decision");
-
-    if (button) {
-      button.disabled = true;
-    }
-
-    const result = SILABKonflikDemo.putuskan(groupId, selectedId);
-
-    if (!result.berhasil) {
-      if (button) button.disabled = false;
-
-      closeDecisionModal();
-
-      console.error(result.pesan);
+    if (!pendingConflictDecision) {
+      console.error("Belum ada keputusan yang dipilih.");
       return;
     }
 
-    selectedSubmissions.delete(groupId);
+    const groupId = pendingConflictDecision.groupId;
+    const selectedId = pendingConflictDecision.selectedId;
 
-    closeDecisionModal();
+    try {
+      const hasil = window.SILABService.putuskanKonflik(groupId, selectedId);
 
-    console.log(result.pesan);
+      if (!hasil || !hasil.berhasil) {
+        throw new Error(hasil?.pesan || "Keputusan gagal disimpan.");
+      }
 
-    // renderKonflik dipanggil melalui event
-    // silab:konflik-demo-berubah.
+      console.log("KEPUTUSAN BERHASIL:", hasil);
+
+      // Bersihkan pilihan.
+      selectedSubmissions.delete(groupId);
+
+      pendingConflictDecision = null;
+
+      // Tutup popup.
+      closeDecisionModal();
+
+      // Muat ulang data dari storage.
+      renderKonflik();
+
+      alert("Keputusan konflik berhasil disimpan!");
+    } catch (error) {
+      console.error("GAGAL MENYIMPAN KEPUTUSAN:", error);
+      alert("Gagal menyimpan keputusan: " + error.message);
+    }
   }
 
   // Pasang event listener satu kali.
@@ -468,9 +399,7 @@ window.getGroupTime = function (pengajuan) {
   });
 
   function toggleSubmissionSelection(groupId, submissionId) {
-    const konflik = SILABKonflikDemo.lihat().filter(
-      (item) => item.status !== "selesai",
-    );
+    const konflik = ambilDataKonflikKepalaLab();
 
     const group = konflik.find((item) => item.id === groupId);
 
@@ -853,14 +782,7 @@ window.getGroupTime = function (pengajuan) {
   // =====================================
 
   function renderKonflik() {
-    if (!window.SILABKonflikDemo) {
-      console.error("SILABKonflikDemo belum tersedia.");
-      return;
-    }
-
-    const konflik = SILABKonflikDemo.lihat().filter(
-      (item) => item.status !== "selesai",
-    );
+    const konflik = ambilDataKonflikKepalaLab();
 
     renderSummary(konflik);
 
@@ -911,14 +833,20 @@ window.getGroupTime = function (pengajuan) {
   // 6. SINKRONISASI DENGAN DATA CONSOLE
   // =====================================
 
-  window.addEventListener("silab:konflik-demo-berubah", renderKonflik);
+  // Perubahan konflik dari layanan SILAB.
+  window.addEventListener("silab:conflicts-berubah", renderKonflik);
+
+  // Perubahan LocalStorage dari tab lain.
+  window.addEventListener("storage", (event) => {
+    if (event.key === SILABStorage.KEYS.CONFLICTS || event.key === null) {
+      renderKonflik();
+    }
+  });
 
   if (toggleAllButton) {
     toggleAllButton.addEventListener("click", () => {
       // Ambil hanya sesi yang belum diputuskan.
-      const konflik = SILABKonflikDemo.lihat().filter(
-        (item) => item.status !== "selesai",
-      );
+      const konflik = ambilDataKonflikKepalaLab();
 
       renderSummary(konflik);
 

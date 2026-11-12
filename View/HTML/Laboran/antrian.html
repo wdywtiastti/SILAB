@@ -1,547 +1,408 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Antrean Pengajuan | SILAB</title>
 
     <!-- Font utama -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Ikon -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
-    <link rel="stylesheet" href="../../CSS/laboran/antrian.css">
-</head>
+    <link rel="stylesheet" href="../../CSS/laboran/navbar.css" />
+    <link rel="stylesheet" href="../../CSS/laboran/antrian.css" />
+  </head>
 
-<body>
-
+  <body>
     <!-- Navigasi utama -->
     <nav class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="../../Assets/Logo_RPL.svg"
+          alt="Logo SILAB"
+          class="navbar-logo"
+        />
 
-        <div class="navbar-brand">
-            <img src="../../Assets/Logo_RPL.svg" alt="Logo SILAB" class="navbar-logo">
+        <div class="brand-info">
+          <h1>SILAB</h1>
+          <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+      </div>
 
-            <div class="brand-info">
-                <h1>SILAB</h1>
-                <p>Teknik Informatika - Universitas Khairun</p>
+      <div class="navbar-menu">
+        <a href="dashboard.html" class="nav-link">Dashboard Laboran</a>
+        <a href="antrian.html" class="nav-link active">Antrean</a>
+        <a href="rekomendasi_jadwal.html" class="nav-link"
+          >Rekomendasi Jadwal</a
+        >
+      </div>
+
+      <div class="navbar-profile">
+        <div class="profile-info">
+          <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
+          <p>Laboran Lab RPL</p>
+        </div>
+
+        <details class="profile-dropdown">
+          <summary class="profile-trigger">
+            <i class="bi bi-person"></i>
+          </summary>
+
+          <div class="profile-menu">
+            <div class="profile-info-dropdown">
+              <p>Satria Dwi Pauwah S.T., M.Kom.</p>
+              <span>NIP: 197804122005011003</span>
+
+              <div class="profile-role">
+                <i class="bi bi-check-circle-fill"></i>
+                Laboran Lab
+              </div>
             </div>
-        </div>
 
-        <div class="navbar-menu">
-            <a href="dashboard.html" class="nav-link">Dashboard Laboran</a>
-            <a href="antrian.html" class="nav-link active">Antrean</a>
-            <a href="rekomendasi_jadwal.html" class="nav-link">Rekomendasi Jadwal</a>
-        </div>
+            <div class="profile-divider"></div>
 
-        <div class="navbar-profile">
-
-            <div class="profile-info">
-                <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
-                <p>Laboran Lab RPL</p>
-            </div>
-
-            <details class="profile-dropdown">
-
-                <summary class="profile-trigger">
-                    <i class="bi bi-person"></i>
-                </summary>
-
-                <div class="profile-menu">
-
-                    <div class="profile-info-dropdown">
-                        <p>Satria Dwi Pauwah S.T., M.Kom.</p>
-                        <span>NIP: 197804122005011003</span>
-
-                        <div class="profile-role">
-                            <i class="bi bi-check-circle-fill"></i>
-                            Laboran Lab
-                        </div>
-                    </div>
-
-                    <div class="profile-divider"></div>
-
-                    <a href="../auth/login.html" class="logout-link">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Keluar/Logout
-                    </a>
-
-                </div>
-
-            </details>
-
-        </div>
-
+            <a href="../auth/login.html" class="logout-link">
+              <i class="bi bi-box-arrow-right"></i>
+              Keluar/Logout
+            </a>
+          </div>
+        </details>
+      </div>
     </nav>
-
 
     <!-- Konten utama -->
     <main class="antrian-container">
+      <!-- Header halaman -->
+      <section class="antrian-header card">
+        <div class="header-decoration">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-        <!-- Header halaman -->
-        <section class="antrian-header card">
+        <div class="header-tags">
+          <span class="header-tag purple-tag">
+            <i class="bi bi-list-ol"></i>
+            PANEL ANTREAN PENGAJUAN
+          </span>
 
-            <div class="header-decoration">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+          <span class="header-tag yellow-tag">
+            <i class="bi bi-building"></i>
+            Laboratorium RPL
+          </span>
+        </div>
 
-            <div class="header-tags">
+        <h2>Antrean Pengajuan Peminjaman Lab</h2>
 
-                <span class="header-tag purple-tag">
-                    <i class="bi bi-list-ol"></i>
-                    PANEL ANTREAN PENGAJUAN
-                </span>
+        <p>
+          Daftar pengajuan yang perlu ditangani Laboran berdasarkan hasil
+          klasifikasi prioritas dan skor sistem.
+        </p>
+      </section>
 
-                <span class="header-tag yellow-tag">
-                    <i class="bi bi-building"></i>
-                    Laboratorium RPL
-                </span>
-
-            </div>
-
-            <h2>Antrean Pengajuan Peminjaman Lab</h2>
+      <!-- Daftar antrean -->
+      <section class="antrian-table-card card">
+        <div class="table-heading">
+          <div>
+            <h3>
+              <i class="bi bi-inboxes"></i>
+              Daftar Antrean Pengajuan
+            </h3>
 
             <p>
-                Daftar pengajuan yang perlu ditangani Laboran berdasarkan
-                hasil klasifikasi prioritas dan skor sistem.
+              Urutan ditampilkan berdasarkan kelas prioritas, kemudian skor
+              tertinggi. Sistem tidak menggunakan FCFS.
             </p>
+          </div>
 
-        </section>
+          <span class="total-antrian">
+            <i class="bi bi-file-earmark-text"></i>
+            <span id="totalAntrian">Memuat pengajuan...</span>
+          </span>
+        </div>
 
+        <!-- Tabel diisi secara dinamis oleh antrean.js -->
+        <div class="table-responsive">
+          <table class="antrian-table">
+            <thead>
+              <tr>
+                <th>ID Pengajuan</th>
+                <th>Kegiatan dan Pemohon</th>
+                <th>Waktu dan Kebutuhan</th>
+                <th>Skor dan Prioritas</th>
+                <th>Status</th>
+                <th>Aksi Laboran</th>
+              </tr>
+            </thead>
 
-        <!-- Daftar antrean -->
-        <section class="antrian-table-card card">
+            <tbody id="antrianBody" aria-live="polite"></tbody>
+          </table>
+        </div>
 
-            <div class="table-heading">
+        <!-- Pagination dinamis -->
+        <div class="pagination-container">
+          <div class="pagination-info" id="paginationInfo">
+            Memuat antrean...
+          </div>
 
-                <div>
-                    <h3>
-                        <i class="bi bi-inboxes"></i>
-                        Daftar Antrean Pengajuan
-                    </h3>
+          <div class="pagination-controls">
+            <button type="button" class="pagination-btn" id="prevPage" disabled>
+              Sebelumnya
+            </button>
 
-                    <p>
-                        Urutan ditampilkan berdasarkan kelas prioritas,
-                        kemudian skor tertinggi. Sistem tidak menggunakan FCFS.
-                    </p>
-                </div>
+            <div class="pagination-numbers" id="paginationNumbers"></div>
 
-                <span class="total-antrian">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span id="totalAntrian">Memuat pengajuan...</span>
-                </span>
+            <button type="button" class="pagination-btn" id="nextPage" disabled>
+              Berikutnya
+            </button>
+          </div>
+        </div>
 
-            </div>
+        <!-- Catatan kewenangan Laboran -->
+        <div class="table-note">
+          <i class="bi bi-info-circle-fill"></i>
 
-
-            <!-- Tabel diisi secara dinamis oleh antrean.js -->
-            <div class="table-responsive">
-
-                <table class="antrian-table">
-
-                    <thead>
-                        <tr>
-                            <th>ID Pengajuan</th>
-                            <th>Kegiatan dan Pemohon</th>
-                            <th>Waktu dan Kebutuhan</th>
-                            <th>Skor dan Prioritas</th>
-                            <th>Status</th>
-                            <th>Aksi Laboran</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="antrianBody" aria-live="polite"></tbody>
-
-                </table>
-
-            </div>
-
-
-            <!-- Pagination dinamis -->
-            <div class="pagination-container">
-
-                <div class="pagination-info" id="paginationInfo">
-                    Memuat antrean...
-                </div>
-
-                <div class="pagination-controls">
-
-                    <button
-                        type="button"
-                        class="pagination-btn"
-                        id="prevPage"
-                        disabled
-                    >
-                        Sebelumnya
-                    </button>
-
-                    <div
-                        class="pagination-numbers"
-                        id="paginationNumbers"
-                    ></div>
-
-                    <button
-                        type="button"
-                        class="pagination-btn"
-                        id="nextPage"
-                        disabled
-                    >
-                        Berikutnya
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- Catatan kewenangan Laboran -->
-            <div class="table-note">
-
-                <i class="bi bi-info-circle-fill"></i>
-
-                <p>
-                    Skor dan klasifikasi ditampilkan dari data hasil pemrosesan
-                    sistem. Laboran melakukan verifikasi, menindaklanjuti
-                    pengajuan tergeser, dan meneruskan konflik kepada Kepala Lab.
-                    Pengaturan bobot serta konfigurasi algoritma hanya dapat
-                    dilakukan oleh Kepala Lab.
-                </p>
-
-            </div>
-
-        </section>
-
+          <p>
+            Skor dan klasifikasi ditampilkan dari data hasil pemrosesan sistem.
+            Laboran melakukan verifikasi, menindaklanjuti pengajuan tergeser,
+            dan meneruskan konflik kepada Kepala Lab. Pengaturan bobot serta
+            konfigurasi algoritma hanya dapat dilakukan oleh Kepala Lab.
+          </p>
+        </div>
+      </section>
     </main>
-
 
     <!-- Template baris antrean -->
     <template id="templateBarisAntrian">
+      <tr>
+        <td>
+          <span class="request-id" data-field="id"></span>
+        </td>
 
-        <tr>
+        <td>
+          <strong data-field="nama-kegiatan"></strong>
+          <small data-field="pemohon"></small>
+        </td>
 
-            <td>
-                <span class="request-id" data-field="id"></span>
-            </td>
+        <td>
+          <strong data-field="rentang-waktu"></strong>
+          <small data-field="kebutuhan"></small>
+        </td>
 
-            <td>
-                <strong data-field="nama-kegiatan"></strong>
-                <small data-field="pemohon"></small>
-            </td>
+        <td>
+          <span class="priority-badge" data-field="prioritas"></span>
 
-            <td>
-                <strong data-field="rentang-waktu"></strong>
-                <small data-field="kebutuhan"></small>
-            </td>
+          <small class="score-text" data-field="skor"></small>
+        </td>
 
-            <td>
-                <span
-                    class="priority-badge"
-                    data-field="prioritas"
-                ></span>
+        <td>
+          <span class="status-badge" data-field="status"></span>
+        </td>
 
-                <small
-                    class="score-text"
-                    data-field="skor"
-                ></small>
-            </td>
-
-            <td>
-                <span
-                    class="status-badge"
-                    data-field="status"
-                ></span>
-            </td>
-
-            <td>
-                <button
-                    type="button"
-                    class="btn-process"
-                    data-aksi-detail
-                    data-id=""
-                >
-                    <i class="bi bi-search"></i>
-                    Periksa &amp; Proses
-                </button>
-            </td>
-
-        </tr>
-
+        <td>
+          <button type="button" class="btn-process" data-aksi-detail data-id="">
+            <i class="bi bi-search"></i>
+            Periksa &amp; Proses
+          </button>
+        </td>
+      </tr>
     </template>
 
-
     <!-- Modal detail pengajuan -->
-    <div
-        class="review-modal"
-        id="modalReview"
-        hidden
-        aria-hidden="true"
-    >
+    <div class="review-modal" id="modalReview" hidden aria-hidden="true">
+      <button
+        type="button"
+        class="modal-backdrop"
+        data-tutup-modal
+        aria-label="Tutup detail pengajuan"
+      ></button>
 
-        <button
+      <div
+        class="review-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="judulReview"
+        tabindex="-1"
+      >
+        <!-- Header modal -->
+        <div class="review-modal-header">
+          <div>
+            <span class="review-label" data-field="label-id"></span>
+
+            <h3 id="judulReview" data-field="judul-kegiatan"></h3>
+          </div>
+
+          <button
             type="button"
-            class="modal-backdrop"
+            class="modal-close"
             data-tutup-modal
-            aria-label="Tutup detail pengajuan"
-        ></button>
-
-        <div
-            class="review-modal-content"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="judulReview"
-            tabindex="-1"
-        >
-
-            <!-- Header modal -->
-            <div class="review-modal-header">
-
-                <div>
-                    <span
-                        class="review-label"
-                        data-field="label-id"
-                    ></span>
-
-                    <h3
-                        id="judulReview"
-                        data-field="judul-kegiatan"
-                    ></h3>
-                </div>
-
-                <button
-                    type="button"
-                    class="modal-close"
-                    data-tutup-modal
-                    aria-label="Tutup"
-                >
-                    <i class="bi bi-x-lg"></i>
-                </button>
-
-            </div>
-
-
-            <!-- Detail pengajuan -->
-            <div class="request-detail-box">
-
-                <div class="detail-item">
-                    <small>Nama Pemohon</small>
-                    <strong data-field="nama-pemohon"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>NIP/NPM</small>
-                    <strong data-field="identifier"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Waktu Penggunaan</small>
-                    <strong data-field="waktu"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Jumlah Peserta</small>
-                    <strong data-field="jumlah-peserta"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kategori</small>
-                    <strong data-field="kategori"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kebutuhan PC</small>
-                    <strong data-field="kebutuhan-pc"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kebutuhan Kursi</small>
-                    <strong data-field="kebutuhan-kursi"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Skor Sistem</small>
-                    <strong data-field="skor-detail"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Klasifikasi Prioritas</small>
-                    <strong>
-                        <span
-                            class="priority-badge"
-                            data-field="prioritas-detail"
-                        ></span>
-                    </strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Status Pengajuan</small>
-                    <strong>
-                        <span
-                            class="status-badge"
-                            data-field="status-detail"
-                        ></span>
-                    </strong>
-                </div>
-
-            </div>
-
-
-            <!-- Tindakan untuk pengajuan verifikasi -->
-            <section
-                class="review-information"
-                data-panel="verifikasi"
-                hidden
-            >
-
-                <i class="bi bi-info-circle-fill"></i>
-
-                <span>
-                    Periksa data pemohon, waktu penggunaan, kebutuhan perangkat,
-                    dan ketersediaan laboratorium sebelum mengambil keputusan.
-                </span>
-
-            </section>
-
-            <div
-                class="verification-actions"
-                data-panel="verifikasi"
-                hidden
-            >
-
-                <button
-                    type="button"
-                    class="btn-reject"
-                    data-keputusan="ditolak"
-                >
-                    <i class="bi bi-x-circle"></i>
-                    Tolak Pengajuan
-                </button>
-
-                <button
-                    type="button"
-                    class="btn-approve"
-                    data-keputusan="disetujui"
-                >
-                    <i class="bi bi-check-circle"></i>
-                    Setujui Pengajuan
-                </button>
-
-            </div>
-
-
-            <!-- Tindakan untuk pengajuan bentrok -->
-            <section
-                class="collision-box"
-                data-panel="bentrok"
-                hidden
-            >
-
-                <div class="collision-heading">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    Tindakan Penyelesaian Bentrok
-                </div>
-
-                <p data-field="pesan-bentrok"></p>
-
-                <div class="collision-actions">
-
-                    <a
-                        href="../KepalaLab/penyelesaian_konflik.html"
-                        class="btn-eskalasi"
-                    >
-                        <i class="bi bi-shield-exclamation"></i>
-                        Eskalasi ke Kepala Lab
-                    </a>
-
-                </div>
-
-            </section>
-
-
-            <!-- Tindakan untuk pengajuan tergeser -->
-            <section
-                class="collision-box displaced-box"
-                data-panel="tergeser"
-                hidden
-            >
-
-                <div class="collision-heading">
-                    <i class="bi bi-calendar-x"></i>
-                    Informasi Penggeseran Jadwal
-                </div>
-
-                <p data-field="pesan-tergeser"></p>
-
-                <div class="collision-actions">
-
-                    <a
-                        href="rekomendasi_jadwal.html"
-                        class="btn-recommend"
-                        data-tautan-rekomendasi
-                    >
-                        <i class="bi bi-calendar-plus"></i>
-                        Buat Rekomendasi Jadwal
-                    </a>
-
-                </div>
-
-            </section>
-
-
-            <!-- Informasi untuk status lainnya -->
-            <section
-                class="review-information"
-                data-panel="lainnya"
-                hidden
-            >
-
-                <i class="bi bi-info-circle-fill"></i>
-
-                <span>
-                    Status pengajuan ini tidak memiliki tindakan lanjutan
-                    pada halaman antrean.
-                </span>
-
-            </section>
-
+            aria-label="Tutup"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
 
-    </div>
+        <!-- Detail pengajuan -->
+        <div class="request-detail-box">
+          <div class="detail-item">
+            <small>Nama Pemohon</small>
+            <strong data-field="nama-pemohon"></strong>
+          </div>
 
+          <div class="detail-item">
+            <small>NIP/NPM</small>
+            <strong data-field="identifier"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Waktu Penggunaan</small>
+            <strong data-field="waktu"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Jumlah Peserta</small>
+            <strong data-field="jumlah-peserta"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Kategori</small>
+            <strong data-field="kategori"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Kebutuhan PC</small>
+            <strong data-field="kebutuhan-pc"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Kebutuhan Kursi</small>
+            <strong data-field="kebutuhan-kursi"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Skor Sistem</small>
+            <strong data-field="skor-detail"></strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Klasifikasi Prioritas</small>
+            <strong>
+              <span class="priority-badge" data-field="prioritas-detail"></span>
+            </strong>
+          </div>
+
+          <div class="detail-item">
+            <small>Status Pengajuan</small>
+            <strong>
+              <span class="status-badge" data-field="status-detail"></span>
+            </strong>
+          </div>
+        </div>
+
+        <!-- Tindakan untuk pengajuan verifikasi -->
+        <section class="review-information" data-panel="verifikasi" hidden>
+          <i class="bi bi-info-circle-fill"></i>
+
+          <span>
+            Periksa data pemohon, waktu penggunaan, kebutuhan perangkat, dan
+            ketersediaan laboratorium sebelum mengambil keputusan.
+          </span>
+        </section>
+
+        <div class="verification-actions" data-panel="verifikasi" hidden>
+          <button type="button" class="btn-reject" data-keputusan="ditolak">
+            <i class="bi bi-x-circle"></i>
+            Tolak Pengajuan
+          </button>
+
+          <button type="button" class="btn-approve" data-keputusan="disetujui">
+            <i class="bi bi-check-circle"></i>
+            Setujui Pengajuan
+          </button>
+        </div>
+
+        <!-- Tindakan untuk pengajuan bentrok -->
+        <section class="collision-box" data-panel="bentrok" hidden>
+          <div class="collision-heading">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Tindakan Penyelesaian Bentrok
+          </div>
+
+          <p data-field="pesan-bentrok"></p>
+
+          <div class="collision-actions">
+            <a
+              href="../KepalaLab/penyelesaian_konflik.html"
+              class="btn-eskalasi"
+            >
+              <i class="bi bi-shield-exclamation"></i>
+              Eskalasi ke Kepala Lab
+            </a>
+          </div>
+        </section>
+
+        <!-- Tindakan untuk pengajuan tergeser -->
+        <section
+          class="collision-box displaced-box"
+          data-panel="tergeser"
+          hidden
+        >
+          <div class="collision-heading">
+            <i class="bi bi-calendar-x"></i>
+            Informasi Penggeseran Jadwal
+          </div>
+
+          <p data-field="pesan-tergeser"></p>
+
+          <div class="collision-actions">
+            <a
+              href="rekomendasi_jadwal.html"
+              class="btn-recommend"
+              data-tautan-rekomendasi
+            >
+              <i class="bi bi-calendar-plus"></i>
+              Buat Rekomendasi Jadwal
+            </a>
+          </div>
+        </section>
+
+        <!-- Informasi untuk status lainnya -->
+        <section class="review-information" data-panel="lainnya" hidden>
+          <i class="bi bi-info-circle-fill"></i>
+
+          <span>
+            Status pengajuan ini tidak memiliki tindakan lanjutan pada halaman
+            antrean.
+          </span>
+        </section>
+      </div>
+    </div>
 
     <!-- Wadah notifikasi -->
     <div
-        id="wadahNotifikasi"
-        class="wadah-notifikasi"
-        aria-live="polite"
-        aria-atomic="true"
+      id="wadahNotifikasi"
+      class="wadah-notifikasi"
+      aria-live="polite"
+      aria-atomic="true"
     ></div>
+    <script src="../../JS/shared/storage.js"></script>
 
+    <script src="../../JS/laboran/utils/waktu.js"></script>
 
+    <script src="../../JS/laboran/layanan.js"></script>
 
-<!-- SHARED STORAGE -->
-<script src="../../JS/shared/storage.js"></script>
-
-<!-- UTILITAS WAKTU -->
-<script src="../../JS/laboran/utils/waktu.js"></script>
-
-<!-- DATA SIMULASI -->
-<script src="../../JS/laboran/data_uji.js"></script>
-
-<!-- LAYANAN DATA -->
-<script src="../../JS/laboran/layanan.js"></script>
-
-<!-- MODUL ANTREAN -->
-<script src="../../JS/laboran/antrean.js"></script>
-
-
-</body>
+    <script src="../../JS/laboran/antrean.js"></script>
+  </body>
 </html>

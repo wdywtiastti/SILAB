@@ -64,10 +64,49 @@ function getFormData() {
   return {
     jumlahPC: jumlahPCInput.value,
     jumlahKursi: jumlahKursiInput.value,
+
+    // Tanggal dan waktu mulai
     waktuMulai: waktuMulaiInput.value,
+
+    // Tanggal dan waktu selesai
     waktuSelesai: waktuSelesaiInput.value,
+
+    // Ambil tanggal peminjaman
+    tanggal: waktuMulaiInput.value ? waktuMulaiInput.value.split("T")[0] : "",
+
     kategori: kategoriTerpilih ? kategoriTerpilih.value : "",
+
     namaKegiatan: namaKegiatanInput.value.trim(),
+  };
+}
+
+// =========================================
+// MENGAMBIL IDENTITAS PENGGUNA LOGIN
+// =========================================
+
+function getIdentitasPemohon(sesi) {
+  if (!sesi || !sesi.identifier) {
+    return null;
+  }
+
+  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+
+  if (!Array.isArray(users)) {
+    return null;
+  }
+
+  const user = users.find(
+    (item) => String(item.nipNpm) === String(sesi.identifier),
+  );
+
+  if (!user || user.status !== "aktif") {
+    return null;
+  }
+
+  return {
+    userId: user.id,
+    namaPemohon: user.nama,
+    nipNpm: user.nipNpm,
   };
 }
 
@@ -428,6 +467,20 @@ function handleSubmit(event) {
     );
     return;
   }
+  // =====================================
+  // MENGAMBIL IDENTITAS AKUN
+  // =====================================
+
+  const identitas = getIdentitasPemohon(sesi);
+
+  if (!identitas) {
+    showFeedback(
+      "Identitas akun tidak ditemukan atau akun tidak aktif. Silakan login kembali.",
+      "error",
+    );
+
+    return;
+  }
 
   //MEMERIKSA LOCAL STORAGE
   if (!SILABStorage.isAvailable()) {
@@ -443,25 +496,34 @@ function handleSubmit(event) {
   }
 
   //MEMBUAT DATA PENGAJUAN
+
   const pengajuanBaru = {
+    // Identitas pengajuan
     id: generateSubmissionId(submissions),
 
+    // Identitas pengguna
+    userId: identitas.userId,
     userIdentifier: sesi.identifier,
-
+    namaPemohon: identitas.namaPemohon,
+    nipNpm: identitas.nipNpm,
     role: sesi.role,
 
-    jumlahPC: Number(data.jumlahPC),
+    // Tanggal peminjaman
+    tanggal: data.tanggal,
 
+    // Fasilitas
+    jumlahPC: Number(data.jumlahPC),
     jumlahKursi: Number(data.jumlahKursi),
 
+    // Waktu
     waktuMulai: data.waktuMulai,
-
     waktuSelesai: data.waktuSelesai,
 
+    // Kegiatan
     kategori: data.kategori,
-
     namaKegiatan: data.namaKegiatan,
 
+    // Status awal
     status: "menunggu_verifikasi",
 
     createdAt: new Date().toISOString(),
@@ -504,5 +566,5 @@ function handleSubmit(event) {
     "success",
   );
 
-  console.log("Pengajuan berhasil disimpan:", pengajuanBaru); 
+  console.log("Pengajuan berhasil disimpan:", pengajuanBaru);
 }

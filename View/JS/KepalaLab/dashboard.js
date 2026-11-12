@@ -400,6 +400,78 @@
   }
 
   // =====================================
+  // DATA BOOKING DARI LOCAL STORAGE
+  // =====================================
+
+  function tanggalLokal() {
+    const sekarang = new Date();
+
+    const tahun = sekarang.getFullYear();
+    const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
+    const hari = String(sekarang.getDate()).padStart(2, "0");
+
+    return `${tahun}-${bulan}-${hari}`;
+  }
+
+  function ambilJadwalHariIni() {
+    const STATUS_AKTIF = ["disetujui", "terjadwal", "digunakan", "berlangsung"];
+
+    if (!window.SILABService) {
+      console.error("SILABService belum tersedia.");
+      return [];
+    }
+
+    const sekarang = new Date();
+
+    const tanggalHariIni = [
+      sekarang.getFullYear(),
+      String(sekarang.getMonth() + 1).padStart(2, "0"),
+      String(sekarang.getDate()).padStart(2, "0"),
+    ].join("-");
+
+    return SILABService.getAll("bookings")
+      .filter((item) => {
+        const status = String(item.status || "")
+          .toLowerCase()
+          .trim();
+
+        return item.tanggal === tanggalHariIni && STATUS_AKTIF.includes(status);
+      })
+      .map((item) => {
+        const statusAsli = String(item.status || "")
+          .toLowerCase()
+          .trim();
+
+        return {
+          id: item.id,
+          pemohon: item.namaPemohon || item.pemohon || "-",
+          kegiatan: item.namaKegiatan || item.kegiatan || "-",
+          kategori: item.kategori || "-",
+          mulai: item.waktuMulai || item.mulai || "00:00",
+          selesai: item.waktuSelesai || item.selesai || "00:00",
+          pc: Number(item.kebutuhanPC ?? item.pc ?? 0),
+          kursi: Number(item.kebutuhanKursi ?? item.kursi ?? 0),
+          status: ["digunakan", "berlangsung"].includes(statusAsli)
+            ? "berlangsung"
+            : "terjadwal",
+        };
+      })
+      .sort((a, b) => a.mulai.localeCompare(b.mulai));
+  }
+
+  function sinkronkanJadwal() {
+    dashboardData.jadwal = ambilJadwalHariIni();
+    currentPage = 1;
+
+    renderDashboard();
+
+    console.log(
+      "Jadwal Kepala Lab berhasil disinkronkan:",
+      dashboardData.jadwal.length,
+    );
+  }
+
+  // =====================================
   // 12. RENDER SELURUH DASHBOARD
   // =====================================
 
@@ -465,4 +537,32 @@
       console.log("Seluruh data dummy dashboard berhasil dikosongkan.");
     },
   };
+
+  // =====================================
+  // 15. INISIALISASI DASHBOARD
+  // =====================================
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", sinkronkanJadwal);
+  } else {
+    sinkronkanJadwal();
+  }
+
+  window.addEventListener("silab:data-changed", () => {
+    sinkronkanJadwal();
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (!event.key || event.key.includes("booking")) {
+      sinkronkanJadwal();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      sinkronkanJadwal();
+    }
+  });
+
+  window.setInterval(sinkronkanJadwal, 15000);
 })();
