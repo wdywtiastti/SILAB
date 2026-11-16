@@ -1,15 +1,222 @@
 //Mengambil elemen HTML
 const peminjamanForm = document.getElementById("peminjamanForm");
-
-const jumlahPCInput = document.getElementById("jumlahPC");
-const jumlahKursiInput = document.getElementById("jumlahKursi");
-
 const waktuMulaiInput = document.getElementById("waktuMulai");
 const waktuSelesaiInput = document.getElementById("waktuSelesai");
 
 const namaKegiatanInput = document.getElementById("namaKegiatan");
 
 const feedbackElement = document.getElementById("applicationFeedback");
+
+// =========================================
+// KONFIGURASI KEPALA LAB
+// =========================================
+
+function getAlgorithmConfig() {
+  const config = SILABStorage.get(SILABStorage.KEYS.ALGORITHM_CONFIG, null);
+
+  return {
+    rules: Array.isArray(config?.rules) ? config.rules : [],
+
+    facilities: Array.isArray(config?.facilities) ? config.facilities : [],
+  };
+}
+// =========================================
+// DROPDOWN ATURAN DINAMIS
+// =========================================
+
+function renderDynamicRules() {
+  const container = document.getElementById("dynamicRuleFields");
+
+  const summary = document.getElementById("dynamicRuleSummary");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (summary) {
+    summary.innerHTML = "";
+  }
+
+  const config = getAlgorithmConfig();
+
+  // Hanya aturan yang mempunyai kriteria
+  // yang ditampilkan sebagai dropdown.
+  const rules = config.rules.filter((rule) => {
+    return (
+      Array.isArray(rule.criteria) &&
+      rule.criteria.length > 0 &&
+      !String(rule.name).toLowerCase().includes("waktu pengajuan")
+    );
+  });
+  const activeRules = rules
+    .map((rule) => ({
+      ...rule,
+      criteria: rule.criteria.filter((item) => item.active !== false),
+    }))
+    .filter((rule) => rule.criteria.length > 0);
+
+  if (rules.length === 0) {
+    container.innerHTML = `
+      <p class="field-error">
+        Belum ada aturan pilihan yang dibuat Kepala Lab.
+      </p>
+    `;
+    return;
+  }
+
+  activeRules.forEach((rule) => {
+    const group = document.createElement("div");
+
+    group.className = "application-group";
+
+    const label = document.createElement("label");
+
+    const fieldId = `rule_${rule.id}`;
+
+    label.htmlFor = fieldId;
+    label.innerHTML = `${escapeHTML(rule.name)} <span>*</span>`;
+
+    const wrapper = document.createElement("div");
+
+    wrapper.className = "application-select";
+
+    const select = document.createElement("select");
+
+    select.id = fieldId;
+    select.name = "ruleSelections";
+    select.className = "application-dynamic-select";
+
+    select.dataset.ruleId = rule.id;
+
+    select.required = true;
+
+    const placeholder = document.createElement("option");
+
+    placeholder.value = "";
+    placeholder.textContent = `Pilih ${rule.name}`;
+
+    select.appendChild(placeholder);
+
+    const criteria = [...rule.criteria]
+      .filter((item) => item.active !== false)
+      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+    criteria.forEach((item) => {
+      const option = document.createElement("option");
+
+      option.value = item.id;
+      option.textContent = item.name;
+
+      select.appendChild(option);
+    });
+
+    wrapper.appendChild(select);
+
+    const error = document.createElement("small");
+
+    error.className = "field-error";
+    error.id = `${fieldId}Error`;
+
+    group.append(label, wrapper, error);
+
+    container.appendChild(group);
+
+    // Panel Kategori hanya menampilkan kriteria Jenis Kegiatan.
+    if (summary && /jenis\s*kegiatan/i.test(rule.name)) {
+      criteria.forEach((criteriaItem) => {
+        const item = document.createElement("div");
+
+        const description = document.createElement("p");
+        description.textContent = criteriaItem.name;
+
+        item.appendChild(description);
+        summary.appendChild(item);
+      });
+    }
+  });
+}
+
+// Mencegah HTML dari nama aturan menjadi kode.
+function escapeHTML(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[character],
+  );
+}
+
+// =========================================
+// DROPDOWN FASILITAS DINAMIS
+// =========================================
+
+function renderDynamicFacilities() {
+  const container = document.getElementById("facilityFields");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const config = getAlgorithmConfig();
+
+  const facilities = config.facilities.filter(
+    (facility) => facility.active !== false,
+  );
+
+  if (facilities.length === 0) {
+    container.innerHTML = `
+      <p class="field-error show">
+        Belum ada fasilitas yang tersedia.
+      </p>
+    `;
+    return;
+  }
+
+  facilities.forEach((facility) => {
+    const group = document.createElement("div");
+
+    group.className = "application-group";
+
+    const label = document.createElement("label");
+
+    const inputId = `facility_${facility.id}`;
+
+    label.htmlFor = inputId;
+    label.textContent = facility.name;
+
+    const input = document.createElement("input");
+
+    input.type = "number";
+    input.id = inputId;
+    input.name = "facilityQuantities";
+    input.className = "application-input";
+
+    input.min = "0";
+    input.max = String(Number(facility.capacity) || 0);
+    input.step = "1";
+    input.value = "0";
+
+    input.dataset.facilityId = facility.id;
+    input.dataset.facilityName = facility.name;
+    input.dataset.facilityCapacity = facility.capacity;
+
+    input.placeholder = "Masukkan jumlah yang diperlukan";
+
+    const error = document.createElement("small");
+
+    error.className = "field-error";
+    error.id = `${inputId}Error`;
+
+    group.append(label, input, error);
+
+    container.appendChild(group);
+  });
+}
 
 let isSubmitting = false;
 
@@ -48,33 +255,73 @@ function clearAllFieldErrors() {
     "jumlahKursi",
     "waktuMulai",
     "waktuSelesai",
-    "kategori",
     "namaKegiatan",
   ];
 
-  fields.forEach(clearFieldError);
+  // Bersihkan error fasilitas dinamis.
+  document.querySelectorAll("#facilityFields .field-error").forEach((error) => {
+    error.textContent = "";
+    error.classList.remove("show");
+  });
+
+  // Hapus border merah seluruh input fasilitas.
+  document
+    .querySelectorAll("#facilityFields input[data-facility-id]")
+    .forEach((input) => {
+      input.classList.remove("input-error");
+    });
+
+  const facilityError = document.getElementById("facilityFieldsError");
+
+  if (facilityError) {
+    facilityError.textContent = "";
+    facilityError.classList.remove("show");
+  }
+
+  // Bersihkan error seluruh dropdown aturan.
+  document
+    .querySelectorAll("#dynamicRuleFields select[data-rule-id]")
+    .forEach((select) => clearFieldError(select.id));
 }
 
 // 3. Mengambil data dari formulir
 function getFormData() {
-  const kategoriTerpilih = document.querySelector(
-    'input[name="kategori"]:checked',
-  );
+  const ruleSelections = {};
+
+  document
+    .querySelectorAll("#dynamicRuleFields select[data-rule-id]")
+    .forEach((select) => {
+      const ruleId = select.dataset.ruleId;
+
+      const rule = getAlgorithmConfig().rules.find(
+        (item) => item.id === ruleId,
+      );
+
+      const criteria = rule?.criteria.find((item) => item.id === select.value);
+
+      ruleSelections[ruleId] = {
+        ruleId,
+        ruleName: rule?.name || "",
+        criteriaId: criteria?.id || "",
+        criteriaName: criteria?.name || "",
+      };
+    });
 
   return {
-    jumlahPC: jumlahPCInput.value,
-    jumlahKursi: jumlahKursiInput.value,
-
-    // Tanggal dan waktu mulai
     waktuMulai: waktuMulaiInput.value,
-
-    // Tanggal dan waktu selesai
     waktuSelesai: waktuSelesaiInput.value,
 
-    // Ambil tanggal peminjaman
     tanggal: waktuMulaiInput.value ? waktuMulaiInput.value.split("T")[0] : "",
 
-    kategori: kategoriTerpilih ? kategoriTerpilih.value : "",
+    ruleSelections,
+
+    facilityRequests: [
+      ...document.querySelectorAll("#facilityFields input[data-facility-id]"),
+    ].map((input) => ({
+      facilityId: input.dataset.facilityId,
+      facilityName: input.dataset.facilityName,
+      quantity: input.value === "" ? 0 : Number(input.value),
+    })),
 
     namaKegiatan: namaKegiatanInput.value.trim(),
   };
@@ -109,20 +356,16 @@ function getIdentitasPemohon(sesi) {
   };
 }
 
+document
+  .getElementById("dynamicRuleFields")
+  ?.addEventListener("change", (event) => {
+    if (event.target.matches("select[data-rule-id]")) {
+      clearFieldError(event.target.id);
+    }
+  });
+
 function validateForm(data) {
   let isValid = true;
-
-  // Validasi jumlah PC
-  if (!SILABValidation.isRequired(data.jumlahPC)) {
-    showFieldError("jumlahPC", "Jumlah PC wajib diisi.");
-    isValid = false;
-  }
-
-  // Validasi jumlah kursi
-  if (!SILABValidation.isRequired(data.jumlahKursi)) {
-    showFieldError("jumlahKursi", "Jumlah kursi wajib diisi.");
-    isValid = false;
-  }
 
   // Validasi waktu mulai
   if (!SILABValidation.isRequired(data.waktuMulai)) {
@@ -136,12 +379,86 @@ function validateForm(data) {
     isValid = false;
   }
 
-  // Validasi kategori
-  if (!SILABValidation.isRequired(data.kategori)) {
-    showFieldError("kategori", "Kategori kegiatan wajib dipilih.");
+  // Validasi seluruh aturan dinamis.
+  Object.values(data.ruleSelections).forEach((selection) => {
+    if (!selection.criteriaId) {
+      showFieldError(
+        `rule_${selection.ruleId}`,
+        `Silakan pilih ${selection.ruleName}.`,
+      );
+
+      isValid = false;
+    }
+  });
+
+  // =====================================
+  // VALIDASI FASILITAS DINAMIS
+  // =====================================
+
+  const facilityInputs = document.querySelectorAll(
+    "#facilityFields input[data-facility-id]",
+  );
+
+  let totalFasilitasDiminta = 0;
+
+  facilityInputs.forEach((input) => {
+    const quantity = Number(input.value);
+
+    const error = document.getElementById(input.id + "Error");
+
+    input.classList.remove("input-error");
+
+    if (error) {
+      error.textContent = "";
+      error.classList.remove("show");
+    }
+
+    // Jumlah harus bilangan bulat dan tidak negatif.
+    if (!Number.isInteger(quantity) || quantity < 0) {
+      if (error) {
+        error.textContent = "Jumlah harus berupa bilangan bulat minimal 0.";
+
+        error.classList.add("show");
+      }
+
+      input.classList.add("input-error");
+
+      isValid = false;
+      return;
+    }
+    // Validasi batas maksimum fasilitas.
+    const maxCapacity = Number(input.dataset.facilityCapacity);
+
+    if (quantity > maxCapacity) {
+      if (error) {
+        error.textContent = `Jumlah melebihi batas maksimum. Maksimal ${maxCapacity} unit.`;
+
+        error.classList.add("show");
+      }
+
+      input.classList.add("input-error");
+
+      isValid = false;
+      return;
+    }
+
+    if (quantity > 0) {
+      totalFasilitasDiminta += quantity;
+    }
+  });
+
+  // Minimal satu fasilitas harus diminta.
+  if (totalFasilitasDiminta === 0) {
+    const error = document.getElementById("facilityFieldsError");
+
+    if (error) {
+      error.textContent = "Pilih minimal satu fasilitas yang diperlukan.";
+
+      error.classList.add("show");
+    }
+
     isValid = false;
   }
-
   // Validasi nama kegiatan
   if (!SILABValidation.isRequired(data.namaKegiatan)) {
     showFieldError("namaKegiatan", "Nama kegiatan wajib diisi.");
@@ -151,96 +468,25 @@ function validateForm(data) {
   return isValid;
 }
 
-//VALIDASI
+document
+  .getElementById("facilityFields")
+  ?.addEventListener("input", (event) => {
+    if (!event.target.matches("[data-facility-id]")) return;
 
-// Memvalidasi jumlah PC dan kursi
-function validateQuantity(data) {
-  let isValid = true;
+    const error = document.getElementById("facilityFieldsError");
 
-  const jumlahPC = Number(data.jumlahPC);
-  const jumlahKursi = Number(data.jumlahKursi);
+    if (error) {
+      error.textContent = "";
+      error.classList.remove("show");
+    }
 
-  // Validasi jumlah PC
-  if (!Number.isInteger(jumlahPC) || jumlahPC <= 0) {
-    showFieldError(
-      "jumlahPC",
-      "Jumlah PC harus berupa bilangan bulat positif.",
-    );
-    isValid = false;
-  }
+    const fieldError = document.getElementById(event.target.id + "Error");
 
-  // Validasi jumlah kursi
-  if (!Number.isInteger(jumlahKursi) || jumlahKursi <= 0) {
-    showFieldError(
-      "jumlahKursi",
-      "Jumlah kursi harus berupa bilangan bulat positif.",
-    );
-    isValid = false;
-  }
-
-  return isValid;
-}
-
-// Mengambil konfigurasi kapasitas fasilitas
-function getFacilityCapacity() {
-  const defaultCapacity = {
-    kapasitasPC: 30,
-    kapasitasKursi: 30,
-  };
-
-  const facilities = SILABStorage.get(
-    SILABStorage.KEYS.FACILITIES,
-    defaultCapacity,
-  );
-
-  // Memastikan konfigurasi tersedia dan valid
-  if (
-    !facilities ||
-    !Number.isInteger(facilities.kapasitasPC) ||
-    !Number.isInteger(facilities.kapasitasKursi) ||
-    facilities.kapasitasPC <= 0 ||
-    facilities.kapasitasKursi <= 0
-  ) {
-    return null;
-  }
-
-  return facilities;
-}
-
-// Memvalidasi kapasitas fasilitas
-function validateCapacity(data) {
-  const capacity = getFacilityCapacity();
-
-  if (!capacity) {
-    showFeedback("Konfigurasi kapasitas fasilitas tidak valid.", "error");
-    return false;
-  }
-
-  let isValid = true;
-
-  const jumlahPC = Number(data.jumlahPC);
-  const jumlahKursi = Number(data.jumlahKursi);
-
-  if (jumlahPC > capacity.kapasitasPC) {
-    showFieldError(
-      "jumlahPC",
-      `Kapasitas PC hanya ${capacity.kapasitasPC} unit.`,
-    );
-
-    isValid = false;
-  }
-
-  if (jumlahKursi > capacity.kapasitasKursi) {
-    showFieldError(
-      "jumlahKursi",
-      `Kapasitas kursi hanya ${capacity.kapasitasKursi} unit.`,
-    );
-
-    isValid = false;
-  }
-
-  return isValid;
-}
+    if (fieldError) {
+      fieldError.textContent = "";
+      fieldError.classList.remove("show");
+    }
+  });
 
 //validasi tanggal dan waktu
 function validateBookingTime(data) {
@@ -317,62 +563,6 @@ function validateBookingTime(data) {
   return isValid;
 }
 
-function tampilkanIdentitasNavbar() {
-  const sesi = sesiSILAB.ambil();
-
-  if (!sesi || sesi.role !== "pengguna") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-  const akun = users.find(
-    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
-  );
-
-  if (!akun || akun.status !== "aktif") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const navbarName = document.getElementById("userNavbarName");
-  const profileName = document.getElementById("profileUserName");
-
-  if (navbarName) navbarName.textContent = akun.nama;
-  if (profileName) profileName.textContent = akun.nama;
-
-  return akun;
-}
-
-function tampilkanIdentitasNavbar() {
-  const sesi = sesiSILAB.ambil();
-
-  if (!sesi || sesi.role !== "pengguna") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-  const akun = users.find(
-    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
-  );
-
-  if (!akun || akun.status !== "aktif") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const navbarName = document.getElementById("userNavbarName");
-  const profileName = document.getElementById("profileUserName");
-
-  if (navbarName) navbarName.textContent = akun.nama;
-  if (profileName) profileName.textContent = akun.nama;
-
-  return akun;
-}
-
 //Membuat ID pengguna otomatis
 function generateSubmissionId(submissions) {
   const sekarang = new Date();
@@ -406,45 +596,6 @@ function generateSubmissionId(submissions) {
 
   return `${prefix}${nomorBaru}`;
 }
-
-//even listeneer untuk validasi input pc dan jumlah kurasi
-[jumlahPCInput, jumlahKursiInput].forEach((input) => {
-  input.addEventListener("input", function () {
-    const fieldId = input.id;
-    const value = input.value;
-
-    clearFieldError(fieldId);
-
-    if (value === "") return;
-    const number = Number(value);
-
-    if (!Number.isInteger(number) || number <= 0) {
-      showFieldError(
-        fieldId,
-        "Masukkan bilangan bulat positif, tanpa desimal.",
-      );
-      return;
-    }
-
-    // Periksa kapasitas fasilitas
-    const capacity = getFacilityCapacity();
-
-    if (!capacity) {
-      showFeedback("Konfigurasi kapasitas fasilitas tidak valid.", "error");
-      return;
-    }
-
-    const maxCapacity =
-      fieldId === "jumlahPC" ? capacity.kapasitasPC : capacity.kapasitasKursi;
-
-    if (number > maxCapacity) {
-      showFieldError(
-        fieldId,
-        `Maksimal fasilitas yang tersedia adalah ${maxCapacity} unit.`,
-      );
-    }
-  });
-});
 
 //validasi input waktu
 [waktuMulaiInput, waktuSelesaiInput].forEach((input) => {
@@ -495,16 +646,6 @@ function handleSubmit(event) {
 
   //VALIDASI INPUT WAJIB
   if (!validateForm(data)) {
-    return;
-  }
-
-  //VALIDASI JUMLAH FASILITAS
-  if (!validateQuantity(data)) {
-    return;
-  }
-
-  //VALIDASI KAPASITAS FISIK
-  if (!validateCapacity(data)) {
     return;
   }
 
@@ -567,16 +708,33 @@ function handleSubmit(event) {
     // Tanggal peminjaman
     tanggal: data.tanggal,
 
-    // Fasilitas
-    jumlahPC: Number(data.jumlahPC),
-    jumlahKursi: Number(data.jumlahKursi),
-
     // Waktu
     waktuMulai: data.waktuMulai,
     waktuSelesai: data.waktuSelesai,
 
     // Kegiatan
-    kategori: data.kategori,
+    // Aturan dan pilihan dari Kepala Lab.
+    ruleSelections: data.ruleSelections,
+
+    // Kompatibilitas dengan riwayat lama.
+    kategori:
+      Object.values(data.ruleSelections).find((item) =>
+        /kategori|jenis kegiatan/i.test(item.ruleName),
+      )?.criteriaName || "",
+
+    // Daftar fasilitas dan jumlah yang diminta.
+    // Daftar seluruh fasilitas yang diminta.
+    facilityRequests: data.facilityRequests.filter((item) => item.quantity > 0),
+
+    // Kompatibilitas dengan sistem lama.
+    facilityId:
+      data.facilityRequests.find((item) => item.quantity > 0)?.facilityId || "",
+
+    facilityName:
+      data.facilityRequests.find((item) => item.quantity > 0)?.facilityName ||
+      "",
+
+    // Nama kegiatan.
     namaKegiatan: data.namaKegiatan,
 
     // Status awal
@@ -664,5 +822,27 @@ function tampilkanIdentitasNavbar() {
   return akun;
 }
 
+// Memuat konfigurasi Kepala Lab.
+renderDynamicRules();
+
+renderDynamicFacilities();
+
 // Jalankan identitas navbar
 const akunLogin = tampilkanIdentitasNavbar();
+
+const config = getAlgorithmConfig();
+
+console.log("DATA ATURAN:", config.rules);
+console.log("DATA FASILITAS:", config.facilities);
+
+console.log(
+  "JUMLAH DROPDOWN ATURAN:",
+  document.querySelectorAll("#dynamicRuleFields select").length,
+);
+
+console.log(
+  "JUMLAH INPUT FASILITAS:",
+  document.querySelectorAll("#facilityFields input[data-facility-id]").length,
+);
+
+console.log("DATA INPUT FASILITAS:", getFormData().facilityRequests);

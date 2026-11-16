@@ -116,46 +116,6 @@
         <!-- FORMULIR PEMINJAMAN -->
 
         <form class="application-form" id="peminjamanForm" novalidate>
-          <!-- JUMLAH PC -->
-
-          <div class="application-group">
-            <label for="jumlahPC">
-              Perangkat komputer Yang Diperlukan
-              <span>*</span>
-            </label>
-
-            <input
-              type="number"
-              id="jumlahPC"
-              name="jumlahPC"
-              min="1"
-              step="1"
-              value="30"
-              required
-            />
-            <small class="field-error" id="jumlahPCError"></small>
-          </div>
-
-          <!-- JUMLAH KURSI -->
-
-          <div class="application-group">
-            <label for="jumlahKursi">
-              Kursi Yang Diperlukan
-              <span>*</span>
-            </label>
-
-            <input
-              type="number"
-              id="jumlahKursi"
-              name="jumlahKursi"
-              min="1"
-              step="1"
-              value="30"
-              required
-            />
-            <small class="field-error" id="jumlahKursiError"></small>
-          </div>
-
           <!-- WAKTU PEMINJAMAN -->
 
           <div class="application-time-row">
@@ -184,74 +144,17 @@
             </div>
           </div>
 
-          <!-- KATEGORI KEGIATAN -->
+          <!-- ATURAN DINAMIS DARI KEPALA LAB -->
 
-          <!-- KATEGORI KEGIATAN -->
+          <div id="dynamicRuleFields"></div>
+          <!-- FASILITAS DINAMIS DARI KEPALA LAB -->
+
           <div class="application-group">
-            <label> Kategori Kegiatan <span>*</span> </label>
+            <label> Fasilitas Laboratorium <span>*</span> </label>
 
-            <div class="application-select">
-              <details class="category-picker">
-                <summary class="category-picker-trigger" , id="kategori">
-                  <i class="bi bi-diagram-3 category-main-icon"></i>
+            <div id="facilityFields"></div>
 
-                  <span class="category-value category-value-k2">
-                    Kuliah Pengganti
-                  </span>
-
-                  <span class="category-value category-value-k3">
-                    Asistensi / Responsi
-                  </span>
-
-                  <span class="category-value category-value-k4"> HMTI </span>
-
-                  <span class="category-value category-value-k5">
-                    Belajar Mandiri
-                  </span>
-
-                  <i class="bi bi-chevron-down category-arrow"></i>
-                </summary>
-
-                <div class="category-picker-options">
-                  <input
-                    type="radio"
-                    id="kategori-k2"
-                    name="kategori"
-                    value="Kuliah Pengganti"
-                  />
-
-                  <label for="kategori-k2">K2</label>
-
-                  <input
-                    type="radio"
-                    id="kategori-k3"
-                    name="kategori"
-                    value="Asistensi / Responsi"
-                  />
-
-                  <label for="kategori-k3">K3</label>
-
-                  <input
-                    type="radio"
-                    id="kategori-k4"
-                    name="kategori"
-                    value="HMTI"
-                  />
-
-                  <label for="kategori-k4">K4</label>
-
-                  <input
-                    type="radio"
-                    id="kategori-k5"
-                    name="kategori"
-                    value="Belajar Mandiri"
-                  />
-
-                  <label for="kategori-k5">K5</label>
-                </div>
-              </details>
-            </div>
-            <small class="field-error" id="kategoriError"></small>
+            <small id="facilityFieldsError" class="field-error"> </small>
           </div>
 
           <!-- NAMA KEGIATAN -->
@@ -304,15 +207,7 @@
             <h3>Kategori</h3>
           </div>
 
-          <div class="application-category-list">
-            <div>2. Kuliah Pengganti</div>
-
-            <div>3. Asistensi / Responsi</div>
-
-            <div>4. HMTI</div>
-
-            <div>5. Belajar Mandiri</div>
-          </div>
+          <div class="application-category-list" id="dynamicRuleSummary"></div>
         </aside>
       </section>
     </main>

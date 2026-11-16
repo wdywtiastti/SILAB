@@ -135,20 +135,19 @@
 
           <label for="modalTambahAturan" class="btn-add-rule">
             <i class="bi bi-plus-lg"></i>
-            Tambah Aturan
+            Tambah Kelompok
           </label>
         </div>
-
         <!-- RINGKASAN -->
         <div class="rule-summary">
           <div class="rule-summary-item">
             <i class="bi bi-list-ul"></i>
-            <span>3 Aturan</span>
+            <span id="ruleCount">0 Aturan</span>
           </div>
 
           <div class="rule-summary-item">
             <i class="bi bi-clipboard-check"></i>
-            <span>7 kriteria penilaian</span>
+            <span id="criteriaCount">0 kriteria penilaian</span>
           </div>
         </div>
 
@@ -162,6 +161,58 @@
 
         <!-- DAFTAR ATURAN -->
         <div class="rule-list"></div>
+      </section>
+
+      <!-- =========================================
+     MANAJEMEN FASILITAS
+========================================== -->
+
+      <section class="algorithm-panel facility-panel">
+        <div class="facility-header">
+          <div>
+            <span class="panel-label">PENGELOLAAN SARANA</span>
+            <h3>Manajemen Fasilitas</h3>
+            <p>
+              Kelola daftar fasilitas laboratorium beserta kapasitas
+              masing-masing fasilitas.
+            </p>
+          </div>
+
+          <label for="modalTambahFasilitas" class="btn-add-facility">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Fasilitas
+          </label>
+        </div>
+
+        <div class="facility-summary">
+          <div class="facility-summary-item">
+            <i class="bi bi-building"></i>
+            <span id="facilityCount">0 Fasilitas</span>
+          </div>
+
+          <div class="facility-summary-item">
+            <i class="bi bi-people"></i>
+            <span id="facilityCapacity">0 Kapasitas</span>
+          </div>
+        </div>
+
+        <div class="facility-list"></div>
+        <!-- RINGKASAN PEMBOBOTAN FASILITAS -->
+
+        <div class="facility-weight-summary">
+          <div class="facility-weight-total">
+            <span>Total Bobot Fasilitas</span>
+
+            <strong id="totalFacilityWeightValue">0%</strong>
+          </div>
+
+          <p id="facilityWeightWarning">Total bobot harus tepat 100%.</p>
+
+          <button type="button" class="btn-save-facility-weight">
+            <i class="bi bi-save"></i>
+            Simpan Perubahan
+          </button>
+        </div>
       </section>
 
       <!-- PARAMETER DAN PRIORITAS -->
@@ -183,81 +234,53 @@
             </div>
           </div>
 
-          <div class="weight-list">
-            <div class="weight-item">
-              <div class="weight-heading">
-                <div>
-                  <strong>Jenis Kegiatan</strong>
-                  <small>Bobot kepentingan kategori kegiatan.</small>
-                </div>
-                <span class="weight-value">35%</span>
+          <!-- BOBOT JENIS KEGIATAN -->
+          <div class="weight-list"></div>
+
+          <!-- BOBOT FASILITAS LABORATORIUM -->
+          <div class="weight-item">
+            <div class="weight-heading">
+              <div>
+                <strong>Fasilitas Laboratorium</strong>
+                <small>Bobot kelompok penilaian fasilitas.</small>
               </div>
 
-              <input
-                type="range"
-                class="weight-slider"
-                min="0"
-                max="100"
-                step="1"
-                value="35"
-                aria-label="Bobot Jenis Kegiatan"
-              />
+              <span class="weight-value" id="facilityGroupWeightValue">0%</span>
             </div>
 
-            <div class="weight-item">
-              <div class="weight-heading">
-                <div>
-                  <strong>Waktu Pengajuan</strong>
-                  <small>Bobot waktu pengajuan dengan penggunaan.</small>
-                </div>
-                <span class="weight-value">20%</span>
-              </div>
-
-              <input
-                type="range"
-                class="weight-slider"
-                min="0"
-                max="100"
-                value="20"
-                aria-label="Bobot Waktu Pengajuan"
-              />
-            </div>
-
-            <div class="weight-item">
-              <div class="weight-heading">
-                <div>
-                  <strong>Kebutuhan Fasilitas</strong>
-                  <small>Bobot kebutuhan fasilitas laboratorium.</small>
-                </div>
-                <span class="weight-value">15%</span>
-              </div>
-
-              <input
-                type="range"
-                class="weight-slider"
-                min="0"
-                max="100"
-                value="15"
-                aria-label="Bobot Kebutuhan Fasilitas"
-              />
-            </div>
+            <input
+              type="range"
+              id="facilityGroupWeightSlider"
+              class="weight-slider facility-group-weight-slider"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+            />
           </div>
 
+          <!-- TOTAL BOBOT -->
           <div class="weight-total">
             <span>Total Bobot Acuan</span>
-            <strong>70%</strong>
+            <strong id="totalWeightValue">0%</strong>
           </div>
 
+          <p id="weightWarning">Total bobot harus tepat 100%.</p>
+
+          <!-- TOMBOL SIMPAN -->
           <div class="weight-footer">
             <div class="panel-note">
               <i class="bi bi-info-circle"></i>
               <span>
-                Nilai persentase merupakan nilai acuan tampilan. Perhitungan dan
-                validasi bobot belum dijalankan pada frontend.
+                Total bobot Jenis Kegiatan dan Fasilitas Laboratorium harus
+                tepat 100%.
               </span>
             </div>
 
-            <button type="button" class="btn-save-weight">Simpan</button>
+            <button type="button" class="btn-save-weight">
+              <i class="bi bi-save"></i>
+              Simpan Perubahan
+            </button>
           </div>
         </section>
 
@@ -338,8 +361,8 @@
     </main>
 
     <!-- =========================================
-         MODAL TAMBAH ATURAN
-    ========================================== -->
+          MODAL TAMBAH ATURAN
+      ========================================== -->
 
     <input type="checkbox" id="modalTambahAturan" class="modal-toggle" />
 
@@ -355,57 +378,38 @@
 
         <form class="modal-form">
           <div class="modal-body">
-            <div class="form-row">
-              <div class="form-group id-group">
-                <label>ID Aturan</label>
-                <input type="text" value="RB004" readonly />
-                <small>ID dibuat otomatis oleh sistem.</small>
-              </div>
-
-              <div class="form-group">
-                <label>Nama Aturan</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Fasilitas Laboratorium"
-                  required
-                />
-                <small>Masukkan nama aturan yang akan ditambahkan.</small>
-              </div>
-            </div>
-
             <div class="form-group">
-              <label>Kebutuhan / Parameter</label>
+              <label>Nama Kelompok</label>
               <input
                 type="text"
-                placeholder="Contoh: Jumlah PC dan Kursi"
+                name="ruleName"
+                placeholder="Contoh: Jenis Kegiatan"
+                maxlength="100"
                 required
               />
             </div>
 
             <div class="form-group">
-              <label>Deskripsi Aturan (Opsional)</label>
+              <label>Deskripsi Kelompok (Opsional)</label>
               <textarea
-                rows="5"
-                placeholder="Tuliskan penjelasan singkat mengenai fungsi dan tujuan aturan..."
+                name="ruleDescription"
+                rows="3"
+                placeholder="Jelaskan tujuan kelompok penilaian..."
               ></textarea>
-              <small
-                >Penjelasan singkat mengenai fungsi aturan dalam sistem
-                SILAB.</small
-              >
             </div>
           </div>
 
           <div class="modal-footer">
             <label for="modalTambahAturan" class="btn-cancel">Batal</label>
-            <button type="button" class="btn-save-rule">Simpan Aturan</button>
+            <button type="submit" class="btn-save-rule">Simpan Aturan</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- =========================================
-         MODAL EDIT ATURAN
-    ========================================== -->
+          MODAL EDIT ATURAN
+      ========================================== -->
 
     <input type="checkbox" id="modalEditAturan" class="modal-toggle" />
 
@@ -421,35 +425,26 @@
 
         <form class="modal-form">
           <div class="modal-body">
-            <div class="form-row">
-              <div class="form-group id-group">
-                <label>ID Aturan</label>
-                <input type="text" value="RB001" readonly />
-                <small>ID aturan tidak dapat diubah.</small>
-              </div>
-
-              <div class="form-group">
-                <label>Nama Aturan</label>
-                <input type="text" value="Jenis Kegiatan" required />
-              </div>
-            </div>
-
             <div class="form-group">
-              <label>Kebutuhan / Parameter</label>
+              <label>Nama Kelompok</label>
               <input
                 type="text"
-                placeholder="Masukkan kebutuhan atau parameter aturan"
+                name="ruleName"
+                placeholder="Contoh: Jenis Kegiatan"
+                maxlength="100"
+                required
               />
             </div>
 
             <div class="form-group">
-              <label>Deskripsi Aturan</label>
-              <textarea rows="5" placeholder="Masukkan deskripsi aturan...">
-Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat kepentingan akademik dan organisasi untuk menentukan prioritas penggunaan.</textarea
-              >
+              <label>Deskripsi Kelompok (Opsional)</label>
+              <textarea
+                name="ruleDescription"
+                rows="3"
+                placeholder="Jelaskan tujuan kelompok penilaian..."
+              ></textarea>
             </div>
           </div>
-
           <div class="modal-footer">
             <label for="modalEditAturan" class="btn-cancel">Batal</label>
             <button type="button" class="btn-save-rule">
@@ -461,8 +456,8 @@ Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat ke
     </div>
 
     <!-- =========================================
-         MODAL HAPUS ATURAN
-    ========================================== -->
+          MODAL HAPUS ATURAN
+      ========================================== -->
 
     <input type="checkbox" id="modalHapusAturan" class="modal-toggle" />
 
@@ -489,8 +484,8 @@ Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat ke
     </div>
 
     <!-- =========================================
-         MODAL TAMBAH KRITERIA
-    ========================================== -->
+          MODAL TAMBAH KRITERIA
+      ========================================== -->
 
     <input type="checkbox" id="modalTambahKriteria" class="modal-toggle" />
 
@@ -507,44 +502,28 @@ Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat ke
         <form class="modal-form">
           <div class="modal-body">
             <div class="form-group">
-              <label>Aturan</label>
-
-              <select required>
-                <option value="" selected disabled>Pilih aturan</option>
-                <option>RB001 - Jenis Kegiatan</option>
-                <option>RB002 - Waktu Pengajuan</option>
-                <option>RB003 - Fasilitas Laboratorium</option>
-              </select>
-
-              <small>Pilih aturan tempat kriteria akan ditambahkan.</small>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group id-group">
-                <label>Nomor Urut</label>
-                <input type="number" min="1" placeholder="5" required />
-              </div>
-
-              <div class="form-group">
-                <label>Nama Kriteria</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Kelas Pengganti"
-                  required
-                />
-              </div>
+              <label>Kelompok Penilaian</label>
+              <input type="text" name="criteriaRuleName" readonly />
             </div>
 
             <div class="form-group">
-              <label>Deskripsi Kriteria</label>
-              <textarea
-                rows="5"
-                placeholder="Tuliskan penjelasan mengenai kriteria yang ditambahkan..."
+              <label>Nama Kriteria</label>
+              <input
+                type="text"
+                name="criteriaName"
+                placeholder="Masukkan nama kriteria"
+                maxlength="100"
                 required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+              <textarea
+                name="criteriaDescription"
+                rows="3"
+                placeholder="Jelaskan kriteria..."
               ></textarea>
-              <small
-                >Berikan penjelasan singkat dan jelas mengenai kriteria.</small
-              >
             </div>
           </div>
 
@@ -557,8 +536,8 @@ Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat ke
     </div>
 
     <!-- =========================================
-         MODAL EDIT KRITERIA
-    ========================================== -->
+          MODAL EDIT KRITERIA
+      ========================================== -->
 
     <input type="checkbox" id="modalEditKriteria" class="modal-toggle" />
 
@@ -575,28 +554,22 @@ Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat ke
         <form class="modal-form">
           <div class="modal-body">
             <div class="form-group">
-              <label>Aturan</label>
-              <input type="text" value="RB001 - Jenis Kegiatan" readonly />
-            </div>
-
-            <div class="form-row">
-              <div class="form-group id-group">
-                <label>Nomor Urut</label>
-                <input type="number" value="1" min="1" required />
-              </div>
-
-              <div class="form-group">
-                <label>Nama Kriteria</label>
-                <input type="text" value="Kelas Pengganti" required />
-              </div>
+              <label>Kelompok Penilaian</label>
+              <input
+                type="text"
+                name="criteriaRuleName"
+                class="criteria-rule-name"
+                readonly
+              />
             </div>
 
             <div class="form-group">
-              <label>Deskripsi Kriteria</label>
-              <textarea rows="5" required>
-Kegiatan pengganti perkuliahan yang memiliki kepentingan akademik.</textarea
-              >
-              <small>Perbarui penjelasan kriteria sesuai kebutuhan.</small>
+              <label>Nama Kriteria</label>
+              <input type="text" name="criteriaName" maxlength="100" required />
+            </div>
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+              <textarea name="criteriaDescription" rows="3"></textarea>
             </div>
           </div>
 
@@ -611,8 +584,8 @@ Kegiatan pengganti perkuliahan yang memiliki kepentingan akademik.</textarea
     </div>
 
     <!-- =========================================
-         MODAL HAPUS KRITERIA
-    ========================================== -->
+          MODAL HAPUS KRITERIA
+      ========================================== -->
 
     <input type="checkbox" id="modalHapusKriteria" class="modal-toggle" />
 
@@ -633,6 +606,97 @@ Kegiatan pengganti perkuliahan yang memiliki kepentingan akademik.</textarea
           <label for="modalHapusKriteria" class="btn-cancel">Batal</label>
           <button type="button" class="btn-delete-confirm">
             Ya, Hapus Kriteria
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL TAMBAH DAN EDIT FASILITAS -->
+
+    <input type="checkbox" id="modalTambahFasilitas" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3 id="facilityModalTitle">Tambah Fasilitas</h3>
+
+          <label for="modalTambahFasilitas" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form" id="facilityForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Fasilitas</label>
+
+              <input
+                type="text"
+                name="facilityName"
+                placeholder="Contoh: Laboratorium RPL"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Kapasitas Fasilitas</label>
+
+              <input
+                type="number"
+                name="facilityCapacity"
+                min="1"
+                step="1"
+                placeholder="Contoh: 30"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+
+              <textarea
+                name="facilityDescription"
+                rows="3"
+                placeholder="Deskripsi fasilitas..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <label for="modalTambahFasilitas" class="btn-cancel"> Batal </label>
+
+            <button type="submit" class="btn-save-rule">
+              Simpan Fasilitas
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL HAPUS FASILITAS -->
+
+    <input type="checkbox" id="modalHapusFasilitas" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="confirm-modal">
+        <div class="confirm-icon delete-icon">
+          <i class="bi bi-trash3"></i>
+        </div>
+
+        <h3>Hapus Fasilitas?</h3>
+
+        <p>Apakah kamu yakin ingin menghapus fasilitas ini?</p>
+
+        <div class="confirm-footer">
+          <label for="modalHapusFasilitas" class="btn-cancel"> Batal </label>
+
+          <button
+            type="button"
+            class="btn-delete-confirm"
+            id="btnDeleteFacility"
+          >
+            Ya, Hapus
           </button>
         </div>
       </div>

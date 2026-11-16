@@ -718,3 +718,57 @@
   background: #911e3f;
   color: #ffffff;
 }
+
+/* =========================================
+   DROPDOWN DINAMIS PENGAJUAN
+========================================= */
+
+.application-dynamic-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+
+  border: 1px solid #dce2ec;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #202b40;
+
+  font-family: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.application-dynamic-select:focus {
+  border-color: #33266a;
+  box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.08);
+}
+
+.application-category-list > div {
+  display: block;
+
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+
+  background: #f7f6fc;
+  border-radius: 8px;
+
+  font-size: 11px;
+  color: #344054;
+}
+
+.application-category-list strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #33266a;
+}
+
+.application-category-list p {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #667a9b;
+}
