@@ -3,13 +3,13 @@
  * SILAB - PEMBUATAN REKOMENDASI JADWAL
  *
  * Fitur:
- * 1. Satu atau dua alternatif jadwal.
- * 2. Tambah dan hapus alternatif.
- * 3. Validasi input jadwal.
- * 4. Validasi bentrokan alternatif.
- * 5. Integrasi SILABService.
- * 6. Kirim rekomendasi.
- * 7. Edit rekomendasi maksimal 24 jam.
+ * 1. Memuat rincian pengguna yang jadwalnya tergeser.
+ * 2. Membuat satu atau dua alternatif jadwal.
+ * 3. Menambah dan menghapus alternatif.
+ * 4. Validasi waktu dan bentrokan jadwal.
+ * 5. Mengirim rekomendasi melalui SILABService.
+ * 6. Melihat rekomendasi yang sudah dikirim.
+ * 7. Mengedit rekomendasi yang masih memenuhi ketentuan layanan.
  */
 
 (function (window, document) {
@@ -22,47 +22,50 @@
     const layanan = window.SILABService;
 
     const el = {
-        form: document.querySelector(
-            "#formRekomendasi, #rekomendasiForm, [data-form-rekomendasi]"
+        form: document.getElementById("formRekomendasi"),
+
+        daftarAlternatif: document.getElementById(
+            "daftarAlternatif"
         ),
 
-        daftarAlternatif: document.querySelector(
-            "#daftarAlternatif, #alternatifContainer, [data-alternatif-list], .alternative-list"
+        tombolTambah: document.getElementById(
+            "btnTambahAlternatif"
         ),
 
-        tombolTambah: document.querySelector(
-            "#tambahAlternatif, [data-tambah-alternatif], .btn-tambah-alternatif"
+        catatan: document.getElementById("catatan"),
+
+        feedback: document.getElementById(
+            "feedbackRekomendasi"
         ),
 
-        catatan: document.querySelector(
-            "#catatanRekomendasi, [name='catatan']"
+        status: document.getElementById(
+            "statusRekomendasi"
         ),
 
-        feedback: document.querySelector(
-            "#rekomendasiFeedback, .recommendation-feedback"
-        ),
-
-        tombolKirim: null,
-
-        idKasus: document.querySelector(
-            "#idKasus, [name='kasusId'], [name='pengajuanId']"
-        )
+        idKasus: document.getElementById("idKasus")
     };
 
-    if (!layanan || !el.form || !el.daftarAlternatif) {
+    if (
+        !layanan ||
+        !el.form ||
+        !el.daftarAlternatif ||
+        !el.tombolTambah
+    ) {
         console.error(
             "SILAB: Elemen formulir atau SILABService tidak ditemukan."
         );
+
         return;
     }
+
 
     // ==========================================
     // 2. KONFIGURASI
     // ==========================================
 
     const BATAS_ALTERNATIF = 2;
-
     const MINIMAL_ALTERNATIF = 1;
+    const ZONA_WAKTU = "Asia/Jayapura";
 
     const STATUS_AKTIF = new Set([
         "menunggu_persetujuan",
@@ -71,10 +74,10 @@
     ]);
 
     let kasusAktif = null;
-
     let modeEdit = false;
-
+    let modeLihat = false;
     let sedangMengirim = false;
+
 
     // ==========================================
     // 3. FUNGSI BANTUAN
@@ -94,44 +97,20 @@
         return elemen;
     }
 
-    function tampilkanFeedback(pesan, jenis = "error") {
-        let feedback = el.feedback;
 
-        if (!feedback) {
-            feedback = buatElemen(
-                "div",
-                "recommendation-feedback"
-            );
-
-            feedback.id = "rekomendasiFeedback";
-
-            feedback.setAttribute("role", "alert");
-
-            el.form.append(feedback);
-
-            el.feedback = feedback;
-        }
-
-        feedback.textContent = pesan;
-
-        feedback.dataset.jenis = jenis;
-
-        feedback.hidden = false;
+    function normalisasi(nilai) {
+        return String(nilai ?? "")
+            .trim()
+            .toLowerCase();
     }
 
-    function hapusFeedback() {
-        if (!el.feedback) return;
-
-        el.feedback.textContent = "";
-
-        el.feedback.hidden = true;
-    }
 
     function ambilParameterURL(nama) {
         return new URLSearchParams(
             window.location.search
         ).get(nama);
     }
+
 
     function ambilIdKasus() {
         return (
@@ -144,56 +123,331 @@
         );
     }
 
-    function formatTanggalInput(tanggal, jam) {
-        if (!tanggal || !jam) return "";
 
-        return `${tanggal}T${jam}`;
-    }
+    // ==========================================
+    // 4. FEEDBACK
+    // ==========================================
 
-    function ubahKeInputWaktu(data) {
-        if (!data) return "";
+    function tampilkanFeedback(pesan, jenis = "error") {
+        let feedback = el.feedback;
 
-        if (data.includes("T")) {
-            return data.slice(0, 16);
+        if (!feedback) {
+            feedback = buatElemen(
+                "div",
+                "recommendation-feedback"
+            );
+
+            feedback.id = "feedbackRekomendasi";
+
+            feedback.setAttribute(
+                "role",
+                "status"
+            );
+
+            feedback.setAttribute(
+                "aria-live",
+                "polite"
+            );
+
+            el.form.append(feedback);
+
+            el.feedback = feedback;
         }
 
-        return data;
+        feedback.textContent = pesan;
+        feedback.dataset.jenis = jenis;
+        feedback.hidden = false;
     }
+
+
+    function hapusFeedback() {
+        if (!el.feedback) return;
+
+        el.feedback.textContent = "";
+
+        delete el.feedback.dataset.jenis;
+
+        el.feedback.hidden = true;
+    }
+
+
+    // ==========================================
+    // 5. STATUS DAN TOMBOL SUBMIT
+    // ==========================================
+
+    function perbaruiStatus(teks) {
+        if (el.status) {
+            el.status.textContent = teks;
+        }
+    }
+
+
+    function ambilTombolSubmit() {
+        return el.form.querySelector(
+            '[type="submit"]'
+        );
+    }
+
+
+    function ubahLabelSubmit(teks) {
+        const tombol = ambilTombolSubmit();
+
+        if (!tombol) return;
+
+        const label = tombol.querySelector(
+            "[data-label-submit]"
+        );
+
+        if (label) {
+            label.textContent = teks;
+        } else {
+            tombol.textContent = teks;
+        }
+    }
+
+
+    // ==========================================
+    // 6. FORMAT WAKTU
+    // ==========================================
+
+    function keNilaiDatetimeLocal(nilai, tanggal = "") {
+        if (!nilai) return "";
+
+        const teks = String(nilai).trim();
+
+        // Format waktu saja.
+        if (/^\d{2}:\d{2}/.test(teks) && tanggal) {
+            return `${tanggal}T${teks.slice(0, 5)}`;
+        }
+
+        // Format tanggal dan waktu.
+        if (!teks.includes("T")) {
+            return "";
+        }
+
+        // Waktu yang sudah memiliki zona waktu.
+        const memilikiZona = /Z$|[+-]\d{2}:\d{2}$/.test(teks);
+
+        if (!memilikiZona) {
+            return teks.slice(0, 16);
+        }
+
+        const tanggalWaktu = new Date(teks);
+
+        if (Number.isNaN(tanggalWaktu.getTime())) {
+            return "";
+        }
+
+        const bagian = new Intl.DateTimeFormat(
+            "en-GB",
+            {
+                timeZone: ZONA_WAKTU,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hourCycle: "h23"
+            }
+        ).formatToParts(tanggalWaktu);
+
+        const hasil = {};
+
+        bagian.forEach(item => {
+            hasil[item.type] = item.value;
+        });
+
+        return (
+            `${hasil.year}-${hasil.month}-${hasil.day}` +
+            `T${hasil.hour}:${hasil.minute}`
+        );
+    }
+
 
     function formatWaktuRekomendasi(data) {
         if (!data) return "";
 
-        if (data.mulaiLokal) {
-            return ubahKeInputWaktu(data.mulaiLokal);
-        }
-
-        return formatTanggalInput(
-            data.tanggal,
-            data.waktuMulai
+        return keNilaiDatetimeLocal(
+            data.mulaiLokal || data.waktuMulai,
+            data.tanggal
         );
     }
+
 
     function formatWaktuSelesai(data) {
         if (!data) return "";
 
-        if (data.selesaiLokal) {
-            return ubahKeInputWaktu(data.selesaiLokal);
-        }
-
-        return formatTanggalInput(
-            data.tanggal,
-            data.waktuSelesai
+        return keNilaiDatetimeLocal(
+            data.selesaiLokal || data.waktuSelesai,
+            data.tanggal
         );
     }
+
 
     function parseWaktuWIT(nilai) {
         if (!nilai) return NaN;
 
-        return Date.parse(`${nilai}:00+09:00`);
+        return Date.parse(
+            `${nilai}:00+09:00`
+        );
     }
 
+
     // ==========================================
-    // 4. MEMBUAT CARD ALTERNATIF
+    // 7. FORMAT JADWAL ASAL
+    // ==========================================
+
+    function formatJadwalAsal(nilai) {
+        if (!nilai) {
+            return {
+                tanggal: "-",
+                jam: "-"
+            };
+        }
+
+        let sumber = nilai;
+
+        if (typeof nilai === "object" && !(nilai instanceof Date)) {
+            if (nilai.mulaiLokal) {
+                sumber = nilai.mulaiLokal;
+            } else if (nilai.waktuMulai && nilai.tanggal) {
+                sumber = `${nilai.tanggal}T${nilai.waktuMulai}`;
+            }
+        }
+
+        let tanggal;
+
+        if (
+            typeof sumber === "string" &&
+            /^\d{4}-\d{2}-\d{2}T/.test(sumber) &&
+            !/Z$|[+-]\d{2}:\d{2}$/.test(sumber)
+        ) {
+            tanggal = new Date(
+                `${sumber.slice(0, 16)}:00+09:00`
+            );
+        } else {
+            tanggal = new Date(sumber);
+        }
+
+        if (Number.isNaN(tanggal.getTime())) {
+            return {
+                tanggal: "-",
+                jam: "-"
+            };
+        }
+
+        return {
+            tanggal: new Intl.DateTimeFormat(
+                "id-ID",
+                {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                    timeZone: ZONA_WAKTU
+                }
+            ).format(tanggal),
+
+            jam: new Intl.DateTimeFormat(
+                "id-ID",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hourCycle: "h23",
+                    timeZone: ZONA_WAKTU
+                }
+            ).format(tanggal) + " WIT"
+        };
+    }
+
+
+    // ==========================================
+    // 8. MENGISI RINCIAN PENGGUNA
+    // ==========================================
+
+    function isiDetail(nama, nilai) {
+        const target = document.querySelector(
+            `[data-detail="${nama}"]`
+        );
+
+        if (!target) return;
+
+        target.textContent =
+            nilai === null ||
+            nilai === undefined ||
+            nilai === ""
+                ? "-"
+                : String(nilai);
+    }
+
+
+    function tampilkanDetailKasus(kasus) {
+        const jadwal = formatJadwalAsal(
+            kasus.jadwalAsal
+        );
+
+        const jumlahPC = Number(kasus.kebutuhanPC);
+        const jumlahKursi = Number(kasus.kebutuhanKursi);
+
+        const kebutuhan =
+            `PC: ${Number.isFinite(jumlahPC) ? jumlahPC : 0} unit` +
+            ` | Kursi: ${Number.isFinite(jumlahKursi) ? jumlahKursi : 0} unit`;
+
+        const namaPenggeser =
+            kasus.namaPenggeser ||
+            kasus.penggeser?.namaPemohon ||
+            kasus.pengajuanPenggeser?.namaPemohon ||
+            "-";
+
+        isiDetail(
+            "namaPemohon",
+            kasus.namaPemohon
+        );
+
+        isiDetail(
+            "nipNpm",
+            kasus.nipNpm
+        );
+
+        isiDetail(
+            "kategoriPrioritas",
+            kasus.prioritas || kasus.kategoriPrioritas
+        );
+
+        isiDetail(
+            "namaKegiatan",
+            kasus.namaKegiatan
+        );
+
+        isiDetail(
+            "kebutuhan",
+            kebutuhan
+        );
+
+        isiDetail(
+            "jadwalAsalTanggal",
+            jadwal.tanggal
+        );
+
+        isiDetail(
+            "jadwalAsalJam",
+            jadwal.jam
+        );
+
+        isiDetail(
+            "namaPenggeser",
+            namaPenggeser
+        );
+
+        isiDetail(
+            "alasan",
+            kasus.alasan || kasus.alasanTergeser
+        );
+    }
+
+
+    // ==========================================
+    // 9. MEMBUAT CARD ALTERNATIF
     // ==========================================
 
     function buatCardAlternatif(nomor, data = {}) {
@@ -245,7 +499,7 @@
 
         aksi.append(label);
 
-        // Tombol hapus hanya untuk alternatif kedua.
+        // Tombol hapus untuk alternatif kedua.
         if (nomor > MINIMAL_ALTERNATIF) {
             const tombolHapus = buatElemen(
                 "button",
@@ -261,12 +515,11 @@
                 `Hapus alternatif jadwal ${nomor}`
             );
 
-            const ikon = buatElemen(
-                "i",
-                "bi bi-trash"
-            );
+            tombolHapus.title = "Hapus alternatif";
 
-            tombolHapus.append(ikon);
+            tombolHapus.append(
+                buatElemen("i", "bi bi-trash3")
+            );
 
             aksi.append(tombolHapus);
         }
@@ -285,19 +538,23 @@
             "form-group"
         );
 
+        const idMulai = `waktuMulai-${nomor}`;
+
         const labelMulai = buatElemen(
             "label",
             "",
             "Waktu Mulai"
         );
 
+        labelMulai.htmlFor = idMulai;
+
         const inputMulai = buatElemen("input");
 
+        inputMulai.id = idMulai;
         inputMulai.type = "datetime-local";
-
         inputMulai.required = true;
-
-        inputMulai.name = `alternatifJadwal[${nomor - 1}][waktuMulai]`;
+        inputMulai.name =
+            `alternatifJadwal[${nomor - 1}][waktuMulai]`;
 
         inputMulai.dataset.field = "waktu-mulai";
 
@@ -322,19 +579,23 @@
             "form-group"
         );
 
+        const idSelesai = `waktuSelesai-${nomor}`;
+
         const labelSelesai = buatElemen(
             "label",
             "",
             "Waktu Selesai"
         );
 
+        labelSelesai.htmlFor = idSelesai;
+
         const inputSelesai = buatElemen("input");
 
+        inputSelesai.id = idSelesai;
         inputSelesai.type = "datetime-local";
-
         inputSelesai.required = true;
-
-        inputSelesai.name = `alternatifJadwal[${nomor - 1}][waktuSelesai]`;
+        inputSelesai.name =
+            `alternatifJadwal[${nomor - 1}][waktuSelesai]`;
 
         inputSelesai.dataset.field = "waktu-selesai";
 
@@ -366,8 +627,9 @@
         return card;
     }
 
+
     // ==========================================
-    // 5. MENGAMBIL DATA ALTERNATIF
+    // 10. MENGAMBIL DATA ALTERNATIF
     // ==========================================
 
     function ambilDataAlternatif() {
@@ -386,8 +648,9 @@
         }));
     }
 
+
     // ==========================================
-    // 6. MEMPERBARUI TOMBOL ALTERNATIF
+    // 11. MENGATUR JUMLAH ALTERNATIF
     // ==========================================
 
     function perbaruiKontrolAlternatif() {
@@ -395,98 +658,43 @@
             ".alternatif-card"
         ).length;
 
-        if (el.tombolTambah) {
-            el.tombolTambah.disabled =
-                jumlah >= BATAS_ALTERNATIF;
+        el.tombolTambah.disabled =
+            jumlah >= BATAS_ALTERNATIF || modeLihat;
 
-            el.tombolTambah.title =
-                jumlah >= BATAS_ALTERNATIF
-                    ? "Maksimal dua alternatif jadwal."
-                    : "Tambah alternatif jadwal";
-        }
+        el.tombolTambah.title =
+            jumlah >= BATAS_ALTERNATIF
+                ? "Maksimal dua alternatif jadwal."
+                : "Tambah alternatif jadwal";
 
         const badge = document.querySelector(
             ".slot-badge"
         );
 
         if (badge) {
-            badge.textContent =
-                ` ${jumlah} dari ${BATAS_ALTERNATIF} slot`;
-        }
-    }
+            const ikon = badge.querySelector("i");
 
-    // ==========================================
-    // 7. MENAMBAHKAN ALTERNATIF
-    // ==========================================
+            badge.replaceChildren();
 
-    function tambahAlternatif(data = {}) {
-        const jumlah = el.daftarAlternatif.querySelectorAll(
-            ".alternatif-card"
-        ).length;
+            if (ikon) {
+                badge.append(ikon);
+            }
 
-        if (jumlah >= BATAS_ALTERNATIF) {
-            tampilkanFeedback(
-                "Maksimal dua alternatif jadwal yang dapat diberikan."
+            badge.append(
+                document.createTextNode(
+                    ` ${jumlah} dari ${BATAS_ALTERNATIF} slot`
+                )
             );
-
-            return;
         }
-
-        const nomor = jumlah + 1;
-
-        const card = buatCardAlternatif(
-            nomor,
-            data
-        );
-
-        el.daftarAlternatif.append(card);
-
-        perbaruiKontrolAlternatif();
-
-        hapusFeedback();
     }
 
-    // ==========================================
-    // 8. MENGHAPUS ALTERNATIF
-    // ==========================================
-
-    function hapusAlternatif(nomor) {
-        if (nomor <= MINIMAL_ALTERNATIF) {
-            return;
-        }
-
-        const cards = Array.from(
-            el.daftarAlternatif.querySelectorAll(
-                ".alternatif-card"
-            )
-        );
-
-        const card = cards.find(
-            item =>
-                Number(item.dataset.alternatif) === nomor
-        );
-
-        if (!card) return;
-
-        card.remove();
-
-        // Susun ulang nomor alternatif.
-        const dataLama = ambilDataAlternatif();
-
-        tampilkanAlternatif(dataLama);
-
-        hapusFeedback();
-    }
 
     // ==========================================
-    // 9. MENAMPILKAN ALTERNATIF
+    // 12. MENAMPILKAN ALTERNATIF
     // ==========================================
 
     function tampilkanAlternatif(data = [{}]) {
-        const daftar = data.slice(
-            0,
-            BATAS_ALTERNATIF
-        );
+        const daftar = data
+            .slice(0, BATAS_ALTERNATIF);
 
         if (daftar.length === 0) {
             daftar.push({});
@@ -503,14 +711,63 @@
         perbaruiKontrolAlternatif();
     }
 
+
     // ==========================================
-    // 10. VALIDASI INPUT ALTERNATIF
+    // 13. MENAMBAHKAN ALTERNATIF
+    // ==========================================
+
+    function tambahAlternatif() {
+        if (modeLihat) return;
+
+        const jumlah = el.daftarAlternatif.querySelectorAll(
+            ".alternatif-card"
+        ).length;
+
+        if (jumlah >= BATAS_ALTERNATIF) {
+            tampilkanFeedback(
+                "Maksimal dua alternatif jadwal yang dapat diberikan."
+            );
+
+            return;
+        }
+
+        tampilkanAlternatif(
+            ambilDataAlternatif().concat([{}])
+        );
+
+        hapusFeedback();
+    }
+
+
+    // ==========================================
+    // 14. MENGHAPUS ALTERNATIF
+    // ==========================================
+
+    function hapusAlternatif(nomor) {
+        if (modeLihat || nomor <= MINIMAL_ALTERNATIF) {
+            return;
+        }
+
+        const data = ambilDataAlternatif();
+
+        data.splice(nomor - 1, 1);
+
+        tampilkanAlternatif(data);
+
+        hapusFeedback();
+    }
+
+
+    // ==========================================
+    // 15. VALIDASI INPUT
     // ==========================================
 
     function tampilkanErrorInput(input, pesan) {
         const grup = input.closest(".form-group");
 
-        const error = grup?.querySelector(".field-error");
+        const error = grup?.querySelector(
+            ".field-error"
+        );
 
         input.setAttribute(
             "aria-invalid",
@@ -519,24 +776,32 @@
 
         if (error) {
             error.textContent = pesan;
-
             error.classList.add("aktif");
         }
     }
 
+
     function hapusErrorInput(input) {
+        if (!input) return;
+
         const grup = input.closest(".form-group");
 
-        const error = grup?.querySelector(".field-error");
+        const error = grup?.querySelector(
+            ".field-error"
+        );
 
         input.removeAttribute("aria-invalid");
 
         if (error) {
             error.textContent = "";
-
             error.classList.remove("aktif");
         }
     }
+
+
+    // ==========================================
+    // 16. VALIDASI ALTERNATIF
+    // ==========================================
 
     function validasiAlternatif() {
         const cards = Array.from(
@@ -556,9 +821,7 @@
 
         const hasil = [];
 
-        for (let index = 0; index < cards.length; index++) {
-            const card = cards[index];
-
+        for (const card of cards) {
             const mulai = card.querySelector(
                 '[data-field="waktu-mulai"]'
             );
@@ -568,7 +831,6 @@
             );
 
             hapusErrorInput(mulai);
-
             hapusErrorInput(selesai);
 
             if (!mulai.value) {
@@ -626,6 +888,7 @@
                 return null;
             }
 
+            // Jadwal tidak boleh melewati pergantian tanggal.
             if (
                 mulai.value.slice(0, 10) !==
                 selesai.value.slice(0, 10)
@@ -662,7 +925,6 @@
         // Memeriksa bentrokan antaralternatif.
         if (hasil.length === 2) {
             const pertama = hasil[0];
-
             const kedua = hasil[1];
 
             const bentrok =
@@ -684,8 +946,9 @@
         }));
     }
 
+
     // ==========================================
-    // 11. MEMBUAT DATA FORMULIR
+    // 17. MEMBENTUK DATA REKOMENDASI
     // ==========================================
 
     function bentukDataRekomendasi() {
@@ -694,7 +957,8 @@
         if (!alternatif) return null;
 
         return {
-            pengajuanId: kasusAktif.pengajuanId,
+            pengajuanId:
+                kasusAktif.pengajuanId || kasusAktif.id,
 
             alternatifJadwal: alternatif,
 
@@ -702,8 +966,9 @@
         };
     }
 
+
     // ==========================================
-    // 12. MEMUAT DATA KASUS TERGESER
+    // 18. MEMUAT DATA KASUS TERGESER
     // ==========================================
 
     function muatKasus(id) {
@@ -725,47 +990,29 @@
 
         el.form.dataset.kasusId = id;
 
-        if (el.idKasus) {
-            el.idKasus.value = kasus.pengajuanId;
-        }
-
-        // Menampilkan detail kasus jika elemen tersedia.
-        const namaPemohon = document.querySelector(
-            '[data-field="nama-pemohon"]'
-        );
-
-        const namaKegiatan = document.querySelector(
-            '[data-field="nama-kegiatan"]'
-        );
-
-        const alasan = document.querySelector(
-            '[data-field="alasan-tergeser"]'
-        );
-
-        if (namaPemohon) {
-            namaPemohon.textContent =
-                kasus.namaPemohon || "-";
-        }
-
-        if (namaKegiatan) {
-            namaKegiatan.textContent =
-                kasus.namaKegiatan || "-";
-        }
-
-        if (alasan) {
-            alasan.textContent =
-                kasus.alasan || "-";
-        }
+        tampilkanDetailKasus(kasus);
 
         return kasus;
     }
 
+
     // ==========================================
-    // 13. MEMUAT DATA EDIT REKOMENDASI
+    // 19. MENGAMBIL REKOMENDASI TERBARU
+    // ==========================================
+
+    function ambilRekomendasiTerbaru(kasus) {
+        return kasus.rekomendasiTerbaru || null;
+    }
+
+
+    // ==========================================
+    // 20. MODE EDIT REKOMENDASI
     // ==========================================
 
     function muatEditRekomendasi(kasus) {
-        const rekomendasi = kasus.rekomendasiTerbaru;
+        const rekomendasi = ambilRekomendasiTerbaru(
+            kasus
+        );
 
         if (!rekomendasi) {
             throw new Error(
@@ -773,11 +1020,11 @@
             );
         }
 
-        if (
-            !STATUS_AKTIF.has(
-                String(rekomendasi.status || "").toLowerCase()
-            )
-        ) {
+        const status = normalisasi(
+            rekomendasi.status
+        );
+
+        if (!STATUS_AKTIF.has(status)) {
             throw new Error(
                 "Rekomendasi ini sudah tidak dapat diedit."
             );
@@ -792,13 +1039,11 @@
             !Array.isArray(alternatif) ||
             alternatif.length === 0
         ) {
-            alternatif = [
-                {
-                    tanggal: rekomendasi.tanggal,
-                    waktuMulai: rekomendasi.waktuMulai,
-                    waktuSelesai: rekomendasi.waktuSelesai
-                }
-            ];
+            alternatif = [{
+                tanggal: rekomendasi.tanggal,
+                waktuMulai: rekomendasi.waktuMulai,
+                waktuSelesai: rekomendasi.waktuSelesai
+            }];
         }
 
         tampilkanAlternatif(alternatif);
@@ -808,32 +1053,99 @@
                 rekomendasi.catatan || "";
         }
 
-        const tombolSubmit = ambilTombolSubmit();
+        perbaruiStatus("Mengubah Rekomendasi");
 
-        if (tombolSubmit) {
-            tombolSubmit.textContent =
-                "Simpan Perubahan Rekomendasi";
-        }
-    }
-
-    // ==========================================
-    // 14. MENGAMBIL TOMBOL SUBMIT
-    // ==========================================
-
-    function ambilTombolSubmit() {
-        return el.form.querySelector(
-            '[type="submit"]'
+        ubahLabelSubmit(
+            "Simpan Perubahan Rekomendasi"
         );
     }
 
+
     // ==========================================
-    // 15. MEMPROSES PENGIRIMAN REKOMENDASI
+    // 21. MODE LIHAT REKOMENDASI
+    // ==========================================
+
+    function aturModeBacaSaja() {
+        modeLihat = true;
+
+        el.form.dataset.mode = "lihat";
+
+        el.daftarAlternatif.querySelectorAll(
+            "input"
+        ).forEach(input => {
+            input.disabled = true;
+        });
+
+        el.daftarAlternatif.querySelectorAll(
+            ".btn-hapus-alternatif"
+        ).forEach(tombol => {
+            tombol.hidden = true;
+        });
+
+        el.tombolTambah.disabled = true;
+
+        if (el.catatan) {
+            el.catatan.disabled = true;
+        }
+
+        const tombolSubmit = ambilTombolSubmit();
+
+        if (tombolSubmit) {
+            tombolSubmit.disabled = true;
+        }
+
+        ubahLabelSubmit("Rekomendasi Telah Dikirim");
+
+        perbaruiKontrolAlternatif();
+    }
+
+
+    function muatLihatRekomendasi(kasus) {
+        const rekomendasi = ambilRekomendasiTerbaru(
+            kasus
+        );
+
+        if (!rekomendasi) {
+            throw new Error(
+                "Data rekomendasi yang akan dilihat tidak ditemukan."
+            );
+        }
+
+        let alternatif = rekomendasi.alternatifJadwal;
+
+        // Kompatibilitas dengan data lama.
+        if (
+            !Array.isArray(alternatif) ||
+            alternatif.length === 0
+        ) {
+            alternatif = [{
+                tanggal: rekomendasi.tanggal,
+                waktuMulai: rekomendasi.waktuMulai,
+                waktuSelesai: rekomendasi.waktuSelesai
+            }];
+        }
+
+        tampilkanAlternatif(alternatif);
+
+        if (el.catatan) {
+            el.catatan.value =
+                rekomendasi.catatan || "";
+        }
+
+        perbaruiStatus("Rekomendasi Telah Dikirim");
+
+        aturModeBacaSaja();
+    }
+
+
+    // ==========================================
+    // 22. MENGIRIM REKOMENDASI
     // ==========================================
 
     function kirimFormulir(event) {
         event.preventDefault();
 
-        if (sedangMengirim) return;
+        if (sedangMengirim || modeLihat) return;
 
         hapusFeedback();
 
@@ -854,15 +1166,15 @@
 
             const tombol = ambilTombolSubmit();
 
-            el.tombolKirim = tombol;
-
             if (tombol) {
                 tombol.disabled = true;
-
-                tombol.textContent = modeEdit
-                    ? "Menyimpan perubahan..."
-                    : "Mengirim rekomendasi...";
             }
+
+            ubahLabelSubmit(
+                modeEdit
+                    ? "Menyimpan perubahan..."
+                    : "Mengirim rekomendasi..."
+            );
 
             const hasil = modeEdit
                 ? layanan.editRekomendasi(
@@ -895,17 +1207,20 @@
                     {
                         detail: {
                             kasusId: kasusAktif.id,
-                            rekomendasi: hasil.rekomendasiTerbaru
+                            rekomendasi:
+                                hasil.rekomendasiTerbaru
                         }
                     }
                 )
             );
 
-            if (tombol) {
-                tombol.textContent = "Berhasil Diproses";
-            }
-
             el.form.dataset.selesai = "true";
+
+            perbaruiStatus("Rekomendasi Berhasil Diproses");
+
+            ubahLabelSubmit("Berhasil Diproses");
+
+            aturModeBacaSaja();
 
         } catch (error) {
             console.error(
@@ -913,39 +1228,44 @@
                 error
             );
 
-            tampilkanFeedback(error.message);
+            tampilkanFeedback(
+                error.message || "Terjadi kesalahan saat memproses rekomendasi."
+            );
 
         } finally {
             sedangMengirim = false;
 
-            const tombol = ambilTombolSubmit();
-
             if (
-                tombol &&
                 el.form.dataset.selesai !== "true"
             ) {
-                tombol.disabled = false;
+                const tombol = ambilTombolSubmit();
 
-                tombol.textContent = modeEdit
-                    ? "Simpan Perubahan Rekomendasi"
-                    : "Kirim Rekomendasi";
+                if (tombol) {
+                    tombol.disabled = false;
+                }
+
+                ubahLabelSubmit(
+                    modeEdit
+                        ? "Simpan Perubahan Rekomendasi"
+                        : "Kirim Rekomendasi"
+                );
             }
         }
     }
 
-    // ==========================================
-    // 16. EVENT TAMBAH ALTERNATIF
-    // ==========================================
-
-    if (el.tombolTambah) {
-        el.tombolTambah.addEventListener(
-            "click",
-            () => tambahAlternatif()
-        );
-    }
 
     // ==========================================
-    // 17. EVENT HAPUS ALTERNATIF
+    // 23. EVENT TAMBAH ALTERNATIF
+    // ==========================================
+
+    el.tombolTambah.addEventListener(
+        "click",
+        tambahAlternatif
+    );
+
+
+    // ==========================================
+    // 24. EVENT HAPUS ALTERNATIF
     // ==========================================
 
     el.daftarAlternatif.addEventListener(
@@ -965,29 +1285,48 @@
         }
     );
 
+
     // ==========================================
-    // 18. EVENT VALIDASI INPUT
+    // 25. EVENT VALIDASI INPUT
     // ==========================================
 
     el.daftarAlternatif.addEventListener(
         "input",
         event => {
             if (
-                event.target.matches(
+                !event.target.matches(
                     '[data-field="waktu-mulai"], [data-field="waktu-selesai"]'
                 )
             ) {
-                hapusErrorInput(event.target);
-
-                hapusFeedback();
-
-                el.form.dataset.selesai = "false";
+                return;
             }
+
+            hapusErrorInput(event.target);
+
+            hapusFeedback();
+
+            el.form.dataset.selesai = "false";
         }
     );
 
+
     // ==========================================
-    // 19. EVENT SUBMIT FORM
+    // 26. EVENT CATATAN
+    // ==========================================
+
+    if (el.catatan) {
+        el.catatan.addEventListener(
+            "input",
+            () => {
+                el.form.dataset.selesai = "false";
+                hapusFeedback();
+            }
+        );
+    }
+
+
+    // ==========================================
+    // 27. EVENT SUBMIT FORM
     // ==========================================
 
     el.form.addEventListener(
@@ -995,8 +1334,9 @@
         kirimFormulir
     );
 
+
     // ==========================================
-    // 20. MEMULAI HALAMAN
+    // 28. INISIALISASI HALAMAN
     // ==========================================
 
     function inisialisasi() {
@@ -1006,18 +1346,33 @@
 
             const idKasus = ambilIdKasus();
 
-            if (idKasus) {
-                const kasus = muatKasus(idKasus);
+            if (!idKasus) {
+                throw new Error(
+                    "ID kasus tidak ditemukan. Silakan kembali ke daftar rekomendasi."
+                );
+            }
 
-                const modeURL = ambilParameterURL("mode");
+            const kasus = muatKasus(idKasus);
 
-                const editAktif =
-                    modeURL === "edit" ||
-                    el.form.dataset.mode === "edit";
+            const modeURL = normalisasi(
+                ambilParameterURL("mode")
+            );
 
-                if (editAktif) {
-                    muatEditRekomendasi(kasus);
-                }
+            const editAktif =
+                modeURL === "edit" ||
+                el.form.dataset.mode === "edit";
+
+            const lihatAktif =
+                modeURL === "lihat";
+
+            if (lihatAktif) {
+                muatLihatRekomendasi(kasus);
+
+            } else if (editAktif) {
+                muatEditRekomendasi(kasus);
+
+            } else {
+                perbaruiStatus("Menunggu Rekomendasi");
             }
 
             console.log(
@@ -1030,9 +1385,18 @@
                 error
             );
 
-            tampilkanFeedback(error.message);
+            tampilkanFeedback(
+                error.message || "Halaman rekomendasi gagal dimuat."
+            );
+
+            const tombol = ambilTombolSubmit();
+
+            if (tombol) {
+                tombol.disabled = true;
+            }
         }
     }
+
 
     inisialisasi();
 

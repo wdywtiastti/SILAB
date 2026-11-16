@@ -718,68 +718,78 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
     }
 
+    
     // ==========================================
     // 11. PENGAMBILAN SELURUH DATA
     // ==========================================
 
     function getAll(namaKoleksi) {
+
+        // ======================================
+        // A. MENGAMBIL SELURUH BOOKING
+        // ======================================
+
         if (namaKoleksi === "bookings") {
-    const bookings = ambilSemuaBooking();
+            const bookings = ambilSemuaBooking();
 
-    return salinData(
-        bookings.map((booking) => {
+            return salinData(
+                bookings.map((booking) => {
 
-            // Booking yang sedang menunggu keputusan
-            // tetap dipertahankan sebagai penahan slot.
-            if (
-                !bookingMasihAktif(booking) ||
-                booking.status === "menunggu_keputusan"
-            ) {
-                return booking;
-            }
+                    // Booking yang tidak aktif atau sedang
+                    // menunggu keputusan tetap dipertahankan.
+                    if (
+                        !bookingMasihAktif(booking) ||
+                        booking.status === "menunggu_keputusan"
+                    ) {
+                        return booking;
+                    }
 
-            const pengajuanBentrok =
-                ambilPengajuanBentrokDenganBooking(
-                    booking
-                );
+                    const pengajuanBentrok =
+                        ambilPengajuanBentrokDenganBooking(
+                            booking
+                        );
 
-            if (!pengajuanBentrok.length) {
-                return booking;
-            }
+                    if (!pengajuanBentrok.length) {
+                        return booking;
+                    }
 
-            return {
-                ...booking,
+                    return {
+                        ...booking,
 
-                statusSebelumBentrok: booking.status,
+                        statusSebelumBentrok: booking.status,
 
-                statusPresensiAsli:
-                    booking.presensi?.status ||
-                    booking.status,
+                        statusPresensiAsli:
+                            booking.presensi?.status ||
+                            booking.status,
 
-                status: "bentrok",
+                        status: "bentrok",
 
-                konflikAktif: true,
+                        konflikAktif: true,
 
-                konflikDengan:
-                    pengajuanBentrok.map((item) => ({
-                        id: item.id,
+                        konflikDengan:
+                            pengajuanBentrok.map((item) => ({
+                                id: item.id,
 
-                        namaPemohon:
-                            item.namaPemohon ||
-                            item.nama ||
-                            "-",
+                                namaPemohon:
+                                    item.namaPemohon ||
+                                    item.nama ||
+                                    "-",
 
-                        namaKegiatan:
-                            item.namaKegiatan || "-",
+                                namaKegiatan:
+                                    item.namaKegiatan || "-",
 
-                        waktuMulai: item.waktuMulai,
+                                waktuMulai: item.waktuMulai,
 
-                        waktuSelesai: item.waktuSelesai
-                    }))
-            };
-        })
-    );
-}
+                                waktuSelesai: item.waktuSelesai
+                            }))
+                    };
+                })
+            );
+        }
+
+        // ======================================
+        // B. MENGAMBIL DATA PENGGUNA TERGESER
+        // ======================================
 
         if (
             [
@@ -916,158 +926,220 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             ).map(normalisasiPengajuan);
         }
 
+        // ======================================
+        // C. MENGAMBIL DATA KOLEKSI
+        // ======================================
+
         const data = ambilSemua(namaKoleksi);
 
         if (
-    namaKoleksi === "antrean" ||
-    namaKoleksi === "submissions"
-) {
-    const bookings = ambilSemuaBooking();
+            namaKoleksi === "antrean" ||
+            namaKoleksi === "submissions"
+        ) {
+            const bookings = ambilSemuaBooking();
 
-    return data.map((pengajuan) => {
-        const hasil = normalisasiPengajuan(pengajuan);
+            return data.map((pengajuan) => {
 
-        const status = String(
-            pengajuan.status || ""
-        ).toLowerCase();
+                const hasil = normalisasiPengajuan(pengajuan);
 
-        // ======================================
-        // A. BOOKING YANG SEBELUMNYA DISETUJUI
-        // ======================================
+                const status = String(
+                    pengajuan.status || ""
+                ).toLowerCase();
 
-        if (status === "disetujui") {
-            const booking = bookings.find(
-                (item) =>
-                    String(item.sourceSubmissionId) ===
-                        String(pengajuan.id) ||
-                    String(item.id) ===
-                        `BOOK-${pengajuan.id}`
-            );
+                // ==================================
+                // C1. BOOKING YANG SUDAH DISETUJUI
+                // ==================================
 
-            if (!booking || !bookingMasihAktif(booking)) {
-                return hasil;
-            }
+                if (status === "disetujui") {
+                    const booking = bookings.find(
+                        (item) =>
+                            String(item.sourceSubmissionId) ===
+                                String(pengajuan.id) ||
+                            String(item.id) ===
+                                `BOOK-${pengajuan.id}`
+                    );
 
-            const pengajuanBentrok =
-                ambilPengajuanBentrokDenganBooking(
-                    booking
+                    if (
+                        !booking ||
+                        !bookingMasihAktif(booking)
+                    ) {
+                        return hasil;
+                    }
+
+                    const pengajuanBentrok =
+                        ambilPengajuanBentrokDenganBooking(
+                            booking
+                        );
+
+                    if (!pengajuanBentrok.length) {
+                        return hasil;
+                    }
+
+                    return {
+                        ...hasil,
+
+                        statusSebelumBentrok: "disetujui",
+
+                        status: "bentrok",
+
+                        konflikAktif: true,
+
+                        konflikDengan:
+                            pengajuanBentrok.map((item) => ({
+                                id: item.id,
+
+                                namaPemohon:
+                                    item.namaPemohon ||
+                                    item.nama ||
+                                    "-",
+
+                                namaKegiatan:
+                                    item.namaKegiatan || "-",
+
+                                waktuMulai: item.waktuMulai,
+
+                                waktuSelesai: item.waktuSelesai
+                            }))
+                    };
+                }
+
+                // ==================================
+                // C2. PENGAJUAN YANG BELUM DISETUJUI
+                // ==================================
+
+                if (
+                    ![
+                        "verifikasi",
+                        "menunggu_verifikasi",
+                        "bentrok"
+                    ].includes(status)
+                ) {
+                    return hasil;
+                }
+
+                // Memeriksa bentrokan dengan booking aktif.
+                const bookingBentrok = bookings.filter(
+                    (booking) => {
+
+                        if (!bookingMasihAktif(booking)) {
+                            return false;
+                        }
+
+                        // Booking yang menunggu keputusan
+                        // tidak membentuk kelompok konflik baru.
+                        if (
+                            booking.status === "menunggu_keputusan"
+                        ) {
+                            return false;
+                        }
+
+                        // Abaikan booking milik pengajuan sendiri.
+                        if (
+                            String(booking.sourceSubmissionId) ===
+                            String(pengajuan.id)
+                        ) {
+                            return false;
+                        }
+
+                        return rentangBertabrakan(
+                            hasil,
+                            booking
+                        );
+                    }
                 );
 
-            if (!pengajuanBentrok.length) {
-                return hasil;
-            }
+                // Memeriksa bentrokan dengan pengajuan aktif lainnya.
+                const pengajuanLainBentrok =
+                    ambilPengajuanAktif().filter(
+                        (item) => {
 
-            // Booking lama kembali ditampilkan
-            // sebagai bentrok pada antrean Laboran.
-            return {
-                ...hasil,
+                            // Abaikan pengajuan sendiri.
+                            if (
+                                String(item.id) ===
+                                String(pengajuan.id)
+                            ) {
+                                return false;
+                            }
 
-                statusSebelumBentrok: "disetujui",
+                            return rentangBertabrakan(
+                                hasil,
+                                item
+                            );
+                        }
+                    );
 
-                status: "bentrok",
+                // Menggabungkan seluruh hasil pemeriksaan.
+                const daftarKonflik = [
 
-                konflikAktif: true,
+                    ...bookingBentrok.map((booking) => ({
+                        id:
+                            booking.sourceSubmissionId ||
+                            booking.id,
 
-                konflikDengan:
-                    pengajuanBentrok.map((item) => ({
-                        id: item.id,
+                        bookingId: booking.id,
 
                         namaPemohon:
-                            item.namaPemohon ||
-                            item.nama ||
-                            "-",
+                            booking.namaPemohon || "-",
 
                         namaKegiatan:
-                            item.namaKegiatan || "-",
+                            booking.namaKegiatan || "-",
 
-                        waktuMulai: item.waktuMulai,
+                        waktuMulai: booking.waktuMulai,
 
-                        waktuSelesai: item.waktuSelesai
-                    }))
-            };
+                        waktuSelesai: booking.waktuSelesai
+                    })),
+
+                    ...pengajuanLainBentrok.map((item) => {
+                        const dataLain =
+                            normalisasiPengajuan(item);
+
+                        return {
+                            id: item.id,
+
+                            namaPemohon:
+                                dataLain.namaPemohon || "-",
+
+                            namaKegiatan:
+                                dataLain.namaKegiatan || "-",
+
+                            waktuMulai:
+                                dataLain.waktuMulai,
+
+                            waktuSelesai:
+                                dataLain.waktuSelesai
+                        };
+                    })
+                ];
+
+                // Tidak ditemukan bentrokan.
+                if (!daftarKonflik.length) {
+                    return hasil;
+                }
+
+                // Tandai pengajuan sebagai bentrok.
+                return {
+                    ...hasil,
+
+                    statusSebelumBentrok:
+                        pengajuan.statusSebelumBentrok ||
+                        pengajuan.status,
+
+                    status: "bentrok",
+
+                    konflikAktif: true,
+
+                    konflikDengan: daftarKonflik
+                };
+            });
         }
 
         // ======================================
-        // B. PENGAJUAN YANG BELUM DISETUJUI
+        // D. MENGEMBALIKAN DATA KOLEKSI LAINNYA
         // ======================================
-
-        if (
-            ![
-                "verifikasi",
-                "menunggu_verifikasi",
-                "bentrok"
-            ].includes(status)
-        ) {
-            return hasil;
-        }
-
-        const bookingBentrok = bookings.filter(
-            (booking) => {
-                if (!bookingMasihAktif(booking)) {
-                    return false;
-                }
-
-                // Booking yang sedang menunggu keputusan
-                // tidak dimasukkan ke kelompok konflik baru.
-                if (
-                    booking.status === "menunggu_keputusan"
-                ) {
-                    return false;
-                }
-
-                if (
-                    String(booking.sourceSubmissionId) ===
-                    String(pengajuan.id)
-                ) {
-                    return false;
-                }
-
-                return rentangBertabrakan(
-                    hasil,
-                    booking
-                );
-            }
-        );
-
-        if (!bookingBentrok.length) {
-            return hasil;
-        }
-
-        return {
-            ...hasil,
-
-            statusSebelumBentrok:
-                pengajuan.statusSebelumBentrok ||
-                pengajuan.status,
-
-            status: "bentrok",
-
-            konflikAktif: true,
-
-            konflikDengan:
-                bookingBentrok.map((booking) => ({
-                    id:
-                        booking.sourceSubmissionId ||
-                        booking.id,
-
-                    bookingId: booking.id,
-
-                    namaPemohon:
-                        booking.namaPemohon || "-",
-
-                    namaKegiatan:
-                        booking.namaKegiatan || "-",
-
-                    waktuMulai: booking.waktuMulai,
-
-                    waktuSelesai: booking.waktuSelesai
-                }))
-        };
-    });
-}
 
         return data;
     }
+
 
     // ==========================================
     // 12. MENGAMBIL DATA BERDASARKAN ID
@@ -3020,47 +3092,73 @@ const konflikLain = cekKonflikJadwal(
         const waktuKeputusan =
             new Date().toISOString();
 
+        
         const displaced = [];
+        const dikembalikan = [];
 
-        const submissionsBaru = submissions.map(
-            (item) => {
-                const anggota = group.pengajuan.find(
-                    (pengajuan) =>
-                        String(pengajuan.id) ===
-                        String(item.id)
-                );
+        // Memproses status setiap anggota berdasarkan
+        // bentrokan terhadap pengajuan yang dipilih.
+        const submissionsBaru = submissions.map((item) => {
 
-                if (!anggota) return item;
+            const anggotaKelompok = group.pengajuan.some(
+                (anggota) =>
+                    String(anggota.id) === String(item.id)
+            );
 
-                if (String(item.id) === idTerpilih) {
-                    return {
-                        ...item,
+            if (!anggotaKelompok) return item;
 
-                        status: "disetujui",
+            // 1. Pengajuan yang dipilih Kepala Lab.
+            if (String(item.id) === idTerpilih) {
+                return {
+                    ...item,
+                    status: "disetujui",
+                    keputusanKonflik: idKonflik,
+                    diputuskanPada: waktuKeputusan,
+                    konflikAktif: false
+                };
+            }
 
-                        keputusanKonflik: idKonflik,
+            // 2. Periksa bentrokan langsung dengan pilihan.
+            const berbenturan = rentangBertabrakan(
+                item,
+                terpilih
+            );
 
-                        diputuskanPada: waktuKeputusan,
-
-                        konflikAktif: false
-                    };
-                }
-
+            // 3. Jika berbenturan, masukkan ke kasus tergeser.
+            if (berbenturan) {
                 displaced.push(item.id);
 
                 return {
                     ...item,
-
                     status: "tergeser",
-
                     keputusanKonflik: idKonflik,
-
                     diputuskanPada: waktuKeputusan,
-
                     konflikAktif: false
                 };
             }
-        );
+
+            // 4. Jika tidak berbenturan, pulihkan status sebelumnya.
+            dikembalikan.push(item.id);
+
+            const statusSebelumnya =
+                item.statusSebelumBentrok ||
+                item.statusSebelumKeputusan ||
+                "verifikasi";
+
+            const statusPulih =
+                String(statusSebelumnya).toLowerCase() === "bentrok"
+                    ? "verifikasi"
+                    : statusSebelumnya;
+
+            return {
+                ...item,
+                status: statusPulih,
+                keputusanKonflik: idKonflik,
+                diputuskanPada: waktuKeputusan,
+                konflikAktif: false
+            };
+        });
+
 
         // Cari nama pengajuan yang terpilih.
         const pengajuanTerpilih =
@@ -3078,24 +3176,23 @@ const konflikLain = cekKonflikJadwal(
         // Buat kasus rekomendasi untuk pengajuan tergeser.
         const konflikDiperbarui = [...konflik];
 
-        const anggotaDiperbarui =
-            group.pengajuan.map((item) => {
-                const hasil = submissionsBaru.find(
-                    (submission) =>
-                        String(submission.id) ===
-                        String(item.id)
-                );
+        
+        const anggotaDiperbarui = group.pengajuan.map((item) => {
 
-                return {
-                    ...item,
-                    ...(hasil || {}),
-                    status:
-                        String(item.id) === idTerpilih
-                            ? "disetujui"
-                            : "tergeser"
-                };
-            });
+            const hasil = submissionsBaru.find(
+                (submission) =>
+                    String(submission.id) === String(item.id)
+            );
 
+            return {
+                ...item,
+                ...(hasil || {}),
+                status: hasil?.status || item.status
+            };
+        });
+
+
+        // Memperbarui riwayat kelompok konflik.
         konflikDiperbarui[index] = {
             ...group,
 
@@ -3107,17 +3204,19 @@ const konflikLain = cekKonflikJadwal(
 
             hasilKeputusan: {
                 disetujui: idTerpilih,
-                tergeser: displaced
+                tergeser: displaced,
+                tidakTergeser: dikembalikan
             },
 
             pengajuan: anggotaDiperbarui
         };
 
+        // Membuat kasus rekomendasi untuk anggota tergeser.
         displaced.forEach((idPengajuan) => {
+
             const pengajuan = submissionsBaru.find(
                 (item) =>
-                    String(item.id) ===
-                    String(idPengajuan)
+                    String(item.id) === String(idPengajuan)
             );
 
             if (!pengajuan) return;
@@ -3131,8 +3230,7 @@ const konflikLain = cekKonflikJadwal(
 
             if (sudahAda) return;
 
-            const data =
-                normalisasiPengajuan(pengajuan);
+            const data = normalisasiPengajuan(pengajuan);
 
             konflikDiperbarui.push({
                 id: `CASE-${idPengajuan}`,
@@ -3180,6 +3278,8 @@ const konflikLain = cekKonflikJadwal(
                 dibuatPada: waktuKeputusan
             });
         });
+
+
 
         // Simpan seluruh hasil keputusan.
         simpanSemua("submissions", submissionsBaru);
