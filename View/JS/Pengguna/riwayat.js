@@ -1,7 +1,7 @@
 "use strict";
 
 /* =========================================
-   ELEMEN HTML
+  ELEMEN HTML
 ========================================= */
 
 const historyTableBody = document.getElementById("historyTableBody");
@@ -15,7 +15,7 @@ const currentPageElement = document.getElementById("currentPage");
 const paginationNumbers = document.getElementById("paginationNumbers");
 
 /* =========================================
-   IDENTITAS NAVBAR PENGGUNA
+  IDENTITAS NAVBAR PENGGUNA
 ========================================= */
 
 function tampilkanIdentitasNavbar() {

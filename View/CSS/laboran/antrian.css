@@ -1,7 +1,7 @@
 
 /* =====================================================
-   ANTRIAN LABORAN - SILAB
-   Tampilan antrean, detail pengajuan, dan notifikasi
+   ANTREAN LABORAN - SILAB
+   Tampilan antrean, filter, detail, dan notifikasi
 ===================================================== */
 
 :root {
@@ -51,7 +51,8 @@ body.modal-terbuka {
 }
 
 button,
-input {
+input,
+textarea {
     font: inherit;
 }
 
@@ -63,6 +64,7 @@ input {
 .antrian-container {
     width: min(1440px, calc(100% - 48px));
     margin: 22px auto 35px;
+
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -119,8 +121,11 @@ input {
     display: inline-flex;
     align-items: center;
     gap: 7px;
+
     padding: 6px 11px;
+
     border-radius: 20px;
+
     font-size: 10px;
     font-weight: 700;
 }
@@ -138,7 +143,9 @@ input {
 
 .antrian-header h2 {
     margin-bottom: 7px;
+
     color: var(--primary);
+
     font-size: 23px;
     font-weight: 800;
     line-height: 1.4;
@@ -146,14 +153,16 @@ input {
 
 .antrian-header > p {
     max-width: 850px;
+
     color: var(--muted);
+
     font-size: 11px;
     line-height: 1.7;
 }
 
 
 /* =====================================================
-   4. KEPALA TABEL ANTREAN
+   4. HEADER TABEL DAN FILTER ANTREAN
 ===================================================== */
 
 .antrian-table-card {
@@ -164,36 +173,130 @@ input {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
+    gap: 18px;
+
     margin-bottom: 17px;
 }
 
-.table-heading h3 {
+.table-heading-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.table-heading-info h3 {
     margin-bottom: 5px;
+
     color: var(--primary);
+
     font-size: 15px;
     font-weight: 800;
 }
 
-.table-heading h3 i {
+.table-heading-info h3 i {
     margin-right: 5px;
 }
 
-.table-heading p {
+.table-heading-info p {
     color: var(--muted);
+
     font-size: 10px;
     line-height: 1.6;
 }
+
+/* Area tombol filter dan total pengajuan */
+
+.table-heading-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    flex-shrink: 0;
+}
+
+/* Wadah kedua tombol filter */
+
+.antrian-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px;
+
+    background: #F4F5F8;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+/* Tombol filter */
+
+.filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 36px;
+    padding: 8px 12px;
+
+    color: var(--muted);
+    background: transparent;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.18s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Hover tombol yang belum aktif */
+
+.filter-btn:hover:not(.active) {
+    color: var(--primary);
+    background: #EAE7F5;
+}
+
+/* Filter yang sedang dipilih */
+
+.filter-btn.active {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
+
+    box-shadow: 0 2px 6px rgba(51, 38, 106, 0.15);
+}
+
+/* Efek tombol ditekan */
+
+.filter-btn:active {
+    transform: scale(0.96);
+}
+
+/* Jumlah pengajuan */
 
 .total-antrian {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
+
     padding: 8px 13px;
 
     color: var(--primary);
     background: #F0EDFA;
+
     border: 1px solid #E2DCF6;
     border-radius: 20px;
 
@@ -212,6 +315,7 @@ input {
     overflow-x: auto;
 
     background: var(--white);
+
     border: 1px solid var(--border);
     border-radius: 11px;
 }
@@ -299,7 +403,7 @@ input {
     border-bottom: none;
 }
 
-/* Micro animation baris tabel */
+/* Animasi baris tabel */
 
 .antrian-table tbody tr td {
     transition: background-color 0.2s ease;
@@ -377,15 +481,11 @@ input {
     white-space: nowrap;
 }
 
-/* Prioritas P1 */
-
 .p1 {
     color: var(--maroon);
     background: #FFF0F2;
     border: 1px solid #EBD1DA;
 }
-
-/* Prioritas P2 */
 
 .p2 {
     color: #946400;
@@ -393,33 +493,20 @@ input {
     border: 1px solid #FBE7A8;
 }
 
-/* Prioritas P3 */
-
 .p3 {
     color: #2862C7;
     background: #EEF5FF;
     border: 1px solid #D7E5FA;
 }
 
-/* Prioritas P4 dan P5 */
-
 .p4,
-.p5 {
-    color: #475569;
-    background: #F1F5F9;
-    border: 1px solid #E2E8F0;
-}
-
-/* Prioritas yang belum dikenali */
-
+.p5,
 .priority-other,
 .status-other {
     color: #475569;
     background: #F1F5F9;
     border: 1px solid #E2E8F0;
 }
-
-/* Informasi skor */
 
 .score-text {
     margin-top: 5px;
@@ -435,15 +522,11 @@ input {
    8. BADGE STATUS PENGAJUAN
 ===================================================== */
 
-/* Bentrok */
-
 .conflict {
     color: var(--maroon);
     background: #FFF0F2;
     border: 1px solid #EBD1DA;
 }
-
-/* Menunggu verifikasi */
 
 .verify {
     color: var(--primary);
@@ -451,23 +534,17 @@ input {
     border: 1px solid #E2DCF6;
 }
 
-/* Tergeser */
-
 .displaced {
     color: #946400;
     background: #FFF7E4;
     border: 1px solid #FBE7A8;
 }
 
-/* Disetujui */
-
 .approved {
     color: var(--success);
     background: #E8F7F0;
     border: 1px solid #C5EBDD;
 }
-
-/* Ditolak */
 
 .rejected {
     color: var(--danger);
@@ -511,7 +588,9 @@ input {
 
 .btn-process:hover {
     background: var(--maroon-dark);
+
     transform: translateY(-2px) scale(1.02);
+
     box-shadow: 0 5px 12px rgba(145, 30, 63, 0.2);
 }
 
@@ -581,6 +660,7 @@ input {
     color: var(--maroon);
     background: #F9EDF1;
     border-color: #EBD1DA;
+
     transform: translateY(-2px);
 }
 
@@ -598,6 +678,7 @@ input {
     color: #AAB2C0;
     background: #F8F9FB;
     border-color: var(--border);
+
     cursor: not-allowed;
     opacity: 0.65;
 }
@@ -653,10 +734,7 @@ input {
 
 /* =====================================================
    13. MODAL DETAIL PENGAJUAN
-   Menggunakan class .is-open dari antrean.js
 ===================================================== */
-
-/* Memastikan modal dan panel tersembunyi benar-benar tidak tampil */
 
 .review-modal[hidden],
 .review-modal [data-panel][hidden] {
@@ -685,15 +763,11 @@ input {
         visibility 0.25s ease;
 }
 
-/* Kondisi modal terbuka */
-
 .review-modal.is-open {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
 }
-
-/* Latar belakang modal */
 
 .modal-backdrop {
     position: absolute;
@@ -708,10 +782,9 @@ input {
 
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
+
     cursor: default;
 }
-
-/* Konten modal */
 
 .review-modal-content {
     position: relative;
@@ -783,8 +856,6 @@ input {
     font-weight: 800;
     line-height: 1.5;
 }
-
-/* Tombol tutup modal */
 
 .modal-close {
     display: flex;
@@ -930,8 +1001,6 @@ input {
     line-height: 1.7;
 }
 
-/* Tampilan khusus pengajuan tergeser */
-
 .displaced-box {
     background: #FFF9E9;
     border-color: #F5E2AC;
@@ -945,12 +1014,9 @@ input {
     color: #755B27;
 }
 
-/* Area tombol eskalasi dan rekomendasi */
-
 .collision-actions {
     display: flex;
     justify-content: flex-end;
-
     margin-top: 16px;
 }
 
@@ -988,8 +1054,6 @@ input {
         border-color 0.18s ease;
 }
 
-/* Eskalasi */
-
 .btn-eskalasi {
     color: var(--white);
     background: var(--maroon);
@@ -1001,8 +1065,6 @@ input {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 5px 12px rgba(145, 30, 63, 0.2);
 }
-
-/* Rekomendasi jadwal */
 
 .btn-recommend {
     color: var(--white);
@@ -1016,8 +1078,6 @@ input {
     box-shadow: 0 5px 12px rgba(51, 38, 106, 0.2);
 }
 
-/* Setujui */
-
 .btn-approve {
     color: var(--white);
     background: var(--primary);
@@ -1028,8 +1088,6 @@ input {
     background: var(--primary-dark);
     transform: translateY(-2px) scale(1.02);
 }
-
-/* Tolak */
 
 .btn-reject {
     color: var(--maroon);
@@ -1042,8 +1100,6 @@ input {
     transform: translateY(-2px) scale(1.02);
 }
 
-/* Efek ketika tombol ditekan */
-
 .btn-eskalasi:active,
 .btn-recommend:active,
 .btn-approve:active,
@@ -1052,9 +1108,24 @@ input {
     box-shadow: none;
 }
 
+/* Tombol verifikasi */
+
+.verification-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-top: 16px;
+}
+
+.verification-actions[hidden] {
+    display: none !important;
+}
+
 /* Fokus keyboard */
 
 .btn-process:focus-visible,
+.filter-btn:focus-visible,
 .pagination-btn:focus-visible,
 .btn-eskalasi:focus-visible,
 .btn-recommend:focus-visible,
@@ -1140,8 +1211,6 @@ input {
     line-height: 1.5;
 }
 
-/* Notifikasi gagal */
-
 .notifikasi-toast[data-jenis="error"] {
     border-left-color: var(--danger);
 }
@@ -1150,8 +1219,6 @@ input {
     color: var(--danger);
     background: #FFF0EF;
 }
-
-/* Animasi keluar */
 
 .notifikasi-toast.is-hilang {
     animation: notifikasiKeluar 0.22s ease forwards;
@@ -1178,7 +1245,142 @@ input {
 
 
 /* =====================================================
-   20. RESPONSIVE TABLET
+   20. FORM ALASAN PENOLAKAN
+===================================================== */
+
+.form-alasan-penolakan {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    margin-top: 15px;
+    padding: 15px;
+
+    background: #F7F9FC;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.form-alasan-penolakan label {
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.form-alasan-penolakan textarea {
+    width: 100%;
+    min-height: 85px;
+    padding: 11px;
+
+    resize: vertical;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    font: inherit;
+    font-size: 12px;
+
+    outline: none;
+}
+
+.form-alasan-penolakan textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.08);
+}
+
+.alasan-error {
+    color: var(--danger);
+    font-size: 10px;
+}
+
+.btn-konfirmasi-penolakan,
+.btn-batal-penolakan {
+    min-height: 40px;
+    padding: 9px 14px;
+
+    border-radius: 8px;
+
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.btn-konfirmasi-penolakan {
+    color: var(--white);
+    background: var(--maroon);
+    border: 1px solid var(--maroon);
+}
+
+.btn-batal-penolakan {
+    color: var(--text);
+    background: var(--white);
+    border: 1px solid var(--border);
+}
+
+.form-alasan-penolakan [hidden] {
+    display: none;
+}
+
+
+/* =====================================================
+   21. FEEDBACK AKSI
+===================================================== */
+
+.aksi-feedback {
+    margin: 12px 0;
+    padding: 11px 13px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.aksi-feedback.error {
+    color: var(--maroon);
+    background: #FFF0F2;
+    border: 1px solid #EBD1DA;
+}
+
+
+/* =====================================================
+   22. NOTIFIKASI ANTREAN
+===================================================== */
+
+.notifikasi-antrean {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 3000;
+
+    padding: 13px 18px;
+
+    color: var(--white);
+    background: var(--primary);
+
+    border-radius: 9px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    transition: 0.25s ease;
+}
+
+.notifikasi-antrean.aktif {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+/* =====================================================
+   23. RESPONSIVE TABLET
 ===================================================== */
 
 @media (max-width: 900px) {
@@ -1200,11 +1402,16 @@ input {
         align-items: flex-start;
     }
 
+    .table-heading-actions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
 }
 
 
 /* =====================================================
-   21. RESPONSIVE MOBILE
+   24. RESPONSIVE MOBILE
 ===================================================== */
 
 @media (max-width: 600px) {
@@ -1237,11 +1444,34 @@ input {
 
     .table-heading {
         flex-direction: column;
-        gap: 10px;
+        gap: 13px;
     }
 
-    .table-heading h3 {
+    .table-heading-info {
+        width: 100%;
+    }
+
+    .table-heading-info h3 {
         font-size: 14px;
+    }
+
+    .table-heading-actions {
+        width: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .antrian-filter {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .filter-btn {
+        width: 100%;
+        padding: 8px 5px;
+        font-size: 9px;
     }
 
     .total-antrian {
@@ -1288,6 +1518,7 @@ input {
     }
 
     .verification-actions {
+        display: grid;
         grid-template-columns: 1fr;
     }
 
@@ -1295,7 +1526,8 @@ input {
         justify-content: stretch;
     }
 
-    .collision-actions a {
+    .collision-actions a,
+    .collision-actions button {
         width: 100%;
     }
 
@@ -1308,7 +1540,7 @@ input {
 
 
 /* =====================================================
-   22. AKSESIBILITAS ANIMASI
+   25. AKSESIBILITAS ANIMASI
 ===================================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1324,139 +1556,107 @@ input {
 
 }
 
+/* ==========================================
+   FILTER KATEGORI ANTREAN
+========================================== */
 
-/* =========================================
-   11. FORM ALASAN PENOLAKAN
-========================================= */
-
-.form-alasan-penolakan {
+.antrian-filter {
     display: flex;
-    flex-direction: column;
-    gap: 9px;
-    margin-top: 15px;
-    padding: 15px;
-    background: #F7F9FC;
-    border: 1px solid var(--border);
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px 0;
+}
+
+.antrian-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    min-height: 44px;
+    padding: 10px 16px;
+
+    border: 1px solid #e2e5ee;
     border-radius: 10px;
-}
 
-.form-alasan-penolakan label {
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 700;
-}
+    background: #ffffff;
+    color: #64748b;
 
-.form-alasan-penolakan textarea {
-    width: 100%;
-    min-height: 85px;
-    padding: 11px;
-    resize: vertical;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font: inherit;
-    font-size: 12px;
-    outline: none;
-}
-
-.form-alasan-penolakan textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(51, 38, 106, 0.08);
-}
-
-.alasan-error {
-    color: var(--danger);
-    font-size: 10px;
-}
-
-.btn-konfirmasi-penolakan,
-.btn-batal-penolakan {
-    min-height: 40px;
-    padding: 9px 14px;
-    border-radius: 8px;
-    font: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.btn-konfirmasi-penolakan {
-    color: white;
-    background: var(--maroon);
-    border: 1px solid var(--maroon);
-}
-
-.btn-batal-penolakan {
-    color: var(--text);
-    background: white;
-    border: 1px solid var(--border);
-}
-
-/* =========================================
-   12. FEEDBACK AKSI
-========================================= */
-
-.aksi-feedback {
-    margin: 12px 0;
-    padding: 11px 13px;
-    border-radius: 8px;
-    font-size: 11px;
-    line-height: 1.6;
-}
-
-.aksi-feedback.error {
-    color: var(--maroon);
-    background: #FFF0F2;
-    border: 1px solid #EBD1DA;
-}
-
-/* =========================================
-   13. STATUS KEPUTUSAN
-========================================= */
-
-.status-badge.approved {
-    color: #0D8060;
-    background: #E7F6F0;
-    border: 1px solid #BCE6D5;
-}
-
-.status-badge.rejected {
-    color: var(--maroon);
-    background: #FFF0F2;
-    border: 1px solid #EBD1DA;
-}
-
-/* =========================================
-   14. NOTIFIKASI
-========================================= */
-
-.notifikasi-antrean {
-    position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 3000;
-
-    padding: 13px 18px;
-
-    color: white;
-    background: var(--primary);
-    border-radius: 9px;
-
-    font-size: 12px;
+    font-family: inherit;
+    font-size: 13px;
     font-weight: 600;
 
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
+    cursor: pointer;
 
-    transition: 0.25s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
-.notifikasi-antrean.aktif {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+.antrian-filter-btn:hover {
+    border-color: #38276d;
+    color: #38276d;
+    transform: translateY(-1px);
 }
 
-.form-alasan-penolakan [hidden] {
-    display: none;
+.antrian-filter-btn:active {
+    transform: scale(0.97);
+}
+
+.antrian-filter-btn.active {
+    background: #38276d;
+    border-color: #38276d;
+    color: #ffffff;
+}
+
+.antrian-filter-btn .filter-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.antrian-filter-btn > span:last-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 23px;
+    height: 23px;
+    padding: 0 6px;
+
+    border-radius: 20px;
+
+    background: #f0eef8;
+    color: #38276d;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.antrian-filter-btn.active > span:last-child {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.antrian-filter-btn:focus-visible {
+    outline: 3px solid rgba(56, 39, 109, 0.2);
+    outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVE FILTER
+========================================== */
+
+@media (max-width: 576px) {
+    .antrian-filter {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .antrian-filter-btn {
+        width: 100%;
+    }
 }
