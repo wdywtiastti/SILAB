@@ -1,25 +1,32 @@
 
 /**
+ * ==========================================================
  * LAYANAN DATA SILAB - MODUL LABORAN
+ * ==========================================================
  *
- * Mengelola:
- * 1. Shared Storage dan data simulasi.
- * 2. Pengajuan dan antrean.
- * 3. Booking dan validasi kapasitas.
- * 4. Deteksi bentrokan otomatis.
- * 5. Verifikasi, penolakan, dan pembatalan booking.
- * 6. Presensi laboratorium.
- * 7. Rekomendasi jadwal pengganti.
- * 8. Edit rekomendasi dengan batas 24 jam.
- * 9. Konflik dan keputusan Kepala Lab.
+ * Tanggung jawab:
+ * 1. Inisialisasi dan pengelolaan data.
+ * 2. Pengambilan data antrean dan booking.
+ * 3. Validasi kapasitas dan jadwal.
+ * 4. Deteksi bentrok booking dan pengajuan aktif.
+ * 5. Persetujuan, penolakan, dan pembatalan.
+ * 6. Pengelolaan presensi.
+ * 7. Pembuatan dan pengiriman rekomendasi.
+ * 8. Pengelolaan rekomendasi kedaluwarsa.
+ * 9. Pengiriman dan keputusan konflik Kepala Lab.
+ *
+ * Catatan:
+ * - Penyimpanan masih menggunakan LocalStorage.
+ * - Decision Tree belum dimasukkan ke modul ini.
+ * - Zona waktu operasional menggunakan WIT (UTC+9).
  */
 
 (function (window) {
     "use strict";
 
-    // ==========================================
+    // ======================================================
     // 1. DEPENDENSI DAN KONFIGURASI
-    // ==========================================
+    // ======================================================
 
     const storage = window.SILABStorage;
     const waktu = window.SILABWaktu;
@@ -37,11 +44,14 @@
     const KOLEKSI = Object.freeze({
         antrean: KEYS.SUBMISSIONS,
         submissions: KEYS.SUBMISSIONS,
+
         rekomendasi: KEYS.RECOMMENDATIONS,
         recommendations: KEYS.RECOMMENDATIONS,
+
         konflik: KEYS.CONFLICTS,
         conflicts: KEYS.CONFLICTS,
         penggunaTergeser: KEYS.CONFLICTS,
+
         presensi: KEYS.ATTENDANCE,
         attendance: KEYS.ATTENDANCE
     });
@@ -67,21 +77,23 @@
     ]);
 
     const STATUS_BOOKING_NONAKTIF = new Set([
-    "dibatalkan",
-    "ditolak",
-    "tidak_digunakan",
-    "tergeser"
-]);
+        "dibatalkan",
+        "ditolak",
+        "tidak_digunakan",
+        "tergeser",
+        "kedaluwarsa"
+    ]);
 
-const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
-    "terjadwal",
-    "menunggu_presensi"
-]);
+    const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
+        "terjadwal",
+        "menunggu_presensi"
+    ]);
+
     const BATAS_KONFIRMASI = 24 * 60 * 60 * 1000;
 
-    // ==========================================
+    // ======================================================
     // 2. FUNGSI DASAR STORAGE
-    // ==========================================
+    // ======================================================
 
     function ambilKey(namaKoleksi) {
         const key = KOLEKSI[namaKoleksi];
@@ -96,11 +108,17 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
     }
 
     function salinData(data) {
+        if (data === undefined) return undefined;
+        if (data === null) return null;
+
         return JSON.parse(JSON.stringify(data));
     }
 
     function ambilSemua(namaKoleksi) {
-        const data = storage.get(ambilKey(namaKoleksi), []);
+        const data = storage.get(
+            ambilKey(namaKoleksi),
+            []
+        );
 
         if (!Array.isArray(data)) {
             throw new Error(
@@ -127,6 +145,52 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         return true;
     }
 
+    /**
+     * Menyimpan beberapa koleksi secara berurutan.
+     * Jika salah satu penyimpanan gagal, data sebelumnya
+     * diusahakan dikembalikan.
+     *
+     * Catatan: ini merupakan rollback simulasi,
+     * bukan transaksi database yang sesungguhnya.
+     */
+    function simpanTransaksi(perubahan) {
+        const daftar = Object.entries(perubahan);
+        const cadangan = {};
+
+        daftar.forEach(([namaKoleksi]) => {
+            cadangan[namaKoleksi] =
+                ambilSemua(namaKoleksi);
+        });
+
+        const berhasil = [];
+
+        try {
+            daftar.forEach(([namaKoleksi, data]) => {
+                simpanSemua(namaKoleksi, data);
+                berhasil.push(namaKoleksi);
+            });
+
+            return true;
+
+        } catch (error) {
+            berhasil.reverse().forEach((namaKoleksi) => {
+                try {
+                    simpanSemua(
+                        namaKoleksi,
+                        cadangan[namaKoleksi]
+                    );
+                } catch (errorRollback) {
+                    console.error(
+                        "Rollback penyimpanan gagal:",
+                        errorRollback
+                    );
+                }
+            });
+
+            throw error;
+        }
+    }
+
     function beriTahuPerubahan(namaKoleksi, aksi) {
         window.dispatchEvent(
             new CustomEvent("silab:data-changed", {
@@ -139,9 +203,19 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
     }
 
-    // ==========================================
+    function beriTahuBanyakPerubahan(daftar) {
+        daftar.forEach(({ koleksi, aksi }) => {
+            beriTahuPerubahan(koleksi, aksi);
+        });
+    }
+
+    function buatTimestamp() {
+        return new Date().toISOString();
+    }
+
+    // ======================================================
     // 3. INISIALISASI DATA SIMULASI
-    // ==========================================
+    // ======================================================
 
     function gabungkanDataAwal(key, dataAwal) {
         if (!Array.isArray(dataAwal)) return;
@@ -162,6 +236,7 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             }
         });
 
+        // Data yang sudah tersimpan tidak ditimpa seed.
         dataTersimpan.forEach((item) => {
             if (item?.id) {
                 gabungan.set(String(item.id), item);
@@ -199,9 +274,9 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
     }
 
-    // ==========================================
+    // ======================================================
     // 4. NORMALISASI WAKTU
-    // ==========================================
+    // ======================================================
 
     function pecahWaktu(nilai, tanggalFallback = "") {
         if (typeof nilai !== "string" || !nilai) {
@@ -211,6 +286,7 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             };
         }
 
+        // Format jam saja.
         if (/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(nilai)) {
             return {
                 tanggal: tanggalFallback,
@@ -218,6 +294,7 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             };
         }
 
+        // Format tanggal dan jam lokal.
         const waktuLokal = nilai.match(
             /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/
         );
@@ -254,14 +331,38 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             String(angka).padStart(2, "0");
 
         return {
-            tanggal: `${bagian.year}-${duaDigit(bagian.month)}-${duaDigit(bagian.day)}`,
-            jam: `${duaDigit(bagian.hour)}:${duaDigit(bagian.minute)}`
+            tanggal:
+                `${bagian.year}-${duaDigit(bagian.month)}-${duaDigit(bagian.day)}`,
+
+            jam:
+                `${duaDigit(bagian.hour)}:${duaDigit(bagian.minute)}`
         };
     }
 
-    // ==========================================
+    function tanggalValid(tanggal) {
+        if (
+            typeof tanggal !== "string" ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(tanggal)
+        ) {
+            return false;
+        }
+
+        const nilai = new Date(
+            `${tanggal}T00:00:00Z`
+        );
+
+        if (Number.isNaN(nilai.getTime())) {
+            return false;
+        }
+
+        return (
+            nilai.toISOString().slice(0, 10) === tanggal
+        );
+    }
+
+    // ======================================================
     // 5. NORMALISASI DATA PENGAJUAN
-    // ==========================================
+    // ======================================================
 
     function normalisasiPengajuan(data) {
         if (!data) return null;
@@ -284,7 +385,9 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             tanggal,
 
             tanggalSelesai:
-                selesai.tanggal || tanggal,
+                data.tanggalSelesai ||
+                selesai.tanggal ||
+                tanggal,
 
             waktuMulai: mulai.jam,
 
@@ -327,16 +430,49 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
     }
 
     function validasiJadwal(data) {
+        if (!data) {
+            return {
+                valid: false,
+                pesan: "Data jadwal tidak tersedia."
+            };
+        }
+
         if (
-            !data.tanggal ||
-            !data.tanggalSelesai ||
-            data.tanggal !== data.tanggalSelesai
+            !tanggalValid(data.tanggal) ||
+            !tanggalValid(data.tanggalSelesai)
         ) {
+            return {
+                valid: false,
+                pesan: "Tanggal peminjaman tidak valid."
+            };
+        }
+
+        if (data.tanggal !== data.tanggalSelesai) {
             return {
                 valid: false,
                 pesan:
                     "Peminjaman tidak boleh melewati pergantian tanggal."
             };
+        }
+
+        if (
+            !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(
+                data.waktuMulai
+            ) ||
+            !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(
+                data.waktuSelesai
+            )
+        ) {
+            return {
+                valid: false,
+                pesan: "Format waktu peminjaman tidak valid."
+            };
+        }
+
+        if (typeof waktu.validasiRentang !== "function") {
+            throw new Error(
+                "Fungsi validasiRentang tidak ditemukan pada SILABWaktu."
+            );
         }
 
         const rentang = waktu.validasiRentang(
@@ -359,18 +495,19 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         };
     }
 
-    // ==========================================
+    // ======================================================
     // 6. PEMERIKSAAN RENTANG BENTROK
-    // ==========================================
+    // ======================================================
 
     function rentangBertabrakan(dataPertama, dataKedua) {
         const pertama = normalisasiPengajuan(dataPertama);
         const kedua = normalisasiPengajuan(dataKedua);
 
+        if (!pertama || !kedua) return false;
+
         if (
-            !pertama ||
-            !kedua ||
-            pertama.tanggal !== kedua.tanggal
+            pertama.tanggal !== kedua.tanggal ||
+            pertama.tanggalSelesai !== kedua.tanggalSelesai
         ) {
             return false;
         }
@@ -385,6 +522,8 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             return false;
         }
 
+        // Interval [mulai, selesai).
+        // Jadwal 08.00-10.00 dan 10.00-12.00 tidak bentrok.
         return (
             rentangPertama.mulai < rentangKedua.selesai &&
             rentangPertama.selesai > rentangKedua.mulai
@@ -401,9 +540,9 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         return !STATUS_BOOKING_NONAKTIF.has(status);
     }
 
-    // ==========================================
+    // ======================================================
     // 7. PEMBENTUKAN DATA BOOKING
-    // ==========================================
+    // ======================================================
 
     function bentukBooking(pengajuan) {
         const data = normalisasiPengajuan(pengajuan);
@@ -446,219 +585,398 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             createdAt:
                 pengajuan.diverifikasiPada ||
                 pengajuan.createdAt ||
-                new Date().toISOString()
+                buatTimestamp()
         };
     }
 
-    // ==========================================
+    // ======================================================
     // 8. MENGAMBIL SELURUH BOOKING
-    // ==========================================
+    // ======================================================
 
     function ambilSemuaBooking() {
-    const daftarBooking = new Map();
+        const daftarBooking = new Map();
 
-    const submissions = ambilSemua("submissions");
+        const submissions = ambilSemua("submissions");
 
-    const dataPengajuan = new Map(
-        submissions.map((item) => [
-            String(item.id),
-            item
-        ])
-    );
+        const dataPengajuan = new Map(
+            submissions.map((item) => [
+                String(item.id),
+                item
+            ])
+        );
 
-    // 1. Mengambil booking dari data simulasi.
-    if (Array.isArray(seed.bookings)) {
-        seed.bookings.forEach((booking) => {
-            if (!booking?.id) return;
+        // A. Booking dari data simulasi.
+        if (Array.isArray(seed.bookings)) {
+            seed.bookings.forEach((booking) => {
+                if (!booking?.id) return;
 
-            const idPengajuan =
-                booking.sourceSubmissionId ||
-                booking.pengajuanId ||
-                (
-                    String(booking.id).startsWith("BOOK-")
-                        ? String(booking.id).substring(5)
-                        : null
+                const idPengajuan =
+                    booking.sourceSubmissionId ||
+                    booking.pengajuanId ||
+                    (
+                        String(booking.id).startsWith("BOOK-")
+                            ? String(booking.id).substring(5)
+                            : null
+                    );
+
+                const pengajuanTerkait = idPengajuan
+                    ? dataPengajuan.get(String(idPengajuan))
+                    : null;
+
+                const statusPengajuan = String(
+                    pengajuanTerkait?.status || ""
+                ).toLowerCase();
+
+                // Jika pengajuan terkait sudah tidak memenuhi
+                // status booking, jangan pertahankan booking lama.
+                if (
+                    pengajuanTerkait &&
+                    ![
+                        "disetujui",
+                        "menunggu_keputusan"
+                    ].includes(statusPengajuan)
+                ) {
+                    return;
+                }
+
+                // Booking mandiri dari seed tetap dipertahankan.
+                daftarBooking.set(
+                    String(booking.id),
+                    salinData(booking)
                 );
+            });
+        }
 
-            const pengajuanTerkait = idPengajuan
-                ? dataPengajuan.get(String(idPengajuan))
-                : null;
-
-            const statusPengajuan = String(
-                pengajuanTerkait?.status || ""
+        // B. Booking dari pengajuan yang disetujui
+        // atau menunggu keputusan Kepala Lab.
+        submissions.forEach((pengajuan) => {
+            const status = String(
+                pengajuan.status || ""
             ).toLowerCase();
 
-            // Booking tetap dipertahankan jika sedang
-            // menunggu keputusan Kepala Lab.
             if (
-                pengajuanTerkait &&
                 ![
                     "disetujui",
                     "menunggu_keputusan"
-                ].includes(statusPengajuan)
+                ].includes(status)
             ) {
                 return;
             }
 
+            const bookingBaru = bentukBooking(pengajuan);
+
+            const bookingLama =
+                daftarBooking.get(String(bookingBaru.id)) || {};
+
+            const bookingGabungan = {
+                ...bookingLama,
+                ...bookingBaru,
+
+                status:
+                    status === "menunggu_keputusan"
+                        ? "menunggu_keputusan"
+                        : bookingLama.status || "terjadwal",
+
+                presensi: bookingLama.presensi ?? null
+            };
+
             daftarBooking.set(
-                String(booking.id),
-                salinData(booking)
+                String(bookingGabungan.id),
+                bookingGabungan
             );
         });
-    }
 
-    // 2. Membentuk booking dari pengajuan yang disetujui
-    //    dan booking sementara yang menunggu keputusan.
-    submissions.forEach((pengajuan) => {
-        const status = String(
-            pengajuan.status || ""
-        ).toLowerCase();
-
-        if (
-            ![
-                "disetujui",
-                "menunggu_keputusan"
-            ].includes(status)
-        ) {
-            return;
-        }
-
-        const bookingBaru = bentukBooking(pengajuan);
-
-        const bookingLama =
-            daftarBooking.get(String(bookingBaru.id)) || {};
-
-        const bookingGabungan = {
-            ...bookingLama,
-            ...bookingBaru,
-
-            status:
-                status === "menunggu_keputusan"
-                    ? "menunggu_keputusan"
-                    : bookingLama.status || "terjadwal",
-
-            presensi: bookingLama.presensi ?? null
-        };
-
-        daftarBooking.set(
-            String(bookingGabungan.id),
-            bookingGabungan
-        );
-    });
-
-    // 3. Mengambil catatan presensi.
-    const attendance = ambilSemua("attendance");
-
-    const presensiTerakhir = new Map();
-
-    attendance.forEach((catatan) => {
-        if (!catatan.bookingId) return;
-
-        presensiTerakhir.set(
-            String(catatan.bookingId),
-            catatan
-        );
-    });
-
-    // 4. Menggabungkan booking dengan data presensi.
-    return Array.from(daftarBooking.values()).map(
-        (booking) => {
-            const catatan = presensiTerakhir.get(
-                String(booking.id)
-            );
-
-            if (!catatan) return booking;
-
-            const menungguKeputusan =
-                booking.status === "menunggu_keputusan";
-
-            return {
-                ...booking,
-
-                status: menungguKeputusan
-                    ? "menunggu_keputusan"
-                    : catatan.status,
-
-                statusPresensiAsli: catatan.status,
-
-                presensi: {
-                    status: catatan.status,
-                    dicatatPada: catatan.dicatatPada
-                }
-            };
-        }
-    );
-}
-
-    // ==========================================
-    // 9. PEMERIKSAAN KELAYAKAN PEMBATALAN BOOKING
-    // ==========================================
-
-    function bolehBatalkanPersetujuan(pengajuanId) {
-        if (!pengajuanId) return false;
-
-        const id = String(pengajuanId).startsWith("BOOK-")
-            ? String(pengajuanId).substring(5)
-            : String(pengajuanId);
-
-        const submissions = ambilSemua("submissions");
-
-        const pengajuan = submissions.find(
-            (item) => String(item.id) === id
-        );
-
-        // Hanya pengajuan yang sudah disetujui.
-        if (
-            !pengajuan ||
-            pengajuan.status !== "disetujui"
-        ) {
-            return false;
-        }
-
-        const bookingId = `BOOK-${id}`;
-
-        // Booking yang sudah memiliki catatan presensi
-        // tidak boleh dibatalkan.
+        // C. Mengambil catatan presensi terbaru.
         const attendance = ambilSemua("attendance");
 
-        const sudahPresensi = attendance.some(
-            (item) =>
-                String(item.bookingId) === bookingId
-        );
+        const presensiTerakhir = new Map();
 
-        if (sudahPresensi) return false;
+        attendance.forEach((catatan) => {
+            if (!catatan.bookingId) return;
 
-        // Pastikan booking masih menunggu presensi.
-        const booking = ambilSemuaBooking().find(
-            (item) =>
-                String(item.id) === bookingId
-        );
+            const id = String(catatan.bookingId);
+            const lama = presensiTerakhir.get(id);
 
-        if (!booking || booking.presensi) {
-            return false;
-        }
+            const waktuBaru =
+                Date.parse(catatan.dicatatPada || "") || 0;
 
-        return STATUS_BOOKING_MENUNGGU_PRESENSI.has(
-            String(booking.status || "").toLowerCase()
+            const waktuLama =
+                Date.parse(lama?.dicatatPada || "") || 0;
+
+            if (!lama || waktuBaru >= waktuLama) {
+                presensiTerakhir.set(id, catatan);
+            }
+        });
+
+        // D. Menggabungkan booking dengan presensi.
+        return Array.from(daftarBooking.values()).map(
+            (booking) => {
+                const catatan = presensiTerakhir.get(
+                    String(booking.id)
+                );
+
+                if (!catatan) return booking;
+
+                if (
+                    booking.status === "menunggu_keputusan"
+                ) {
+                    return booking;
+                }
+
+                return {
+                    ...booking,
+
+                    status: catatan.status,
+
+                    statusPresensiAsli: catatan.status,
+
+                    presensi: {
+                        status: catatan.status,
+                        dicatatPada: catatan.dicatatPada
+                    }
+                };
+            }
         );
     }
 
-    // ==========================================
-    // 10. DETEKSI BENTROK PENGAJUAN DAN BOOKING
-    // ==========================================
+    // ======================================================
+    // 9. PENGAMBILAN PENGAJUAN AKTIF
+    // ======================================================
 
     function ambilPengajuanAktif() {
         return ambilSemua("submissions").filter(
             (item) =>
-                [
-                    "verifikasi",
-                    "menunggu_verifikasi",
-                    "bentrok"
-                ].includes(
+                STATUS_ANTREAN_AKTIF.has(
                     String(item.status || "").toLowerCase()
                 )
         );
     }
+
+    // ======================================================
+    // 10. VALIDASI KAPASITAS
+    // ======================================================
+
+    function ambilKapasitas() {
+        const kapasitasDefault = {
+            kapasitasPC: 30,
+            kapasitasKursi: 30
+        };
+
+        const fasilitas = storage.get(
+            KEYS.FACILITIES,
+            kapasitasDefault
+        );
+
+        if (
+            !fasilitas ||
+            !Number.isInteger(fasilitas.kapasitasPC) ||
+            !Number.isInteger(fasilitas.kapasitasKursi) ||
+            fasilitas.kapasitasPC <= 0 ||
+            fasilitas.kapasitasKursi <= 0
+        ) {
+            throw new Error(
+                "Konfigurasi kapasitas fasilitas tidak valid."
+            );
+        }
+
+        return fasilitas;
+    }
+
+    function validasiKapasitas(data) {
+        if (!data) {
+            return {
+                valid: false,
+                pesan: "Data kebutuhan fasilitas tidak tersedia."
+            };
+        }
+
+        const kapasitas = ambilKapasitas();
+
+        const kebutuhanPC = Number(data.kebutuhanPC);
+        const kebutuhanKursi = Number(data.kebutuhanKursi);
+
+        if (
+            !Number.isInteger(kebutuhanPC) ||
+            !Number.isInteger(kebutuhanKursi) ||
+            kebutuhanPC <= 0 ||
+            kebutuhanKursi <= 0
+        ) {
+            return {
+                valid: false,
+                pesan:
+                    "Kebutuhan PC dan kursi harus berupa bilangan bulat positif."
+            };
+        }
+
+        if (
+            kebutuhanPC > kapasitas.kapasitasPC ||
+            kebutuhanKursi > kapasitas.kapasitasKursi
+        ) {
+            return {
+                valid: false,
+                pesan:
+                    "Kebutuhan fasilitas melebihi kapasitas laboratorium."
+            };
+        }
+
+        return {
+            valid: true,
+            pesan:
+                "Kapasitas fasilitas memenuhi kebutuhan.",
+            kapasitas
+        };
+    }
+
+    // ======================================================
+    // 11. PEMERIKSAAN KONFLIK TERPUSAT
+    // ======================================================
+
+    /**
+     * Pemeriksaan dilakukan terhadap:
+     * 1. Booking aktif.
+     * 2. Pengajuan aktif yang belum menjadi booking.
+     *
+     * bookingId dapat berupa satu ID atau array ID
+     * yang dikecualikan dari pemeriksaan.
+     */
+    function cekKonflikJadwal(
+        dataBaru,
+        bookingId = null
+    ) {
+        const data = normalisasiPengajuan(dataBaru);
+
+        const rentangBaru = validasiJadwal(data);
+
+        if (!rentangBaru.valid) {
+            return {
+                bentrok: false,
+                valid: false,
+                pesan: rentangBaru.pesan,
+                booking: null,
+                daftarBooking: [],
+                daftarPengajuan: [],
+                daftarKonflik: []
+            };
+        }
+
+        const referensi = Array.isArray(bookingId)
+            ? bookingId
+            : [bookingId];
+
+        const daftarPengecualian = new Set();
+
+        referensi.forEach((referensiId) => {
+            if (
+                referensiId === null ||
+                referensiId === undefined ||
+                referensiId === ""
+            ) {
+                return;
+            }
+
+            const id = String(referensiId);
+
+            if (id.startsWith("BOOK-")) {
+                daftarPengecualian.add(id);
+                daftarPengecualian.add(id.substring(5));
+            } else {
+                daftarPengecualian.add(id);
+                daftarPengecualian.add(`BOOK-${id}`);
+            }
+        });
+
+        const daftarBooking = ambilSemuaBooking().filter(
+            (booking) => {
+                if (!bookingMasihAktif(booking)) {
+                    return false;
+                }
+
+                if (
+                    daftarPengecualian.has(
+                        String(booking.id)
+                    ) ||
+                    daftarPengecualian.has(
+                        String(booking.sourceSubmissionId)
+                    )
+                ) {
+                    return false;
+                }
+
+                return rentangBertabrakan(data, booking);
+            }
+        );
+
+        const daftarPengajuan = ambilPengajuanAktif().filter(
+            (pengajuan) => {
+                const id = String(pengajuan.id);
+
+                if (daftarPengecualian.has(id)) {
+                    return false;
+                }
+
+                // Pengajuan yang sudah menjadi booking
+                // tidak perlu dihitung dua kali.
+                const sudahMenjadiBooking =
+                    daftarBooking.some(
+                        (booking) =>
+                            String(booking.sourceSubmissionId) === id ||
+                            String(booking.id) === `BOOK-${id}`
+                    );
+
+                if (sudahMenjadiBooking) {
+                    return false;
+                }
+
+                return rentangBertabrakan(
+                    data,
+                    pengajuan
+                );
+            }
+        );
+
+        const daftarKonflik = [
+            ...daftarBooking.map((booking) => ({
+                jenis: "booking",
+                id: booking.sourceSubmissionId || booking.id,
+                bookingId: booking.id,
+                namaPemohon: booking.namaPemohon || "-",
+                namaKegiatan: booking.namaKegiatan || "-",
+                waktuMulai: booking.waktuMulai,
+                waktuSelesai: booking.waktuSelesai
+            })),
+
+            ...daftarPengajuan.map((pengajuan) => ({
+                jenis: "pengajuan",
+                id: pengajuan.id,
+                namaPemohon: pengajuan.namaPemohon || "-",
+                namaKegiatan: pengajuan.namaKegiatan || "-",
+                waktuMulai: pengajuan.waktuMulai,
+                waktuSelesai: pengajuan.waktuSelesai
+            }))
+        ];
+
+        return {
+            bentrok: daftarKonflik.length > 0,
+
+            valid: true,
+
+            pesan: daftarKonflik.length
+                ? "Jadwal bertabrakan dengan data lain yang masih aktif."
+                : "Tidak ditemukan bentrokan jadwal.",
+
+            booking: daftarBooking[0] || null,
+
+            daftarBooking: salinData(daftarBooking),
+
+            daftarPengajuan: salinData(daftarPengajuan),
+
+            daftarKonflik
+        };
+    }
+
+    // ======================================================
+    // 12. DETEKSI BENTROK PENGAJUAN
+    // ======================================================
 
     function deteksiBentrokJadwal(pengajuanId) {
         const pengajuan = ambilSemua("submissions").find(
@@ -667,36 +985,30 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
 
         if (!pengajuan) {
-            throw new Error(
-                "Pengajuan tidak ditemukan."
-            );
+            throw new Error("Pengajuan tidak ditemukan.");
         }
 
-        const dataPengajuan = normalisasiPengajuan(pengajuan);
+        const data = normalisasiPengajuan(pengajuan);
 
-        const bookings = ambilSemuaBooking();
-
-        const bentrok = bookings.filter((booking) => {
-            if (!bookingMasihAktif(booking)) return false;
-
-            if (
-                String(booking.sourceSubmissionId) ===
-                String(pengajuanId)
-            ) {
-                return false;
-            }
-
-            return rentangBertabrakan(
-                dataPengajuan,
-                booking
-            );
-        });
+        const hasil = cekKonflikJadwal(
+            data,
+            pengajuanId
+        );
 
         return {
-            bentrok: bentrok.length > 0,
-            jumlahBentrok: bentrok.length,
-            pengajuan: salinData(dataPengajuan),
-            daftarBooking: salinData(bentrok)
+            bentrok: hasil.bentrok,
+
+            valid: hasil.valid,
+
+            jumlahBentrok: hasil.daftarKonflik.length,
+
+            pengajuan: salinData(data),
+
+            daftarBooking: hasil.daftarBooking,
+
+            daftarPengajuan: hasil.daftarPengajuan,
+
+            daftarKonflik: hasil.daftarKonflik
         };
     }
 
@@ -718,27 +1030,23 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
     }
 
-    
-    // ==========================================
-    // 11. PENGAMBILAN SELURUH DATA
-    // ==========================================
+    // ======================================================
+    // 13. PENGAMBILAN SELURUH DATA
+    // ======================================================
 
     function getAll(namaKoleksi) {
 
-        // ======================================
-        // A. MENGAMBIL SELURUH BOOKING
-        // ======================================
-
+        // A. BOOKING
         if (namaKoleksi === "bookings") {
             const bookings = ambilSemuaBooking();
 
             return salinData(
                 bookings.map((booking) => {
+                    if (!bookingMasihAktif(booking)) {
+                        return booking;
+                    }
 
-                    // Booking yang tidak aktif atau sedang
-                    // menunggu keputusan tetap dipertahankan.
                     if (
-                        !bookingMasihAktif(booking) ||
                         booking.status === "menunggu_keputusan"
                     ) {
                         return booking;
@@ -756,7 +1064,8 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
                     return {
                         ...booking,
 
-                        statusSebelumBentrok: booking.status,
+                        statusSebelumBentrok:
+                            booking.status,
 
                         statusPresensiAsli:
                             booking.presensi?.status ||
@@ -771,9 +1080,7 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
                                 id: item.id,
 
                                 namaPemohon:
-                                    item.namaPemohon ||
-                                    item.nama ||
-                                    "-",
+                                    item.namaPemohon || "-",
 
                                 namaKegiatan:
                                     item.namaKegiatan || "-",
@@ -787,10 +1094,7 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             );
         }
 
-        // ======================================
-        // B. MENGAMBIL DATA PENGGUNA TERGESER
-        // ======================================
-
+        // B. PENGGUNA TERGESER / KASUS TERGESER
         if (
             [
                 "penggunaTergeser",
@@ -926,89 +1230,24 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             ).map(normalisasiPengajuan);
         }
 
-        // ======================================
-        // C. MENGAMBIL DATA KOLEKSI
-        // ======================================
-
+        // C. KOLEKSI BIASA
         const data = ambilSemua(namaKoleksi);
 
         if (
             namaKoleksi === "antrean" ||
             namaKoleksi === "submissions"
         ) {
-            const bookings = ambilSemuaBooking();
-
             return data.map((pengajuan) => {
-
-                const hasil = normalisasiPengajuan(pengajuan);
+                const hasil =
+                    normalisasiPengajuan(pengajuan);
 
                 const status = String(
                     pengajuan.status || ""
                 ).toLowerCase();
 
-                // ==================================
-                // C1. BOOKING YANG SUDAH DISETUJUI
-                // ==================================
-
-                if (status === "disetujui") {
-                    const booking = bookings.find(
-                        (item) =>
-                            String(item.sourceSubmissionId) ===
-                                String(pengajuan.id) ||
-                            String(item.id) ===
-                                `BOOK-${pengajuan.id}`
-                    );
-
-                    if (
-                        !booking ||
-                        !bookingMasihAktif(booking)
-                    ) {
-                        return hasil;
-                    }
-
-                    const pengajuanBentrok =
-                        ambilPengajuanBentrokDenganBooking(
-                            booking
-                        );
-
-                    if (!pengajuanBentrok.length) {
-                        return hasil;
-                    }
-
-                    return {
-                        ...hasil,
-
-                        statusSebelumBentrok: "disetujui",
-
-                        status: "bentrok",
-
-                        konflikAktif: true,
-
-                        konflikDengan:
-                            pengajuanBentrok.map((item) => ({
-                                id: item.id,
-
-                                namaPemohon:
-                                    item.namaPemohon ||
-                                    item.nama ||
-                                    "-",
-
-                                namaKegiatan:
-                                    item.namaKegiatan || "-",
-
-                                waktuMulai: item.waktuMulai,
-
-                                waktuSelesai: item.waktuSelesai
-                            }))
-                    };
-                }
-
-                // ==================================
-                // C2. PENGAJUAN YANG BELUM DISETUJUI
-                // ==================================
-
                 if (
                     ![
+                        "disetujui",
                         "verifikasi",
                         "menunggu_verifikasi",
                         "bentrok"
@@ -1017,133 +1256,64 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
                     return hasil;
                 }
 
-                // Memeriksa bentrokan dengan booking aktif.
-                const bookingBentrok = bookings.filter(
-                    (booking) => {
-
-                        if (!bookingMasihAktif(booking)) {
-                            return false;
-                        }
-
-                        // Booking yang menunggu keputusan
-                        // tidak membentuk kelompok konflik baru.
-                        if (
-                            booking.status === "menunggu_keputusan"
-                        ) {
-                            return false;
-                        }
-
-                        // Abaikan booking milik pengajuan sendiri.
-                        if (
-                            String(booking.sourceSubmissionId) ===
-                            String(pengajuan.id)
-                        ) {
-                            return false;
-                        }
-
-                        return rentangBertabrakan(
-                            hasil,
-                            booking
-                        );
-                    }
+                const konflik = cekKonflikJadwal(
+                    hasil,
+                    pengajuan.id
                 );
 
-                // Memeriksa bentrokan dengan pengajuan aktif lainnya.
-                const pengajuanLainBentrok =
-                    ambilPengajuanAktif().filter(
-                        (item) => {
+                if (konflik.bentrok) {
+                    return {
+                        ...hasil,
 
-                            // Abaikan pengajuan sendiri.
-                            if (
-                                String(item.id) ===
-                                String(pengajuan.id)
-                            ) {
-                                return false;
-                            }
+                        statusSebelumBentrok:
+                            pengajuan.statusSebelumBentrok ||
+                            pengajuan.status,
 
-                            return rentangBertabrakan(
-                                hasil,
-                                item
-                            );
-                        }
-                    );
+                        status: "bentrok",
 
-                // Menggabungkan seluruh hasil pemeriksaan.
-                const daftarKonflik = [
+                        konflikAktif: true,
 
-                    ...bookingBentrok.map((booking) => ({
-                        id:
-                            booking.sourceSubmissionId ||
-                            booking.id,
-
-                        bookingId: booking.id,
-
-                        namaPemohon:
-                            booking.namaPemohon || "-",
-
-                        namaKegiatan:
-                            booking.namaKegiatan || "-",
-
-                        waktuMulai: booking.waktuMulai,
-
-                        waktuSelesai: booking.waktuSelesai
-                    })),
-
-                    ...pengajuanLainBentrok.map((item) => {
-                        const dataLain =
-                            normalisasiPengajuan(item);
-
-                        return {
-                            id: item.id,
-
-                            namaPemohon:
-                                dataLain.namaPemohon || "-",
-
-                            namaKegiatan:
-                                dataLain.namaKegiatan || "-",
-
-                            waktuMulai:
-                                dataLain.waktuMulai,
-
-                            waktuSelesai:
-                                dataLain.waktuSelesai
-                        };
-                    })
-                ];
-
-                // Tidak ditemukan bentrokan.
-                if (!daftarKonflik.length) {
-                    return hasil;
+                        konflikDengan:
+                            konflik.daftarKonflik
+                    };
                 }
 
-                // Tandai pengajuan sebagai bentrok.
+                // Jika bentrok lama sudah tidak aktif,
+                // kembalikan pengajuan pending ke verifikasi.
+                if (status === "bentrok") {
+                    return {
+                        ...hasil,
+
+                        status: "verifikasi",
+
+                        konflikAktif: false,
+
+                        konflikDengan: []
+                    };
+                }
+
                 return {
                     ...hasil,
-
-                    statusSebelumBentrok:
-                        pengajuan.statusSebelumBentrok ||
-                        pengajuan.status,
-
-                    status: "bentrok",
-
-                    konflikAktif: true,
-
-                    konflikDengan: daftarKonflik
+                    konflikAktif: false
                 };
             });
         }
 
-        // ======================================
-        // D. MENGEMBALIKAN DATA KOLEKSI LAINNYA
-        // ======================================
+        // D. REKOMENDASI
+        if (
+            namaKoleksi === "rekomendasi" ||
+            namaKoleksi === "recommendations"
+        ) {
+            kedaluwarsakanRekomendasi();
+            return ambilSemua("recommendations");
+        }
 
         return data;
     }
 
-
-    // ==========================================
-    // 12. MENGAMBIL DATA BERDASARKAN ID
-    // ==========================================
+    // ======================================================
+    // 14. PENGAMBILAN DATA BERDASARKAN ID
+    // ======================================================
 
     function getById(namaKoleksi, id) {
         if (!id) return null;
@@ -1156,9 +1326,9 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         ) || null;
     }
 
-    // ==========================================
-    // 13. MENGAMBIL ANTREAN AKTIF
-    // ==========================================
+    // ======================================================
+    // 15. PENGAMBILAN ANTREAN AKTIF
+    // ======================================================
 
     function getAntreanAktif() {
         return getAll("antrean").filter(
@@ -1169,168 +1339,59 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         );
     }
 
-    // ==========================================
-    // 14. VALIDASI KAPASITAS
-    // ==========================================
+    // ======================================================
+    // 16. PEMERIKSAAN PEMBATALAN BOOKING
+    // ======================================================
 
-    function ambilKapasitas() {
-        const kapasitasDefault = {
-            kapasitasPC: 30,
-            kapasitasKursi: 30
-        };
+    function bolehBatalkanPersetujuan(pengajuanId) {
+        if (!pengajuanId) return false;
 
-        const fasilitas = storage.get(
-            KEYS.FACILITIES,
-            kapasitasDefault
+        const id = String(pengajuanId).startsWith("BOOK-")
+            ? String(pengajuanId).substring(5)
+            : String(pengajuanId);
+
+        const submissions = ambilSemua("submissions");
+
+        const pengajuan = submissions.find(
+            (item) =>
+                String(item.id) === id
         );
 
         if (
-            !fasilitas ||
-            !Number.isInteger(fasilitas.kapasitasPC) ||
-            !Number.isInteger(fasilitas.kapasitasKursi) ||
-            fasilitas.kapasitasPC <= 0 ||
-            fasilitas.kapasitasKursi <= 0
+            !pengajuan ||
+            pengajuan.status !== "disetujui"
         ) {
-            throw new Error(
-                "Konfigurasi kapasitas fasilitas tidak valid."
-            );
+            return false;
         }
 
-        return fasilitas;
+        const bookingId = `BOOK-${id}`;
+
+        const attendance = ambilSemua("attendance");
+
+        const sudahPresensi = attendance.some(
+            (item) =>
+                String(item.bookingId) === bookingId
+        );
+
+        if (sudahPresensi) return false;
+
+        const booking = ambilSemuaBooking().find(
+            (item) =>
+                String(item.id) === bookingId
+        );
+
+        if (!booking || booking.presensi) {
+            return false;
+        }
+
+        return STATUS_BOOKING_MENUNGGU_PRESENSI.has(
+            String(booking.status || "").toLowerCase()
+        );
     }
 
-    function validasiKapasitas(data) {
-        const kapasitas = ambilKapasitas();
-
-        if (
-            !Number.isInteger(data.kebutuhanPC) ||
-            !Number.isInteger(data.kebutuhanKursi) ||
-            data.kebutuhanPC <= 0 ||
-            data.kebutuhanKursi <= 0
-        ) {
-            return {
-                valid: false,
-                pesan:
-                    "Kebutuhan PC dan kursi harus berupa bilangan bulat positif."
-            };
-        }
-
-        if (
-            data.kebutuhanPC > kapasitas.kapasitasPC ||
-            data.kebutuhanKursi > kapasitas.kapasitasKursi
-        ) {
-            return {
-                valid: false,
-                pesan:
-                    "Kebutuhan fasilitas melebihi kapasitas laboratorium."
-            };
-        }
-
-        return {
-            valid: true,
-            pesan:
-                "Kapasitas fasilitas memenuhi kebutuhan."
-        };
-    }
-
-    // ==========================================
-    // 15. PEMERIKSAAN BENTROKAN JADWAL
-    // ==========================================
-
-    function cekKonflikJadwal(
-    dataBaru,
-    bookingId = null
-) {
-    const data = normalisasiPengajuan(dataBaru);
-
-    const rentangBaru = validasiJadwal(data);
-
-    if (!rentangBaru.valid) {
-        return {
-            bentrok: false,
-            valid: false,
-            pesan: rentangBaru.pesan,
-            booking: null,
-            daftarBooking: []
-        };
-    }
-
-    // Mendukung pengecualian satu atau beberapa booking.
-    const referensi = Array.isArray(bookingId)
-        ? bookingId
-        : [bookingId];
-
-    const daftarPengecualian = new Set();
-
-    referensi.forEach((referensiId) => {
-        if (
-            referensiId === null ||
-            referensiId === undefined ||
-            referensiId === ""
-        ) {
-            return;
-        }
-
-        const id = String(referensiId);
-
-        if (id.startsWith("BOOK-")) {
-            daftarPengecualian.add(id);
-            daftarPengecualian.add(
-                id.substring(5)
-            );
-        } else {
-            daftarPengecualian.add(id);
-            daftarPengecualian.add(
-                `BOOK-${id}`
-            );
-        }
-    });
-
-    const bookings = ambilSemuaBooking();
-
-    const daftarBentrok = bookings.filter(
-        (booking) => {
-            if (!bookingMasihAktif(booking)) {
-                return false;
-            }
-
-            // Abaikan booking milik kelompok yang diperiksa.
-            if (
-                daftarPengecualian.has(
-                    String(booking.id)
-                ) ||
-                daftarPengecualian.has(
-                    String(booking.sourceSubmissionId)
-                )
-            ) {
-                return false;
-            }
-
-            return rentangBertabrakan(
-                data,
-                booking
-            );
-        }
-    );
-
-    return {
-        bentrok: daftarBentrok.length > 0,
-
-        valid: true,
-
-        pesan: daftarBentrok.length
-            ? "Jadwal bertabrakan dengan booking yang sudah ada."
-            : "Tidak ditemukan bentrokan jadwal.",
-
-        booking: daftarBentrok[0] || null,
-
-        daftarBooking: salinData(daftarBentrok)
-    };
-}
-
-    // ==========================================
-    // 16. PERSETUJUAN PENGAJUAN
-    // ==========================================
+    // ======================================================
+    // 17. PERSETUJUAN PENGAJUAN
+    // ======================================================
 
     function setujuiPengajuan(pengajuanId) {
         if (!pengajuanId) {
@@ -1353,23 +1414,22 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
         const pengajuan = submissions[index];
 
         if (
-            ["disetujui", "ditolak"].includes(
-                pengajuan.status
+            ["disetujui", "ditolak", "tergeser"].includes(
+                String(pengajuan.status).toLowerCase()
             )
         ) {
             throw new Error(
-                "Pengajuan sudah memiliki keputusan akhir."
+                "Pengajuan sudah memiliki status akhir."
             );
         }
 
         if (
-            ![
-                "verifikasi",
-                "menunggu_verifikasi"
-            ].includes(pengajuan.status)
+            !STATUS_ANTREAN_AKTIF.has(
+                String(pengajuan.status || "").toLowerCase()
+            )
         ) {
             throw new Error(
-                "Pengajuan tidak berada dalam status verifikasi."
+                "Pengajuan tidak berada dalam antrean verifikasi."
             );
         }
 
@@ -1387,52 +1447,41 @@ const STATUS_BOOKING_MENUNGGU_PRESENSI = new Set([
             throw new Error(kapasitas.pesan);
         }
 
-        const konflik = cekKonflikJadwal(data);
-
-if (konflik.bentrok) {
-
-    // Jangan membuat kelompok konflik baru jika
-    // booking sedang menunggu keputusan Kepala Lab.
-    const menungguKeputusan =
-        konflik.daftarBooking.some(
-            (booking) =>
-                booking.status === "menunggu_keputusan"
+        // Pemeriksaan booking dan pengajuan aktif.
+        const konflik = cekKonflikJadwal(
+            data,
+            pengajuan.id
         );
 
-    if (menungguKeputusan) {
-        throw new Error(
-            "Jadwal sedang menunggu keputusan Kepala Lab. Pengajuan belum dapat disetujui."
-        );
-    }
+        if (konflik.bentrok) {
+            submissions[index] = {
+                ...pengajuan,
 
-    submissions[index] = {
-        ...pengajuan,
+                status: "bentrok",
 
-        status: "bentrok",
+                statusSebelumBentrok:
+                    pengajuan.statusSebelumBentrok ||
+                    pengajuan.status,
 
-        statusSebelumBentrok:
-            pengajuan.status,
+                konflikAktif: true,
 
-        bentrokTerdeteksiPada:
-            new Date().toISOString()
-    };
+                bentrokTerdeteksiPada: buatTimestamp()
+            };
 
-    simpanSemua("submissions", submissions);
+            simpanSemua(
+                "submissions",
+                submissions
+            );
 
-    beriTahuPerubahan(
-        "antrean",
-        "bentrok"
-    );
+            beriTahuBanyakPerubahan([
+                { koleksi: "antrean", aksi: "bentrok" },
+                { koleksi: "bookings", aksi: "bentrok" }
+            ]);
 
-    beriTahuPerubahan(
-        "bookings",
-        "bentrok"
-    );
-
-    throw new Error(
-        "Pengajuan tidak dapat disetujui karena jadwal bentrok. Pengajuan dikembalikan ke antrean untuk diteruskan kepada Kepala Lab."
-    );
-}
+            throw new Error(
+                "Pengajuan tidak dapat disetujui karena masih terdapat bentrokan jadwal. Pengajuan perlu diproses melalui penyelesaian konflik."
+            );
+        }
 
         const bookings = ambilSemuaBooking();
 
@@ -1455,25 +1504,30 @@ if (konflik.bentrok) {
 
             status: "disetujui",
 
-            diverifikasiPada: new Date().toISOString()
+            diverifikasiPada: buatTimestamp(),
+
+            konflikAktif: false
         };
 
         simpanSemua("submissions", submissions);
 
-        beriTahuPerubahan("bookings", "disetujui");
-        beriTahuPerubahan("antrean", "disetujui");
+        beriTahuBanyakPerubahan([
+            { koleksi: "bookings", aksi: "disetujui" },
+            { koleksi: "antrean", aksi: "disetujui" }
+        ]);
 
         return {
             pengajuan: salinData(submissions[index]),
+
             booking: salinData(
                 bentukBooking(submissions[index])
             )
         };
     }
 
-    // ==========================================
-    // 17. PENOLAKAN PENGAJUAN
-    // ==========================================
+    // ======================================================
+    // 18. PENOLAKAN PENGAJUAN
+    // ======================================================
 
     function tolakPengajuan(
         pengajuanId,
@@ -1504,14 +1558,15 @@ if (konflik.bentrok) {
             throw new Error("Pengajuan tidak ditemukan.");
         }
 
+        const status = String(
+            submissions[index].status || ""
+        ).toLowerCase();
+
         if (
-            ![
-                "verifikasi",
-                "menunggu_verifikasi"
-            ].includes(submissions[index].status)
+            !STATUS_ANTREAN_AKTIF.has(status)
         ) {
             throw new Error(
-                "Pengajuan tidak berada dalam status verifikasi."
+                "Pengajuan tidak berada dalam status yang dapat ditolak."
             );
         }
 
@@ -1522,20 +1577,24 @@ if (konflik.bentrok) {
 
             alasanPenolakan,
 
-            diverifikasiPada: new Date().toISOString()
+            konflikAktif: false,
+
+            diverifikasiPada: buatTimestamp()
         };
 
         simpanSemua("submissions", submissions);
 
-        beriTahuPerubahan("antrean", "ditolak");
-        beriTahuPerubahan("bookings", "ditolak");
+        beriTahuBanyakPerubahan([
+            { koleksi: "antrean", aksi: "ditolak" },
+            { koleksi: "bookings", aksi: "ditolak" }
+        ]);
 
         return salinData(submissions[index]);
     }
 
-    // ==========================================
-    // 18. MEMBATALKAN BOOKING SEBELUM PRESENSI
-    // ==========================================
+    // ======================================================
+    // 19. MEMBATALKAN BOOKING SEBELUM PRESENSI
+    // ======================================================
 
     function batalkanPersetujuan(pengajuanId) {
         if (!pengajuanId) {
@@ -1544,7 +1603,6 @@ if (konflik.bentrok) {
             );
         }
 
-        // Mendukung ID pengajuan maupun ID booking.
         const id = String(pengajuanId).startsWith("BOOK-")
             ? String(pengajuanId).substring(5)
             : String(pengajuanId);
@@ -1552,83 +1610,57 @@ if (konflik.bentrok) {
         const submissions = ambilSemua("submissions");
 
         const index = submissions.findIndex(
-            (item) => String(item.id) === id
+            (item) =>
+                String(item.id) === id
         );
 
         if (index === -1) {
             throw new Error("Pengajuan tidak ditemukan.");
         }
 
-        const pengajuan = submissions[index];
-
-        if (pengajuan.status !== "disetujui") {
-            throw new Error(
-                "Hanya booking yang sudah disetujui yang dapat dibatalkan."
-            );
-        }
-
-        const bookingId = `BOOK-${id}`;
-
-        // Periksa apakah presensi sudah pernah dicatat.
-        const attendance = ambilSemua("attendance");
-
-        const presensiSudahDicatat = attendance.some(
-            (item) =>
-                String(item.bookingId) === bookingId
-        );
-
-        if (presensiSudahDicatat) {
-            throw new Error(
-                "Booking tidak dapat dibatalkan karena presensi sudah dicatat. Penggunaan laboratorium dianggap sedang berlangsung."
-            );
-        }
-
-        // Pastikan booking masih berstatus menunggu presensi.
         if (!bolehBatalkanPersetujuan(id)) {
             throw new Error(
-                "Pembatalan hanya diperbolehkan untuk booking yang masih menunggu presensi."
+                "Pembatalan hanya diperbolehkan untuk booking yang masih menunggu presensi dan belum memiliki catatan presensi."
             );
         }
+
+        const pengajuan = submissions[index];
 
         const bookingAsal = bentukBooking(pengajuan);
 
-        // Cari semua pengajuan aktif yang bertabrakan
-        // dengan booking yang akan dibatalkan.
-        const pengajuanBentrok = submissions.filter(
-            (item) => {
-                if (String(item.id) === id) return false;
-
-                if (
-                    ![
-                        "verifikasi",
-                        "menunggu_verifikasi",
-                        "bentrok"
-                    ].includes(
-                        String(item.status || "").toLowerCase()
-                    )
-                ) {
-                    return false;
-                }
-
-                return rentangBertabrakan(
-                    item,
-                    bookingAsal
-                );
-            }
+        const konflik = cekKonflikJadwal(
+            bookingAsal,
+            id
         );
 
-        const waktuPembatalan =
-            new Date().toISOString();
+        const waktuPembatalan = buatTimestamp();
 
-        const idBentrok = pengajuanBentrok.map(
-            (item) => String(item.id)
-        );
+        const idBentrok = [
+            ...new Set([
+                ...konflik.daftarBooking.map(
+                    (item) =>
+                        String(
+                            item.sourceSubmissionId ||
+                            item.id
+                        )
+                ),
+
+                ...konflik.daftarPengajuan.map(
+                    (item) => String(item.id)
+                )
+            ])
+        ];
+
+        const idPengajuanBentrok =
+            konflik.daftarPengajuan.map(
+                (item) => String(item.id)
+            );
 
         // Booking yang dibatalkan kembali ke antrean.
         submissions[index] = {
             ...pengajuan,
 
-            status: idBentrok.length
+            status: konflik.bentrok
                 ? "bentrok"
                 : "verifikasi",
 
@@ -1638,20 +1670,20 @@ if (konflik.bentrok) {
                 waktuPembatalan,
 
             alasanPembatalan:
-                idBentrok.length
-                    ? "Persetujuan dibatalkan karena terjadi bentrok jadwal."
+                konflik.bentrok
+                    ? "Persetujuan dibatalkan dan ditemukan bentrokan jadwal."
                     : "Persetujuan dibatalkan oleh Laboran.",
 
             konflikDengan: idBentrok,
 
-            konflikAktif: idBentrok.length > 0
+            konflikAktif: konflik.bentrok
         };
 
-        // Pengajuan baru yang bertabrakan juga ditandai.
-        pengajuanBentrok.forEach((item) => {
+        // Pengajuan lain yang berbenturan juga ditandai.
+        idPengajuanBentrok.forEach((idLain) => {
             const posisi = submissions.findIndex(
-                (data) =>
-                    String(data.id) === String(item.id)
+                (item) =>
+                    String(item.id) === idLain
             );
 
             if (posisi === -1) return;
@@ -1680,20 +1712,20 @@ if (konflik.bentrok) {
 
         simpanSemua("submissions", submissions);
 
-        beriTahuPerubahan(
-            "antrean",
-            "persetujuan_dibatalkan"
-        );
-
-        beriTahuPerubahan(
-            "bookings",
-            "persetujuan_dibatalkan"
-        );
-
-        beriTahuPerubahan(
-            "submissions",
-            "bentrok"
-        );
+        beriTahuBanyakPerubahan([
+            {
+                koleksi: "antrean",
+                aksi: "persetujuan_dibatalkan"
+            },
+            {
+                koleksi: "bookings",
+                aksi: "persetujuan_dibatalkan"
+            },
+            {
+                koleksi: "submissions",
+                aksi: "bentrok"
+            }
+        ]);
 
         return {
             ...salinData(submissions[index]),
@@ -1701,16 +1733,18 @@ if (konflik.bentrok) {
             berhasil: true,
 
             jumlahPengajuanBentrok:
-                pengajuanBentrok.length,
+                idPengajuanBentrok.length,
 
             pengajuanBentrok:
-                salinData(pengajuanBentrok)
+                salinData(
+                    konflik.daftarPengajuan
+                )
         };
     }
 
-    // ==========================================
-    // 19. UPDATE ANTREAN
-    // ==========================================
+    // ======================================================
+    // 20. UPDATE ANTREAN
+    // ======================================================
 
     function update(
         namaKoleksi,
@@ -1728,7 +1762,8 @@ if (konflik.bentrok) {
 
         if (
             !perubahan ||
-            typeof perubahan !== "object"
+            typeof perubahan !== "object" ||
+            Array.isArray(perubahan)
         ) {
             throw new Error(
                 "Data perubahan tidak valid."
@@ -1753,15 +1788,21 @@ if (konflik.bentrok) {
         );
     }
 
-    // ==========================================
-    // 20. PENGELOLAAN PRESENSI
-    // ==========================================
+    // ======================================================
+    // 21. PENGELOLAAN PRESENSI
+    // ======================================================
 
     function updatePresensi(bookingId, status) {
         const statusValid = [
             "digunakan",
             "tidak_digunakan"
         ];
+
+        if (!bookingId) {
+            throw new Error(
+                "ID booking wajib tersedia."
+            );
+        }
 
         if (!statusValid.includes(status)) {
             throw new Error(
@@ -1788,8 +1829,6 @@ if (konflik.bentrok) {
             );
         }
 
-        // Presensi hanya boleh dicatat pada booking
-        // yang masih menunggu presensi.
         if (
             !STATUS_BOOKING_MENUNGGU_PRESENSI.has(
                 String(booking.status || "").toLowerCase()
@@ -1798,6 +1837,17 @@ if (konflik.bentrok) {
         ) {
             throw new Error(
                 "Presensi hanya dapat dicatat pada booking yang masih menunggu presensi."
+            );
+        }
+
+        // Validasi ulang jadwal booking.
+        const jadwal = validasiJadwal(
+            normalisasiPengajuan(booking)
+        );
+
+        if (!jadwal.valid) {
+            throw new Error(
+                `Jadwal booking tidak valid: ${jadwal.pesan}`
             );
         }
 
@@ -1814,8 +1864,7 @@ if (konflik.bentrok) {
             );
         }
 
-        const waktuPencatatan =
-            new Date().toISOString();
+        const waktuPencatatan = buatTimestamp();
 
         const catatanBaru = {
             id: `${bookingId}-${status}`,
@@ -1828,8 +1877,10 @@ if (konflik.bentrok) {
 
         simpanSemua("attendance", attendance);
 
-        beriTahuPerubahan("bookings", "presensi");
-        beriTahuPerubahan("attendance", "presensi");
+        beriTahuBanyakPerubahan([
+            { koleksi: "bookings", aksi: "presensi" },
+            { koleksi: "attendance", aksi: "presensi" }
+        ]);
 
         return {
             ...booking,
@@ -1843,9 +1894,9 @@ if (konflik.bentrok) {
         };
     }
 
-    // ==========================================
-    // 21. ID REKOMENDASI
-    // ==========================================
+    // ======================================================
+    // 22. ID REKOMENDASI
+    // ======================================================
 
     function buatIdRekomendasi(data) {
         let nomorTerakhir = 0;
@@ -1866,134 +1917,318 @@ if (konflik.bentrok) {
         ).padStart(3, "0")}`;
     }
 
-    // ==========================================
-    // 22. MEMBUAT REKOMENDASI JADWAL
-    // ==========================================
+    // ======================================================
+    // 23. BATAS KONFIRMASI REKOMENDASI
+    // ======================================================
 
-    function buatRekomendasi(data) {
-        if (!data || !data.pengajuanId) {
-            throw new Error(
-                "ID pengajuan untuk rekomendasi wajib tersedia."
-            );
+    function ambilBatasRekomendasi(rekomendasi) {
+        const batas =
+            rekomendasi.kedaluwarsaPada ||
+            rekomendasi.expiresAt ||
+            rekomendasi.batasRespons;
+
+        if (batas) {
+            const timestamp = Date.parse(batas);
+
+            if (Number.isFinite(timestamp)) {
+                return timestamp;
+            }
         }
 
-        const pengajuan = getById(
-            "submissions",
-            data.pengajuanId
+        const dibuat = Date.parse(
+            rekomendasi.dikirimPada ||
+            rekomendasi.dibuatPada ||
+            rekomendasi.createdAt ||
+            ""
         );
 
-        if (!pengajuan) {
-            throw new Error(
-                "Data pengajuan tidak ditemukan."
+        return Number.isFinite(dibuat)
+            ? dibuat + BATAS_KONFIRMASI
+            : NaN;
+    }
+
+    /**
+     * Menandai rekomendasi yang melewati batas waktu.
+     * Riwayat rekomendasi tetap dipertahankan.
+     */
+    function kedaluwarsakanRekomendasi() {
+        const daftar =
+            ambilSemua("recommendations");
+
+        const sekarang = Date.now();
+
+        let berubah = false;
+
+        const hasil = daftar.map((item) => {
+            const status = String(
+                item.status || ""
+            ).toLowerCase();
+
+            if (
+                !STATUS_REKOMENDASI_AKTIF.has(status)
+            ) {
+                return item;
+            }
+
+            const batas = ambilBatasRekomendasi(item);
+
+            if (
+                !Number.isFinite(batas) ||
+                sekarang < batas
+            ) {
+                return item;
+            }
+
+            berubah = true;
+
+            return {
+                ...item,
+
+                status: "kedaluwarsa",
+
+                kedaluwarsaDiprosesPada:
+                    buatTimestamp()
+            };
+        });
+
+        if (berubah) {
+            simpanSemua("recommendations", hasil);
+
+            beriTahuPerubahan(
+                "recommendations",
+                "kedaluwarsa"
             );
         }
 
-        const dataRekomendasi = normalisasiPengajuan({
-            ...pengajuan,
-            ...data
+        return hasil;
+    }
+
+    // ======================================================
+    // 24. VALIDASI SLOT REKOMENDASI
+    // ======================================================
+
+    function siapkanJadwalRekomendasi(
+        kasus,
+        detail
+    ) {
+        if (
+            !detail ||
+            !detail.waktuMulai ||
+            !detail.waktuSelesai
+        ) {
+            throw new Error(
+                "Waktu mulai dan waktu selesai wajib diisi."
+            );
+        }
+
+        const mulai = pecahWaktu(detail.waktuMulai);
+        const selesai = pecahWaktu(detail.waktuSelesai);
+
+        if (!mulai.jam || !selesai.jam) {
+            throw new Error(
+                "Format waktu rekomendasi tidak valid."
+            );
+        }
+
+        if (
+            !mulai.tanggal ||
+            mulai.tanggal !== selesai.tanggal
+        ) {
+            throw new Error(
+                "Jadwal rekomendasi tidak boleh melewati pergantian tanggal."
+            );
+        }
+
+        const waktuMulaiTimestamp = Date.parse(
+            `${mulai.tanggal}T${mulai.jam}:00+09:00`
+        );
+
+        if (
+            !Number.isFinite(waktuMulaiTimestamp) ||
+            waktuMulaiTimestamp <= Date.now()
+        ) {
+            throw new Error(
+                "Jadwal rekomendasi harus berada di masa mendatang."
+            );
+        }
+
+        const dataJadwal = normalisasiPengajuan({
+            ...kasus,
+
+            tanggal: mulai.tanggal,
+
+            tanggalSelesai: selesai.tanggal,
+
+            waktuMulai: mulai.jam,
+
+            waktuSelesai: selesai.jam
         });
 
-        const rentang = validasiJadwal(dataRekomendasi);
+        const rentang = validasiJadwal(dataJadwal);
 
         if (!rentang.valid) {
             throw new Error(rentang.pesan);
         }
 
-        const kapasitas = validasiKapasitas(
-            dataRekomendasi
-        );
+        const kapasitas = validasiKapasitas(dataJadwal);
 
         if (!kapasitas.valid) {
             throw new Error(kapasitas.pesan);
         }
 
-        const idBookingAsal =
-            data.bookingId ||
-            `BOOK-${data.pengajuanId}`;
-
-        const konflik = cekKonflikJadwal(
-            dataRekomendasi,
-            idBookingAsal
+        const konflikBooking = cekKonflikJadwal(
+            dataJadwal,
+            [
+                kasus.pengajuanId,
+                `BOOK-${kasus.pengajuanId}`
+            ]
         );
 
-        if (konflik.bentrok) {
+        if (konflikBooking.bentrok) {
             throw new Error(
-                "Jadwal rekomendasi masih bertabrakan dengan booking lain."
+                "Jadwal rekomendasi bertabrakan dengan peminjaman atau pengajuan aktif lainnya."
             );
         }
 
-        const rekomendasi =
-            ambilSemua("recommendations");
+        return {
+            data: dataJadwal,
 
-        const rekomendasiBaru = {
-            ...dataRekomendasi,
+            mulaiLokal: detail.waktuMulai,
 
-            id: buatIdRekomendasi(rekomendasi),
+            selesaiLokal: detail.waktuSelesai,
 
-            pengajuanId: data.pengajuanId,
-
-            bookingId: idBookingAsal,
-
-            status: "menunggu_persetujuan",
-
-            dibuatPada: new Date().toISOString(),
-
-            sumber: "laboran"
+            rentang
         };
-
-        rekomendasi.push(rekomendasiBaru);
-
-        simpanSemua("recommendations", rekomendasi);
-
-        beriTahuPerubahan(
-            "recommendations",
-            "dibuat"
-        );
-
-        return salinData(rekomendasiBaru);
     }
 
-    function hapusRekomendasi(rekomendasiId) {
-        const rekomendasi =
+    // ======================================================
+    // 25. PEMERIKSAAN BENTROK REKOMENDASI
+    // ======================================================
+
+    function cekKonflikRekomendasi(
+        dataBaru,
+        pengajuanId,
+        rekomendasiId = null
+    ) {
+        kedaluwarsakanRekomendasi();
+
+        const daftar =
             ambilSemua("recommendations");
 
-        const index = rekomendasi.findIndex(
-            (item) =>
-                String(item.id) === String(rekomendasiId)
-        );
+        const rentangBaru = validasiJadwal(dataBaru);
 
-        if (index === -1) {
-            throw new Error(
-                "Rekomendasi tidak ditemukan."
-            );
+        if (!rentangBaru.valid) {
+            return null;
         }
+
+        return (
+            daftar.find((item) => {
+                if (
+                    rekomendasiId &&
+                    String(item.id) === String(rekomendasiId)
+                ) {
+                    return false;
+                }
+
+                if (
+                    String(item.pengajuanId) ===
+                    String(pengajuanId)
+                ) {
+                    return false;
+                }
+
+                if (
+                    !STATUS_REKOMENDASI_AKTIF.has(
+                        String(item.status || "").toLowerCase()
+                    )
+                ) {
+                    return false;
+                }
+
+                return rentangBertabrakan(
+                    dataBaru,
+                    item
+                );
+            }) || null
+        );
+    }
+
+    // ======================================================
+    // 26. VALIDASI MULTI ALTERNATIF
+    // ======================================================
+
+    function siapkanAlternatifRekomendasi(
+        kasus,
+        detail,
+        rekomendasiId = null
+    ) {
+        const daftarAlternatif =
+            detail?.alternatifJadwal;
 
         if (
-            rekomendasi[index].status !==
-            "menunggu_persetujuan"
+            !Array.isArray(daftarAlternatif) ||
+            daftarAlternatif.length < 1 ||
+            daftarAlternatif.length > 2
         ) {
             throw new Error(
-                "Rekomendasi yang sudah diproses tidak dapat dihapus."
+                "Rekomendasi harus memiliki satu atau dua alternatif jadwal."
             );
         }
 
-        rekomendasi.splice(index, 1);
+        const hasil = daftarAlternatif.map(
+            (alternatif, index) => {
+                const jadwal = siapkanJadwalRekomendasi(
+                    kasus,
+                    alternatif
+                );
 
-        simpanSemua("recommendations", rekomendasi);
+                const konflik = cekKonflikRekomendasi(
+                    jadwal.data,
+                    kasus.pengajuanId,
+                    rekomendasiId
+                );
 
-        beriTahuPerubahan(
-            "recommendations",
-            "dihapus"
+                if (konflik) {
+                    throw new Error(
+                        `Alternatif ${index + 1} bertabrakan dengan rekomendasi pengguna lain.`
+                    );
+                }
+
+                return {
+                    ...jadwal.data,
+
+                    nomorAlternatif: index + 1,
+
+                    mulaiLokal: jadwal.mulaiLokal,
+
+                    selesaiLokal: jadwal.selesaiLokal
+                };
+            }
         );
 
-        return true;
+        if (hasil.length === 2) {
+            if (
+                rentangBertabrakan(
+                    hasil[0],
+                    hasil[1]
+                )
+            ) {
+                throw new Error(
+                    "Alternatif pertama dan kedua tidak boleh memiliki waktu yang bertabrakan."
+                );
+            }
+        }
+
+        return hasil;
     }
 
-    // ==========================================
-    // 23. MENGAMBIL REKOMENDASI BERDASARKAN KASUS
-    // ==========================================
+    // ======================================================
+    // 27. MENGAMBIL REKOMENDASI BERDASARKAN KASUS
+    // ======================================================
 
     function ambilRekomendasiKasus(kasus) {
+        kedaluwarsakanRekomendasi();
+
         const daftar =
             ambilSemua("recommendations");
 
@@ -2038,9 +2273,9 @@ if (konflik.bentrok) {
         return hasil[0] || null;
     }
 
-    // ==========================================
-    // 24. MENGAMBIL KASUS TERGESER
-    // ==========================================
+    // ======================================================
+    // 28. MENGAMBIL KASUS TERGESER
+    // ======================================================
 
     function getKasusTergeserById(idReferensi) {
         if (!idReferensi) return null;
@@ -2139,257 +2374,9 @@ if (konflik.bentrok) {
         });
     }
 
-    // ==========================================
-    // 25. VALIDASI SLOT REKOMENDASI
-    // ==========================================
-
-    function siapkanJadwalRekomendasi(
-        kasus,
-        detail
-    ) {
-        if (
-            !detail ||
-            !detail.waktuMulai ||
-            !detail.waktuSelesai
-        ) {
-            throw new Error(
-                "Waktu mulai dan waktu selesai wajib diisi."
-            );
-        }
-
-        const mulai = pecahWaktu(detail.waktuMulai);
-
-        const selesai = pecahWaktu(
-            detail.waktuSelesai
-        );
-
-        if (!mulai.jam || !selesai.jam) {
-            throw new Error(
-                "Format waktu rekomendasi tidak valid."
-            );
-        }
-
-        if (
-            !mulai.tanggal ||
-            mulai.tanggal !== selesai.tanggal
-        ) {
-            throw new Error(
-                "Jadwal rekomendasi tidak boleh melewati pergantian tanggal."
-            );
-        }
-
-        const waktuMulaiTimestamp = Date.parse(
-            `${mulai.tanggal}T${mulai.jam}:00+09:00`
-        );
-
-        if (
-            !Number.isFinite(waktuMulaiTimestamp) ||
-            waktuMulaiTimestamp <= Date.now()
-        ) {
-            throw new Error(
-                "Jadwal rekomendasi harus berada di masa mendatang."
-            );
-        }
-
-        const dataJadwal = normalisasiPengajuan({
-            ...kasus,
-
-            tanggal: mulai.tanggal,
-
-            tanggalSelesai: selesai.tanggal,
-
-            waktuMulai: mulai.jam,
-
-            waktuSelesai: selesai.jam
-        });
-
-        const rentang = validasiJadwal(dataJadwal);
-
-        if (!rentang.valid) {
-            throw new Error(rentang.pesan);
-        }
-
-        const kapasitas = validasiKapasitas(kasus);
-
-        if (!kapasitas.valid) {
-            throw new Error(kapasitas.pesan);
-        }
-
-        const konflikBooking = cekKonflikJadwal(
-            dataJadwal,
-            `BOOK-${kasus.pengajuanId}`
-        );
-
-        if (konflikBooking.bentrok) {
-            throw new Error(
-                "Jadwal rekomendasi bertabrakan dengan peminjaman yang sudah terjadwal."
-            );
-        }
-
-        return {
-            data: dataJadwal,
-
-            mulaiLokal: detail.waktuMulai,
-
-            selesaiLokal: detail.waktuSelesai,
-
-            rentang
-        };
-    }
-
-    // ==========================================
-    // 26. VALIDASI MULTI ALTERNATIF JADWAL
-    // ==========================================
-
-    function siapkanAlternatifRekomendasi(
-        kasus,
-        detail,
-        rekomendasiId = null
-    ) {
-        const daftarAlternatif =
-            detail?.alternatifJadwal;
-
-        if (
-            !Array.isArray(daftarAlternatif) ||
-            daftarAlternatif.length < 1 ||
-            daftarAlternatif.length > 2
-        ) {
-            throw new Error(
-                "Rekomendasi harus memiliki satu atau dua alternatif jadwal."
-            );
-        }
-
-        const hasil = daftarAlternatif.map(
-            (alternatif, index) => {
-                const jadwal = siapkanJadwalRekomendasi(
-                    kasus,
-                    alternatif
-                );
-
-                const konflik = cekKonflikRekomendasi(
-                    jadwal.data,
-                    kasus.pengajuanId,
-                    rekomendasiId
-                );
-
-                if (konflik) {
-                    throw new Error(
-                        `Alternatif ${index + 1} bertabrakan dengan rekomendasi pengguna lain.`
-                    );
-                }
-
-                return {
-                    ...jadwal.data,
-
-                    nomorAlternatif: index + 1,
-
-                    mulaiLokal: jadwal.mulaiLokal,
-
-                    selesaiLokal: jadwal.selesaiLokal
-                };
-            }
-        );
-
-        if (hasil.length === 2) {
-            const pertama = validasiJadwal(hasil[0]);
-            const kedua = validasiJadwal(hasil[1]);
-
-            if (
-                pertama.mulai < kedua.selesai &&
-                pertama.selesai > kedua.mulai
-            ) {
-                throw new Error(
-                    "Alternatif pertama dan kedua tidak boleh memiliki waktu yang bertabrakan."
-                );
-            }
-        }
-
-        return hasil;
-    }
-
-    // ==========================================
-    // 27. PEMERIKSAAN BENTROKAN REKOMENDASI
-    // ==========================================
-
-    function cekKonflikRekomendasi(
-        dataBaru,
-        pengajuanId,
-        rekomendasiId = null
-    ) {
-        const daftar =
-            ambilSemua("recommendations");
-
-        const rentangBaru = validasiJadwal(dataBaru);
-
-        if (!rentangBaru.valid) {
-            return null;
-        }
-
-        return (
-            daftar.find((item) => {
-                if (
-                    String(item.id) ===
-                    String(rekomendasiId)
-                ) {
-                    return false;
-                }
-
-                if (
-                    String(item.pengajuanId) ===
-                    String(pengajuanId)
-                ) {
-                    return false;
-                }
-
-                if (
-                    !STATUS_REKOMENDASI_AKTIF.has(
-                        String(item.status || "").toLowerCase()
-                    )
-                ) {
-                    return false;
-                }
-
-                return rentangBertabrakan(
-                    dataBaru,
-                    item
-                );
-            }) || null
-        );
-    }
-
-    // ==========================================
-    // 28. BATAS KONFIRMASI REKOMENDASI
-    // ==========================================
-
-    function ambilBatasRekomendasi(rekomendasi) {
-        const batas =
-            rekomendasi.kedaluwarsaPada ||
-            rekomendasi.expiresAt ||
-            rekomendasi.batasRespons;
-
-        if (batas) {
-            const timestamp = Date.parse(batas);
-
-            if (Number.isFinite(timestamp)) {
-                return timestamp;
-            }
-        }
-
-        const dibuat = Date.parse(
-            rekomendasi.dikirimPada ||
-            rekomendasi.dibuatPada ||
-            rekomendasi.createdAt ||
-            ""
-        );
-
-        return Number.isFinite(dibuat)
-            ? dibuat + BATAS_KONFIRMASI
-            : NaN;
-    }
-
-    // ==========================================
-    // 29. UPDATE METADATA KONFLIK
-    // ==========================================
+    // ======================================================
+    // 29. PEMBARUAN METADATA REKOMENDASI
+    // ======================================================
 
     function perbaruiMetadataRekomendasi(
         kasus,
@@ -2406,7 +2393,7 @@ if (konflik.bentrok) {
                 ) === String(kasus.pengajuanId)
         );
 
-        if (index === -1) return;
+        if (index === -1) return false;
 
         konflik[index] = {
             ...konflik[index],
@@ -2423,11 +2410,175 @@ if (konflik.bentrok) {
         };
 
         simpanSemua("conflicts", konflik);
+
+        return true;
     }
 
-    // ==========================================
-    // 30. MENGIRIM REKOMENDASI MULTI ALTERNATIF
-    // ==========================================
+    // ======================================================
+    // 30. MEMBUAT REKOMENDASI JADWAL
+    // ======================================================
+
+    function buatRekomendasi(data) {
+        if (!data || !data.pengajuanId) {
+            throw new Error(
+                "ID pengajuan untuk rekomendasi wajib tersedia."
+            );
+        }
+
+        const pengajuan = getById(
+            "submissions",
+            data.pengajuanId
+        );
+
+        if (!pengajuan) {
+            throw new Error(
+                "Data pengajuan tidak ditemukan."
+            );
+        }
+
+        const dataRekomendasi = normalisasiPengajuan({
+            ...pengajuan,
+            ...data
+        });
+
+        const jadwal = siapkanJadwalRekomendasi(
+            dataRekomendasi,
+            data
+        );
+
+        const konflikRekomendasi =
+            cekKonflikRekomendasi(
+                jadwal.data,
+                data.pengajuanId
+            );
+
+        if (konflikRekomendasi) {
+            throw new Error(
+                "Jadwal rekomendasi bertabrakan dengan rekomendasi pengguna lain."
+            );
+        }
+
+        const daftar =
+            ambilSemua("recommendations");
+
+        const sekarang = new Date();
+
+        const waktuDikirim = sekarang.toISOString();
+
+        const kedaluwarsa = new Date(
+            sekarang.getTime() + BATAS_KONFIRMASI
+        ).toISOString();
+
+        const rekomendasiBaru = {
+            ...jadwal.data,
+
+            id: buatIdRekomendasi(daftar),
+
+            pengajuanId: data.pengajuanId,
+
+            bookingId:
+                data.bookingId ||
+                `BOOK-${data.pengajuanId}`,
+
+            alternatifJadwal: [
+                {
+                    ...jadwal.data,
+                    nomorAlternatif: 1
+                }
+            ],
+
+            jumlahAlternatif: 1,
+
+            catatan: String(
+                data.catatan || ""
+            ).trim(),
+
+            status: "menunggu_persetujuan",
+
+            dibuatPada: waktuDikirim,
+
+            dikirimPada: waktuDikirim,
+
+            kedaluwarsaPada: kedaluwarsa,
+
+            expiresAt: kedaluwarsa,
+
+            batasRespons: kedaluwarsa,
+
+            sumber: "laboran"
+        };
+
+        daftar.push(rekomendasiBaru);
+
+        simpanSemua("recommendations", daftar);
+
+        beriTahuPerubahan(
+            "recommendations",
+            "dibuat"
+        );
+
+        return salinData(rekomendasiBaru);
+    }
+
+    // ======================================================
+    // 31. MENGHAPUS REKOMENDASI
+    // ======================================================
+
+    function hapusRekomendasi(rekomendasiId) {
+        const rekomendasi =
+            ambilSemua("recommendations");
+
+        const index = rekomendasi.findIndex(
+            (item) =>
+                String(item.id) === String(rekomendasiId)
+        );
+
+        if (index === -1) {
+            throw new Error(
+                "Rekomendasi tidak ditemukan."
+            );
+        }
+
+        if (
+            !STATUS_REKOMENDASI_AKTIF.has(
+                String(rekomendasi[index].status).toLowerCase()
+            )
+        ) {
+            throw new Error(
+                "Rekomendasi yang sudah diproses atau kedaluwarsa tidak dapat dihapus."
+            );
+        }
+
+        const batas = ambilBatasRekomendasi(
+            rekomendasi[index]
+        );
+
+        if (
+            !Number.isFinite(batas) ||
+            Date.now() >= batas
+        ) {
+            kedaluwarsakanRekomendasi();
+
+            throw new Error(
+                "Rekomendasi sudah melewati batas waktu konfirmasi."
+            );
+        }
+
+        rekomendasi.splice(index, 1);
+
+        simpanSemua("recommendations", rekomendasi);
+
+        beriTahuPerubahan(
+            "recommendations",
+            "dihapus"
+        );
+
+        return true;
+    }
+
+    // ======================================================
+    // 32. MENGIRIM REKOMENDASI MULTI ALTERNATIF
+    // ======================================================
 
     function kirimRekomendasi(idKasus, detail) {
         if (!idKasus) {
@@ -2529,32 +2680,33 @@ if (konflik.bentrok) {
 
         daftar.push(rekomendasiBaru);
 
+        // Simpan rekomendasi terlebih dahulu.
         simpanSemua("recommendations", daftar);
 
+        // Perbarui metadata kasus jika tersedia.
         perbaruiMetadataRekomendasi(
             kasus,
             rekomendasiBaru
         );
 
-        beriTahuPerubahan(
-            "recommendations",
-            "dikirim"
-        );
-
-        beriTahuPerubahan(
-            "antrean",
-            "rekomendasi_dikirim"
-        );
-
-        beriTahuPerubahan(
-            "conflicts",
-            "rekomendasi_dikirim"
-        );
-
-        beriTahuPerubahan(
-            "penggunaTergeser",
-            "rekomendasi_dikirim"
-        );
+        beriTahuBanyakPerubahan([
+            {
+                koleksi: "recommendations",
+                aksi: "dikirim"
+            },
+            {
+                koleksi: "antrean",
+                aksi: "rekomendasi_dikirim"
+            },
+            {
+                koleksi: "conflicts",
+                aksi: "rekomendasi_dikirim"
+            },
+            {
+                koleksi: "penggunaTergeser",
+                aksi: "rekomendasi_dikirim"
+            }
+        ]);
 
         return {
             ...getKasusTergeserById(kasus.id),
@@ -2568,9 +2720,9 @@ if (konflik.bentrok) {
         };
     }
 
-    // ==========================================
-    // 31. EDIT REKOMENDASI MULTI ALTERNATIF
-    // ==========================================
+    // ======================================================
+    // 33. EDIT REKOMENDASI MULTI ALTERNATIF
+    // ======================================================
 
     function editRekomendasi(idKasus, detail) {
         const kasus = getKasusTergeserById(idKasus);
@@ -2608,6 +2760,8 @@ if (konflik.bentrok) {
             !Number.isFinite(batas) ||
             Date.now() >= batas
         ) {
+            kedaluwarsakanRekomendasi();
+
             throw new Error(
                 "Batas waktu edit rekomendasi 24 jam sudah berakhir."
             );
@@ -2634,8 +2788,7 @@ if (konflik.bentrok) {
             );
         }
 
-        const diperbaruiPada =
-            new Date().toISOString();
+        const diperbaruiPada = buatTimestamp();
 
         const rekomendasiBaru = {
             ...daftar[index],
@@ -2681,20 +2834,20 @@ if (konflik.bentrok) {
             rekomendasiBaru
         );
 
-        beriTahuPerubahan(
-            "recommendations",
-            "diedit"
-        );
-
-        beriTahuPerubahan(
-            "conflicts",
-            "rekomendasi_diedit"
-        );
-
-        beriTahuPerubahan(
-            "penggunaTergeser",
-            "rekomendasi_diedit"
-        );
+        beriTahuBanyakPerubahan([
+            {
+                koleksi: "recommendations",
+                aksi: "diedit"
+            },
+            {
+                koleksi: "conflicts",
+                aksi: "rekomendasi_diedit"
+            },
+            {
+                koleksi: "penggunaTergeser",
+                aksi: "rekomendasi_diedit"
+            }
+        ]);
 
         return {
             ...getKasusTergeserById(kasus.id),
@@ -2708,122 +2861,133 @@ if (konflik.bentrok) {
         };
     }
 
-    // ==========================================
-    // 32. MENGIRIM KONFLIK KE KEPALA LAB
-    // ==========================================
+    // ======================================================
+    // 34. MENGIRIM KELOMPOK KONFLIK KE KEPALA LAB
+    // ======================================================
 
     function kirimKonflik(pengajuanIds) {
-    if (
-        !Array.isArray(pengajuanIds) ||
-        pengajuanIds.length < 2
-    ) {
-        throw new Error(
-            "Minimal dua pengajuan diperlukan untuk membentuk konflik."
-        );
-    }
-
-    const ids = [
-        ...new Set(pengajuanIds.map(String))
-    ];
-
-    const submissions = ambilSemua("submissions");
-
-    const daftarPengajuan = submissions.filter(
-        (item) => ids.includes(String(item.id))
-    );
-
-    if (daftarPengajuan.length !== ids.length) {
-        throw new Error(
-            "Sebagian pengajuan tidak ditemukan."
-        );
-    }
-
-    // ======================================
-    // 1. CEK KONFLIK YANG SUDAH PERNAH DIKIRIM
-    // ======================================
-
-    const konflik = ambilSemua("conflicts");
-
-    const sudahAda = konflik.find(
-        (group) =>
-            group.status === "menunggu_keputusan" &&
-            Array.isArray(group.pengajuan) &&
-            group.pengajuan.length === ids.length &&
-            ids.every((id) =>
-                group.pengajuan.some(
-                    (item) =>
-                        String(item.id) === id
-                )
-            )
-    );
-
-    if (sudahAda) {
-        return salinData(sudahAda);
-    }
-
-    // ======================================
-    // 2. VALIDASI STATUS DAN BOOKING
-    // ======================================
-
-    const statusDiizinkan = [
-        "bentrok",
-        "verifikasi",
-        "menunggu_verifikasi",
-        "disetujui"
-    ];
-
-    const bookings = ambilSemuaBooking();
-
-    const tanggal = normalisasiPengajuan(
-        daftarPengajuan[0]
-    ).tanggal;
-
-    for (const pengajuan of daftarPengajuan) {
-        const status = String(
-            pengajuan.status || ""
-        ).toLowerCase();
-
-        const data = normalisasiPengajuan(
-            pengajuan
-        );
-
         if (
-            !statusDiizinkan.includes(status) ||
-            data.tanggal !== tanggal
+            !Array.isArray(pengajuanIds) ||
+            pengajuanIds.length < 2
         ) {
             throw new Error(
-                "Pengajuan tidak memenuhi syarat untuk dikirim sebagai kelompok konflik."
+                "Minimal dua pengajuan diperlukan untuk membentuk konflik."
             );
         }
 
-        // Booking yang sebelumnya disetujui
-        // harus benar-benar memiliki booking aktif.
-        if (status === "disetujui") {
-            const booking = bookings.find(
-                (item) =>
-                    String(item.sourceSubmissionId) ===
-                        String(pengajuan.id) ||
-                    String(item.id) ===
-                        `BOOK-${pengajuan.id}`
+        const ids = [
+            ...new Set(pengajuanIds.map(String))
+        ];
+
+        if (ids.length < 2) {
+            throw new Error(
+                "Minimal dua ID pengajuan yang berbeda diperlukan."
+            );
+        }
+
+        const submissions = ambilSemua("submissions");
+
+        const daftarPengajuan = submissions.filter(
+            (item) => ids.includes(String(item.id))
+        );
+
+        if (daftarPengajuan.length !== ids.length) {
+            throw new Error(
+                "Sebagian pengajuan tidak ditemukan."
+            );
+        }
+
+        const konflik = ambilSemua("conflicts");
+
+        // A. Mencegah pengiriman kelompok yang sama dua kali.
+        const sudahAda = konflik.find(
+            (group) =>
+                group.status === "menunggu_keputusan" &&
+                Array.isArray(group.pengajuan) &&
+                group.pengajuan.length === ids.length &&
+                ids.every((id) =>
+                    group.pengajuan.some(
+                        (item) =>
+                            String(item.id) === id
+                    )
+                )
+        );
+
+        if (sudahAda) {
+            return salinData(sudahAda);
+        }
+
+        // B. Validasi status, jadwal, dan kapasitas.
+        const statusDiizinkan = [
+            "bentrok",
+            "verifikasi",
+            "menunggu_verifikasi",
+            "disetujui"
+        ];
+
+        const bookings = ambilSemuaBooking();
+
+        const tanggal = normalisasiPengajuan(
+            daftarPengajuan[0]
+        ).tanggal;
+
+        for (const pengajuan of daftarPengajuan) {
+            const status = String(
+                pengajuan.status || ""
+            ).toLowerCase();
+
+            const data = normalisasiPengajuan(
+                pengajuan
             );
 
             if (
-                !booking ||
-                !bookingMasihAktif(booking)
+                !statusDiizinkan.includes(status) ||
+                data.tanggal !== tanggal
             ) {
                 throw new Error(
-                    `Booking pengajuan ${pengajuan.id} tidak lagi aktif.`
+                    "Pengajuan tidak memenuhi syarat untuk dikirim sebagai kelompok konflik."
                 );
             }
+
+            const rentang = validasiJadwal(data);
+
+            if (!rentang.valid) {
+                throw new Error(
+                    `Jadwal pengajuan ${pengajuan.id} tidak valid: ${rentang.pesan}`
+                );
+            }
+
+            const kapasitas = validasiKapasitas(data);
+
+            if (!kapasitas.valid) {
+                throw new Error(
+                    `Kapasitas pengajuan ${pengajuan.id} tidak valid: ${kapasitas.pesan}`
+                );
+            }
+
+            if (status === "disetujui") {
+                const booking = bookings.find(
+                    (item) =>
+                        String(item.sourceSubmissionId) ===
+                            String(pengajuan.id) ||
+                        String(item.id) ===
+                            `BOOK-${pengajuan.id}`
+                );
+
+                if (
+                    !booking ||
+                    !bookingMasihAktif(booking)
+                ) {
+                    throw new Error(
+                        `Booking pengajuan ${pengajuan.id} tidak lagi aktif.`
+                    );
+                }
+            }
         }
-    }
 
-    // ======================================
-    // 3. PASTIKAN ANGGOTA MEMILIKI BENTROKAN
-    // ======================================
-
-    const setiapAnggotaBerbenturan =
-        daftarPengajuan.every(
+        // C. Pastikan setiap anggota mempunyai hubungan
+        // bentrokan dengan anggota lain.
+        const salingBerhubungan = daftarPengajuan.every(
             (pengajuan, index) =>
                 daftarPengajuan.some(
                     (anggotaLain, indexLain) =>
@@ -2835,159 +2999,173 @@ if (konflik.bentrok) {
                 )
         );
 
-    if (!setiapAnggotaBerbenturan) {
-        throw new Error(
-            "Tidak semua pengajuan memiliki hubungan bentrokan dengan anggota kelompok lainnya."
-        );
-    }
-
-    // ======================================
-    // 4. PASTIKAN TIDAK ADA KONFLIK DI LUAR KELOMPOK
-    // ======================================
-
-    for (const pengajuan of daftarPengajuan) {
-        const hasilKonflik = cekKonflikJadwal(
-            pengajuan,
-            ids
-        );
-
-        if (hasilKonflik.bentrok) {
+        if (!salingBerhubungan) {
             throw new Error(
-                `Pengajuan ${pengajuan.id} masih berbenturan dengan booking lain di luar kelompok konflik.`
+                "Tidak semua pengajuan memiliki hubungan bentrokan dengan anggota kelompok lainnya."
             );
         }
-    }
 
-    // ======================================
-    // 5. MEMBUAT IDENTITAS KELOMPOK KONFLIK
-    // ======================================
+        // D. Pastikan kelompok merupakan satu komponen
+        // konflik yang saling terhubung.
+        const terhubung = new Set([0]);
 
-    const idKonflik =
-        `CONFLICT-${Date.now()}`;
+        let berubah = true;
 
-    const waktuPengiriman =
-        new Date().toISOString();
+        while (berubah) {
+            berubah = false;
 
-    // ======================================
-    // 6. MENGUBAH STATUS ANGGOTA KELOMPOK
-    // ======================================
+            daftarPengajuan.forEach(
+                (pengajuan, index) => {
+                    if (terhubung.has(index)) return;
 
-    const submissionsBaru = submissions.map(
-        (item) => {
-            if (!ids.includes(String(item.id))) {
-                return item;
+                    const terhubungDenganAnggota =
+                        [...terhubung].some(
+                            (indexLain) =>
+                                rentangBertabrakan(
+                                    pengajuan,
+                                    daftarPengajuan[indexLain]
+                                )
+                        );
+
+                    if (terhubungDenganAnggota) {
+                        terhubung.add(index);
+                        berubah = true;
+                    }
+                }
+            );
+        }
+
+        if (terhubung.size !== daftarPengajuan.length) {
+            throw new Error(
+                "Kelompok konflik terdiri dari beberapa kelompok yang tidak saling terhubung. Kirim setiap kelompok secara terpisah."
+            );
+        }
+
+        // E. Pastikan tidak ada konflik di luar kelompok.
+        for (const pengajuan of daftarPengajuan) {
+            const hasilKonflik = cekKonflikJadwal(
+                pengajuan,
+                ids
+            );
+
+            if (hasilKonflik.bentrok) {
+                throw new Error(
+                    `Pengajuan ${pengajuan.id} masih berbenturan dengan data di luar kelompok konflik.`
+                );
             }
+        }
 
-            return {
+        // F. Bentuk identitas konflik.
+        const idKonflik =
+            `CONFLICT-${Date.now()}`;
+
+        const waktuPengiriman = buatTimestamp();
+
+        const submissionsBaru = submissions.map(
+            (item) => {
+                if (!ids.includes(String(item.id))) {
+                    return item;
+                }
+
+                return {
+                    ...item,
+
+                    statusSebelumKeputusan:
+                        item.status,
+
+                    status: "menunggu_keputusan",
+
+                    konflikId: idKonflik,
+
+                    konflikDikirimPada:
+                        waktuPengiriman
+                };
+            }
+        );
+
+        const daftarAnggota = submissionsBaru.filter(
+            (item) =>
+                ids.includes(String(item.id))
+        );
+
+        const groupBaru = {
+            id: idKonflik,
+
+            jenis: "bentrok_jadwal",
+
+            tanggal,
+
+            status: "menunggu_keputusan",
+
+            dibuatPada: waktuPengiriman,
+
+            dikirimPada: waktuPengiriman,
+
+            pengajuan: daftarAnggota.map((item) => ({
                 ...item,
 
-                statusSebelumKeputusan:
-                    item.status,
+                pemohon:
+                    item.namaPemohon ||
+                    item.pemohon ||
+                    "-",
 
-                status: "menunggu_keputusan",
+                mulai:
+                    item.mulai ||
+                    item.waktuMulai,
 
-                konflikId: idKonflik,
+                selesai:
+                    item.selesai ||
+                    item.waktuSelesai
+            }))
+        };
 
-                konflikDikirimPada:
-                    waktuPengiriman
-            };
-        }
-    );
+        konflik.push(groupBaru);
 
-    const daftarAnggota = submissionsBaru.filter(
-        (item) =>
-            ids.includes(String(item.id))
-    );
+        // G. Simpan kedua koleksi sebagai satu operasi
+        // dengan mekanisme rollback.
+        simpanTransaksi({
+            submissions: submissionsBaru,
+            conflicts: konflik
+        });
 
-    // ======================================
-    // 7. MEMBENTUK DATA KELOMPOK KONFLIK
-    // ======================================
+        beriTahuBanyakPerubahan([
+            {
+                koleksi: "submissions",
+                aksi: "konflik_dikirim"
+            },
+            {
+                koleksi: "antrean",
+                aksi: "konflik_dikirim"
+            },
+            {
+                koleksi: "conflicts",
+                aksi: "konflik_dikirim"
+            },
+            {
+                koleksi: "bookings",
+                aksi: "konflik_dikirim"
+            }
+        ]);
 
-    const groupBaru = {
-        id: idKonflik,
-
-        jenis: "bentrok_jadwal",
-
-        tanggal,
-
-        status: "menunggu_keputusan",
-
-        dibuatPada: waktuPengiriman,
-
-        dikirimPada: waktuPengiriman,
-
-        pengajuan: daftarAnggota.map((item) => ({
-            ...item,
-
-            pemohon:
-                item.namaPemohon ||
-                item.pemohon ||
-                "-",
-
-            mulai:
-                item.mulai ||
-                item.waktuMulai,
-
-            selesai:
-                item.selesai ||
-                item.waktuSelesai
-        }))
-    };
-
-    // ======================================
-    // 8. MENYIMPAN DATA
-    // ======================================
-
-    simpanSemua(
-        "submissions",
-        submissionsBaru
-    );
-
-    konflik.push(groupBaru);
-
-    simpanSemua(
-        "conflicts",
-        konflik
-    );
-
-    // ======================================
-    // 9. MEMBERITAHU PERUBAHAN DATA
-    // ======================================
-
-    beriTahuPerubahan(
-        "submissions",
-        "konflik_dikirim"
-    );
-
-    beriTahuPerubahan(
-        "antrean",
-        "konflik_dikirim"
-    );
-
-    beriTahuPerubahan(
-        "conflicts",
-        "konflik_dikirim"
-    );
-
-    beriTahuPerubahan(
-        "bookings",
-        "konflik_dikirim"
-    );
-
-    return salinData(groupBaru);
-}
-
-    // ==========================================
-    // 33. MENGAMBIL KELOMPOK KONFLIK
-    // ==========================================
-
-    function getKonflik() {
-        return ambilSemua("conflicts");
+        return salinData(groupBaru);
     }
 
-    // ==========================================
-    // 34. KEPUTUSAN KONFLIK KEPALA LAB
-    // ==========================================
+    // ======================================================
+    // 35. MENGAMBIL KELOMPOK KONFLIK
+    // ======================================================
+
+    function getKonflik() {
+        // Hanya mengembalikan kelompok konflik.
+        // Kasus tergeser tetap diambil melalui getAll().
+        return ambilSemua("conflicts").filter(
+            (item) =>
+                Array.isArray(item.pengajuan)
+        );
+    }
+
+    // ======================================================
+    // 36. KEPUTUSAN KONFLIK KEPALA LAB
+    // ======================================================
 
     function putuskanKonflik(
         idKonflik,
@@ -3025,7 +3203,35 @@ if (konflik.bentrok) {
 
         const idTerpilih = String(selectedId);
 
-        const terpilih = group.pengajuan.find(
+        const submissions =
+            ambilSemua("submissions");
+
+        // Mengambil kondisi terbaru dari penyimpanan.
+        const anggotaSaatIni = group.pengajuan.map(
+            (anggota) => {
+                const data = submissions.find(
+                    (item) =>
+                        String(item.id) ===
+                        String(anggota.id)
+                );
+
+                if (!data) {
+                    throw new Error(
+                        `Pengajuan ${anggota.id} tidak ditemukan.`
+                    );
+                }
+
+                if (data.status !== "menunggu_keputusan") {
+                    throw new Error(
+                        `Status pengajuan ${anggota.id} sudah berubah.`
+                    );
+                }
+
+                return data;
+            }
+        );
+
+        const terpilih = anggotaSaatIni.find(
             (item) =>
                 String(item.id) === idTerpilih
         );
@@ -3036,26 +3242,7 @@ if (konflik.bentrok) {
             );
         }
 
-        const submissions =
-            ambilSemua("submissions");
-
-        const semuaTersedia = group.pengajuan.every(
-            (item) =>
-                submissions.some(
-                    (submission) =>
-                        String(submission.id) ===
-                        String(item.id) &&
-                        submission.status === "menunggu_keputusan"
-                )
-        );
-
-        if (!semuaTersedia) {
-            throw new Error(
-                "Data pengajuan berubah. Keputusan tidak dapat disimpan."
-            );
-        }
-
-        // Validasi ulang jadwal dan kapasitas pengajuan terpilih.
+        // Validasi ulang jadwal dan kapasitas.
         const dataTerpilih =
             normalisasiPengajuan(terpilih);
 
@@ -3072,95 +3259,104 @@ if (konflik.bentrok) {
             throw new Error(kapasitas.pesan);
         }
 
-        // Pastikan keputusan tidak menimbulkan bentrok baru
-        // dengan booking lain di luar kelompok konflik.
-    const idsKelompok = group.pengajuan.map(
-    (item) => String(item.id)
-);
+        // Pengecualian seluruh anggota kelompok.
+        const idsKelompok = group.pengajuan.map(
+            (item) => String(item.id)
+        );
 
-const konflikLain = cekKonflikJadwal(
-    dataTerpilih,
-    idsKelompok
-);
+        // Pastikan tidak ada konflik di luar kelompok.
+        const konflikLain = cekKonflikJadwal(
+            dataTerpilih,
+            idsKelompok
+        );
 
         if (konflikLain.bentrok) {
             throw new Error(
-                "Pengajuan pilihan masih bertabrakan dengan booking lain di luar kelompok konflik."
+                "Pengajuan pilihan masih bertabrakan dengan booking atau pengajuan aktif di luar kelompok konflik."
             );
         }
 
-        const waktuKeputusan =
-            new Date().toISOString();
+        const waktuKeputusan = buatTimestamp();
 
-        
         const displaced = [];
         const dikembalikan = [];
 
-        // Memproses status setiap anggota berdasarkan
-        // bentrokan terhadap pengajuan yang dipilih.
-        const submissionsBaru = submissions.map((item) => {
+        // Memproses seluruh anggota kelompok.
+        const submissionsBaru = submissions.map(
+            (item) => {
+                const anggotaKelompok =
+                    idsKelompok.includes(
+                        String(item.id)
+                    );
 
-            const anggotaKelompok = group.pengajuan.some(
-                (anggota) =>
-                    String(anggota.id) === String(item.id)
-            );
+                if (!anggotaKelompok) return item;
 
-            if (!anggotaKelompok) return item;
+                // A. Pengajuan yang dipilih.
+                if (String(item.id) === idTerpilih) {
+                    return {
+                        ...item,
 
-            // 1. Pengajuan yang dipilih Kepala Lab.
-            if (String(item.id) === idTerpilih) {
+                        status: "disetujui",
+
+                        keputusanKonflik: idKonflik,
+
+                        diputuskanPada: waktuKeputusan,
+
+                        konflikAktif: false
+                    };
+                }
+
+                // B. Periksa bentrokan langsung dengan pilihan.
+                const berbenturan = rentangBertabrakan(
+                    item,
+                    terpilih
+                );
+
+                // C. Pengajuan yang bertabrakan menjadi tergeser.
+                if (berbenturan) {
+                    displaced.push(String(item.id));
+
+                    return {
+                        ...item,
+
+                        status: "tergeser",
+
+                        keputusanKonflik: idKonflik,
+
+                        diputuskanPada: waktuKeputusan,
+
+                        konflikAktif: false
+                    };
+                }
+
+                // D. Pengajuan yang tidak bertabrakan
+                // dikembalikan ke status sebelumnya.
+                dikembalikan.push(String(item.id));
+
+                const statusSebelumnya =
+                    item.statusSebelumBentrok ||
+                    item.statusSebelumKeputusan ||
+                    "verifikasi";
+
+                const statusPulih =
+                    String(statusSebelumnya).toLowerCase() === "bentrok"
+                        ? "verifikasi"
+                        : statusSebelumnya;
+
                 return {
                     ...item,
-                    status: "disetujui",
+
+                    status: statusPulih,
+
                     keputusanKonflik: idKonflik,
+
                     diputuskanPada: waktuKeputusan,
+
                     konflikAktif: false
                 };
             }
+        );
 
-            // 2. Periksa bentrokan langsung dengan pilihan.
-            const berbenturan = rentangBertabrakan(
-                item,
-                terpilih
-            );
-
-            // 3. Jika berbenturan, masukkan ke kasus tergeser.
-            if (berbenturan) {
-                displaced.push(item.id);
-
-                return {
-                    ...item,
-                    status: "tergeser",
-                    keputusanKonflik: idKonflik,
-                    diputuskanPada: waktuKeputusan,
-                    konflikAktif: false
-                };
-            }
-
-            // 4. Jika tidak berbenturan, pulihkan status sebelumnya.
-            dikembalikan.push(item.id);
-
-            const statusSebelumnya =
-                item.statusSebelumBentrok ||
-                item.statusSebelumKeputusan ||
-                "verifikasi";
-
-            const statusPulih =
-                String(statusSebelumnya).toLowerCase() === "bentrok"
-                    ? "verifikasi"
-                    : statusSebelumnya;
-
-            return {
-                ...item,
-                status: statusPulih,
-                keputusanKonflik: idKonflik,
-                diputuskanPada: waktuKeputusan,
-                konflikAktif: false
-            };
-        });
-
-
-        // Cari nama pengajuan yang terpilih.
         const pengajuanTerpilih =
             submissionsBaru.find(
                 (item) =>
@@ -3173,24 +3369,23 @@ const konflikLain = cekKonflikJadwal(
             pengajuanTerpilih?.nama ||
             "-";
 
-        // Buat kasus rekomendasi untuk pengajuan tergeser.
         const konflikDiperbarui = [...konflik];
 
-        
-        const anggotaDiperbarui = group.pengajuan.map((item) => {
+        const anggotaDiperbarui = group.pengajuan.map(
+            (item) => {
+                const hasil = submissionsBaru.find(
+                    (submission) =>
+                        String(submission.id) ===
+                        String(item.id)
+                );
 
-            const hasil = submissionsBaru.find(
-                (submission) =>
-                    String(submission.id) === String(item.id)
-            );
-
-            return {
-                ...item,
-                ...(hasil || {}),
-                status: hasil?.status || item.status
-            };
-        });
-
+                return {
+                    ...item,
+                    ...(hasil || {}),
+                    status: hasil?.status || item.status
+                };
+            }
+        );
 
         // Memperbarui riwayat kelompok konflik.
         konflikDiperbarui[index] = {
@@ -3211,20 +3406,18 @@ const konflikLain = cekKonflikJadwal(
             pengajuan: anggotaDiperbarui
         };
 
-        // Membuat kasus rekomendasi untuk anggota tergeser.
+        // Membuat kasus rekomendasi untuk pengajuan tergeser.
         displaced.forEach((idPengajuan) => {
-
             const pengajuan = submissionsBaru.find(
                 (item) =>
-                    String(item.id) === String(idPengajuan)
+                    String(item.id) === idPengajuan
             );
 
             if (!pengajuan) return;
 
             const sudahAda = konflikDiperbarui.some(
                 (item) =>
-                    String(item.pengajuanId) ===
-                        String(idPengajuan) &&
+                    String(item.pengajuanId) === idPengajuan &&
                     item.jenis === "kasus_tergeser"
             );
 
@@ -3279,37 +3472,34 @@ const konflikLain = cekKonflikJadwal(
             });
         });
 
+        // Simpan hasil keputusan.
+        simpanTransaksi({
+            submissions: submissionsBaru,
+            conflicts: konflikDiperbarui
+        });
 
-
-        // Simpan seluruh hasil keputusan.
-        simpanSemua("submissions", submissionsBaru);
-
-        simpanSemua("conflicts", konflikDiperbarui);
-
-        beriTahuPerubahan(
-            "submissions",
-            "keputusan_konflik"
-        );
-
-        beriTahuPerubahan(
-            "antrean",
-            "keputusan_konflik"
-        );
-
-        beriTahuPerubahan(
-            "conflicts",
-            "keputusan_konflik"
-        );
-
-        beriTahuPerubahan(
-            "penggunaTergeser",
-            "kasus_tergeser"
-        );
-
-        beriTahuPerubahan(
-            "bookings",
-            "keputusan_konflik"
-        );
+        beriTahuBanyakPerubahan([
+            {
+                koleksi: "submissions",
+                aksi: "keputusan_konflik"
+            },
+            {
+                koleksi: "antrean",
+                aksi: "keputusan_konflik"
+            },
+            {
+                koleksi: "conflicts",
+                aksi: "keputusan_konflik"
+            },
+            {
+                koleksi: "penggunaTergeser",
+                aksi: "kasus_tergeser"
+            },
+            {
+                koleksi: "bookings",
+                aksi: "keputusan_konflik"
+            }
+        ]);
 
         return {
             berhasil: true,
@@ -3319,13 +3509,15 @@ const konflikLain = cekKonflikJadwal(
 
             terpilih: idTerpilih,
 
-            tergeser: displaced
+            tergeser: displaced,
+
+            tidakTergeser: dikembalikan
         };
     }
 
-    // ==========================================
-    // 35. EKSPOR LAYANAN SILAB
-    // ==========================================
+    // ======================================================
+    // 37. EKSPOR LAYANAN SILAB
+    // ======================================================
 
     window.SILABService = Object.freeze({
 
@@ -3357,6 +3549,7 @@ const konflikLain = cekKonflikJadwal(
         kirimRekomendasi,
         editRekomendasi,
         ambilRekomendasiKasus,
+        cekKonflikRekomendasi,
 
         // Konflik Kepala Lab
         kirimKonflik,

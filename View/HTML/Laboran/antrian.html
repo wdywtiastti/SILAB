@@ -637,29 +637,51 @@
             </div>
 
 
-            <!-- ==================================
-                 PANEL 2: BOOKING DISETUJUI
-            =================================== -->
+<!-- ==================================
+     PANEL 2: BOOKING DISETUJUI
+=================================== -->
 
-            <section
-                class="review-information"
-                data-panel="disetujui"
-                hidden
-            >
+<section
+    class="review-information"
+    data-panel="disetujui"
+    hidden
+>
 
-                <i class="bi bi-check-circle-fill"></i>
+    <i class="bi bi-check-circle-fill"></i>
 
-                <span>
-                    Pengajuan ini sudah disetujui dan tercatat
-                    sebagai booking laboratorium.
+    <span>
+        Pengajuan ini sudah disetujui dan tercatat
+        sebagai booking laboratorium.
 
-                    Booking tetap tercatat sampai terdapat
-                    keputusan atau tindakan resmi terhadapnya.
-                </span>
+        Booking masih dapat dibatalkan oleh Laboran
+        selama pengguna belum melakukan presensi.
+    </span>
 
-            </section>
+</section>
 
+<!-- AKSI PEMBATALAN PERSETUJUAN -->
 
+<div
+    class="verification-actions"
+    data-panel="disetujui"
+    hidden
+>
+
+    <button
+        type="button"
+        class="btn-reject"
+        data-aksi-batalkan-persetujuan
+    >
+
+        <i class="bi bi-x-circle"></i>
+
+        Batalkan Persetujuan
+
+    </button>
+
+</div>
+
+            
             <!-- ==================================
                  PANEL 3: BENTROK PENGAJUAN
             =================================== -->
@@ -835,21 +857,20 @@
          10. JAVASCRIPT
     ======================================= -->
 
-    <!-- STORAGE -->
+    <!-- SHARED STORAGE -->
+<script src="../../JS/shared/storage.js"></script>
 
-    <script src="../../JS/shared/storage.js"></script>
+<!-- UTILITAS WAKTU -->
+<script src="../../JS/laboran/utils/waktu.js"></script>
 
-    <!-- UTILITAS WAKTU -->
+<!-- DATA SIMULASI -->
+<script src="../../JS/laboran/data_uji.js"></script>
 
-    <script src="../../JS/laboran/utils/waktu.js"></script>
+<!-- LAYANAN DATA -->
+<script src="../../JS/laboran/layanan.js"></script>
 
-    <!-- LAYANAN DATA LABORAN -->
-
-    <script src="../../JS/laboran/layanan.js"></script>
-
-    <!-- LOGIKA HALAMAN ANTREAN -->
-
-    <script src="../../JS/laboran/antrean.js"></script>
+<!-- MODUL ANTREAN -->
+<script src="../../JS/laboran/antrean.js"></script>
 
 </body>
 
