@@ -854,16 +854,8 @@
 
     weightList.innerHTML = "";
 
-    // Cari kelompok Jenis Kegiatan.
-    const rule = state.config.rules.find(
-      (item) =>
-        String(item.name || "")
-          .trim()
-          .toLowerCase() === "jenis kegiatan",
-    );
-
-    // Tampilkan slider Jenis Kegiatan.
-    if (rule) {
+    // Tampilkan seluruh kelompok aturan secara dinamis.
+    state.config.rules.forEach((rule) => {
       const weight = Number(rule.weight) || 0;
 
       const item = document.createElement("div");
@@ -899,16 +891,17 @@
       slider.dataset.ruleId = rule.id;
 
       item.append(heading, slider);
-      weightList.appendChild(item);
-    }
 
-    // Tampilkan nilai slider Fasilitas Laboratorium.
+      weightList.appendChild(item);
+    });
+
+    // Tetap tampilkan bobot Fasilitas Laboratorium.
     if (elements.facilityGroupSlider) {
       elements.facilityGroupSlider.value =
         Number(state.config.facilityGroupWeight) || 0;
     }
 
-    // Hitung total kedua bobot.
+    // Hitung total seluruh bobot.
     updateWeightTotal();
   }
 
