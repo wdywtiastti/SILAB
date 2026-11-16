@@ -672,7 +672,7 @@
   color: #33266a;
   font-size: 19px;
   font-weight: 800;
-    transition: color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 /* TOTAL BOBOT MELEBIHI 100% */
@@ -1511,4 +1511,799 @@
 
 .algorithm-toast.error .toast-icon {
   color: #ef4444;
+}
+
+/* =========================================
+   MANAJEMEN FASILITAS
+========================================= */
+
+.facility-panel {
+  margin-top: 12px;
+}
+
+.facility-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.facility-header h3 {
+  margin-bottom: 5px;
+  color: #202b40;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.facility-header p {
+  color: #667a9b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.btn-add-facility {
+  min-height: 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  color: #fff;
+  background: #33266a;
+  border: 1px solid #33266a;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.btn-add-facility:hover {
+  background: #271d52;
+}
+
+.facility-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.facility-summary-item {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  color: #52647e;
+  background: #fff;
+  border: 1px solid #e3e7ef;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.facility-summary-item i {
+  color: #5145c5;
+}
+
+.facility-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px;
+  background: #fff;
+  border: 1px solid #e3e8f0;
+  border-radius: 9px;
+}
+
+.facility-information {
+  flex: 1;
+  min-width: 0;
+}
+
+.facility-information strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #263249;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.facility-information p {
+  color: #8291a9;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.facility-capacity {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  color: #5145c5;
+  background: #f0eeff;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.facility-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.facility-empty {
+  padding: 25px 12px;
+  color: #8291a9;
+  font-size: 11px;
+  text-align: center;
+  border: 1px dashed #dce2eb;
+  border-radius: 9px;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 700px) {
+  .facility-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .btn-add-facility {
+    width: 100%;
+  }
+
+  .facility-item {
+    flex-wrap: wrap;
+  }
+
+  .facility-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+.criteria-weight-control {
+  width: 100%;
+  margin-top: 10px;
+  max-width: 320px;
+}
+
+.criteria-weight-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.criteria-weight-heading small {
+  color: #8291a9;
+  font-size: 10px;
+}
+
+.criteria-weight-value {
+  color: #31236f;
+  font-size: 11px;
+}
+
+.criteria-weight-slider {
+  width: 100%;
+  accent-color: #39277e;
+  cursor: pointer;
+}
+
+.criteria-weight-status {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.criteria-weight-status.valid {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.criteria-weight-status.invalid {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Baris kriteria */
+.criteria-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.criteria-information {
+  flex: 1;
+  min-width: 0;
+}
+
+.criteria-information strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.criteria-information p {
+  margin-top: 4px;
+  font-size: 10px;
+  color: #8291a9;
+}
+
+/* Input persentase dengan spinner bawaan browser */
+.criteria-weight-input {
+  width: 85px;
+  min-width: 85px;
+  height: 38px;
+  padding: 0 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #31236f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.criteria-weight-input:focus {
+  outline: none;
+  border-color: #39277e;
+  box-shadow: 0 0 0 3px rgba(57, 39, 126, 0.1);
+}
+
+/* Tombol simpan di bawah daftar kriteria */
+.btn-save-criteria-weights {
+  width: 100%;
+  margin-top: 16px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #39277e;
+  color: white;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-save-criteria-weights:hover {
+  background: #2c1d65;
+}
+
+.btn-save-criteria-weights:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save-criteria-weights[hidden] {
+  display: none;
+}
+
+.criteria-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 13px 16px;
+  background: #f7f6fc;
+  border: 1px solid #e7e3f3;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #344054;
+}
+
+.criteria-total-value {
+  font-size: 19px;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.criteria-total-value.valid {
+  color: #16a34a;
+}
+
+.criteria-total-value.invalid {
+  color: #dc2626;
+}
+
+.btn-save-criteria-weights {
+  margin-top: 12px;
+}
+
+/* =========================================
+   PEMBOBOTAN KRITERIA - SILAB
+========================================= */
+
+/* Baris total persentase */
+.criteria-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 18px;
+
+  background: #f7f6fc;
+  border: 1px solid #e7e3f3;
+  border-radius: 10px;
+
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.criteria-total-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #dc2626;
+}
+
+.criteria-total-value.valid {
+  color: #16a34a;
+}
+
+.criteria-total-value.invalid {
+  color: #dc2626;
+}
+
+/* Input persentase */
+.criteria-weight-input {
+  width: 85px;
+  min-width: 85px;
+  height: 36px;
+
+  padding: 0 8px;
+
+  border: 1px solid #d5dde9;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #33266a;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.criteria-weight-input:focus {
+  outline: none;
+  border-color: #39277e;
+  box-shadow: 0 0 0 3px rgba(57, 39, 126, 0.1);
+}
+
+/* Tombol simpan perubahan */
+.btn-save-criteria-weights {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 42px;
+
+  margin-top: 12px;
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #39277e;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-save-criteria-weights:hover {
+  background: #2c1d65;
+  box-shadow: 0 4px 12px rgba(57, 39, 126, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-save-criteria-weights:active {
+  transform: translateY(0);
+}
+
+.btn-save-criteria-weights:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-save-criteria-weights[hidden] {
+  display: none;
+}
+
+/* Susunan kriteria */
+.criteria-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.criteria-information {
+  flex: 1;
+  min-width: 0;
+}
+
+/* =====================================
+   MANAJEMEN ALGORITMA - BOBOT KRITERIA
+===================================== */
+
+.criteria-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: #f7f6fc;
+  border: 1px solid #e7e3f3;
+  border-radius: 10px;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.criteria-total-value {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.criteria-total-value.valid {
+  color: #16a34a;
+}
+
+.criteria-total-value.invalid {
+  color: #dc2626;
+}
+
+.btn-save-criteria-weights {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 42px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 9px;
+  background: #39277e;
+  color: white;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save-criteria-weights:hover {
+  background: #2c1d65;
+  box-shadow: 0 4px 12px rgba(57, 39, 126, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-save-criteria-weights:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save-criteria-weights[hidden] {
+  display: none;
+}
+
+.criteria-weight-input {
+  width: 85px;
+  min-width: 85px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #d5dde9;
+  border-radius: 8px;
+  background: white;
+  color: #33266a;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.criteria-weight-input:focus {
+  outline: none;
+  border-color: #39277e;
+  box-shadow: 0 0 0 3px rgba(57, 39, 126, 0.1);
+}
+
+/* TOTAL PERSENTASE KRITERIA */
+.criteria-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: #f7f6fc;
+  border: 1px solid #e7e3f3;
+  border-radius: 10px;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.criteria-total-value {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.criteria-total-value.valid {
+  color: #16a34a;
+}
+
+.criteria-total-value.invalid {
+  color: #dc2626;
+}
+
+/* TOMBOL SIMPAN */
+button.btn-save-criteria-weights {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100% !important;
+  min-height: 42px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 9px;
+  background: #39277e !important;
+  color: #ffffff !important;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button.btn-save-criteria-weights:hover {
+  background: #2c1d65 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(57, 39, 126, 0.18);
+}
+
+button.btn-save-criteria-weights[hidden] {
+  display: none !important;
+}
+
+/* =========================================
+   PEMBOBOTAN FASILITAS
+========================================= */
+
+.facility-weight-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e7eaf0;
+}
+
+.facility-weight-heading {
+  margin-bottom: 15px;
+}
+
+.facility-weight-heading strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #263249;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.facility-weight-heading small {
+  color: #8791a3;
+  font-size: 10px;
+}
+
+.facility-weight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.facility-weight-slider {
+  width: 100%;
+  height: 4px;
+  display: block;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #e0e6ef;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.facility-weight-slider::-webkit-slider-thumb {
+  width: 13px;
+  height: 13px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #5145c5;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #5145c5;
+}
+
+.facility-weight-slider::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  background: #5145c5;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #5145c5;
+}
+
+.facility-weight-slider:focus {
+  outline: 2px solid rgba(81, 69, 197, 0.15);
+  outline-offset: 4px;
+}
+
+.facility-weight-total {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 11px;
+  margin-top: 14px;
+  background: #f8f7fc;
+  border: 1px solid #ebe8f4;
+  border-radius: 8px;
+}
+
+.facility-weight-total span {
+  color: #52647e;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.facility-weight-total strong {
+  color: #33266a;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.facility-weight-total strong.weight-over-limit {
+  color: #dc2626;
+}
+
+#facilityWeightWarning {
+  margin: 8px 0 0;
+  color: #dc2626;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.btn-save-facility-weight {
+  min-width: 75px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  color: #202b40;
+  background: #f7f8fa;
+  border: 1px solid #e6e8ed;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.btn-save-facility-weight:hover {
+  color: #ffffff;
+  background: #5145c5;
+  border-color: #5145c5;
+}
+
+/* INPUT BOBOT SETIAP FASILITAS */
+
+.facility-weight-control {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 100px;
+}
+
+.facility-weight-control label {
+  font-size: 10px;
+  color: #8291a9;
+}
+
+.facility-weight-input {
+  width: 100px;
+  padding: 9px 10px;
+  border: 1px solid #dce3ef;
+  border-radius: 7px;
+  background: #f5f7fa;
+  color: #243b80;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =====================================
+   STANDAR TOMBOL SIMPAN SILAB
+===================================== */
+
+button.btn-save-criteria-weights,
+button.btn-save-facility-weight {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  width: 149px !important;
+  min-width: 149px;
+  height: 33px;
+  min-height: 33px;
+
+  margin-top: 12px;
+  margin-left: auto;
+  padding: 0 12px;
+
+  background: #911e3f !important;
+  color: #ffffff !important;
+
+  border: 1px solid #911e3f !important;
+  border-radius: 7px;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button.btn-save-criteria-weights:hover,
+button.btn-save-facility-weight:hover {
+  background: #761630 !important;
+  border-color: #761630 !important;
+}
+
+button.btn-save-criteria-weights:disabled,
+button.btn-save-facility-weight:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.btn-save-criteria-weights[hidden] {
+  display: none !important;
 }

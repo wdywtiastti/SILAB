@@ -7,102 +7,42 @@
    * Modul ini hanya mengelola konfigurasi.
    */
 
-  const STORAGE_KEY = window.SILABStorage?.KEYS?.ALGORITHM_CONFIG;
-
   const DEFAULT_CONFIG = {
-    rules: [
-      {
-        id: "RB001",
-        name: "Jenis Kegiatan",
-        parameter: "Kategori kegiatan",
-        description:
-          "Mengklasifikasikan jenis kegiatan peminjaman laboratorium berdasarkan tingkat kepentingan akademik dan organisasi untuk menentukan prioritas penggunaan.",
-        criteria: [
-          {
-            id: "CR001",
-            order: 1,
-            name: "Kelas Pengganti",
-            description:
-              "Kegiatan pengganti perkuliahan yang memiliki kepentingan akademik.",
-          },
-          {
-            id: "CR002",
-            order: 2,
-            name: "Asistensi dan Responsi",
-            description:
-              "Kegiatan pendampingan pembelajaran dan penguatan pemahaman materi.",
-          },
-          {
-            id: "CR003",
-            order: 3,
-            name: "HMTI",
-            description:
-              "Kegiatan organisasi Himpunan Mahasiswa Teknik Informatika.",
-          },
-          {
-            id: "CR004",
-            order: 4,
-            name: "Belajar Mandiri",
-            description:
-              "Kegiatan belajar mandiri yang dilakukan oleh mahasiswa.",
-          },
-        ],
-      },
-      {
-        id: "RB002",
-        name: "Waktu Pengajuan",
-        parameter: "Urutan waktu pengajuan (FCFS)",
-        description:
-          "Menentukan prioritas pengajuan berdasarkan urutan waktu pengiriman permohonan untuk menyelesaikan bentrokan jadwal dengan kebutuhan fasilitas yang sama.",
-        criteria: [
-          {
-            id: "CR005",
-            order: 1,
-            name: "Urutan Waktu Pengajuan (FCFS)",
-            description:
-              "Apabila terjadi bentrokan dengan kebutuhan PC dan kursi yang sama, pengajuan yang dikirim lebih dahulu akan diprioritaskan (FCFS).",
-          },
-        ],
-      },
-      {
-        id: "RB003",
-        name: "Fasilitas Laboratorium",
-        parameter: "Jumlah PC dan kursi",
-        description:
-          "Memeriksa kebutuhan fasilitas komputer dan kursi yang diajukan pengguna agar tidak melebihi kapasitas laboratorium.",
-        criteria: [
-          {
-            id: "CR006",
-            order: 1,
-            name: "PC",
-            description: "Jumlah PC yang diajukan maksimal 36 unit.",
-          },
-          {
-            id: "CR007",
-            order: 2,
-            name: "Kursi",
-            description: "Jumlah kursi yang diajukan maksimal 36 unit.",
-          },
-        ],
-      },
-    ],
-
-    weights: {
-      jenisKegiatan: 35,
-      waktuPengajuan: 20,
-      kebutuhanFasilitas: 15,
-    },
+    rules: [],
+    facilities: [],
+    groups: [],
+    facilityGroupWeight: 0,
+    version: 1,
+    updatedAt: null,
   };
 
+  const STORAGE_KEY = window.SILABStorage?.KEYS?.ALGORITHM_CONFIG;
+
   const state = {
+    selectedFacilityId: null,
+    deleteFacilityId: null,
     config: null,
     selectedRuleId: null,
     selectedCriteriaId: null,
     deleteTarget: null,
     expandedBeforeRender: new Set(),
+    pendingCriteriaWeights: {},
   };
 
   const elements = {
+    facilityList: document.querySelector(".facility-list"),
+
+    facilityCount: document.getElementById("facilityCount"),
+
+    facilityCapacity: document.getElementById("facilityCapacity"),
+
+    addFacilityToggle: document.getElementById("modalTambahFasilitas"),
+
+    deleteFacilityToggle: document.getElementById("modalHapusFasilitas"),
+
+    facilityForm: document.getElementById("facilityForm"),
+
+    deleteFacilityButton: document.getElementById("btnDeleteFacility"),
     ruleList: document.querySelector(".rule-list"),
     ruleSummary: document.querySelector(".rule-summary"),
     expandAll: document.querySelector(".btn-expand-all"),
@@ -115,10 +55,24 @@
     editCriteriaToggle: document.getElementById("modalEditKriteria"),
     deleteCriteriaToggle: document.getElementById("modalHapusKriteria"),
 
-    weightSliders: [...document.querySelectorAll(".weight-slider")],
+    weightList: document.querySelector(".weight-list"),
 
     weightTotal: document.querySelector(".weight-total strong"),
     saveWeights: document.querySelector(".btn-save-weight"),
+
+    facilityGroupSlider: document.getElementById("facilityGroupWeightSlider"),
+
+    facilityGroupWeightValue: document.getElementById(
+      "facilityGroupWeightValue",
+    ),
+
+    weightWarning: document.getElementById("weightWarning"),
+
+    facilityWeightTotal: document.getElementById("totalFacilityWeightValue"),
+
+    facilityWeightWarning: document.getElementById("facilityWeightWarning"),
+
+    saveFacilityWeights: document.querySelector(".btn-save-facility-weight"),
   };
 
   // Menyalin objek agar data awal tidak berubah.
@@ -139,63 +93,76 @@
 
   // Menyimpan konfigurasi.
   function saveConfig() {
-    if (!window.SILABStorage || !STORAGE_KEY) {
-      console.error("SILABStorage atau key ALGORITHM_CONFIG tidak tersedia.");
+    try {
+      if (!window.SILABStorage || !STORAGE_KEY) {
+        console.error("SILABStorage atau key tidak tersedia.");
 
-      showMessage(
-        "Penyimpanan SILAB belum tersedia. Periksa storage.js.",
-        "error",
-      );
+        showMessage("Penyimpanan belum tersedia.", "error");
+
+        return false;
+      }
+
+      // Simpan konfigurasi.
+      const result = window.SILABStorage.set(STORAGE_KEY, state.config);
+
+      if (result === false) {
+        throw new Error("Storage menolak penyimpanan.");
+      }
+
+      // Verifikasi hasil penyimpanan.
+      const verified = window.SILABStorage.get(STORAGE_KEY, null);
+
+      if (
+        !verified ||
+        JSON.stringify(verified) !== JSON.stringify(state.config)
+      ) {
+        throw new Error("Verifikasi penyimpanan gagal.");
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Gagal menyimpan konfigurasi:", error);
+
+      showMessage("Gagal menyimpan data. Periksa Console.", "error");
 
       return false;
     }
-
-    const saved = window.SILABStorage.set(STORAGE_KEY, state.config);
-
-    if (!saved) {
-      showMessage("Perubahan gagal disimpan ke LocalStorage.", "error");
-
-      return false;
-    }
-
-    return true;
   }
 
   // Mengambil konfigurasi.
+
   function loadConfig() {
     if (!window.SILABStorage || !STORAGE_KEY) {
-      console.error(
-        "Pastikan storage.js dimuat sebelum manajemen_algoritma.js.",
-      );
+      console.error("SILABStorage belum tersedia.");
 
       return clone(DEFAULT_CONFIG);
     }
 
     const stored = window.SILABStorage.get(STORAGE_KEY, null);
 
-    if (
-      !stored ||
-      !Array.isArray(stored.rules) ||
-      !stored.weights ||
-      typeof stored.weights !== "object"
-    ) {
-      const initial = clone(DEFAULT_CONFIG);
-
-      window.SILABStorage.set(STORAGE_KEY, initial);
-
-      return initial;
+    // Tidak membuat data bawaan.
+    if (!stored || typeof stored !== "object") {
+      return clone(DEFAULT_CONFIG);
     }
 
     return {
-      rules: stored.rules.map((rule) => ({
-        ...rule,
-        criteria: Array.isArray(rule.criteria) ? rule.criteria : [],
-      })),
+      ...clone(DEFAULT_CONFIG),
+      ...stored,
 
-      weights: {
-        ...DEFAULT_CONFIG.weights,
-        ...stored.weights,
-      },
+      facilityGroupWeight: Number(stored.facilityGroupWeight) || 0,
+
+      // Pastikan fasilitas benar-benar dinamis.
+      facilities: Array.isArray(stored.facilities)
+        ? stored.facilities.map((facility) => ({
+            ...facility,
+            weight: Number(facility.weight) || 0,
+          }))
+        : [],
+
+      // Struktur sementara untuk kompatibilitas renderer lama.
+      rules: Array.isArray(stored.rules) ? stored.rules : [],
+
+      groups: Array.isArray(stored.groups) ? stored.groups : [],
     };
   }
 
@@ -283,6 +250,307 @@
 
   function getCriteria(rule, criteriaId) {
     return rule?.criteria.find((item) => item.id === criteriaId) || null;
+  }
+
+  // =========================================
+  // MANAJEMEN FASILITAS
+  // =========================================
+
+  // Mengambil fasilitas berdasarkan ID.
+  function getFacility(facilityId) {
+    return (
+      state.config.facilities.find((facility) => facility.id === facilityId) ||
+      null
+    );
+  }
+
+  // Menampilkan seluruh fasilitas.
+  function renderFacilities() {
+    const list = elements.facilityList;
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    const facilities = state.config.facilities;
+
+    // Menghitung ringkasan.
+    const totalCapacity = facilities.reduce(
+      (total, facility) => total + (Number(facility.capacity) || 0),
+      0,
+    );
+
+    if (elements.facilityCount) {
+      elements.facilityCount.textContent = `${facilities.length} Fasilitas`;
+    }
+
+    if (elements.facilityCapacity) {
+      elements.facilityCapacity.textContent = `${totalCapacity} Kapasitas`;
+    }
+
+    // Tampilan jika belum ada fasilitas.
+    if (facilities.length === 0) {
+      const empty = document.createElement("div");
+
+      empty.className = "facility-empty";
+
+      empty.textContent =
+        "Belum ada fasilitas. Silakan tambahkan fasilitas laboratorium.";
+
+      list.appendChild(empty);
+
+      return;
+    }
+
+    // Menampilkan setiap fasilitas.
+    facilities.forEach((facility) => {
+      const item = document.createElement("div");
+
+      item.className = "facility-item";
+      item.dataset.facilityId = facility.id;
+
+      const information = document.createElement("div");
+
+      information.className = "facility-information";
+
+      const name = document.createElement("strong");
+
+      name.textContent = facility.name;
+
+      const description = document.createElement("p");
+
+      description.textContent = facility.description || "Tidak ada deskripsi.";
+
+      information.append(name, description);
+
+      const capacity = document.createElement("span");
+
+      capacity.className = "facility-capacity";
+
+      capacity.innerHTML =
+        '<i class="bi bi-box-seam"></i> ' + `${Number(facility.capacity)} Unit`;
+
+      const actions = document.createElement("div");
+
+      actions.className = "facility-actions";
+
+      const editButton = document.createElement("button");
+
+      editButton.type = "button";
+      editButton.className = "edit-button";
+      editButton.dataset.action = "edit-facility";
+      editButton.title = "Edit fasilitas";
+      editButton.setAttribute("aria-label", "Edit fasilitas");
+
+      editButton.innerHTML = '<i class="bi bi-pencil-square"></i>';
+
+      const deleteButton = document.createElement("button");
+
+      deleteButton.type = "button";
+      deleteButton.className = "delete-button";
+      deleteButton.dataset.action = "delete-facility";
+      deleteButton.title = "Hapus fasilitas";
+      deleteButton.setAttribute("aria-label", "Hapus fasilitas");
+
+      deleteButton.innerHTML = '<i class="bi bi-trash3"></i>';
+
+      actions.append(editButton, deleteButton);
+
+      // Input bobot fasilitas
+      const weightWrapper = document.createElement("div");
+      weightWrapper.className = "facility-weight-control";
+
+      const weightLabel = document.createElement("label");
+      weightLabel.textContent = "Bobot (%)";
+
+      const weightInput = document.createElement("input");
+
+      weightInput.type = "number";
+      weightInput.className = "facility-weight-input";
+      weightInput.min = "0";
+      weightInput.max = "100";
+      weightInput.step = "1";
+      weightInput.value = Number(facility.weight) || 0;
+
+      weightInput.dataset.facilityId = facility.id;
+
+      weightInput.setAttribute(
+        "aria-label",
+        `Bobot fasilitas ${facility.name}`,
+      );
+
+      weightWrapper.append(weightLabel, weightInput);
+
+      // Gabungkan seluruh elemen
+      item.append(information, capacity, weightWrapper, actions);
+
+      list.appendChild(item);
+    });
+    updateFacilityWeightTotal();
+  }
+
+  // Membuka modal tambah fasilitas.
+  function openAddFacilityModal() {
+    const form = elements.facilityForm;
+
+    if (!form) return;
+
+    form.reset();
+
+    state.selectedFacilityId = null;
+
+    document.getElementById("facilityModalTitle").textContent =
+      "Tambah Fasilitas";
+
+    openModal(elements.addFacilityToggle);
+  }
+
+  // Membuka modal edit fasilitas.
+  function openEditFacilityModal(facilityId) {
+    const facility = getFacility(facilityId);
+
+    const form = elements.facilityForm;
+
+    if (!facility || !form) return;
+
+    form.elements.facilityName.value = facility.name;
+
+    form.elements.facilityCapacity.value = facility.capacity;
+
+    form.elements.facilityDescription.value = facility.description || "";
+
+    state.selectedFacilityId = facilityId;
+
+    document.getElementById("facilityModalTitle").textContent =
+      "Edit Fasilitas";
+
+    openModal(elements.addFacilityToggle);
+  }
+
+  // Menyimpan fasilitas baru atau perubahan fasilitas.
+  function saveFacility(event) {
+    event.preventDefault();
+
+    const form = elements.facilityForm;
+
+    if (!form) return;
+
+    const name = form.elements.facilityName.value.trim();
+
+    const capacityInput = form.elements.facilityCapacity.value;
+
+    const description = form.elements.facilityDescription.value.trim();
+
+    const capacity = Number(capacityInput);
+
+    if (!name) {
+      return showMessage("Nama fasilitas wajib diisi.", "error");
+    }
+
+    if (capacityInput === "" || !Number.isInteger(capacity) || capacity < 1) {
+      return showMessage(
+        "Kapasitas harus berupa bilangan bulat minimal 1.",
+        "error",
+      );
+    }
+
+    // Validasi nama duplikat.
+    const duplicate = state.config.facilities.some(
+      (facility) =>
+        facility.id !== state.selectedFacilityId &&
+        facility.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (duplicate) {
+      return showMessage("Nama fasilitas sudah digunakan.", "error");
+    }
+
+    // Mode edit.
+    if (state.selectedFacilityId) {
+      const facility = getFacility(state.selectedFacilityId);
+
+      if (!facility) return;
+
+      const previous = { ...facility };
+
+      facility.name = name;
+      facility.capacity = capacity;
+      facility.description = description;
+
+      if (!saveConfig()) {
+        Object.assign(facility, previous);
+        return;
+      }
+
+      showMessage("Fasilitas berhasil diperbarui.");
+    }
+
+    // Mode tambah.
+    else {
+      const facility = {
+        id: createId("FS", state.config.facilities),
+        name,
+        capacity,
+        description,
+        weight: 0,
+        active: true,
+      };
+
+      state.config.facilities.push(facility);
+
+      if (!saveConfig()) {
+        state.config.facilities.pop();
+        return;
+      }
+
+      showMessage("Fasilitas berhasil ditambahkan.");
+    }
+
+    closeModal(elements.addFacilityToggle);
+
+    state.selectedFacilityId = null;
+
+    renderFacilities();
+  }
+
+  // Membuka konfirmasi hapus fasilitas.
+  function confirmDeleteFacility(facilityId) {
+    if (!getFacility(facilityId)) return;
+
+    state.deleteFacilityId = facilityId;
+
+    openModal(elements.deleteFacilityToggle);
+  }
+
+  // Menghapus fasilitas.
+  function deleteFacility() {
+    const facility = getFacility(state.deleteFacilityId);
+
+    if (!facility) return;
+
+    const index = state.config.facilities.findIndex(
+      (item) => item.id === state.deleteFacilityId,
+    );
+
+    if (index === -1) return;
+
+    const deletedFacility = state.config.facilities[index];
+
+    state.config.facilities.splice(index, 1);
+
+    if (!saveConfig()) {
+      state.config.facilities.splice(index, 0, deletedFacility);
+
+      return;
+    }
+
+    closeModal(elements.deleteFacilityToggle);
+
+    state.deleteFacilityId = null;
+
+    renderFacilities();
+
+    showMessage("Fasilitas berhasil dihapus.");
   }
 
   // Memperbarui ringkasan aturan dan kriteria.
@@ -433,21 +701,39 @@
           row.dataset.criteriaId = criteria.id;
 
           const information = document.createElement("div");
-
           information.className = "criteria-information";
 
           const name = document.createElement("strong");
-
-          name.textContent = `${criteria.order}. ${criteria.name}`;
+          name.textContent = criteria.name;
 
           const text = document.createElement("p");
-
           text.textContent = criteria.description || "";
 
           information.append(name, text);
 
-          const criteriaActions = document.createElement("div");
+          // Input persentase dengan tombol panah atas/bawah.
+          const criteriaWeight = document.createElement("input");
 
+          criteriaWeight.type = "number";
+          criteriaWeight.className = "criteria-weight-input";
+          criteriaWeight.min = "0";
+          criteriaWeight.max = "100";
+          criteriaWeight.step = "1";
+          const pendingValue =
+            state.pendingCriteriaWeights[rule.id]?.[criteria.id];
+
+          criteriaWeight.value =
+            pendingValue !== undefined
+              ? pendingValue
+              : Number(criteria.weight) || 0;
+          criteriaWeight.dataset.criteriaId = criteria.id;
+          criteriaWeight.dataset.ruleId = rule.id;
+          criteriaWeight.setAttribute(
+            "aria-label",
+            `Persentase ${criteria.name}`,
+          );
+
+          const criteriaActions = document.createElement("div");
           criteriaActions.className = "criteria-actions";
 
           criteriaActions.append(
@@ -457,7 +743,6 @@
               "Edit kriteria",
               "edit-criteria",
             ),
-
             makeActionButton(
               "delete-button",
               "bi-trash3",
@@ -466,8 +751,7 @@
             ),
           );
 
-          row.append(information, criteriaActions);
-
+          row.append(information, criteriaWeight, criteriaActions);
           criteriaList.appendChild(row);
         });
 
@@ -484,9 +768,43 @@
 
       detail.append(criteriaHeading, criteriaList);
 
+      // Ringkasan total persentase kriteria
+      const totalWeightRow = document.createElement("div");
+      totalWeightRow.className = "criteria-total-row";
+
+      const totalWeightLabel = document.createElement("span");
+      totalWeightLabel.textContent = "Total Persentase";
+
+      const totalWeightValue = document.createElement("strong");
+      totalWeightValue.className = "criteria-total-value";
+      totalWeightValue.dataset.ruleId = rule.id;
+
+      totalWeightRow.append(totalWeightLabel, totalWeightValue);
+
+      detail.appendChild(totalWeightRow);
+
+      // Tombol simpan perubahan bobot kriteria.
+      const saveCriteriaButton = document.createElement("button");
+
+      saveCriteriaButton.type = "button";
+      saveCriteriaButton.className = "btn-save-criteria-weights";
+      saveCriteriaButton.dataset.action = "save-criteria-weights";
+      saveCriteriaButton.dataset.ruleId = rule.id;
+
+      saveCriteriaButton.innerHTML =
+        '<i class="bi bi-save"></i> Simpan Perubahan';
+
+      const hasPendingChanges =
+        Object.keys(state.pendingCriteriaWeights[rule.id] || {}).length > 0;
+
+      saveCriteriaButton.hidden = !hasPendingChanges;
+      saveCriteriaButton.disabled = !hasPendingChanges;
+      detail.appendChild(saveCriteriaButton);
+
       details.appendChild(detail);
 
       elements.ruleList.appendChild(details);
+      updateCriteriaWeightTotal(rule.id);
     });
 
     renderSummary();
@@ -529,73 +847,263 @@
       : '<i class="bi bi-arrows-angle-expand"></i> Buka Semua';
   }
 
-  // Menampilkan konfigurasi bobot.
   function renderWeights() {
-    const values = [
-      state.config.weights.jenisKegiatan,
-      state.config.weights.waktuPengajuan,
-      state.config.weights.kebutuhanFasilitas,
-    ];
+    const weightList = elements.weightList;
 
-    elements.weightSliders.forEach((slider, index) => {
-      const value = Number(values[index] ?? 0);
+    if (!weightList) return;
 
-      slider.value = value;
+    weightList.innerHTML = "";
 
-      const valueLabel = slider
-        .closest(".weight-item")
-        ?.querySelector(".weight-value");
+    // Cari kelompok Jenis Kegiatan.
+    const rule = state.config.rules.find(
+      (item) =>
+        String(item.name || "")
+          .trim()
+          .toLowerCase() === "jenis kegiatan",
+    );
 
-      if (valueLabel) {
-        valueLabel.textContent = `${value}%`;
+    // Tampilkan slider Jenis Kegiatan.
+    if (rule) {
+      const weight = Number(rule.weight) || 0;
+
+      const item = document.createElement("div");
+      item.className = "weight-item";
+
+      const heading = document.createElement("div");
+      heading.className = "weight-heading";
+
+      const information = document.createElement("div");
+
+      const title = document.createElement("strong");
+      title.textContent = rule.name;
+
+      const description = document.createElement("small");
+      description.textContent = "Bobot kelompok penilaian.";
+
+      information.append(title, description);
+
+      const valueLabel = document.createElement("span");
+      valueLabel.className = "weight-value";
+      valueLabel.textContent = `${weight}%`;
+
+      heading.append(information, valueLabel);
+
+      const slider = document.createElement("input");
+
+      slider.type = "range";
+      slider.className = "weight-slider";
+      slider.min = "0";
+      slider.max = "100";
+      slider.step = "1";
+      slider.value = weight;
+      slider.dataset.ruleId = rule.id;
+
+      item.append(heading, slider);
+      weightList.appendChild(item);
+    }
+
+    // Tampilkan nilai slider Fasilitas Laboratorium.
+    if (elements.facilityGroupSlider) {
+      elements.facilityGroupSlider.value =
+        Number(state.config.facilityGroupWeight) || 0;
+    }
+
+    // Hitung total kedua bobot.
+    updateWeightTotal();
+  }
+
+  // =========================================
+  // PEMBOBOTAN FASILITAS
+  // =======================================
+
+  // Menghitung total bobot fasilitas.
+  function updateFacilityWeightTotal() {
+    const inputs = document.querySelectorAll(".facility-weight-input");
+
+    let total = 0;
+    let valid = true;
+
+    inputs.forEach((input) => {
+      const value = Number(input.value);
+
+      if (
+        input.value === "" ||
+        !Number.isInteger(value) ||
+        value < 0 ||
+        value > 100
+      ) {
+        input.setCustomValidity("Bobot harus berupa bilangan bulat 0–100.");
+
+        valid = false;
+        return;
+      }
+
+      input.setCustomValidity("");
+      total += value;
+    });
+
+    if (!valid) {
+      if (elements.facilityWeightWarning) {
+        elements.facilityWeightWarning.textContent =
+          "Periksa kembali bobot fasilitas.";
+
+        elements.facilityWeightWarning.style.display = "block";
+      }
+
+      return null;
+    }
+
+    if (elements.facilityWeightTotal) {
+      elements.facilityWeightTotal.textContent = `${total}%`;
+
+      elements.facilityWeightTotal.classList.toggle(
+        "weight-over-limit",
+        total > 100,
+      );
+    }
+
+    if (elements.facilityWeightWarning) {
+      if (total !== 100) {
+        elements.facilityWeightWarning.textContent = `Total bobot saat ini ${total}%. Total harus tepat 100%.`;
+
+        elements.facilityWeightWarning.style.display = "block";
+      } else {
+        elements.facilityWeightWarning.style.display = "none";
+      }
+    }
+
+    return total;
+  }
+
+  // Menyimpan bobot fasilitas.
+  function saveFacilityWeights() {
+    const total = updateFacilityWeightTotal();
+
+    if (total === null) {
+      showMessage("Periksa kembali bobot fasilitas.", "error");
+      return;
+    }
+
+    if (total !== 100) {
+      showMessage("Total bobot fasilitas harus tepat 100%.", "error");
+      return;
+    }
+
+    const inputs = [...document.querySelectorAll(".facility-weight-input")];
+
+    const previousWeights = state.config.facilities.map((facility) => ({
+      id: facility.id,
+      weight: facility.weight,
+    }));
+
+    inputs.forEach((input) => {
+      const facility = getFacility(input.dataset.facilityId);
+
+      if (facility) {
+        facility.weight = Number(input.value);
       }
     });
 
-    updateWeightTotal();
+    if (!saveConfig()) {
+      previousWeights.forEach((item) => {
+        const facility = getFacility(item.id);
+
+        if (facility) {
+          facility.weight = item.weight;
+        }
+      });
+
+      return;
+    }
+
+    showMessage("Pembobotan fasilitas berhasil disimpan.");
+  }
+
+  // Menghitung total persentase kriteria, termasuk perubahan sementara.
+  function updateCriteriaWeightTotal(ruleId) {
+    const rule = getRule(ruleId);
+    if (!rule || !elements.ruleList) return 0;
+
+    const pending = state.pendingCriteriaWeights[ruleId] || {};
+
+    const total = rule.criteria.reduce((sum, criteria) => {
+      const value = Object.prototype.hasOwnProperty.call(pending, criteria.id)
+        ? pending[criteria.id]
+        : criteria.weight;
+
+      return sum + (value === "" ? 0 : Number(value) || 0);
+    }, 0);
+
+    const display = elements.ruleList.querySelector(
+      `.criteria-total-value[data-rule-id="${ruleId}"]`,
+    );
+
+    if (display) {
+      display.textContent = `${total}%`;
+      display.classList.toggle("valid", total === 100);
+      display.classList.toggle("invalid", total !== 100);
+    }
+
+    return total;
   }
 
   // Menghitung total bobot.
 
   function updateWeightTotal() {
+    const sliders =
+      elements.weightList?.querySelectorAll(".weight-slider") || [];
+
     let total = 0;
 
-    elements.weightSliders.forEach((slider) => {
+    // Hitung bobot Jenis Kegiatan.
+    sliders.forEach((slider) => {
       const value = Number(slider.value);
 
       total += value;
 
-      const weightItem = slider.closest(".weight-item");
+      const label = slider
+        .closest(".weight-item")
+        ?.querySelector(".weight-value");
 
-      const valueLabel = weightItem?.querySelector(".weight-value");
+      if (label) {
+        label.textContent = `${value}%`;
+      }
 
-      if (valueLabel) {
-        valueLabel.textContent = `${value}%`;
+      const rule = getRule(slider.dataset.ruleId);
+
+      if (rule) {
+        rule.weight = value;
       }
     });
 
-    const totalContainer = document.querySelector(".weight-total");
+    // Hitung bobot Fasilitas Laboratorium.
+    const facilitySlider = elements.facilityGroupSlider;
 
-    const totalLabel = totalContainer?.querySelector("strong");
+    if (facilitySlider) {
+      const facilityWeight = Number(facilitySlider.value);
 
-    if (totalLabel) {
-      totalLabel.textContent = `${total}%`;
+      state.config.facilityGroupWeight = facilityWeight;
 
-      totalLabel.classList.toggle("weight-over-limit", total > 100);
+      total += facilityWeight;
+
+      if (elements.facilityGroupWeightValue) {
+        elements.facilityGroupWeightValue.textContent = `${facilityWeight}%`;
+      }
     }
 
-    let warning = document.getElementById("weightWarning");
+    // Tampilkan total gabungan.
+    if (elements.weightTotal) {
+      elements.weightTotal.textContent = `${total}%`;
 
-    if (!warning) {
-      warning = document.createElement("p");
-      warning.id = "weightWarning";
-
-      totalContainer?.insertAdjacentElement("afterend", warning);
+      elements.weightTotal.classList.toggle("weight-over-limit", total > 100);
     }
 
-    warning.textContent =
-      "Total bobot tidak boleh melebihi 100%. Silakan sesuaikan kembali nilai bobot penilaian.";
+    // Tampilkan peringatan.
+    if (elements.weightWarning) {
+      elements.weightWarning.textContent = `Total bobot saat ini ${total}%. Total harus tepat 100%.`;
 
-    warning.style.display = total > 100 ? "block" : "none";
+      elements.weightWarning.style.display = total === 100 ? "none" : "block";
+    }
 
     return total;
   }
@@ -614,21 +1122,15 @@
   }
 
   // Membuka modal edit aturan.
+
   function openEditRuleModal(ruleId) {
     const rule = getRule(ruleId);
-
     const form = getModalForm(elements.editRuleToggle);
 
     if (!rule || !form) return;
 
-    const { inputs, textareas } = getFormFields(form);
-
-    if (inputs[1]) inputs[1].value = rule.name;
-    if (inputs[2]) inputs[2].value = rule.parameter || "";
-
-    if (textareas[0]) {
-      textareas[0].value = rule.description || "";
-    }
+    form.elements.ruleName.value = rule.name;
+    form.elements.ruleDescription.value = rule.description || "";
 
     state.selectedRuleId = ruleId;
 
@@ -636,42 +1138,21 @@
   }
 
   // Membuka modal tambah kriteria.
+
   function openAddCriteriaModal(ruleId) {
     const rule = getRule(ruleId);
-
     const form = getModalForm(elements.addCriteriaToggle);
 
     if (!rule || !form) return;
 
+    if (rule.name.toLowerCase().includes("waktu pengajuan")) {
+      showMessage("FCFS tidak menerima kriteria berbobot.", "error");
+      return;
+    }
+
     form.reset();
 
-    const { inputs, selects } = getFormFields(form);
-
-    if (selects[0]) {
-      selects[0].innerHTML = "";
-
-      state.config.rules.forEach((item) => {
-        const option = document.createElement("option");
-
-        option.value = item.id;
-
-        option.textContent = `${item.id} - ${item.name}`;
-
-        option.selected = item.id === ruleId;
-
-        selects[0].appendChild(option);
-      });
-    }
-
-    const nextOrder =
-      rule.criteria.reduce(
-        (max, item) => Math.max(max, Number(item.order) || 0),
-        0,
-      ) + 1;
-
-    if (inputs[0]) {
-      inputs[0].value = nextOrder;
-    }
+    form.elements.criteriaRuleName.value = rule.name;
 
     state.selectedRuleId = ruleId;
     state.selectedCriteriaId = null;
@@ -679,33 +1160,16 @@
     openModal(elements.addCriteriaToggle);
   }
 
-  // Membuka modal edit kriteria.
   function openEditCriteriaModal(ruleId, criteriaId) {
     const rule = getRule(ruleId);
-
     const criteria = getCriteria(rule, criteriaId);
-
     const form = getModalForm(elements.editCriteriaToggle);
 
     if (!rule || !criteria || !form) return;
 
-    const { inputs, textareas } = getFormFields(form);
-
-    if (inputs[0]) {
-      inputs[0].value = `${rule.id} - ${rule.name}`;
-    }
-
-    if (inputs[1]) {
-      inputs[1].value = criteria.order;
-    }
-
-    if (inputs[2]) {
-      inputs[2].value = criteria.name;
-    }
-
-    if (textareas[0]) {
-      textareas[0].value = criteria.description || "";
-    }
+    form.elements.criteriaRuleName.value = rule.name;
+    form.elements.criteriaName.value = criteria.name;
+    form.elements.criteriaDescription.value = criteria.description || "";
 
     state.selectedRuleId = ruleId;
     state.selectedCriteriaId = criteriaId;
@@ -714,13 +1178,10 @@
   }
 
   // Validasi form aturan.
-  function validateRuleForm(name, parameter) {
+
+  function validateRuleForm(name) {
     if (!name.trim()) {
       return "Nama aturan wajib diisi.";
-    }
-
-    if (!parameter.trim()) {
-      return "Kebutuhan atau parameter aturan wajib diisi.";
     }
 
     if (name.trim().length > 100) {
@@ -731,62 +1192,64 @@
   }
 
   // Menyimpan aturan baru.
+
   function saveNewRule() {
     const form = getModalForm(elements.addRuleToggle);
 
-    const { inputs, textareas } = getFormFields(form);
-    const name = inputs[0]?.value || "";
-    const parameter = inputs[1]?.value || "";
-    const description = textareas[0]?.value || "";
+    if (!form) return;
 
-    const id = createId("RB", state.config.rules);
+    const name = form.elements.ruleName.value.trim();
+    const description = form.elements.ruleDescription.value.trim();
 
-    const error = validateRuleForm(name, parameter);
+    const error = validateRuleForm(name);
 
     if (error) {
       return showMessage(error, "error");
     }
 
     const duplicate = state.config.rules.some(
-      (rule) => rule.name.toLowerCase() === name.trim().toLowerCase(),
+      (rule) => rule.name.toLowerCase() === name.toLowerCase(),
     );
 
     if (duplicate) {
       return showMessage("Nama aturan tersebut sudah digunakan.", "error");
     }
 
+    const id = createId("RB", state.config.rules);
+
     state.config.rules.push({
       id,
-      name: name.trim(),
-      parameter: parameter.trim(),
-      description: description.trim(),
+      name,
+      description,
+      ruleType: "scoring",
+      weight: 0,
       criteria: [],
     });
 
     if (saveConfig()) {
+      form.reset();
       closeModal(elements.addRuleToggle);
-
       renderRules();
+      renderWeights();
+      renderSummary();
+      renderWeights();
 
       showMessage("Aturan baru berhasil ditambahkan.");
     }
   }
 
   // Menyimpan perubahan aturan.
+
   function saveEditedRule() {
     const rule = getRule(state.selectedRuleId);
-
     const form = getModalForm(elements.editRuleToggle);
 
     if (!rule || !form) return;
 
-    const { inputs, textareas } = getFormFields(form);
+    const name = form.elements.ruleName.value.trim();
+    const description = form.elements.ruleDescription.value.trim();
 
-    const name = inputs[0]?.value || "";
-    const parameter = inputs[1]?.value || "";
-    const description = textareas[0]?.value || "";
-
-    const error = validateRuleForm(name, parameter);
+    const error = validateRuleForm(name);
 
     if (error) {
       return showMessage(error, "error");
@@ -794,149 +1257,119 @@
 
     const duplicate = state.config.rules.some(
       (item) =>
-        item.id !== rule.id &&
-        item.name.toLowerCase() === name.trim().toLowerCase(),
+        item.id !== rule.id && item.name.toLowerCase() === name.toLowerCase(),
     );
 
     if (duplicate) {
       return showMessage("Nama aturan tersebut sudah digunakan.", "error");
     }
 
-    rule.name = name.trim();
-
-    rule.parameter = parameter.trim();
-
-    rule.description = description.trim();
+    rule.name = name;
+    rule.description = description;
 
     if (saveConfig()) {
       closeModal(elements.editRuleToggle);
-
       renderRules();
+      renderWeights();
 
       showMessage("Perubahan aturan berhasil disimpan.");
     }
   }
 
   // Menyimpan kriteria baru.
+
+  // Menyimpan kriteria baru.
   function saveNewCriteria() {
     const form = getModalForm(elements.addCriteriaToggle);
+    if (!form) return;
 
-    const { inputs, textareas, selects } = getFormFields(form);
-
-    const ruleId = selects[0]?.value;
-
-    const rule = getRule(ruleId);
-
-    const order = Number(inputs[0]?.value);
-
-    const name = inputs[1]?.value || "";
-
-    const description = textareas[0]?.value || "";
+    const rule = getRule(state.selectedRuleId);
 
     if (!rule) {
-      return showMessage("Pilih aturan yang valid.", "error");
+      return showMessage("Kelompok tidak ditemukan.", "error");
     }
 
-    if (!Number.isInteger(order) || order < 1) {
-      return showMessage(
-        "Nomor urut harus berupa bilangan bulat minimal 1.",
-        "error",
-      );
-    }
+    const name = form.elements.criteriaName.value.trim();
+    const description = form.elements.criteriaDescription.value.trim();
 
-    if (!name.trim()) {
+    if (!name) {
       return showMessage("Nama kriteria wajib diisi.", "error");
     }
 
-    if (!description.trim()) {
-      return showMessage("Deskripsi kriteria wajib diisi.", "error");
-    }
+    const duplicate = rule.criteria.some(
+      (item) => item.name.toLowerCase() === name.toLowerCase(),
+    );
 
-    if (rule.criteria.some((item) => Number(item.order) === order)) {
-      return showMessage(
-        "Nomor urut tersebut sudah digunakan pada aturan ini.",
-        "error",
-      );
+    if (duplicate) {
+      return showMessage("Nama kriteria sudah digunakan.", "error");
     }
 
     const allCriteria = state.config.rules.flatMap((item) => item.criteria);
 
+    const nextOrder =
+      Math.max(0, ...rule.criteria.map((item) => Number(item.order) || 0)) + 1;
+
     rule.criteria.push({
       id: createId("CR", allCriteria),
-      order,
-      name: name.trim(),
-      description: description.trim(),
+      order: nextOrder,
+      name,
+      description,
+      weight: 0,
+      active: true,
     });
-
-    rule.criteria.sort((a, b) => Number(a.order) - Number(b.order));
 
     if (saveConfig()) {
       closeModal(elements.addCriteriaToggle);
-
       renderRules();
+      renderSummary();
 
-      showMessage("Kriteria berhasil ditambahkan.");
+      showMessage("Kriteria berhasil ditambahkan. Silakan atur persentasenya.");
+    } else {
+      rule.criteria.pop();
     }
   }
 
-  // Menyimpan perubahan kriteria.
+  // Menyimpan perubahan informasi kriteria.
   function saveEditedCriteria() {
     const rule = getRule(state.selectedRuleId);
-
     const criteria = getCriteria(rule, state.selectedCriteriaId);
-
     const form = getModalForm(elements.editCriteriaToggle);
 
     if (!rule || !criteria || !form) return;
 
-    const { inputs, textareas } = getFormFields(form);
+    const name = form.elements.criteriaName.value.trim();
+    const description = form.elements.criteriaDescription.value.trim();
 
-    const order = Number(inputs[1]?.value);
-
-    const name = inputs[2]?.value || "";
-
-    const description = textareas[0]?.value || "";
-
-    if (!Number.isInteger(order) || order < 1) {
-      return showMessage(
-        "Nomor urut harus berupa bilangan bulat minimal 1.",
-        "error",
-      );
-    }
-
-    if (!name.trim()) {
+    if (!name) {
       return showMessage("Nama kriteria wajib diisi.", "error");
     }
 
-    if (!description.trim()) {
-      return showMessage("Deskripsi kriteria wajib diisi.", "error");
+    const duplicate = rule.criteria.some(
+      (item) =>
+        item.id !== criteria.id &&
+        item.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (duplicate) {
+      return showMessage("Nama kriteria sudah digunakan.", "error");
     }
 
-    if (
-      rule.criteria.some(
-        (item) => item.id !== criteria.id && Number(item.order) === order,
-      )
-    ) {
-      return showMessage(
-        "Nomor urut tersebut sudah digunakan pada aturan ini.",
-        "error",
-      );
-    }
+    const previous = {
+      name: criteria.name,
+      description: criteria.description,
+    };
 
-    criteria.order = order;
-
-    criteria.name = name.trim();
-
-    criteria.description = description.trim();
-
-    rule.criteria.sort((a, b) => Number(a.order) - Number(b.order));
+    criteria.name = name;
+    criteria.description = description;
 
     if (saveConfig()) {
       closeModal(elements.editCriteriaToggle);
-
       renderRules();
 
-      showMessage("Perubahan kriteria berhasil disimpan.");
+      showMessage("Informasi kriteria berhasil diperbarui.");
+    } else {
+      criteria.name = previous.name;
+      criteria.description = previous.description;
     }
   }
 
@@ -975,34 +1408,119 @@
       state.deleteTarget = null;
 
       renderRules();
+      renderWeights();
+      renderSummary();
 
       showMessage("Data berhasil dihapus.");
     }
   }
 
-  // Menyimpan konfigurasi bobot.
+  // Menyimpan pembobotan kriteria satu kelompok.
+  function saveCriteriaWeights(ruleId) {
+    const rule = getRule(ruleId);
+    if (!rule) return;
 
-  function saveWeights() {
-    const total = updateWeightTotal();
+    const pending = state.pendingCriteriaWeights[ruleId] || {};
 
-    // Validasi total bobot.
-    if (total > 100) {
-      showMessage("Total bobot tidak boleh melebihi 100%.", "error");
+    const proposedWeights = rule.criteria.map((criteria) => {
+      const value = Object.prototype.hasOwnProperty.call(pending, criteria.id)
+        ? pending[criteria.id]
+        : criteria.weight;
+
+      return {
+        id: criteria.id,
+        weight: Number(value),
+      };
+    });
+
+    const invalid = proposedWeights.some(
+      (item) =>
+        !Number.isInteger(item.weight) || item.weight < 0 || item.weight > 100,
+    );
+
+    if (invalid) {
+      showMessage("Setiap bobot harus berupa bilangan bulat 0–100.", "error");
+      return;
+    }
+
+    const total = proposedWeights.reduce((sum, item) => sum + item.weight, 0);
+
+    if (total !== 100) {
+      showMessage(`Total bobot kriteria ${total}%. Harus tepat 100%.`, "error");
+      return;
+    }
+
+    const previousWeights = rule.criteria.map((criteria) => ({
+      id: criteria.id,
+      weight: criteria.weight,
+    }));
+
+    proposedWeights.forEach((item) => {
+      const criteria = getCriteria(rule, item.id);
+      if (criteria) criteria.weight = item.weight;
+    });
+
+    if (!saveConfig()) {
+      previousWeights.forEach((item) => {
+        const criteria = getCriteria(rule, item.id);
+        if (criteria) criteria.weight = item.weight;
+      });
 
       return;
     }
 
-    state.config.weights = {
-      jenisKegiatan: Number(elements.weightSliders[0]?.value || 0),
+    delete state.pendingCriteriaWeights[ruleId];
 
-      waktuPengajuan: Number(elements.weightSliders[1]?.value || 0),
+    renderRules();
 
-      kebutuhanFasilitas: Number(elements.weightSliders[2]?.value || 0),
-    };
+    showMessage("Persentase kriteria berhasil disimpan.");
+  }
 
-    if (saveConfig()) {
-      showMessage("Konfigurasi bobot berhasil disimpan.");
+  // Menyimpan pembobotan kelompok.
+
+  function saveWeights() {
+    // Hitung total kedua kelompok.
+    const total = updateWeightTotal();
+
+    // Validasi total harus tepat 100%.
+    if (total !== 100) {
+      showMessage(
+        "Total bobot Jenis Kegiatan dan Fasilitas Laboratorium harus tepat 100%.",
+        "error",
+      );
+      return;
     }
+
+    // Simpan konfigurasi.
+    if (saveConfig()) {
+      showMessage("Pembobotan parameter berhasil disimpan.");
+    }
+  }
+
+  function updateCriteriaWeightTotal(ruleId) {
+    const rule = getRule(ruleId);
+    if (!rule) return;
+
+    const pending = state.pendingCriteriaWeights[ruleId] || {};
+
+    const total = rule.criteria.reduce((sum, criteria) => {
+      const value = Object.prototype.hasOwnProperty.call(pending, criteria.id)
+        ? pending[criteria.id]
+        : criteria.weight;
+
+      return sum + (value === "" ? 0 : Number(value) || 0);
+    }, 0);
+
+    const display = elements.ruleList.querySelector(
+      `.criteria-total-value[data-rule-id="${ruleId}"]`,
+    );
+
+    if (!display) return;
+
+    display.textContent = `${total}%`;
+
+    display.classList.toggle("valid", total === 100);
+    display.classList.toggle("invalid", total !== 100);
   }
 
   // Memasang seluruh event listener.
@@ -1015,6 +1533,66 @@
 
         openAddRuleModal();
       });
+
+    elements.ruleList?.addEventListener("input", (event) => {
+      if (!event.target.matches(".criteria-weight-input")) return;
+
+      const input = event.target;
+      const ruleId = input.dataset.ruleId;
+      const criteriaId = input.dataset.criteriaId;
+
+      const rule = getRule(ruleId);
+      const criteria = getCriteria(rule, criteriaId);
+
+      if (!criteria) return;
+
+      const button = elements.ruleList.querySelector(
+        `.btn-save-criteria-weights[data-rule-id="${ruleId}"]`,
+      );
+
+      if (!state.pendingCriteriaWeights[ruleId]) {
+        state.pendingCriteriaWeights[ruleId] = {};
+      }
+
+      const value = input.value;
+
+      if (value === "") {
+        input.setCustomValidity("");
+        state.pendingCriteriaWeights[ruleId][criteriaId] = "";
+      } else {
+        const number = Number(value);
+
+        if (!Number.isInteger(number) || number < 0 || number > 100) {
+          input.setCustomValidity(
+            "Persentase harus berupa bilangan bulat 0–100.",
+          );
+          input.reportValidity();
+          return;
+        }
+
+        input.setCustomValidity("");
+
+        if (number === Number(criteria.weight)) {
+          delete state.pendingCriteriaWeights[ruleId][criteriaId];
+        } else {
+          state.pendingCriteriaWeights[ruleId][criteriaId] = number;
+        }
+      }
+
+      const hasChanges =
+        Object.keys(state.pendingCriteriaWeights[ruleId]).length > 0;
+
+      updateCriteriaWeightTotal(ruleId);
+
+      if (button) {
+        button.hidden = !hasChanges;
+        button.disabled = !hasChanges;
+      }
+
+      if (!hasChanges) {
+        delete state.pendingCriteriaWeights[ruleId];
+      }
+    });
 
     // Menangani aksi aturan dan kriteria.
     elements.ruleList?.addEventListener("click", (event) => {
@@ -1037,6 +1615,11 @@
         event.stopPropagation();
 
         openEditRuleModal(ruleId);
+      } else if (action === "save-criteria-weights") {
+        event.preventDefault();
+        event.stopPropagation();
+
+        saveCriteriaWeights(ruleId);
       } else if (action === "delete-rule") {
         event.preventDefault();
         event.stopPropagation();
@@ -1088,9 +1671,14 @@
     elements.ruleList?.addEventListener("toggle", updateExpandButton, true);
 
     // Tombol simpan aturan baru.
-    getModalForm(elements.addRuleToggle)
-      ?.querySelector(".btn-save-rule")
-      ?.addEventListener("click", saveNewRule);
+    const addRuleForm = getModalForm(elements.addRuleToggle);
+
+    if (addRuleForm) {
+      addRuleForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        saveNewRule();
+      });
+    }
 
     // Tombol simpan perubahan aturan.
     getModalForm(elements.editRuleToggle)
@@ -1123,12 +1711,57 @@
     });
 
     // Memperbarui total bobot ketika slider digerakkan.
-    elements.weightSliders.forEach((slider) => {
-      slider.addEventListener("input", updateWeightTotal);
+
+    document.addEventListener("input", (event) => {
+      // Slider Jenis Kegiatan.
+      if (event.target.matches(".weight-slider")) {
+        updateWeightTotal();
+      }
+
+      // Slider Fasilitas Laboratorium.
+      if (event.target.matches(".facility-group-weight-slider")) {
+        updateWeightTotal();
+      }
     });
 
     // Menyimpan perubahan bobot.
     elements.saveWeights?.addEventListener("click", saveWeights);
+    // Menyimpan pembobotan fasilitas
+    elements.saveFacilityWeights?.addEventListener(
+      "click",
+      saveFacilityWeights,
+    );
+
+    // =========================================
+    // EVENT MANAJEMEN FASILITAS
+    // =========================================
+
+    // Tombol tambah fasilitas.
+    elements.facilityList?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+
+      if (!button) return;
+
+      const item = button.closest(".facility-item");
+
+      const facilityId = item?.dataset.facilityId;
+
+      const action = button.dataset.action;
+
+      if (action === "edit-facility") {
+        openEditFacilityModal(facilityId);
+      }
+
+      if (action === "delete-facility") {
+        confirmDeleteFacility(facilityId);
+      }
+    });
+
+    // Menyimpan fasilitas.
+    elements.facilityForm?.addEventListener("submit", saveFacility);
+
+    // Konfirmasi hapus fasilitas.
+    elements.deleteFacilityButton?.addEventListener("click", deleteFacility);
   }
 
   // Inisialisasi halaman.
@@ -1145,6 +1778,9 @@
 
     renderWeights();
 
+    // Menampilkan data fasilitas.
+    renderFacilities();
+
     bindEvents();
 
     console.log("Manajemen Algoritma SILAB berhasil dimuat.");
@@ -1152,66 +1788,3 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
-
-function updateWeightTotal() {
-  let total = 0;
-
-  elements.weightSliders.forEach((slider) => {
-    const value = Number(slider.value);
-
-    total += value;
-
-    // Memperbarui angka di samping slider.
-    const valueLabel = slider
-      .closest(".weight-item")
-      ?.querySelector(".weight-value");
-
-    if (valueLabel) {
-      valueLabel.textContent = `${value}%`;
-    }
-  });
-
-  // Memperbarui angka total.
-  if (elements.weightTotal) {
-    elements.weightTotal.textContent = `${total}%`;
-
-    if (total > 100) {
-      elements.weightTotal.style.color = "#DC2626";
-    } else {
-      elements.weightTotal.style.color = "#312E81";
-    }
-  }
-
-  // Membuat elemen peringatan jika belum tersedia.
-  let warning = document.getElementById("weightWarning");
-
-  if (!warning) {
-    warning = document.createElement("p");
-
-    warning.id = "weightWarning";
-
-    warning.style.cssText = `
-            display: none;
-            color: #DC2626;
-            font-size: 11px;
-            margin: 8px 0 0;
-            line-height: 1.5;
-        `;
-
-    elements.weightTotal
-      ?.closest(".weight-total")
-      ?.insertAdjacentElement("afterend", warning);
-  }
-
-  // Menampilkan peringatan.
-  if (total > 100) {
-    warning.textContent =
-      "Total bobot tidak boleh melebihi 100%. Silakan sesuaikan kembali nilai bobot penilaian.";
-
-    warning.style.display = "block";
-  } else {
-    warning.style.display = "none";
-  }
-
-  return total;
-}
