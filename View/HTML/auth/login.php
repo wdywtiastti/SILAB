@@ -1,0 +1,182 @@
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login | SILAB</title>
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- BOOTSTRAP ICONS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- CSS AUTHENTICATION -->
+    <link rel="stylesheet" href="../../CSS/auth/auth.css" />
+  </head>
+
+  <body>
+    <main class="login-container">
+
+      <!-- BAGIAN KIRI -->
+      <section class="visual-panel">
+
+        <img
+          src="../../Assets/Background.svg"
+          alt=""
+          class="visual-background"
+        />
+
+        <div class="brand">
+
+          <img
+            src="../../Assets/Logo_RPL.svg"
+            alt="Logo SILAB"
+            class="brand-logo"
+          />
+
+          <div class="brand-text">
+            <h1>SILAB</h1>
+            <p>Sistem Peminjaman Laboratorium</p>
+            <p>Universitas Khairun</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BAGIAN KANAN -->
+      <section class="form-panel">
+        <div class="form-content">
+
+          <header class="form-header">
+            <h2>Selamat Datang!</h2>
+            <p>Silahkan login untuk melanjutkan</p>
+          </header>
+
+          <!-- FORM LOGIN -->
+          <form class="login-form" id="loginForm" novalidate>
+
+            <!-- NIP/NPM -->
+            <div class="input-group">
+              <i class="bi bi-person"></i>
+
+              <input
+                type="text"
+                name="identifier"
+                placeholder="NIP/NPM"
+                inputmode="numeric"
+                pattern="[0-9]+"
+                title="NIP/NPM hanya boleh berisi angka."
+                autocomplete="username"
+                required
+              />
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="input-group">
+              <i class="bi bi-lock"></i>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="password"
+                aria-label="Tampilkan password"
+                aria-controls="password"
+                aria-pressed="false"
+              >
+                <i class="bi bi-eye-slash" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <!-- INGAT SAYA -->
+            <label class="remember">
+              <input type="checkbox" name="remember" />
+              <span>Ingat Saya</span>
+            </label>
+
+            <!-- TOMBOL LOGIN -->
+            <button type="submit" class="btn-login">
+              Login
+            </button>
+
+            <!-- PESAN LOGIN -->
+            <p id="loginMessage" role="alert" aria-live="polite"></p>
+
+          </form>
+
+          <!-- FOOTER -->
+          <div class="form-footer">
+            <p>
+              Belum punya akun?
+              <a href="register.php">Daftar di sini</a>
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL STATUS AKUN -->
+    <div
+      id="accountStatusModal"
+      class="account-status-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="accountStatusTitle"
+      aria-describedby="accountStatusDescription"
+      hidden
+    >
+
+      <div class="account-status-modal">
+
+        <div id="accountStatusIcon" class="account-status-icon">
+          <i
+            id="accountStatusIconSymbol"
+            class="bi bi-clock-history"
+          ></i>
+        </div>
+
+        <h2 id="accountStatusTitle"></h2>
+
+        <p id="accountStatusDescription"></p>
+
+        <button
+          type="button"
+          id="closeAccountStatusModal"
+          class="account-status-close"
+        >
+          Mengerti
+        </button>
+
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="../../JS/shared/storage.js"></script>
+    <script src="../../JS/auth/sesi.js"></script>
+    <script src="../../JS/auth/masuk.js"></script>
+    <script src="../../JS/auth/liat_psswd.js"></script>
+
+  </body>
+</html>
