@@ -1,0 +1,745 @@
+<?php
+declare(strict_types=1);
+
+// =========================================
+// SILAB - MANAJEMEN ALGORITMA
+// KEPALA LABORATORIUM
+// =========================================
+
+require_once __DIR__ . "/../auth/sesi.php";
+
+// Proteksi khusus Kepala Lab
+wajibRole(["kepala_lab"], "../auth/login.php");
+
+// Mengambil identitas Kepala Lab
+$user = penggunaLogin();
+
+$namaKepalaLab = $user["nama"] ?? "Kepala Laboratorium";
+$nipKepalaLab = $user["nip_npm"] ?? "-";
+?>
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Manajemen Algoritma | SILAB</title>
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- BOOTSTRAP ICON -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- CSS NAVBAR BERSAMA -->
+    <link rel="stylesheet" href="../../CSS/kepalaLab/navbar.css" />
+
+    <!-- CSS HALAMAN -->
+    <link rel="stylesheet" href="../../CSS/kepalaLab/algoritma.css" />
+  </head>
+
+  <body>
+    <!-- NAVBAR KEPALA LAB -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="../../Assets/Logo_RPL.svg"
+          alt="Logo SILAB"
+          class="navbar-logo"
+        />
+
+        <div class="brand-info">
+          <h1>SILAB</h1>
+          <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+      </div>
+
+
+<nav class="navbar-menu">
+    <a href="Dashboard.php" class="nav-link">
+        Dashboard Kepala Lab
+    </a>
+
+    <a href="penyelesaian_konflik.php" class="nav-link">
+        Penyelesaian Konflik
+    </a>
+
+    <a href="manajemen_algoritma.php" class="nav-link active">
+        Manajemen Algoritma
+    </a>
+
+    <a href="manajemen_user.php" class="nav-link">
+        Manajemen User
+    </a>
+</nav>
+
+
+<div class="navbar-profile">
+    <div class="profile-info">
+        <h3>
+            <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
+        </h3>
+        <p>Kepala Lab</p>
+    </div>
+
+    <details class="profile-dropdown">
+        <summary class="profile-trigger">
+            <i class="bi bi-person"></i>
+        </summary>
+
+        <div class="profile-menu">
+            <div class="profile-info-dropdown">
+                <p>
+                    <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
+                </p>
+
+                <span>
+                    NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
+                </span>
+
+                <div class="profile-role">
+                    <i class="bi bi-shield-check"></i>
+                    Kepala Lab
+                </div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <a href="../auth/logout.php" class="logout-link">
+                <i class="bi bi-box-arrow-right"></i>
+                Keluar / Logout
+            </a>
+        </div>
+    </details>
+</div>
+
+    </nav>
+
+    <!-- KONTEN UTAMA -->
+    <main class="algorithm-container">
+      <!-- HEADER HALAMAN -->
+      <section class="algorithm-heading">
+        <div class="algorithm-heading-content">
+          <div class="algorithm-label">
+            <i class="bi bi-gear"></i>
+            PENGELOLAAN KEBIJAKAN SISTEM
+          </div>
+
+          <h2>Manajemen Algoritma</h2>
+
+          <p>
+            Kelola aturan dan parameter penentuan prioritas peminjaman
+            laboratorium di luar mata kuliah wajib.
+          </p>
+        </div>
+
+        <div class="algorithm-heading-status">
+          <i class="bi bi-shield-check"></i>
+          Area Konfigurasi Kepala Lab
+        </div>
+      </section>
+
+      <!-- INFORMASI SISTEM -->
+      <section class="algorithm-information">
+        <div class="information-icon">
+          <i class="bi bi-info-circle"></i>
+        </div>
+
+        <div class="information-content">
+          <h4>Pemisahan Jadwal Wajib dan Peminjaman</h4>
+
+          <p>
+            Mata kuliah wajib dicatat sebagai jadwal tetap dan tidak masuk
+            klasifikasi P1–P4. Empat tingkat prioritas digunakan untuk
+            permohonan peminjaman di luar mata kuliah wajib.
+          </p>
+        </div>
+      </section>
+
+      <!-- MANAJEMEN ATURAN -->
+      <section class="algorithm-panel rule-base-panel">
+        <div class="rule-base-header">
+          <h3>Manajemen Aturan (Rule Base)</h3>
+
+          <label for="modalTambahAturan" class="btn-add-rule">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Kelompok
+          </label>
+        </div>
+        <!-- RINGKASAN -->
+        <div class="rule-summary">
+          <div class="rule-summary-item">
+            <i class="bi bi-list-ul"></i>
+            <span id="ruleCount">0 Aturan</span>
+          </div>
+
+          <div class="rule-summary-item">
+            <i class="bi bi-clipboard-check"></i>
+            <span id="criteriaCount">0 kriteria penilaian</span>
+          </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="rule-toolbar">
+          <button type="button" class="btn-expand-all">
+            <i class="bi bi-arrows-angle-expand"></i>
+            Semua
+          </button>
+        </div>
+
+        <!-- DAFTAR ATURAN -->
+        <div class="rule-list"></div>
+      </section>
+
+      <!-- =========================================
+     MANAJEMEN FASILITAS
+========================================== -->
+
+      <section class="algorithm-panel facility-panel">
+        <div class="facility-header">
+          <div>
+            <span class="panel-label">PENGELOLAAN SARANA</span>
+            <h3>Manajemen Fasilitas</h3>
+            <p>
+              Kelola daftar fasilitas laboratorium beserta kapasitas
+              masing-masing fasilitas.
+            </p>
+          </div>
+
+          <label for="modalTambahFasilitas" class="btn-add-facility">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Fasilitas
+          </label>
+        </div>
+
+        <div class="facility-summary">
+          <div class="facility-summary-item">
+            <i class="bi bi-building"></i>
+            <span id="facilityCount">0 Fasilitas</span>
+          </div>
+
+          <div class="facility-summary-item">
+            <i class="bi bi-people"></i>
+            <span id="facilityCapacity">0 Kapasitas</span>
+          </div>
+        </div>
+
+        <div class="facility-list"></div>
+        <!-- RINGKASAN PEMBOBOTAN FASILITAS -->
+
+        <div class="facility-weight-summary">
+          <div class="facility-weight-total">
+            <span>Total Bobot Fasilitas</span>
+
+            <strong id="totalFacilityWeightValue">0%</strong>
+          </div>
+
+          <p id="facilityWeightWarning">Total bobot harus tepat 100%.</p>
+
+          <button type="button" class="btn-save-facility-weight">
+            <i class="bi bi-save"></i>
+            Simpan Perubahan
+          </button>
+        </div>
+      </section>
+
+      <!-- PARAMETER DAN PRIORITAS -->
+      <section class="algorithm-grid">
+        <!-- PARAMETER DAN BOBOT -->
+        <section class="algorithm-panel weight-panel">
+          <div class="panel-heading">
+            <div class="panel-heading-content">
+              <span class="panel-label">LAPISAN PENILAIAN</span>
+              <h3>Parameter dan Bobot Penilaian</h3>
+              <p>
+                Pengaturan bobot atribut yang digunakan dalam penilaian
+                pengajuan.
+              </p>
+            </div>
+
+            <div class="panel-heading-icon">
+              <i class="bi bi-sliders"></i>
+            </div>
+          </div>
+
+          <!-- BOBOT JENIS KEGIATAN -->
+          <div class="weight-list"></div>
+
+          <!-- BOBOT FASILITAS LABORATORIUM -->
+          <div class="weight-item">
+            <div class="weight-heading">
+              <div>
+                <strong>Fasilitas Laboratorium</strong>
+                <small>Bobot kelompok penilaian fasilitas.</small>
+              </div>
+
+              <span class="weight-value" id="facilityGroupWeightValue">0%</span>
+            </div>
+
+            <input
+              type="range"
+              id="facilityGroupWeightSlider"
+              class="weight-slider facility-group-weight-slider"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+            />
+          </div>
+
+          <!-- TOTAL BOBOT -->
+          <div class="weight-total">
+            <span>Total Bobot Acuan</span>
+            <strong id="totalWeightValue">0%</strong>
+          </div>
+
+          <p id="weightWarning">Total bobot harus tepat 100%.</p>
+
+          <!-- TOMBOL SIMPAN -->
+          <div class="weight-footer">
+            <div class="panel-note">
+              <i class="bi bi-info-circle"></i>
+              <span>
+                Total bobot Jenis Kegiatan dan Fasilitas Laboratorium harus
+                tepat 100%.
+              </span>
+            </div>
+
+            <button type="button" class="btn-save-weight">
+              <i class="bi bi-save"></i>
+              Simpan Perubahan
+            </button>
+          </div>
+        </section>
+
+        <!-- TINGKAT PRIORITAS -->
+        <section class="algorithm-panel priority-panel">
+          <div class="panel-heading">
+            <div class="panel-heading-content">
+              <span class="panel-label panel-label-blue"
+                >KLASIFIKASI PEMINJAMAN</span
+              >
+              <h3>Empat Tingkat Prioritas</h3>
+              <p>
+                Klasifikasi tingkat prioritas untuk pengajuan di luar mata
+                kuliah wajib.
+              </p>
+            </div>
+
+            <div class="panel-heading-icon blue-icon">
+              <i class="bi bi-flag"></i>
+            </div>
+          </div>
+
+          <div class="priority-list">
+            <article class="priority-item priority-one">
+              <div class="priority-code">P1</div>
+              <div class="priority-information">
+                <strong>Prioritas 1</strong>
+                <small>Tingkat prioritas pertama</small>
+              </div>
+              <span class="priority-level">Tertinggi</span>
+            </article>
+
+            <article class="priority-item priority-two">
+              <div class="priority-code">P2</div>
+              <div class="priority-information">
+                <strong>Prioritas 2</strong>
+                <small>Tingkat prioritas kedua</small>
+              </div>
+            </article>
+
+            <article class="priority-item priority-three">
+              <div class="priority-code">P3</div>
+              <div class="priority-information">
+                <strong>Prioritas 3</strong>
+                <small>Tingkat prioritas ketiga</small>
+              </div>
+            </article>
+
+            <article class="priority-item priority-four">
+              <div class="priority-code">P4</div>
+              <div class="priority-information">
+                <strong>Prioritas 4</strong>
+                <small>Tingkat prioritas keempat</small>
+              </div>
+              <span class="priority-level">Terendah</span>
+            </article>
+          </div>
+
+          <div class="priority-warning">
+            <i class="bi bi-exclamation-circle"></i>
+            <p>
+              Batas skor atau kriteria pemisah P1–P4 perlu ditetapkan
+              berdasarkan hasil pembahasan dengan pakar.
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <!-- FOOTNOTE -->
+      <div class="algorithm-footnote">
+        <i class="bi bi-info-circle"></i>
+        <p>
+          Halaman Manajemen Algoritma merupakan antarmuka konfigurasi frontend.
+          Proses evaluasi aturan, perhitungan skor Decision Tree, dan penentuan
+          prioritas dilakukan pada backend.
+        </p>
+      </div>
+    </main>
+
+    <!-- =========================================
+          MODAL TAMBAH ATURAN
+      ========================================== -->
+
+    <input type="checkbox" id="modalTambahAturan" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3>Tambah Aturan</h3>
+
+          <label for="modalTambahAturan" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Kelompok</label>
+              <input
+                type="text"
+                name="ruleName"
+                placeholder="Contoh: Jenis Kegiatan"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi Kelompok (Opsional)</label>
+              <textarea
+                name="ruleDescription"
+                rows="3"
+                placeholder="Jelaskan tujuan kelompok penilaian..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <label for="modalTambahAturan" class="btn-cancel">Batal</label>
+            <button type="submit" class="btn-save-rule">Simpan Aturan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================
+          MODAL EDIT ATURAN
+      ========================================== -->
+
+    <input type="checkbox" id="modalEditAturan" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3>Edit Aturan</h3>
+
+          <label for="modalEditAturan" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Kelompok</label>
+              <input
+                type="text"
+                name="ruleName"
+                placeholder="Contoh: Jenis Kegiatan"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi Kelompok (Opsional)</label>
+              <textarea
+                name="ruleDescription"
+                rows="3"
+                placeholder="Jelaskan tujuan kelompok penilaian..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <label for="modalEditAturan" class="btn-cancel">Batal</label>
+            <button type="button" class="btn-save-rule">
+              Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================
+          MODAL HAPUS ATURAN
+      ========================================== -->
+
+    <input type="checkbox" id="modalHapusAturan" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="confirm-modal">
+        <div class="confirm-icon delete-icon">
+          <i class="bi bi-trash3"></i>
+        </div>
+
+        <h3>Hapus Aturan?</h3>
+
+        <p>
+          Apakah kamu yakin ingin menghapus aturan ini? Seluruh kriteria yang
+          terdapat di dalam aturan juga akan terhapus.
+        </p>
+
+        <div class="confirm-footer">
+          <label for="modalHapusAturan" class="btn-cancel">Batal</label>
+          <button type="button" class="btn-delete-confirm">
+            Ya, Hapus Aturan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================
+          MODAL TAMBAH KRITERIA
+      ========================================== -->
+
+    <input type="checkbox" id="modalTambahKriteria" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3>Tambah Kriteria</h3>
+
+          <label for="modalTambahKriteria" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Kelompok Penilaian</label>
+              <input type="text" name="criteriaRuleName" readonly />
+            </div>
+
+            <div class="form-group">
+              <label>Nama Kriteria</label>
+              <input
+                type="text"
+                name="criteriaName"
+                placeholder="Masukkan nama kriteria"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+              <textarea
+                name="criteriaDescription"
+                rows="3"
+                placeholder="Jelaskan kriteria..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <label for="modalTambahKriteria" class="btn-cancel">Batal</label>
+            <button type="button" class="btn-save-rule">Simpan Kriteria</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================
+          MODAL EDIT KRITERIA
+      ========================================== -->
+
+    <input type="checkbox" id="modalEditKriteria" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3>Edit Kriteria</h3>
+
+          <label for="modalEditKriteria" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Kelompok Penilaian</label>
+              <input
+                type="text"
+                name="criteriaRuleName"
+                class="criteria-rule-name"
+                readonly
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Nama Kriteria</label>
+              <input type="text" name="criteriaName" maxlength="100" required />
+            </div>
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+              <textarea name="criteriaDescription" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <label for="modalEditKriteria" class="btn-cancel">Batal</label>
+            <button type="button" class="btn-save-rule">
+              Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =========================================
+          MODAL HAPUS KRITERIA
+      ========================================== -->
+
+    <input type="checkbox" id="modalHapusKriteria" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="confirm-modal">
+        <div class="confirm-icon delete-icon">
+          <i class="bi bi-trash3"></i>
+        </div>
+
+        <h3>Hapus Kriteria?</h3>
+
+        <p>
+          Apakah kamu yakin ingin menghapus kriteria ini? Kriteria yang telah
+          dihapus tidak akan ditampilkan lagi dalam daftar aturan.
+        </p>
+
+        <div class="confirm-footer">
+          <label for="modalHapusKriteria" class="btn-cancel">Batal</label>
+          <button type="button" class="btn-delete-confirm">
+            Ya, Hapus Kriteria
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL TAMBAH DAN EDIT FASILITAS -->
+
+    <input type="checkbox" id="modalTambahFasilitas" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="rule-modal">
+        <div class="modal-heading">
+          <h3 id="facilityModalTitle">Tambah Fasilitas</h3>
+
+          <label for="modalTambahFasilitas" class="modal-close">
+            <i class="bi bi-x-lg"></i>
+          </label>
+        </div>
+
+        <form class="modal-form" id="facilityForm">
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Nama Fasilitas</label>
+
+              <input
+                type="text"
+                name="facilityName"
+                placeholder="Contoh: Laboratorium RPL"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Kapasitas Fasilitas</label>
+
+              <input
+                type="number"
+                name="facilityCapacity"
+                min="1"
+                step="1"
+                placeholder="Contoh: 30"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Deskripsi (Opsional)</label>
+
+              <textarea
+                name="facilityDescription"
+                rows="3"
+                placeholder="Deskripsi fasilitas..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <label for="modalTambahFasilitas" class="btn-cancel"> Batal </label>
+
+            <button type="submit" class="btn-save-rule">
+              Simpan Fasilitas
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL HAPUS FASILITAS -->
+
+    <input type="checkbox" id="modalHapusFasilitas" class="modal-toggle" />
+
+    <div class="modal-overlay">
+      <div class="confirm-modal">
+        <div class="confirm-icon delete-icon">
+          <i class="bi bi-trash3"></i>
+        </div>
+
+        <h3>Hapus Fasilitas?</h3>
+
+        <p>Apakah kamu yakin ingin menghapus fasilitas ini?</p>
+
+        <div class="confirm-footer">
+          <label for="modalHapusFasilitas" class="btn-cancel"> Batal </label>
+
+          <button
+            type="button"
+            class="btn-delete-confirm"
+            id="btnDeleteFacility"
+          >
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../JS/shared/storage.js" defer></script>
+    <script src="../../JS/kepalaLab/manajemen_algoritma.js" defer></script>
+  </body>
+</html>
