@@ -1,0 +1,526 @@
+<?php
+
+declare(strict_types=1);
+
+// =========================================
+// SILAB - DASHBOARD LABORAN
+// =========================================
+
+// Memanggil pengelolaan session
+require_once __DIR__ . "/../auth/sesi.php";
+
+// Memastikan hanya Laboran yang dapat mengakses
+wajibRole(
+    ["laboran"],
+    "../auth/login.php"
+);
+
+// Mengambil identitas Laboran dari session
+$namaLaboran = htmlspecialchars(
+    (string) ($_SESSION["nama"] ?? "Laboran"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+$nipLaboran = htmlspecialchars(
+    (string) ($_SESSION["nip_npm"] ?? "-"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard Laboran | SILAB</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
+    <link rel="stylesheet" href="../../CSS/laboran/dashboard.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="navbar-brand">
+            <img src="../../Assets/Logo_RPL.svg" alt="SILAB Logo" class="navbar-logo">
+
+            <div class="brand-info">
+                <h1>SILAB</h1>
+                <p>Teknik Informatika - Universitas Khairun</p>
+            </div>
+        </div>
+
+        <div class="navbar-menu">
+            <a href="dashboard.php" class="nav-link active">
+                Dashboard Laboran
+            </a>
+
+            <a href="antrian.html" class="nav-link">
+                Antrian
+            </a>
+
+            <a href="rekomendasi_jadwal.html" class="nav-link">
+                Rekomendasi Jadwal
+            </a>
+        </div>
+
+        <div class="navbar-profile">
+
+            <div class="profile-info">
+                <h3><?= $namaLaboran ?></h3>
+                <p>Laboran Lab RPL</p>
+            </div>
+
+            <details class="profile-dropdown">
+
+                <summary class="profile-trigger">
+                    <i class="bi bi-person"></i>
+                </summary>
+
+                <div class="profile-menu">
+
+                    <div class="profile-info-dropdown">
+                        <p><?= $namaLaboran ?></p>
+                        <span>NIP : <?= $nipLaboran ?></span>
+
+                        <div class="profile-role">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Laboran Lab
+                        </div>
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <a href="../auth/logout.php" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Keluar/Logout
+                    </a>
+
+                </div>
+            </details>
+
+        </div>
+    </nav>
+
+
+    <!-- DASHBOARD CONTAINER -->
+    <div class="dashboard-container">
+
+        <!-- HEADER PANEL -->
+        <div class="card dashboard-header">
+
+            <div class="header-decoration">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="header-tags">
+
+                <span class="info-tag tag-panel">
+                    <i class="bi bi-circle-fill"></i>
+                    PANEL OPERASIONAL LABORAN
+                </span>
+
+                <span class="info-tag tag-fasilitas">
+                    <i class="bi bi-building"></i>
+                    Fasilitas: 1 Ruangan Laboratorium Terpadu RPL (36 Workstations)
+                </span>
+
+            </div>
+
+            <h2>Validasi Presensi & Operasional Laboran RPL</h2>
+
+            <p>
+                Verifikasi kehadiran pengguna lab secara langsung (real-time),
+                pemantauan jadwal terisi, dan otomatisasi pembukaan slot.
+            </p>
+
+            <span class="badge-otoritas">
+                <i class="bi bi-shield-check"></i>
+                Otoritas Laboran
+            </span>
+
+        </div>
+
+
+        <!-- TEMPAT CARD PRESENSI -->
+        <div id="wadahPresensi"></div>
+
+
+        <!-- TEMPLATE CARD PRESENSI -->
+        <template id="templatePresensi">
+
+            <div class="card sesi-card" data-booking-id="">
+
+                <div class="sesi-info">
+
+                    <div class="sesi-top">
+
+                        <span class="badge-sesi">
+                            <i class="bi bi-circle-fill"></i>
+                            Sesi Berlangsung
+                        </span>
+
+                        <span class="sesi-jam" data-field="rentang-jam"></span>
+
+                    </div>
+
+                    <h3 data-field="nama-kegiatan"></h3>
+
+                    <div class="sesi-lokasi">
+                        <i class="bi bi-people-fill"></i>
+
+                        <strong data-field="pemohon"></strong>
+
+                        <span>
+                            • Ruang Lab RPL (Workstation 01–36)
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="sesi-aksi">
+
+                    <div class="batas-waktu">
+                        <i class="bi bi-clock"></i>
+                        Batas waktu validasi kehadiran: 15 menit
+                    </div>
+
+                    <div class="tombol-validasi">
+
+                        <button type="button" class="btn btn-hadir" data-aksi-presensi="digunakan">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Tandai Digunakan (Hadir)
+                        </button>
+
+                        <button type="button" class="btn btn-tidak" data-aksi-presensi="tidak_digunakan">
+                            <i class="bi bi-x-circle-fill"></i>
+                            Tandai Tidak Digunakan
+                        </button>
+
+                    </div>
+
+                    <p class="presensi-feedback" data-presensi-feedback role="status" aria-live="polite"></p>
+
+                </div>
+
+            </div>
+
+        </template>
+
+
+        <!-- JADWAL PEMINJAMAN HARI INI -->
+        <div class="card jadwal-card">
+
+            <div class="jadwal-head">
+
+                <div>
+                    <h3>Jadwal Peminjaman Hari Ini</h3>
+
+                    <p>
+                        Daftar reservasi lab harian dan transparansi alokasi prioritas sistem.
+                    </p>
+                </div>
+
+                <span class="badge-terjadwal">
+                    <i class="bi bi-calendar-check-fill"></i>
+                    <span id="jumlahJadwal">0</span> Sesi Terjadwal
+                </span>
+
+            </div>
+
+
+            <!-- TABEL JADWAL -->
+            <div class="tabel-wrapper">
+
+                <div class="tabel-jadwal">
+
+                    <!-- HEADER TABEL -->
+                    <div class="tabel-row tabel-header">
+
+                        <span>JAM / SESI</span>
+                        <span>KEGIATAN & PEMOHON</span>
+                        <span class="kolom-kategori">KATEGORI</span>
+                        <span class="kolom-status">STATUS</span>
+
+                    </div>
+
+
+                    <!-- TEMPAT DATA JADWAL -->
+                    <div id="jadwalBody"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TEMPLATE BARIS JADWAL -->
+            <template id="templateBarisJadwal">
+
+                <div class="tabel-row" data-jadwal-row>
+
+                    <div class="kolom-jam">
+
+                        <i class="bi bi-clock" data-field="ikon-jam"></i>
+
+                        <div class="jam-text">
+
+                            <strong data-field="waktu"></strong>
+
+                            <small data-field="keterangan"></small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="kolom-kegiatan">
+
+                        <strong data-field="nama-kegiatan"></strong>
+
+                        <span data-field="pemohon"></span>
+
+                    </div>
+
+
+                    <div class="kolom-kategori">
+
+                        <span class="badge-kategori" data-field="kategori">
+
+                            <i class="bi" data-field="ikon-kategori"></i>
+
+                            <span data-field="label-kategori"></span>
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="kolom-status">
+
+                        <span class="badge-status" data-field="status">
+
+                            <i class="bi" data-field="ikon-status"></i>
+
+                            <span data-field="label-status"></span>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </template>
+
+
+            <!-- PAGINASI JADWAL -->
+            <div class="jadwal-pagination">
+
+                <div class="pagination-info" id="infoPagination">
+                    Memuat jadwal...
+                </div>
+
+                <div class="pagination-controls" id="kontrolPagination" aria-label="Navigasi halaman jadwal"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- UNDUH REKAPAN -->
+        <div class="card unduh-card">
+
+            <div class="unduh-info">
+
+                <div class="unduh-icon">
+                    <i class="bi bi-download"></i>
+                </div>
+
+                <div class="unduh-content">
+
+                    <div class="unduh-judul">
+                        <h3>Unduh Rekapan Peminjaman</h3>
+                        <span class="badge-rekap">Rekap Harian</span>
+                    </div>
+
+                    <div class="unduh-text">
+                        <p>
+                            Ekspor data peminjaman, log kehadiran, dan utilisasi
+                            36 workstation Lab RPL untuk kebutuhan arsip serta
+                            laporan operasional.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="unduh-tombol">
+
+                <a href="#modal-pdf" class="btn btn-pdf">
+                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                    Unduh PDF
+                </a>
+
+                <a href="#modal-excel" class="btn btn-excel">
+                    <i class="bi bi-file-earmark-excel-fill"></i>
+                    Unduh Excel
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <!-- MODAL PDF -->
+    <div id="modal-pdf" class="modal-overlay">
+
+        <a href="#" class="modal-close-area"></a>
+
+        <div class="modal-box">
+
+            <div class="modal-strip">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <span class="modal-tag">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+                Modul Rekapitulasi Data Aktivitas
+            </span>
+
+            <h3>Unduh Rekapan Laporan Laboratorium PDF</h3>
+
+            <label class="modal-label" for="tanggalPdf">
+                <i class="bi bi-calendar-fill"></i>
+                Tanggal
+            </label>
+
+            <input type="date" id="tanggalPdf" class="modal-input" required>
+
+            <div class="modal-divider"></div>
+
+            <div class="modal-aksi">
+
+                <a href="#" class="btn btn-batal">
+                    Batal
+                </a>
+
+                <button type="button" class="btn btn-unduh-maroon" data-unduh-laporan="pdf">
+                    <i class="bi bi-download"></i>
+                    Unduh Berkas Rekapan (PDF)
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MODAL EXCEL -->
+    <div id="modal-excel" class="modal-overlay">
+
+        <a href="#" class="modal-close-area"></a>
+
+        <div class="modal-box">
+
+            <div class="modal-strip">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <span class="modal-tag">
+                <i class="bi bi-file-earmark-excel-fill"></i>
+                Modul Rekapitulasi Data Aktivitas
+            </span>
+
+            <h3>Unduh Rekapan Laporan Laboratorium Excel</h3>
+
+            <label class="modal-label" for="tanggalExcel">
+                <i class="bi bi-calendar-fill"></i>
+                Tanggal
+            </label>
+
+            <input type="date" id="tanggalExcel" class="modal-input" required>
+
+            <div class="modal-divider"></div>
+
+            <div class="modal-aksi">
+
+                <a href="#" class="btn btn-batal">
+                    Batal
+                </a>
+
+                <button type="button" class="btn btn-unduh-ungu" data-unduh-laporan="excel">
+                    <i class="bi bi-download"></i>
+                    Unduh Berkas Rekapan (Excel)
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TAMBAHAN: WADAH NOTIFIKASI TOAST -->
+    <div id="wadahNotifikasi" class="wadah-notifikasi" aria-live="polite" aria-atomic="true"></div>
+
+
+    <!-- SHARED STORAGE -->
+    <script src="../../JS/shared/storage.js"></script>
+
+    <!-- UTILITAS WAKTU -->
+    <script src="../../JS/laboran/utils/waktu.js"></script>
+
+    <!-- DATA SIMULASI -->
+    <script src="../../JS/laboran/data_uji.js"></script>
+
+    <!-- LAYANAN DATA -->
+    <script src="../../JS/laboran/layanan.js"></script>
+
+    <!-- LIBRARY EXCEL -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+    <!-- LIBRARY PDF -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- MODUL DASHBOARD -->
+    <script src="../../JS/laboran/dashboard/dashboard.js"></script>
+    <script src="../../JS/laboran/dashboard/presensi.js"></script>
+
+    <!-- MODUL LAPORAN -->
+    <script src="../../JS/laboran/laporan.js"></script>
+
+
+</body>
+
+</html>

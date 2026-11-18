@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rekomendasi Jadwal | SILAB</title>
+
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- BOOTSTRAP ICONS -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
+    <link rel="stylesheet" href="../../CSS/laboran/rekomendasi.css">
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="navbar-brand">
+
+            <img
+                src="../../Assets/Logo_RPL.svg"
+                alt="SILAB Logo"
+                class="navbar-logo"
+            >
+
+            <div class="brand-info">
+                <h1>SILAB</h1>
+                <p>Teknik Informatika - Universitas Khairun</p>
+            </div>
+
+        </div>
+
+        <div class="navbar-menu">
+
+            <a href="dashboard.html" class="nav-link">
+                Dashboard Laboran
+            </a>
+
+            <a href="antrian.html" class="nav-link">
+                Antrian
+            </a>
+
+            <a
+                href="rekomendasi_jadwal.html"
+                class="nav-link active"
+                aria-current="page"
+            >
+                Rekomendasi Jadwal
+            </a>
+
+        </div>
+
+        <div class="navbar-profile">
+
+            <div class="profile-info">
+                <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
+                <p>Laboran Lab RPL</p>
+            </div>
+
+            <details class="profile-dropdown">
+
+                <summary class="profile-trigger">
+                    <i class="bi bi-person"></i>
+                </summary>
+
+                <div class="profile-menu">
+
+                    <div class="profile-info-dropdown">
+                        <p>Satria Dwi Pauwah S.T., M.Kom.</p>
+                        <span>NIP : 197804122005011003</span>
+
+                        <div class="profile-role">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Laboran Lab
+                        </div>
+                    </div>
+
+                    <div class="profile-divider"></div>
+
+                    <a href="../auth/login.html" class="logout-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Keluar/Logout
+                    </a>
+
+                </div>
+
+            </details>
+
+        </div>
+
+    </nav>
+
+
+    <!-- KONTEN UTAMA -->
+    <main class="rekomendasi-container">
+
+        <!-- HEADER HALAMAN -->
+        <section class="card page-header-card">
+
+            <div class="header-decoration">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="header-tags">
+
+                <span class="info-tag tag-disposisi">
+                    <i class="bi bi-circle-fill"></i>
+                    DISPOSISI KEPALA LAB • JADWAL PENGGANTI
+                </span>
+
+                <span class="info-tag tag-fasilitas">
+                    <i class="bi bi-building"></i>
+                    Fasilitas: 1 Ruangan Laboratorium Terpadu RPL (36 Workstations)
+                </span>
+
+            </div>
+
+            <h2>Daftar Pengguna Tergeser Prioritas</h2>
+
+            <p>
+                Daftar peminjaman yang tergeser akibat penugasan prioritas
+                akademik yang lebih tinggi. Laboran bertugas menindaklanjuti
+                kasus dengan memberikan rekomendasi jadwal pengganti.
+            </p>
+
+        </section>
+
+
+        <!-- STATISTIK -->
+        <section class="stats-grid">
+
+            <!-- TOTAL KASUS -->
+            <article class="card stat-card">
+
+                <div class="stat-icon ungu">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+
+                <div class="stat-content">
+
+                    <small>TOTAL KASUS TERGESER</small>
+
+                    <h3 data-stat="total">
+                        0 Pengguna
+                    </h3>
+
+                    <span data-stat="sumber">
+                        Berdasarkan data pengguna tergeser
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- STATUS TINDAK LANJUT -->
+            <article class="card stat-card">
+
+                <div class="stat-icon maroon">
+                    <i class="bi bi-clipboard2-check"></i>
+                </div>
+
+                <div class="stat-content">
+
+                    <small>STATUS TINDAK LANJUT</small>
+
+                    <h3 data-stat="pending">
+                        0 Perlu Solusi Slot
+                    </h3>
+
+                    <span data-stat="selesai">
+                        0 Selesai Direkomendasikan
+                    </span>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- TABEL PENGGUNA TERGESER -->
+        <section class="card tabel-container">
+
+            <!-- FILTER DAN PENCARIAN -->
+            <div class="tabel-header-actions">
+
+                <button
+                    type="button"
+                    class="btn-filter"
+                    data-filter-kasus
+                    aria-pressed="false"
+                >
+                    <i class="bi bi-people-fill"></i>
+                    Semua Tergeser
+                </button>
+
+
+                <div class="search-box">
+
+                    <i class="bi bi-search"></i>
+
+                    <input
+                        type="search"
+                        placeholder="Cari nama atau NIP / NPM..."
+                        data-cari-kasus
+                        aria-label="Cari pengguna tergeser"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- TABEL -->
+            <div class="tabel-wrapper">
+
+                <div class="tabel-tergeser">
+
+                    <!-- HEADER TABEL -->
+                    <div class="tabel-row tabel-header">
+
+                        <span>PEMOHON</span>
+
+                        <span>JADWAL ASAL DIBATALKAN</span>
+
+                        <span>KEGIATAN & KEBUTUHAN</span>
+
+                        <span>AKSI LABORAN</span>
+
+                    </div>
+
+
+                    <!-- BODY TABEL DINAMIS -->
+                    <div
+                        id="tabelBody"
+                        aria-live="polite"
+                    ></div>
+
+
+                    <!-- TEMPLATE BARIS PENGGUNA -->
+                    <template id="templateBarisTergeser">
+
+                        <div class="tabel-row">
+
+                            <!-- PEMOHON -->
+                            <div class="kolom-pemohon">
+
+                                <strong data-field="namaPemohon"></strong>
+
+                                <span data-field="nipNpm"></span>
+
+                            </div>
+
+
+                            <!-- JADWAL ASAL -->
+                            <div class="kolom-jadwal">
+
+                                <strong
+                                    class="merah"
+                                    data-field="jadwalAsal"
+                                ></strong>
+
+                            </div>
+
+
+                            <!-- KEGIATAN DAN KEBUTUHAN -->
+                            <div class="kolom-kegiatan">
+
+                                <strong data-field="namaKegiatan"></strong>
+
+                                <span data-field="kebutuhanPC"></span>
+
+                                <span data-field="kebutuhanKursi"></span>
+
+                            </div>
+
+
+                            <!-- AKSI LABORAN -->
+                            <div class="kolom-aksi">
+
+                                <a
+                                    href="buat_rekomendasi.html"
+                                    class="btn-rekomendasi"
+                                    data-aksi-rekomendasi
+                                >
+
+                                    <span data-label-aksi>
+                                        Beri Rekomendasi
+                                    </span>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </template>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- PAGINATION -->
+            <div class="pagination-container">
+
+                <p
+                    class="pagination-info"
+                    data-info-pagination
+                >
+                    Menampilkan 0 dari 0 kasus
+                </p>
+
+                <div
+                    class="pagination-buttons"
+                    data-pagination-buttons
+                ></div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- SHARED STORAGE -->
+    <script src="../../JS/shared/storage.js"></script>
+
+    <!-- UTILITAS WAKTU -->
+    <script src="../../JS/laboran/utils/waktu.js"></script>
+
+    <!-- DATA SIMULASI -->
+    <script src="../../JS/laboran/data_uji.js"></script>
+
+    <!-- LAYANAN DATA -->
+    <script src="../../JS/laboran/layanan.js"></script>
+
+    <!-- MODUL REKOMENDASI -->
+    <script src="../../JS/laboran/rekomendasi'/rekomen.js"></script>
+
+</body>
+</html>
