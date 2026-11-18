@@ -357,12 +357,22 @@ if ($targetUser["role"] === "kepala_lab") {
             }
         }
 
+        // =====================================
+// UPDATE SESSION JIKA YANG DIEDIT
+// ADALAH AKUN YANG SEDANG LOGIN
+// =====================================
+
+if (
+    isset($_SESSION["id_user"]) &&
+    (string) $_SESSION["id_user"] === (string) $id
+) {
+    $_SESSION["nama"] = $nama;
+    $_SESSION["nip_npm"] = $nipNpm;
+    $_SESSION["role"] = $role;
+}
+
         jsonResponse(true, "Data pengguna berhasil diperbarui.");
     }
-
-    // =====================================
-    // HAPUS PENGGUNA
-    // =====================================
 
 
 // =====================================
