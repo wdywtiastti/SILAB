@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // =========================================
-// SILAB - PROSES LOGIN
+// SILAB - PROSES LOGIN FINAL
 // =========================================
 
 require_once __DIR__ . "/sesi.php";
@@ -11,24 +11,18 @@ require_once __DIR__ . "/../../config/database.php";
 
 header("Content-Type: application/json; charset=UTF-8");
 
-// =========================================
-// FUNGSI RESPONSE
-// =========================================
-
 function responseJSON(
     bool $success,
     string $message,
     ?string $status = null,
     ?string $role = null
 ): void {
-
     echo json_encode([
         "success" => $success,
         "message" => $message,
         "status" => $status,
         "role" => $role
     ]);
-
     exit;
 }
 
@@ -46,9 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 // =========================================
 
 $identifier = trim($_POST["identifier"] ?? "");
-$password = $_POST["password"] ?? "";
+$plainPassword = $_POST["password"] ?? "";
 
-if ($identifier === "" || $password === "") {
+if ($identifier === "" || $plainPassword === "") {
     responseJSON(false, "NIP/NPM dan password wajib diisi.");
 }
 
@@ -57,12 +51,12 @@ if (!preg_match('/^[0-9]+$/', $identifier)) {
 }
 
 // =========================================
-// CARI AKUN DI DATABASE
+// PROSES LOGIN
 // =========================================
 
 try {
 
-    $query = "
+    $stmt = $pdo->prepare("
         SELECT
             id_user,
             role,
@@ -73,34 +67,29 @@ try {
         FROM users
         WHERE nip_npm = :identifier
         LIMIT 1
-    ";
-
-    $stmt = $pdo->prepare($query);
+    ");
 
     $stmt->execute([
         ":identifier" => $identifier
     ]);
 
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // =====================================
-    // PERIKSA PASSWORD
-    // =====================================
-
-    if (
-        !$user ||
-        !password_verify($password, $user["password"])
-    ) {
-        responseJSON(
-            false,
-            "NIP/NPM atau password salah."
-        );
+    if (!$user) {
+        responseJSON(false, "NIP/NPM atau password salah.");
     }
 
-    // =====================================
-    // PERIKSA STATUS AKUN
-    // =====================================
+    // Verifikasi password
+    $passwordHash = (string) $user["password"];
 
+    if (
+        $passwordHash === "" ||
+        !password_verify($plainPassword, $passwordHash)
+    ) {
+        responseJSON(false, "NIP/NPM atau password salah.");
+    }
+
+    // Periksa status akun
     $status = $user["status"];
 
     if ($status !== "aktif") {
@@ -123,10 +112,7 @@ try {
         );
     }
 
-    // =====================================
-    // PERIKSA ROLE
-    // =====================================
-
+    // Periksa role
     $roleDiizinkan = [
         "kepala_lab",
         "laboran",
@@ -137,10 +123,7 @@ try {
         responseJSON(false, "Role akun tidak dikenali.");
     }
 
-    // =====================================
-    // BUAT SESSION
-    // =====================================
-
+    // Buat session
     session_regenerate_id(true);
 
     $_SESSION["id_user"] = $user["id_user"];
@@ -148,10 +131,6 @@ try {
     $_SESSION["nip_npm"] = $user["nip_npm"];
     $_SESSION["nama"] = $user["nama"];
     $_SESSION["login"] = true;
-
-    // =====================================
-    // LOGIN BERHASIL
-    // =====================================
 
     responseJSON(
         true,
@@ -162,23 +141,15 @@ try {
 
 } catch (PDOException $e) {
 
-    error_log("Database Login Error: " . $e->getMessage());
+    error_log("LOGIN DATABASE ERROR: " . $e->getMessage());
 
     http_response_code(500);
-
-    responseJSON(
-        false,
-        "Terjadi kesalahan pada database."
-    );
+    responseJSON(false, "Terjadi kesalahan pada database.");
 
 } catch (Throwable $e) {
 
-    error_log("Login Error: " . $e->getMessage());
+    error_log("LOGIN ERROR: " . $e->getMessage());
 
     http_response_code(500);
-
-    responseJSON(
-        false,
-        "Terjadi kesalahan pada sistem."
-    );
+    responseJSON(false, "Terjadi kesalahan pada sistem.");
 }

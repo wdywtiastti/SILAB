@@ -186,14 +186,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             </div>
           </div>
 
-          <h2 class="verification-number">2 Akun</h2>
+          <h2 class="verification-number" id="waiting-users">0 Akun</h2>
 
           <div class="summary-divider"></div>
 
           <div class="verification-footer">
             <span>Menunggu persetujuan</span>
 
-            <a href="verifikasi_akun.html" class="review-link">
+            <a href="verifikasi_akun.php" class="review-link">
               Tinjau Permintaan
               <i class="bi bi-chevron-right"></i>
             </a>
@@ -239,264 +239,30 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         <!-- TABEL -->
         <div class="table-responsive">
           <table class="user-table">
-            <thead>
-              <tr>
-                <th>NAMA PENGGUNA</th>
-                <th>NIDN / NIM</th>
-                <th>STATUS AKUN</th>
-                <th>AKSI</th>
-              </tr>
-            </thead>
+<thead>
+    <tr>
+        <th>NAMA PENGGUNA</th>
+        <th>NIP / NIM</th>
+        <th>ROLE</th>
+        <th>STATUS AKUN</th>
+        <th>AKSI</th>
+    </tr>
+</thead>
 
-            <tbody>
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">IS</div>
-                    <span>Ir. Salkin Lutfi S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0012058201</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">W</div>
-                    <span>Widyawati Astuti</span>
-                  </div>
-                </td>
-                <td>0024088902</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">D</div>
-                    <span>Desy Indriasty Faradaniyah</span>
-                  </div>
-                </td>
-                <td>0702211045</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">D</div>
-                    <span>Desy Indriasty Faradaniyah</span>
-                  </div>
-                </td>
-                <td>0702211045</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">YM</div>
-                    <span>Yasir Muin S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">YM</div>
-                    <span>Yasir Muin S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">J</div>
-                    <span>Jasmin</span>
-                  </div>
-                </td>
-                <td>0702221089</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+<tbody id="user-table-body">
+</tbody>
           </table>
         </div>
 
         <!-- FOOTER TABEL -->
-        <div class="table-footer">
-          <p>
-            Menampilkan <strong>10</strong> dari <strong>128</strong> akun
-            pengguna
-          </p>
+<div class="table-footer">
+    <p id="table-info">
+        Menampilkan 0 dari 0 akun pengguna
+    </p>
 
-          <div class="pagination">
-            <button type="button" class="page-button" disabled>
-              Sebelumnya
-            </button>
-
-            <button type="button" class="page-number active-page">1</button>
-            <button type="button" class="page-number">2</button>
-            <button type="button" class="page-number">3</button>
-
-            <button type="button" class="page-button">Berikutnya</button>
-          </div>
-        </div>
+    <div class="pagination" id="user-pagination">
+    </div>
+</div>
       </section>
     </main>
 
@@ -567,6 +333,16 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             </small>
           </div>
 
+          <div class="form-group">
+    <label for="add-role">Role Pengguna</label>
+
+    <select name="role" id="add-role" required>
+        <option value="pengguna">Pengguna</option>
+        <option value="laboran">Laboran</option>
+        <option value="kepala_lab">Kepala Lab</option>
+    </select>
+</div>
+
           <div class="modal-footer">
             <label for="modal-tambah-user" class="btn-batal"> Batal </label>
 
@@ -633,6 +409,15 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             <small class="field-error" data-error-for="nip_npm"></small>
           </div>
 
+          <div class="form-group">
+    <label for="edit-role">Role Pengguna</label>
+
+    <select name="role" id="edit-role" required>
+        <option value="pengguna">Pengguna</option>
+        <option value="laboran">Laboran</option>
+        <option value="kepala_lab">Kepala Lab</option>
+    </select>
+</div>
           <div class="form-group status-group">
             <label>Status Akun</label>
 
@@ -726,9 +511,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         </div>
       </div>
     </div>
-
-    <!-- STORAGE -->
-    <script src="../../JS/shared/storage.js" defer></script>
 
     <!-- JAVASCRIPT MANAJEMEN USER -->
     <script src="../../JS/kepalaLab/manajemen_user.js" defer></script>

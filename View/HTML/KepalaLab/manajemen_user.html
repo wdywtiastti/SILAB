@@ -121,20 +121,19 @@
               <i class="bi bi-people"></i>
             </div>
           </div>
-
-          <h2>128</h2>
+          <h2 id="total-users">0</h2>
 
           <div class="summary-divider"></div>
 
           <div class="account-status">
-            <span class="status-active">
+            <span class="status-active" id="active-users">
               <i class="bi bi-circle-fill"></i>
-              122 Aktif
+              0 Aktif
             </span>
 
-            <span class="status-inactive">
+            <span class="status-inactive" id="inactive-users">
               <i class="bi bi-circle-fill"></i>
-              6 Nonaktif
+              0 Nonaktif
             </span>
           </div>
         </div>
@@ -149,14 +148,14 @@
             </div>
           </div>
 
-          <h2 class="verification-number">2 Akun</h2>
+          <h2 class="verification-number" id="waiting-users">0 Akun</h2>
 
           <div class="summary-divider"></div>
 
           <div class="verification-footer">
             <span>Menunggu persetujuan</span>
 
-            <a href="verifikasi_akun.html" class="review-link">
+            <a href="verifikasi_akun.php" class="review-link">
               Tinjau Permintaan
               <i class="bi bi-chevron-right"></i>
             </a>
@@ -170,7 +169,9 @@
         <div class="table-toolbar">
           <!-- DROPDOWN FILTER STATUS -->
           <details class="status-filter">
-            <summary class="filter-button">Semua (128)</summary>
+            <summary class="filter-button" id="filter-button">
+              Semua (0)
+            </summary>
 
             <div class="filter-dropdown">
               <span class="filter-heading"> FILTER STATUS AKUN </span>
@@ -211,233 +212,7 @@
               </tr>
             </thead>
 
-            <tbody>
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">IS</div>
-                    <span>Ir. Salkin Lutfi S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0012058201</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">W</div>
-                    <span>Widyawati Astuti</span>
-                  </div>
-                </td>
-                <td>0024088902</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">D</div>
-                    <span>Desy Indriasty Faradaniyah</span>
-                  </div>
-                </td>
-                <td>0702211045</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">D</div>
-                    <span>Desy Indriasty Faradaniyah</span>
-                  </div>
-                </td>
-                <td>0702211045</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">YM</div>
-                    <span>Yasir Muin S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">YM</div>
-                    <span>Yasir Muin S.T., M.Kom.</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-active">Aktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar purple-avatar">LF</div>
-                    <span>Laili Fadila</span>
-                  </div>
-                </td>
-                <td>0702221012</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="user-name">
-                    <div class="avatar maroon-avatar">J</div>
-                    <span>Jasmin</span>
-                  </div>
-                </td>
-                <td>0702221089</td>
-                <td><span class="account-inactive">Nonaktif</span></td>
-                <td>
-                  <div class="action-buttons">
-                    <label for="modal-edit-user" class="edit-button">
-                      <i class="bi bi-pencil"></i>
-                      Edit
-                    </label>
-                    <label for="modal-hapus-user" class="delete-button">
-                      <i class="bi bi-trash"></i>
-                      Hapus
-                    </label>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+            <tbody id="user-table-body"></tbody>
           </table>
         </div>
 

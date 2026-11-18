@@ -1057,3 +1057,77 @@ body {
     top: 16px;
   }
 }
+
+.verification-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.verification-tab {
+  padding: 11px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verification-tab.active {
+  background: #7b1e2b;
+  color: #fff;
+  border-color: #7b1e2b;
+}
+
+.status-rejected {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =====================================
+   PERBAIKAN TOMBOL VERIFIKASI KEMBALI
+===================================== */
+
+.verification-table .action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.verification-table .action-buttons .approve-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 165px;
+  width: auto;
+  height: 40px;
+
+  padding: 0 14px;
+
+  white-space: nowrap;
+  flex-wrap: nowrap;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.verification-table .action-buttons .approve-btn i {
+  flex-shrink: 0;
+  font-size: 15px;
+}

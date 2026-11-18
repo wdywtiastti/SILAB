@@ -1,9 +1,13 @@
-/* Pengelolaan registrasi akun SILAB */
+/* =========================================
+   SILAB - REGISTRASI AKUN
+   TERHUBUNG DENGAN PHP DAN MYSQL
+========================================= */
 
-// Mengambil elemen form.
+"use strict";
+
+// Mengambil elemen form
 const formDaftar = document.getElementById("registerForm");
 
-// Mengambil seluruh input.
 const nama = formDaftar.elements.nama;
 const identifier = formDaftar.elements.identifier;
 const noTelp = formDaftar.elements.no_telp;
@@ -11,7 +15,7 @@ const password = formDaftar.elements.password;
 const konfirmasi = formDaftar.elements.confirm_password;
 const persetujuan = formDaftar.elements.terms;
 
-// Mengambil elemen pesan kesalahan.
+// Pesan kesalahan
 const namaError = document.getElementById("namaError");
 const identifierError = document.getElementById("identifierError");
 const noTelpError = document.getElementById("noTelpError");
@@ -19,7 +23,12 @@ const passwordError = document.getElementById("passwordError");
 const confirmPasswordError = document.getElementById("confirmPasswordError");
 const termsError = document.getElementById("termsError");
 
+const tombolDaftar = formDaftar.querySelector('button[type="submit"]');
+
+// =========================================
 // MENAMPILKAN PESAN KESALAHAN
+// =========================================
+
 function tampilkanError(input, elemenError, pesan) {
   elemenError.textContent = pesan;
 
@@ -38,7 +47,10 @@ function tampilkanError(input, elemenError, pesan) {
   }
 }
 
+// =========================================
 // MENGHAPUS PESAN KESALAHAN
+// =========================================
+
 function hapusError(input, elemenError) {
   elemenError.textContent = "";
 
@@ -57,7 +69,10 @@ function hapusError(input, elemenError) {
   }
 }
 
-// MENGHAPUS SELURUH PESAN KESALAHAN
+// =========================================
+// MENGHAPUS SEMUA ERROR
+// =========================================
+
 function hapusSemuaError() {
   hapusError(nama, namaError);
   hapusError(identifier, identifierError);
@@ -67,120 +82,46 @@ function hapusSemuaError() {
   hapusError(persetujuan, termsError);
 }
 
-// MENGHAPUS PESAN SAAT INPUT DIPERBAIKI
+// =========================================
+// MENGHAPUS ERROR SAAT INPUT DIPERBAIKI
+// =========================================
 
-nama.addEventListener("input", function () {
+nama.addEventListener("input", () => {
   hapusError(nama, namaError);
 });
 
-identifier.addEventListener("input", function () {
+identifier.addEventListener("input", () => {
   hapusError(identifier, identifierError);
 });
 
-noTelp.addEventListener("input", function () {
+noTelp.addEventListener("input", () => {
   hapusError(noTelp, noTelpError);
 });
 
-password.addEventListener("input", function () {
+password.addEventListener("input", () => {
   hapusError(password, passwordError);
   hapusError(konfirmasi, confirmPasswordError);
 });
 
-konfirmasi.addEventListener("input", function () {
+konfirmasi.addEventListener("input", () => {
   hapusError(konfirmasi, confirmPasswordError);
 });
 
-persetujuan.addEventListener("change", function () {
+persetujuan.addEventListener("change", () => {
   hapusError(persetujuan, termsError);
 });
 
 // =========================================
-// PENYIMPANAN AKUN REGISTRASI
+// PROSES VALIDASI REGISTRASI
 // =========================================
 
-function simpanAkunRegistrasi() {
-  // Memastikan SILABStorage tersedia.
-  if (!window.SILABStorage) {
-    console.error("SILABStorage belum dimuat.");
-
-    alert("Sistem penyimpanan belum tersedia.");
-    return false;
-  }
-
-  // Mengambil data pengguna yang sudah tersimpan.
-  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-  if (!Array.isArray(users)) {
-    console.error("Format data pengguna tidak valid.");
-
-    alert("Data pengguna tidak dapat diproses.");
-    return false;
-  }
-
-  // Memeriksa NIP/NPM duplikat.
-  const nipNpmTerdaftar = users.some((user) => {
-    const identitas = user.nipNpm || user.identifier || "";
-
-    return identitas.toString().trim() === identifier.value.trim();
-  });
-
-  if (nipNpmTerdaftar) {
-    tampilkanError(
-      identifier,
-      identifierError,
-      "NIP/NPM sudah terdaftar. Gunakan NIP/NPM lain.",
-    );
-
-    identifier.focus();
-    return false;
-  }
-
-  // Membuat ID pengguna yang unik.
-  let userId;
-
-  do {
-    userId = `USR${Date.now()}${Math.floor(Math.random() * 1000)}`;
-  } while (users.some((user) => user.id === userId));
-
-  // Membentuk data akun baru.
-  const akunBaru = {
-    id: userId,
-    nama: nama.value.trim(),
-    nipNpm: identifier.value.trim(),
-    noTelp: noTelp.value.trim(),
-    password: password.value,
-    status: "menunggu_verifikasi",
-    tanggalDaftar: new Date().toISOString(),
-    tanggalVerifikasi: null,
-    alasanPenolakan: null,
-  };
-
-  // Menambahkan akun ke data pengguna.
-  const usersTerbaru = [...users, akunBaru];
-
-  // Menyimpan melalui SILABStorage.
-  const berhasil = SILABStorage.set(SILABStorage.KEYS.USERS, usersTerbaru);
-
-  if (!berhasil) {
-    console.error("Penyimpanan akun gagal.");
-
-    alert("Pendaftaran gagal disimpan. Silakan coba kembali.");
-    return false;
-  }
-
-  return true;
-}
-
-// PROSES VALIDASI REGISTRASI
-
-formDaftar.addEventListener("submit", function (event) {
+formDaftar.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   hapusSemuaError();
 
   let valid = true;
 
-  // Mengambil nilai input.
   const nilaiNama = nama.value.trim();
   const nilaiIdentifier = identifier.value.trim();
   const nilaiNoTelp = noTelp.value.trim();
@@ -261,24 +202,94 @@ formDaftar.addEventListener("submit", function (event) {
     valid = false;
   }
 
-  // MENGHENTIKAN PROSES JIKA VALIDASI GAGAL
+  // HENTIKAN JIKA VALIDASI GAGAL
   if (!valid) {
     const inputPertama = formDaftar.querySelector('[aria-invalid="true"]');
 
-    if (inputPertama) {
-      inputPertama.focus();
+    inputPertama?.focus();
+
+    return;
+  }
+
+  // =====================================
+  // KIRIM DATA KE PHP
+  // =====================================
+
+  const formData = new FormData();
+
+  formData.append("nama", nilaiNama);
+  formData.append("identifier", nilaiIdentifier);
+  formData.append("no_telp", nilaiNoTelp);
+  formData.append("password", nilaiPassword);
+  formData.append("confirm_password", nilaiKonfirmasi);
+  formData.append("terms", persetujuan.checked ? "1" : "0");
+
+  try {
+    tombolDaftar.disabled = true;
+    tombolDaftar.textContent = "Memproses...";
+
+    const response = await fetch("proses_register.php", {
+      method: "POST",
+      body: formData,
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    // =================================
+    // PENDAFTARAN GAGAL
+    // =================================
+
+    if (!response.ok || !result.success) {
+      if (result.field === "identifier") {
+        tampilkanError(
+          identifier,
+          identifierError,
+          result.message || "NIP/NPM sudah terdaftar.",
+        );
+
+        identifier.focus();
+      } else if (result.field === "nama") {
+        tampilkanError(nama, namaError, result.message);
+
+        nama.focus();
+      } else if (result.field === "no_telp") {
+        tampilkanError(noTelp, noTelpError, result.message);
+
+        noTelp.focus();
+      } else if (result.field === "password") {
+        tampilkanError(password, passwordError, result.message);
+
+        password.focus();
+      } else if (result.field === "confirm_password") {
+        tampilkanError(konfirmasi, confirmPasswordError, result.message);
+
+        konfirmasi.focus();
+      } else if (result.field === "terms") {
+        tampilkanError(persetujuan, termsError, result.message);
+      } else {
+        alert(result.message || "Pendaftaran gagal. Silakan coba kembali.");
+      }
+
+      return;
     }
 
-    return;
+    // =================================
+    // PENDAFTARAN BERHASIL
+    // =================================
+
+    formDaftar.reset();
+
+    window.location.hash = "registerModal";
+  } catch (error) {
+    console.error("Kesalahan registrasi:", error);
+
+    alert("Tidak dapat menghubungi server. Periksa koneksi dan coba kembali.");
+  } finally {
+    tombolDaftar.disabled = false;
+    tombolDaftar.textContent = "Daftar";
   }
-
-  // MENYIMPAN AKUN KE SILAB STORAGE
-  const berhasil = simpanAkunRegistrasi();
-
-  if (!berhasil) {
-    return;
-  }
-
-  // MENAMPILKAN MODAL JIKA PENDAFTARAN BERHASIL
-  window.location.hash = "registerModal";
 });

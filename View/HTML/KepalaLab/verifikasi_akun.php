@@ -1,0 +1,326 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . "/../auth/sesi.php";
+
+wajibRole(["kepala_lab"], "../auth/login.php");
+
+$user = penggunaLogin();
+
+$namaKepalaLab = $user["nama"] ?? "Kepala Laboratorium";
+$nipKepalaLab = $user["nip_npm"] ?? "-";
+
+?>
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verifikasi Akun | SILAB</title>
+
+    <!-- Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- Navbar -->
+    <link rel="stylesheet" href="../../CSS/kepalalab/navbar.css" />
+
+    <!-- CSS Halaman -->
+    <link rel="stylesheet" href="../../CSS/kepalaLab/verifikasi_akun.css" />
+  </head>
+
+  <body>
+    <!-- =====================================
+        NAVBAR
+    ===================================== -->
+
+    <header class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="../../Assets/Logo_RPL.svg"
+          alt="Logo SILAB"
+          class="navbar-logo"
+        />
+
+        <div class="brand-info">
+          <h1>SILAB</h1>
+          <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+      </div>
+
+<nav class="navbar-menu">
+    <a href="Dashboard.php" class="nav-link">
+        Dashboard Kepala Lab
+    </a>
+
+    <a href="penyelesaian_konflik.php" class="nav-link">
+        Penyelesaian Konflik
+    </a>
+
+    <a href="manajemen_algoritma.php" class="nav-link">
+        Manajemen Algoritma
+    </a>
+
+    <a href="manajemen_user.php" class="nav-link">
+        Manajemen User
+    </a>
+</nav>
+
+      <div class="navbar-profile">
+        <div class="profile-info">
+          <h3><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?></h3>
+          <p>Kepala Lab</p>
+        </div>
+
+        <details class="profile-dropdown">
+          <summary class="profile-trigger">
+            <i class="bi bi-person"></i>
+          </summary>
+
+          <div class="profile-menu">
+            <div class="profile-info">
+              <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
+              <span>
+    NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
+</span>
+
+              <div class="profile-role">
+                <i class="bi bi-shield-check"></i>
+                Kepala Lab RPL
+              </div>
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <a href="../auth/logout.php" class="logout-link">
+              <i class="bi bi-box-arrow-right"></i>
+              Keluar / Logout
+            </a>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="verification-page">
+      <!-- KEMBALI -->
+      <a href="manajemen_user.php" class="back-link">
+        <i class="bi bi-chevron-left"></i>
+        Kembali
+      </a>
+
+      <!-- HEADER HALAMAN -->
+      <section class="verification-header">
+        <div class="header-decoration">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="header-content">
+          <div class="header-left">
+            <div class="header-badges">
+              <span class="header-badge primary-badge">
+                <i class="bi bi-circle-fill"></i>
+                MANAJEMEN PENGGUNA
+              </span>
+
+              <span class="header-badge muted-badge">
+                <i class="bi bi-circle-fill"></i>
+                VERIFIKASI AKUN
+              </span>
+            </div>
+
+            <h1>Verifikasi Akun Baru</h1>
+
+            <p>
+              Tinjau dan verifikasi pengajuan pendaftaran akun baru mahasiswa,
+              dosen, atau laboran untuk akses sistem SILAB RPL.
+            </p>
+          </div>
+
+          <div class="waiting-summary">
+            <div class="waiting-icon">
+              <i class="bi bi-clipboard-check"></i>
+            </div>
+
+            <div>
+              <strong id="waiting-count">0</strong>
+              <span>Permintaan Menunggu</span>
+            </div>
+          </div>
+        </div>
+      </section>
+        <div class="verification-tabs">
+    <button
+        type="button"
+        id="tab-pending"
+        class="verification-tab active"
+    >
+        Menunggu Verifikasi (0)
+    </button>
+
+    <button
+        type="button"
+        id="tab-rejected"
+        class="verification-tab"
+    >
+        Ditolak (0)
+    </button>
+</div>
+      <!-- TABEL VERIFIKASI -->
+      <section class="verification-table-card">
+
+
+    <!-- TOOLBAR -->
+    <div class="table-toolbar">
+
+        <div class="verification-filter">
+            <i class="bi bi-people-fill"></i>
+            <span id="verification-total">
+                Permintaan Verifikasi (0)
+            </span>
+        </div>
+
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+
+            <input
+                type="text"
+                id="search-verification"
+                placeholder="Cari nama atau NIDN / NIM..."
+            >
+        </div>
+
+    </div>
+
+    <!-- TABEL -->
+    <div class="table-responsive">
+
+        <table class="verification-table">
+
+            <thead>
+                <tr>
+                    <th class="name-column">NAMA PENGGUNA</th>
+                    <th>NIP / NIM</th>
+                    <th>STATUS AKUN</th>
+                    <th>AKSI</th>
+                </tr>
+            </thead>
+
+            <tbody id="verification-table-body">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="table-pagination">
+
+        <p id="verification-info">
+            Menampilkan 0 dari 0 akun menunggu verifikasi
+        </p>
+
+        <div
+            class="pagination-buttons"
+            id="verification-pagination">
+        </div>
+
+    </div>
+
+</section>
+
+    </main>
+
+    <!-- =========================================
+        MODAL KONFIRMASI VERIFIKASI AKUN
+    ========================================= -->
+
+    <input
+      type="checkbox"
+      id="modal-verifikasi"
+      class="verification-modal-toggle"
+    />
+
+    <div class="verification-modal-overlay">
+      <div class="verification-modal verifikasi-modal">
+        <div class="verification-modal-content">
+          <span class="modal-badge-verifikasi">
+            <i class="bi bi-circle-fill"></i>
+            KONFIRMASI VERIFIKASI
+          </span>
+
+          <div class="modal-icon-verifikasi">
+            <i class="bi bi-person-check"></i>
+          </div>
+
+          <h2>Verifikasi Akun Pengguna?</h2>
+
+          <p>
+            Apakah kamu yakin ingin menyetujui akun pengguna ini? Pengguna akan
+            mendapatkan akses ke sistem SILAB.
+          </p>
+        </div>
+
+        <div class="verification-modal-footer">
+          <label for="modal-verifikasi" class="modal-btn-cancel"> Batal </label>
+
+<button type="button" id="confirm-approve" class="modal-btn-approve">
+    <i class="bi bi-check-circle"></i>
+    Ya, Verifikasi Akun
+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================
+        MODAL KONFIRMASI TOLAK AKUN
+    ========================================= -->
+
+    <input type="checkbox" id="modal-tolak" class="verification-modal-toggle" />
+
+    <div class="verification-modal-overlay">
+      <div class="verification-modal tolak-modal">
+        <div class="verification-modal-content">
+          <span class="modal-badge-tolak">
+            <i class="bi bi-circle-fill"></i>
+            KONFIRMASI PENOLAKAN
+          </span>
+
+          <div class="modal-icon-tolak">
+            <i class="bi bi-trash3"></i>
+          </div>
+
+          <h2>Tolak Pengajuan Akun?</h2>
+
+          <p>
+            Apakah kamu yakin ingin menolak verifikasi akun pengguna ini?
+            Pengajuan yang ditolak tidak akan mendapatkan akses ke sistem SILAB.
+          </p>
+        </div>
+
+        <div class="verification-modal-footer">
+          <label for="modal-tolak" class="modal-btn-cancel"> Batal </label>
+<button type="button" id="confirm-reject" class="modal-btn-reject">
+    <i class="bi bi-trash3"></i>
+    Ya, Tolak Akun
+</button>
+
+        </div>
+      </div>
+    </div>
+<!-- VERIFIKASI AKUN -->
+<script src="../../JS/kepalaLab/verifikasi_akun.js" defer></script>
+  </body>
+</html>
