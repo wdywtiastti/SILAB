@@ -1131,3 +1131,109 @@ body {
   flex-shrink: 0;
   font-size: 15px;
 }
+
+/* =========================================
+   FIX TOMBOL AKSI VERIFIKASI
+========================================= */
+
+.verification-table .approve-btn,
+.verification-table .reject-btn {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex: 0 0 44px !important;
+
+  border-radius: 50% !important;
+
+  background: #ffffff !important;
+
+  box-sizing: border-box;
+}
+
+/* TERIMA */
+.verification-table .approve-btn {
+  border: 1.5px solid #009b69 !important;
+  color: #009b69 !important;
+}
+
+/* TOLAK */
+.verification-table .reject-btn {
+  border: 1.5px solid #911e3f !important;
+  color: #911e3f !important;
+}
+
+/* ICON */
+.verification-table .approve-btn i,
+.verification-table .reject-btn i {
+  font-size: 19px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+/* HOVER TERIMA */
+.verification-table .approve-btn:hover {
+  background: #009b69 !important;
+  color: #ffffff !important;
+}
+
+/* HOVER TOLAK */
+.verification-table .reject-btn:hover {
+  background: #911e3f !important;
+  color: #ffffff !important;
+}
+
+
+/* =========================================
+   TOMBOL VERIFIKASI KEMBALI
+========================================= */
+
+.verification-table .action-buttons
+button:not(.approve-btn):not(.reject-btn) {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+
+    padding: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    flex: 0 0 44px !important;
+
+    border-radius: 50% !important;
+
+    background: #ffffff !important;
+
+    border: 1.5px solid #009b69 !important;
+    color: #009b69 !important;
+
+    font-size: 0 !important;
+    line-height: 1 !important;
+
+    box-sizing: border-box;
+}
+
+/* Ikon Verifikasi Kembali */
+.verification-table .action-buttons
+button:not(.approve-btn):not(.reject-btn) i {
+    font-size: 19px !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Hover */
+.verification-table .action-buttons
+button:not(.approve-btn):not(.reject-btn):hover {
+    background: #009b69 !important;
+    color: #ffffff !important;
+}

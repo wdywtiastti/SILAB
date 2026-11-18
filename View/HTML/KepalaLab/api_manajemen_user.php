@@ -106,20 +106,23 @@ try {
     if ($action === "add") {
 
     $nama = trim($_POST["nama"] ?? "");
-$nipNpm = trim($_POST["nip_npm"] ?? "");
-$password = $_POST["password"] ?? "";
-$role = $_POST["role"] ?? "pengguna";
+    $nipNpm = trim($_POST["nip_npm"] ?? "");
+    $password = $_POST["password"] ?? "";
+    $role = $_POST["role"] ?? "pengguna";
 
-$roleDiizinkan = [
-    "kepala_lab",
-    "laboran",
-    "pengguna"
-];
+    $roleDiizinkan = [
+        "laboran",
+        "pengguna"
+    ];
 
-if (!in_array($role, $roleDiizinkan, true)) {
-    jsonResponse(false, "Role tidak valid.", [], 422);
-}
-
+    if (!in_array($role, $roleDiizinkan, true)) {
+        jsonResponse(
+            false,
+            "Role hanya boleh Laboran atau Pengguna.",
+            [],
+            422
+        );
+    }
         if ($nama === "" || $nipNpm === "" || $password === "") {
             jsonResponse(false, "Semua data wajib diisi.", [], 422);
         }
@@ -198,21 +201,64 @@ INSERT INTO users (
         $nipNpm = trim($_POST["nip_npm"] ?? "");
         $status = $_POST["status"] ?? "";
         $password = $_POST["password"] ?? "";
-        $role = $_POST["role"] ?? "";
 
-$roleDiizinkan = [
-    "kepala_lab",
-    "laboran",
-    "pengguna"
-];
-
-if (!in_array($role, $roleDiizinkan, true)) {
-    jsonResponse(false, "Role tidak valid.", [], 422);
-}
 
         if (!$id || $nama === "" || $nipNpm === "") {
             jsonResponse(false, "Data pengguna tidak lengkap.", [], 422);
         }
+
+
+$role = $_POST["role"] ?? "";
+
+// =====================================
+// CEK AKUN YANG AKAN DIEDIT
+// =====================================
+
+$cekTarget = $pdo->prepare("
+    SELECT id_user, role
+    FROM users
+    WHERE id_user = :id
+    AND status IN ('aktif', 'nonaktif')
+    LIMIT 1
+");
+
+$cekTarget->execute([
+    ":id" => $id
+]);
+
+$targetUser = $cekTarget->fetch(PDO::FETCH_ASSOC);
+
+if (!$targetUser) {
+    jsonResponse(false, "Pengguna tidak ditemukan.", [], 404);
+}
+
+// =====================================
+// PERLINDUNGAN KEPALA LAB
+// =====================================
+
+if ($targetUser["role"] === "kepala_lab") {
+
+    // Role Kepala Lab harus tetap
+    $role = "kepala_lab";
+
+} else {
+
+    // Akun biasa hanya boleh Laboran atau Pengguna
+    $roleDiizinkan = [
+        "laboran",
+        "pengguna"
+    ];
+
+    if (!in_array($role, $roleDiizinkan, true)) {
+        jsonResponse(
+            false,
+            "Role hanya boleh Laboran atau Pengguna.",
+            [],
+            422
+        );
+    }
+}
+
 
         if (mb_strlen($nama) > 100) {
             jsonResponse(false, "Nama maksimal 100 karakter.", [], 422);
@@ -248,52 +294,52 @@ if (!in_array($role, $roleDiizinkan, true)) {
         }
 
 
-if ($password !== "") {
+        if ($password !== "") {
 
-    $hash = password_hash($password, PASSWORD_DEFAULT);
+            $hash = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmt = $pdo->prepare("
-        UPDATE users
-        SET
-            nama = :nama,
-            nip_npm = :nip,
-            role = :role,
-            status = :status,
-            password = :password
-        WHERE id_user = :id
-        AND status IN ('aktif', 'nonaktif')
-    ");
+            $stmt = $pdo->prepare("
+                UPDATE users
+                SET
+                    nama = :nama,
+                    nip_npm = :nip,
+                    role = :role,
+                    status = :status,
+                    password = :password
+                WHERE id_user = :id
+                AND status IN ('aktif', 'nonaktif')
+            ");
 
-    $stmt->execute([
-        ":nama" => $nama,
-        ":nip" => $nipNpm,
-        ":role" => $role,
-        ":status" => $status,
-        ":password" => $hash,
-        ":id" => $id
-    ]);
+            $stmt->execute([
+                ":nama" => $nama,
+                ":nip" => $nipNpm,
+                ":role" => $role,
+                ":status" => $status,
+                ":password" => $hash,
+                ":id" => $id
+            ]);
 
-} else {
+        } else {
 
-    $stmt = $pdo->prepare("
-        UPDATE users
-        SET
-            nama = :nama,
-            nip_npm = :nip,
-            role = :role,
-            status = :status
-        WHERE id_user = :id
-        AND status IN ('aktif', 'nonaktif')
-    ");
+            $stmt = $pdo->prepare("
+                UPDATE users
+                SET
+                    nama = :nama,
+                    nip_npm = :nip,
+                    role = :role,
+                    status = :status
+                WHERE id_user = :id
+                AND status IN ('aktif', 'nonaktif')
+            ");
 
-    $stmt->execute([
-        ":nama" => $nama,
-        ":nip" => $nipNpm,
-        ":role" => $role,
-        ":status" => $status,
-        ":id" => $id
-    ]);
-}
+            $stmt->execute([
+                ":nama" => $nama,
+                ":nip" => $nipNpm,
+                ":role" => $role,
+                ":status" => $status,
+                ":id" => $id
+            ]);
+        }
 
 
         if ($stmt->rowCount() === 0) {
@@ -318,31 +364,102 @@ if ($password !== "") {
     // HAPUS PENGGUNA
     // =====================================
 
-    if ($action === "delete") {
 
-        $id = filter_var(
-            $_POST["id_user"] ?? null,
-            FILTER_VALIDATE_INT
-        );
+// =====================================
+// HAPUS PENGGUNA
+// =====================================
 
-        if (!$id) {
-            jsonResponse(false, "ID pengguna tidak valid.", [], 422);
-        }
+if ($action === "delete") {
 
-        $stmt = $pdo->prepare("
-            DELETE FROM users
-            WHERE id_user = :id
-            AND status IN ('aktif', 'nonaktif')
-        ");
+    $id = filter_var(
+        $_POST["id_user"] ?? null,
+        FILTER_VALIDATE_INT
+    );
 
-        $stmt->execute([":id" => $id]);
-
-        if ($stmt->rowCount() !== 1) {
-            jsonResponse(false, "Pengguna tidak ditemukan.", [], 404);
-        }
-
-        jsonResponse(true, "Pengguna berhasil dihapus.");
+    if (!$id) {
+        jsonResponse(false, "ID pengguna tidak valid.", [], 422);
     }
+
+    // =================================
+    // CEK AKUN TARGET
+    // =================================
+
+    $check = $pdo->prepare("
+        SELECT id_user, role
+        FROM users
+        WHERE id_user = :id
+        AND status IN ('aktif', 'nonaktif')
+        LIMIT 1
+    ");
+
+    $check->execute([
+        ":id" => $id
+    ]);
+
+    $targetUser = $check->fetch(PDO::FETCH_ASSOC);
+
+    if (!$targetUser) {
+        jsonResponse(false, "Pengguna tidak ditemukan.", [], 404);
+    }
+
+    // =================================
+    // LARANG HAPUS AKUN SENDIRI
+    // =================================
+
+    $idLogin = $_SESSION["id_user"] ?? null;
+
+    if (
+        $idLogin !== null &&
+        (string) $idLogin === (string) $targetUser["id_user"]
+    ) {
+        jsonResponse(
+            false,
+            "Anda tidak dapat menghapus akun sendiri.",
+            [],
+            403
+        );
+    }
+
+    // =================================
+    // LARANG HAPUS KEPALA LAB
+    // =================================
+
+    if ($targetUser["role"] === "kepala_lab") {
+        jsonResponse(
+            false,
+            "Akun Kepala Lab tidak dapat dihapus.",
+            [],
+            403
+        );
+    }
+
+    // =================================
+    // HAPUS AKUN
+    // =================================
+
+    $stmt = $pdo->prepare("
+        DELETE FROM users
+        WHERE id_user = :id
+        AND status IN ('aktif', 'nonaktif')
+        AND role != 'kepala_lab'
+    ");
+
+    $stmt->execute([
+        ":id" => $id
+    ]);
+
+    if ($stmt->rowCount() !== 1) {
+        jsonResponse(
+            false,
+            "Pengguna gagal dihapus atau tidak ditemukan.",
+            [],
+            404
+        );
+    }
+
+    jsonResponse(true, "Pengguna berhasil dihapus.");
+}
+
 
     jsonResponse(false, "Aksi tidak dikenali.", [], 400);
 

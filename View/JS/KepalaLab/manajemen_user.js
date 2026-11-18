@@ -578,11 +578,17 @@
     );
 
     if (status) status.checked = true;
-
     const roleSelect = el.editForm.querySelector('[name="role"]');
 
     if (roleSelect) {
-      roleSelect.value = user.role;
+      if (user.role === "kepala_lab") {
+        roleSelect.disabled = true;
+        roleSelect.required = false;
+      } else {
+        roleSelect.disabled = false;
+        roleSelect.required = true;
+        roleSelect.value = user.role;
+      }
     }
 
     state.selectedUserId = user.id;

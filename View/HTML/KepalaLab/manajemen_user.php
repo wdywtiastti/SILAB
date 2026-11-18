@@ -334,14 +334,13 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
           </div>
 
           <div class="form-group">
-    <label for="add-role">Role Pengguna</label>
+          <label for="add-role">Role Pengguna</label>
 
-    <select name="role" id="add-role" required>
-        <option value="pengguna">Pengguna</option>
-        <option value="laboran">Laboran</option>
-        <option value="kepala_lab">Kepala Lab</option>
-    </select>
-</div>
+          <select name="role" id="add-role" required>
+              <option value="pengguna">Pengguna</option>
+              <option value="laboran">Laboran</option>
+          </select>
+      </div>
 
           <div class="modal-footer">
             <label for="modal-tambah-user" class="btn-batal"> Batal </label>
@@ -415,7 +414,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
     <select name="role" id="edit-role" required>
         <option value="pengguna">Pengguna</option>
         <option value="laboran">Laboran</option>
-        <option value="kepala_lab">Kepala Lab</option>
     </select>
 </div>
           <div class="form-group status-group">

@@ -325,10 +325,6 @@
 
     button.appendChild(iconElement);
 
-    if (action === "reapprove") {
-      button.appendChild(document.createTextNode(" Verifikasi Kembali"));
-    }
-
     return button;
   }
 
