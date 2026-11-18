@@ -1,66 +1,21 @@
 /* =========================================
-   SILAB - DASHBOARD PENGGUNA
-   DATA DUMMY MELALUI CONSOLE
-   TANPA STORAGE
+  SILAB - DASHBOARD PENGGUNA
+  TAMPILAN DAN PENGELOLAAN JADWAL HARI INI
 ========================================= */
 
 (() => {
   "use strict";
 
-  // =====================================
-  // 1. IDENTITAS PENGGUNA
-  // =====================================
 
-  function tampilkanIdentitasNavbar() {
-    const sesi = sesiSILAB.ambil();
+  //  REFERENSI ELEMEN HTML
 
-    if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
-      window.location.href = "../auth/login.html";
-      return null;
-    }
+  const tanggalElement = document.getElementById(
+    "user-current-date"
+  );
 
-    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-    if (!Array.isArray(users)) return null;
-
-    const akun = users.find(
-      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
-    );
-
-    if (!akun || akun.status !== "aktif") {
-      window.location.href = "../auth/login.html";
-      return null;
-    }
-
-    const navbarName = document.getElementById("userNavbarName");
-    const profileName = document.getElementById("profileUserName");
-
-    if (navbarName) navbarName.textContent = akun.nama;
-    if (profileName) profileName.textContent = akun.nama;
-
-    return akun;
-  }
-
-  const akunLogin = tampilkanIdentitasNavbar();
-
-  if (!akunLogin) return;
-
-  const slotContainer = document.querySelector("#user-slot-list");
-
-  const tanggalElement = document.querySelector("#user-current-date");
-
-  if (!slotContainer) {
-    console.error("Elemen #user-slot-list tidak ditemukan.");
-    return;
-  }
-
-  // =====================================
-  // 2. DATA DUMMY SEMENTARA
-  // =====================================
-
-  const dashboardData = {
-    jadwal: [],
-  };
+  const slotContainer = document.getElementById(
+    "user-slot-list"
+  );
 
   // =====================================
   // 3. FUNGSI TANGGAL HARI INI
@@ -259,49 +214,12 @@
   // 9. FILTER JADWAL PENGGUNA
   // =====================================
 
+    function getJadwalHariIni() {
+  // Data akan diambil dari database
+  // melalui endpoint PHP pada tahap berikutnya.
 
-function getJadwalHariIni() {
-  const STATUS_AKTIF = [
-    "disetujui",
-    "terjadwal",
-    "digunakan",
-    "berlangsung"
-  ];
-
-  const tanggalHariIni = getTanggalHariIni();
-
-  if (!window.SILABService) {
-    console.error("SILABService belum tersedia.");
-    return [];
+  return [];
   }
-
-  return SILABService.getAll("bookings")
-    .filter((item) => {
-      const status = String(item.status || "")
-        .toLowerCase()
-        .trim();
-
-      return (
-        item.tanggal === tanggalHariIni &&
-        STATUS_AKTIF.includes(status)
-      );
-    })
-    .map((item) => ({
-      id: item.id,
-      tanggal: item.tanggal,
-      pemohon: item.namaPemohon || "-",
-      kegiatan: item.namaKegiatan || "-",
-      kelas: item.kategori || "Penggunaan Laboratorium",
-      mulai: item.waktuMulai,
-      selesai: item.waktuSelesai,
-      pc: Number(item.kebutuhanPC ?? 0),
-      kursi: Number(item.kebutuhanKursi ?? 0),
-      status: item.status
-    }))
-    .filter((item) => item.mulai && item.selesai)
-    .sort((a, b) => a.mulai.localeCompare(b.mulai));
-}
-
 
   // =====================================
   // 10. RENDER SELURUH JADWAL
@@ -324,169 +242,5 @@ function getJadwalHariIni() {
     });
   }
 
-  // =====================================
-  // 11. VALIDASI DATA DUMMY
-  // =====================================
-
-  function validasiJadwal(item) {
-    if (!item || typeof item !== "object") {
-      return false;
-    }
-
-    const wajib = [
-      "id",
-      "tanggal",
-      "pemohon",
-      "kegiatan",
-      "mulai",
-      "selesai",
-      "pc",
-      "kursi",
-      "status",
-    ];
-
-    if (
-      !wajib.every((key) => Object.prototype.hasOwnProperty.call(item, key))
-    ) {
-      return false;
-    }
-
-    if (
-      typeof item.id !== "string" ||
-      typeof item.pemohon !== "string" ||
-      typeof item.kegiatan !== "string"
-    ) {
-      return false;
-    }
-
-    if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(item.tanggal) ||
-      !Number.isInteger(item.pc) ||
-      !Number.isInteger(item.kursi) ||
-      item.pc < 0 ||
-      item.kursi < 0
-    ) {
-      return false;
-    }
-
-    const mulai = toMinutes(item.mulai);
-    const selesai = toMinutes(item.selesai);
-
-    if (mulai === null || selesai === null || mulai >= selesai) {
-      return false;
-    }
-
-    if (
-      ![
-        "disetujui",
-        "terjadwal",
-        "menunggu_verifikasi",
-        "ditolak",
-        "tergeser",
-      ].includes(item.status)
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // =====================================
-  // 12. API DATA DUMMY CONSOLE
-  // =====================================
-
-  window.SILABDashboardPenggunaDemo = {
-    // Tambah data
-    tambah: function (data) {
-      if (!Array.isArray(data) || data.length === 0) {
-        console.error("Data harus berupa array dan tidak boleh kosong.");
-        return false;
-      }
-
-      const idAda = new Set(dashboardData.jadwal.map((item) => item.id));
-
-      for (const item of data) {
-        if (!validasiJadwal(item)) {
-          console.error("Format jadwal tidak valid:", item);
-          return false;
-        }
-
-        if (idAda.has(item.id)) {
-          console.error(`ID jadwal ${item.id} sudah digunakan.`);
-          return false;
-        }
-
-        idAda.add(item.id);
-      }
-
-      dashboardData.jadwal.push(...structuredClone(data));
-
-      renderJadwalHariIni();
-
-      console.log(`${data.length} data dummy berhasil ditambahkan.`);
-
-      return true;
-    },
-
-    // Lihat data
-    lihat: function () {
-      return structuredClone(dashboardData.jadwal);
-    },
-
-    // Lihat jadwal hari ini
-    lihatHariIni: function () {
-      return structuredClone(getJadwalHariIni());
-    },
-
-    // Kosongkan data
-    hapusSemua: function () {
-      dashboardData.jadwal.length = 0;
-
-      renderJadwalHariIni();
-
-      console.log("Seluruh data dummy dashboard pengguna dikosongkan.");
-    },
-
-    // Render ulang
-    render: renderJadwalHariIni,
-  };
-
-  // =====================================
-  // 13. INISIALISASI
-  // =====================================
-
-  function sinkronkanJadwalPengguna() {
-    try {
-      renderJadwalHariIni();
-      console.log(
-        "[SILAB] Jadwal dashboard diperbarui:",
-        new Date().toLocaleTimeString("id-ID"),
-      );
-    } catch (error) {
-      console.error("Gagal memperbarui jadwal:", error);
-    }
-  }
-
-  // Pembaruan awal
-  sinkronkanJadwalPengguna();
-
-  // Event perubahan data SILAB
-  window.addEventListener("silab:data-changed", sinkronkanJadwalPengguna);
-
-  // Perubahan LocalStorage dari tab lain
-  window.addEventListener("storage", () => {
-    sinkronkanJadwalPengguna();
-  });
-
-  // Ketika pengguna kembali membuka dashboard
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      sinkronkanJadwalPengguna();
-    }
-  });
-
-  // Pemeriksaan berkala setiap 5 detik
-  const intervalJadwal = window.setInterval(sinkronkanJadwalPengguna, 5000);
-
-  console.log("Dashboard Pengguna SILAB berhasil diinisialisasi.");
+  renderJadwalHariIni();
 })();

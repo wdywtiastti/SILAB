@@ -2,7 +2,6 @@
   "use strict";
 
   const waktu = window.SILABWaktu;
-  const layanan = window.SILABService;
 
   const el = {
     presensi: document.getElementById("wadahPresensi"),
@@ -27,10 +26,10 @@
   let halamanAktif = 1;
   let sedangMemperbarui = false;
 
-  if (!waktu || !layanan || Object.values(el).some((item) => !item)) {
-    console.error("SILAB: Elemen atau layanan dashboard belum tersedia.");
-    return;
-  }
+  if (!waktu || Object.values(el).some((item) => !item)) {
+  console.error("SILAB: Elemen atau utilitas waktu dashboard belum tersedia.");
+  return;
+}
 
   // Mengambil status akhir presensi.
   function statusPresensi(booking) {
@@ -52,24 +51,14 @@
     );
   }
 
-  // Mengambil jadwal hari ini dan mengurutkannya berdasarkan jam.
+  // Mengambil jadwal hari ini dari database melalui API PHP.
+  async function ambilJadwalHariIni(tanggal) {
+    // Data akan diambil melalui endpoint PHP
+    // setelah API jadwal Laboran dibuat.
 
-  function ambilJadwalHariIni(tanggal) {
-    const STATUS_AKTIF = ["disetujui", "terjadwal", "digunakan", "berlangsung"];
-
-    return layanan
-      .getAll("bookings")
-      .filter((item) => {
-        const status = String(item.status || "")
-          .toLowerCase()
-          .trim();
-
-        return item.tanggal === tanggal && STATUS_AKTIF.includes(status);
-      })
-      .sort((a, b) =>
-        String(a.waktuMulai || "").localeCompare(String(b.waktuMulai || "")),
-      );
+    return [];
   }
+
 
   // Menentukan status yang ditampilkan pada tabel.
   function statusJadwal(booking, rentang, sekarang) {
@@ -327,6 +316,26 @@
     tampilkanPagination(data.length);
   }
 
+  // Menampilkan kondisi ketika pengambilan data gagal.
+  function tampilkanErrorJadwal() {
+    el.jumlah.textContent = "-";
+
+    el.jadwal.replaceChildren();
+
+    const pesan = document.createElement("p");
+
+    pesan.className = "jadwal-kosong";
+    pesan.textContent =
+      "Jadwal belum dapat dimuat. Silakan coba kembali.";
+
+    el.jadwal.append(pesan);
+
+    el.presensi.replaceChildren();
+
+    el.infoHalaman.textContent = "Gagal memuat jadwal.";
+    el.kontrolHalaman.replaceChildren();
+      }
+
   // Menampilkan card hanya selama validasi masih tersedia.
   function tampilkanPresensi(data, sekarang) {
     const fragmen = document.createDocumentFragment();
@@ -385,7 +394,7 @@
   }
 
   // Memperbarui seluruh tampilan dashboard.
-  function perbaruiDashboard() {
+  async function perbaruiDashboard() {
     if (sedangMemperbarui) return;
 
     sedangMemperbarui = true;
@@ -394,14 +403,21 @@
       const tanggal = waktu.tanggalHariIni();
       const sekarang = new Date();
 
-      const data = ambilJadwalHariIni(tanggal);
+      const data = await ambilJadwalHariIni(tanggal);
 
       el.jumlah.textContent = String(data.length);
 
       tampilkanJadwal(data, sekarang);
       tampilkanPresensi(data, sekarang);
+
     } catch (error) {
-      console.error("SILAB: Gagal memperbarui dashboard.", error);
+      console.error(
+        "SILAB: Gagal memperbarui dashboard.",
+        error
+      );
+
+      tampilkanErrorJadwal();
+
     } finally {
       sedangMemperbarui = false;
     }
