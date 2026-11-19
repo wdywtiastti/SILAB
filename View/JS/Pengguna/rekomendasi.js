@@ -1,131 +1,241 @@
+
 /* =========================================
-   SILAB - AKSI REKOMENDASI JADWAL
-   SIMULASI TANPA DATABASE
+   SILAB - REKOMENDASI PENGGUNA
+   TERHUBUNG DENGAN DATABASE MYSQL
 ========================================= */
 
 (() => {
   "use strict";
 
+  const API = "API_rekomendasi.php";
+
+  const $ = (selector) => document.querySelector(selector);
+
+  const options = $("#recommendation-options");
+  const acceptButton = $("#btn-accept-recommendation");
+  const modal = $("#accept-modal");
+  const rejectModal = $("#reject-modal");
+
+  let recommendation = null;
+  let selected = null;
+  let busy = false;
+
   // =====================================
-  // IDENTITAS PROFIL PENGGUNA
+  // NOTIFIKASI
   // =====================================
 
-  function tampilkanIdentitasNavbar() {
-    const sesi = sesiSILAB.ambil();
+  function feedback(message, error = false) {
+    const box = $("#recommendation-feedback");
 
-    if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
-      window.location.href = "../auth/login.html";
-      return null;
+    if (!box) return;
+
+    box.textContent = message;
+    box.classList.toggle("error", error);
+    box.classList.add("show");
+
+    window.setTimeout(() => {
+      box.classList.remove("show");
+    }, 4000);
+  }
+
+  // =====================================
+  // REQUEST API
+  // =====================================
+
+  async function api(action, method = "GET", data = {}) {
+
+    const url = method === "GET"
+      ? `${API}?action=${encodeURIComponent(action)}`
+      : API;
+
+    const response = await fetch(url, {
+      method: method,
+      credentials: "same-origin",
+      cache: "no-store",
+
+      headers: {
+        Accept: "application/json",
+
+        ...(method === "POST"
+          ? { "Content-Type": "application/json" }
+          : {})
+      },
+
+      ...(method === "POST"
+        ? {
+            body: JSON.stringify({
+              action,
+              ...data
+            })
+          }
+        : {})
+    });
+
+    let result;
+
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error(
+        "Server tidak mengirim JSON. Periksa API_rekomendasi.php."
+      );
     }
 
-    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.message || "Permintaan gagal diproses."
+      );
+    }
 
-    if (!Array.isArray(users)) return null;
+    return result;
+  }
 
-    const akun = users.find(
-      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
+  // =====================================
+  // FORMAT TANGGAL
+  // =====================================
+
+  function formatDate(value) {
+    if (!value) return "-";
+
+    const date = new Date(
+      String(value).replace(" ", "T")
     );
 
-    if (!akun || akun.status !== "aktif") {
-      window.location.href = "../auth/login.html";
-      return null;
+    if (Number.isNaN(date.getTime())) return "-";
+
+    return date.toLocaleDateString("id-ID", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    });
+  }
+
+  // =====================================
+  // FORMAT JAM
+  // =====================================
+
+  function formatTime(value) {
+    if (!value) return "-";
+
+    const date = new Date(
+      String(value).replace(" ", "T")
+    );
+
+    if (Number.isNaN(date.getTime())) return "-";
+
+    return date.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  }
+
+  // =====================================
+  // TAMPILKAN / SEMBUNYIKAN ELEMEN
+  // =====================================
+
+  function setVisible(element, visible) {
+    if (element) {
+      element.hidden = !visible;
     }
-
-    const navbarName = document.getElementById("userNavbarName");
-    const profileName = document.getElementById("profileUserName");
-
-    if (navbarName) navbarName.textContent = akun.nama;
-    if (profileName) profileName.textContent = akun.nama;
-
-    return akun;
-  }
-
-  const akunLogin = tampilkanIdentitasNavbar();
-
-  if (!akunLogin) return;
-
-  // =====================================
-  // 1. AMBIL ELEMEN HTML
-  // =====================================
-
-  const optionsContainer = document.querySelector("#recommendation-options");
-
-  function getRadioPilihan() {
-    return document.querySelectorAll('input[name="pilihan-jadwal"]');
-  }
-  const btnTerima = document.querySelector("#btn-accept-recommendation");
-
-  const namaPilihan = document.querySelector("#selected-schedule-name");
-
-  const waktuPilihan = document.querySelector("#selected-schedule-time");
-
-  const modalTerima = document.querySelector("#accept-modal");
-
-  const namaKonfirmasi = document.querySelector("#confirmation-name");
-
-  const waktuKonfirmasi = document.querySelector("#confirmation-time");
-
-  const feedback = document.querySelector("#recommendation-feedback");
-
-  if (!btnTerima || !modalTerima || !optionsContainer) {
-    console.error("Elemen rekomendasi belum lengkap. Periksa HTML.");
-    return;
-  }
-  // =====================================
-  // 2. DATA DUMMY DARI CONSOLE
-  // =====================================
-
-  let dataRekomendasiDummy = [];
-
-  // =====================================
-  // 2.1 STATUS SIMULASI REKOMENDASI
-  // =====================================
-
-  const statusRekomendasi = {
-    pilihan: null,
-    keputusan: "menunggu",
-  };
-  // =====================================
-  // 3. MENGAMBIL DETAIL PILIHAN
-  // =====================================
-
-  function getDetailPilihan(radio) {
-    const card = radio.closest(".recommendation-option");
-
-    if (!card) return null;
-
-    const nama = card.querySelector(".recommendation-date h3");
-
-    const waktu = card.querySelector(".recommendation-session");
-
-    const jenis = card.querySelector(".recommendation-type");
-
-    return {
-      value: radio.value,
-      nama: nama?.textContent.trim() || "Jadwal rekomendasi",
-      waktu: waktu?.textContent.trim() || "Waktu tidak tersedia",
-      jenis: jenis?.textContent.trim() || "Rekomendasi",
-    };
   }
 
   // =====================================
-  // RENDER KARTU REKOMENDASI DUMMY
+  // TAMPILAN KOSONG
   // =====================================
 
-  function renderRekomendasi() {
-    optionsContainer.replaceChildren();
+  function empty(message) {
 
-    if (dataRekomendasiDummy.length === 0) {
-      const kosong = document.createElement("p");
+    options.replaceChildren();
 
-      kosong.textContent = "Belum ada rekomendasi jadwal.";
+    const paragraph = document.createElement("p");
 
-      optionsContainer.appendChild(kosong);
+    paragraph.textContent = message;
+
+    options.appendChild(paragraph);
+
+    acceptButton.disabled = true;
+
+    setVisible(
+      $("#recommendation-action"),
+      false
+    );
+
+    setVisible(
+      $(".recommendation-reject"),
+      false
+    );
+  }
+
+  // =====================================
+  // RENDER REKOMENDASI
+  // =====================================
+
+  function render(data) {
+
+    recommendation = data;
+    selected = null;
+
+    if (!data) {
+
+      empty(
+        "Saat ini belum ada rekomendasi jadwal yang menunggu respons."
+      );
+
+      $(".context-heading span").textContent =
+        "Tidak ada tawaran rekomendasi aktif.";
+
+      $(".context-content > p").textContent =
+        "Tawaran jadwal dari Laboran akan muncul di halaman ini.";
+
+      $(".response-deadline span").textContent =
+        "Tidak ada batas respons aktif";
+
+      $("#selected-schedule-name").textContent =
+        "Belum ada jadwal dipilih";
+
+      $("#selected-schedule-time").textContent =
+        "Silakan tunggu rekomendasi dari Laboran.";
 
       return;
     }
 
-    dataRekomendasiDummy.forEach((item) => {
+    // Informasi pengajuan.
+    $(".context-heading span").textContent =
+      data.nama_kegiatan || "Pengajuan Anda";
+
+    $(".context-content > p").textContent =
+      data.catatan ||
+      "Laboran memberikan pilihan jadwal pengganti untuk pengajuan Anda.";
+
+    // Batas waktu respons.
+    $(".response-deadline span").textContent =
+      data.batas_waktu
+        ? `Batas respons: ${new Date(
+            data.batas_waktu.replace(" ", "T")
+          ).toLocaleString("id-ID")}`
+        : "Batas respons belum ditentukan";
+
+    $("#selected-schedule-name").textContent =
+      "Belum ada jadwal dipilih";
+
+    $("#selected-schedule-time").textContent =
+      "Silakan pilih salah satu rekomendasi.";
+
+    options.replaceChildren();
+
+    if (
+      !Array.isArray(data.alternatives) ||
+      data.alternatives.length === 0
+    ) {
+      empty("Laboran belum menambahkan alternatif jadwal.");
+      return;
+    }
+
+    // Buat kartu alternatif.
+    data.alternatives.forEach((item, index) => {
+
       const card = document.createElement("label");
 
       card.className = "recommendation-option";
@@ -138,316 +248,270 @@
 
       const content = document.createElement("div");
 
-      content.className = "recommendation-option-content";
+      content.className =
+        "recommendation-option-content";
 
-      const tanggal = document.createElement("div");
+      const heading = document.createElement("div");
 
-      tanggal.className = "recommendation-date";
+      heading.className = "recommendation-date";
 
-      const judul = document.createElement("h3");
+      const title = document.createElement("h3");
 
-      judul.textContent = item.nama;
+      title.textContent =
+        `Pilihan Jadwal ${index + 1}`;
 
-      const jenis = document.createElement("span");
+      const status = document.createElement("span");
 
-      jenis.className = "recommendation-type";
+      status.className = "recommendation-type";
 
-      jenis.textContent = item.jenis;
+      status.textContent = item.status || "Menunggu";
 
-      tanggal.append(judul, jenis);
+      heading.append(title, status);
 
-      const waktu = document.createElement("div");
+      const session = document.createElement("div");
 
-      waktu.className = "recommendation-session";
+      session.className = "recommendation-session";
 
-      waktu.textContent = `${item.tanggal} | ${item.waktuMulai} – ${item.waktuSelesai} WIT`;
+      session.textContent =
+        `${formatDate(item.waktuMulai)} | ` +
+        `${formatTime(item.waktuMulai)} – ` +
+        `${formatTime(item.waktuSelesai)} WIT`;
 
-      const kebutuhan = document.createElement("p");
-
-      kebutuhan.textContent = `Peserta: ${item.jumlahPeserta} | PC: ${item.jumlahPC} | Kursi: ${item.jumlahKursi}`;
-
-      const bentrok = document.createElement("p");
-
-      bentrok.className = "recommendation-conflict-info";
-
-      bentrok.textContent = item.jadwalBentrok
-        ? `Jadwal bentrok: ${item.jadwalBentrok.nama} | ${item.jadwalBentrok.mulai} – ${item.jadwalBentrok.selesai} WIT`
-        : "Tidak ada informasi jadwal bentrok.";
-
-      content.append(tanggal, waktu, kebutuhan, bentrok);
+      content.append(heading, session);
 
       card.append(radio, content);
 
-      optionsContainer.appendChild(card);
-    });
-  }
-  // =====================================
-  // 4. NOTIFIKASI
-  // =====================================
+      options.appendChild(card);
 
-  function tampilkanFeedback(pesan, error = false) {
-    feedback.textContent = pesan;
+      // Pilih alternatif.
+      radio.addEventListener("change", () => {
 
-    feedback.classList.toggle("error", error);
-    feedback.classList.add("show");
+        selected = item;
 
-    window.setTimeout(() => {
-      feedback.classList.remove("show");
-    }, 3500);
-  }
+        $("#selected-schedule-name").textContent =
+          title.textContent;
 
-  // =====================================
-  // 5. MEMILIH REKOMENDASI
-  // =====================================
+        $("#selected-schedule-time").textContent =
+          session.textContent;
 
-  function pilihJadwal(radio) {
-    if (statusRekomendasi.keputusan !== "menunggu") {
-      return;
-    }
+        acceptButton.disabled = false;
 
-    const detail = getDetailPilihan(radio);
+        options
+          .querySelectorAll(".recommendation-option")
+          .forEach((element) => {
+            element.classList.remove("is-selected");
+          });
 
-    if (!detail) return;
-
-    statusRekomendasi.pilihan = detail;
-
-    namaPilihan.textContent = detail.nama;
-    waktuPilihan.textContent = detail.waktu;
-
-    btnTerima.disabled = false;
-
-    document.querySelectorAll(".recommendation-option").forEach((option) => {
-      option.classList.remove("is-selected");
-    });
-
-    radio.closest(".recommendation-option").classList.add("is-selected");
-  }
-
-  optionsContainer.addEventListener("change", (event) => {
-    if (event.target.matches('input[name="pilihan-jadwal"]')) {
-      pilihJadwal(event.target);
-    }
-  });
-
-  // =====================================
-  // 6. BUKA MODAL KONFIRMASI
-  // =====================================
-
-  btnTerima.addEventListener("click", () => {
-    if (
-      !statusRekomendasi.pilihan ||
-      statusRekomendasi.keputusan !== "menunggu"
-    ) {
-      tampilkanFeedback(
-        "Silakan pilih rekomendasi jadwal terlebih dahulu.",
-        true,
-      );
-      return;
-    }
-
-    namaKonfirmasi.textContent = statusRekomendasi.pilihan.nama;
-
-    waktuKonfirmasi.textContent = statusRekomendasi.pilihan.waktu;
-
-    modalTerima.classList.add("show");
-  });
-
-  // =====================================
-  // 7. TUTUP MODAL
-  // =====================================
-
-  function tutupModal() {
-    modalTerima.classList.remove("show");
-  }
-
-  document
-    .querySelector("#btn-cancel-accept")
-    .addEventListener("click", tutupModal);
-
-  document
-    .querySelector(".recommendation-modal-backdrop")
-    .addEventListener("click", tutupModal);
-
-  // =====================================
-  // 8. KONFIRMASI PENERIMAAN
-  // =====================================
-
-  document
-    .querySelector("#btn-confirm-accept")
-    .addEventListener("click", () => {
-      if (!statusRekomendasi.pilihan) return;
-
-      // Simpan pilihan untuk keperluan simulasi
-      const pilihanDiterima = structuredClone(statusRekomendasi.pilihan);
-
-      statusRekomendasi.keputusan = "diterima";
-
-      // Tutup modal
-      tutupModal();
-
-      // Hapus seluruh tawaran rekomendasi
-      dataRekomendasiDummy = [];
-
-      // Reset pilihan
-      statusRekomendasi.pilihan = null;
-
-      // Render ulang halaman
-      renderRekomendasi();
-
-      // Nonaktifkan tombol
-      btnTerima.disabled = true;
-
-      // Tampilkan notifikasi
-      tampilkanFeedback(
-        "Rekomendasi berhasil diterima. Seluruh tawaran jadwal telah ditutup.",
-      );
-
-      console.log("Rekomendasi diterima:", pilihanDiterima);
-    });
-
-  // =====================================
-  // 9. PENOLAKAN REKOMENDASI
-  // =====================================
-
-  const modalTolak = document.querySelector("#reject-modal");
-
-  const btnTolak = document.querySelector(".btn-reject-confirm");
-
-  const linkBatal = document.querySelector(".btn-reject-cancel");
-
-  const backdropTolak = document.querySelector(".reject-modal-backdrop");
-  const linkTolak = document.querySelector(".recommendation-reject");
-
-  if (linkTolak && modalTolak) {
-    linkTolak.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      if (statusRekomendasi.keputusan !== "menunggu") {
-        return;
-      }
-
-      modalTolak.classList.add("show");
-    });
-  }
-
-  if (linkBatal) {
-    linkBatal.addEventListener("click", (event) => {
-      event.preventDefault();
-      modalTolak.classList.remove("show");
-    });
-  }
-
-  // Tutup modal ketika backdrop diklik
-  if (backdropTolak) {
-    backdropTolak.addEventListener("click", (event) => {
-      event.preventDefault();
-      modalTolak.classList.remove("show");
-    });
-  }
-
-  if (btnTolak) {
-    btnTolak.addEventListener("click", (event) => {
-      event.preventDefault();
-
-      if (statusRekomendasi.keputusan !== "menunggu") {
-        return;
-      }
-
-      statusRekomendasi.keputusan = "ditolak";
-
-      modalTolak.classList.remove("show");
-
-      getRadioPilihan().forEach((radio) => {
-        radio.disabled = true;
+        card.classList.add("is-selected");
       });
-
-      btnTerima.disabled = true;
-
-      tampilkanFeedback(
-        "Rekomendasi ditolak. Silakan lanjutkan pengajuan waktu lain secara manual.",
-      );
-
-      console.log("Rekomendasi ditolak:", statusRekomendasi);
     });
+
+    setVisible(
+      $("#recommendation-action"),
+      true
+    );
+
+    setVisible(
+      $(".recommendation-reject"),
+      true
+    );
+
+    acceptButton.disabled = true;
   }
 
   // =====================================
-  // 12. API DATA DUMMY CONSOLE
+  // AMBIL DATA DARI DATABASE
   // =====================================
 
-  window.SILABRekomendasiDemo = {
-    // Memasukkan data dari Console
-    tambah: function (data) {
-      if (!Array.isArray(data) || data.length === 0) {
-        console.error("Data harus berupa array dan tidak boleh kosong.");
-        return false;
-      }
+  async function load() {
 
-      const wajib = [
-        "id",
-        "tanggal",
-        "waktuMulai",
-        "waktuSelesai",
-        "nama",
-        "jenis",
-        "jumlahPC",
-        "jumlahKursi",
-        "jumlahPeserta",
-      ];
+    empty("Memuat rekomendasi jadwal...");
 
-      for (const item of data) {
-        if (
-          !item ||
-          !wajib.every((key) => Object.prototype.hasOwnProperty.call(item, key))
-        ) {
-          console.error("Format data tidak lengkap:", item);
-          return false;
-        }
-      }
+    try {
 
-      dataRekomendasiDummy = structuredClone(data);
+      const result = await api("list");
 
-      statusRekomendasi.pilihan = null;
-      statusRekomendasi.keputusan = "menunggu";
+      const nama =
+        result.data.nama_pengguna || "Pengguna";
 
-      btnTerima.disabled = true;
-      btnTerima.textContent = "Terima Rekomendasi";
+      $("#userNavbarName").textContent = nama;
 
-      renderRekomendasi();
+      $("#profileUserName").textContent = nama;
 
-      console.log(
-        "Berhasil menampilkan",
-        data.length,
-        "data dummy rekomendasi.",
+      render(result.data.recommendation);
+
+    } catch (error) {
+
+      empty(error.message);
+
+      feedback(error.message, true);
+    }
+  }
+
+  // =====================================
+  // TUTUP MODAL
+  // =====================================
+
+  function closeAccept() {
+    modal?.classList.remove("show");
+  }
+
+  function closeReject() {
+    rejectModal?.classList.remove("show");
+  }
+
+  // =====================================
+  // BUKA MODAL PENERIMAAN
+  // =====================================
+
+  acceptButton.addEventListener("click", () => {
+
+    if (!recommendation || !selected || busy) {
+
+      feedback(
+        "Pilih salah satu jadwal terlebih dahulu.",
+        true
       );
 
-      return true;
-    },
+      return;
+    }
 
-    // Melihat data
-    lihat: function () {
-      return structuredClone(dataRekomendasiDummy);
-    },
+    $("#confirmation-name").textContent =
+      $("#selected-schedule-name").textContent;
 
-    // Melihat keputusan pengguna
-    lihatKeputusan: function () {
-      return structuredClone(statusRekomendasi);
-    },
+    $("#confirmation-time").textContent =
+      $("#selected-schedule-time").textContent;
 
-    // Menghapus data dummy dari tampilan
-    hapus: function () {
-      dataRekomendasiDummy = [];
+    modal.classList.add("show");
+  });
 
-      statusRekomendasi.pilihan = null;
-      statusRekomendasi.keputusan = "menunggu";
+  $("#btn-cancel-accept")
+    ?.addEventListener("click", closeAccept);
 
-      btnTerima.disabled = true;
+  $(".recommendation-modal-backdrop")
+    ?.addEventListener("click", closeAccept);
 
-      renderRekomendasi();
+  // =====================================
+  // KONFIRMASI PENERIMAAN
+  // =====================================
 
-      console.log("Data dummy berhasil dikosongkan.");
-    },
-  };
+  $("#btn-confirm-accept")
+    ?.addEventListener("click", async () => {
 
-  console.log("Aksi rekomendasi SILAB berhasil diinisialisasi.");
+      if (!recommendation || !selected || busy) return;
+
+      busy = true;
+
+      const button = $("#btn-confirm-accept");
+
+      button.disabled = true;
+
+      try {
+
+        const result = await api(
+          "accept",
+          "POST",
+          {
+            id_rekomendasi:
+              recommendation.id_rekomendasi,
+
+            id_alternatif_rekomendasi:
+              selected.id
+          }
+        );
+
+        closeAccept();
+
+        feedback(result.message);
+
+        await load();
+
+      } catch (error) {
+
+        feedback(error.message, true);
+
+      } finally {
+
+        busy = false;
+
+        button.disabled = false;
+      }
+    });
+
+  // =====================================
+  // BUKA MODAL PENOLAKAN
+  // =====================================
+
+  $(".recommendation-reject")
+    ?.addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      if (recommendation && !busy) {
+        rejectModal.classList.add("show");
+      }
+    });
+
+  $(".btn-reject-cancel")
+    ?.addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      closeReject();
+    });
+
+  $(".reject-modal-backdrop")
+    ?.addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      closeReject();
+    });
+
+  // =====================================
+  // KONFIRMASI PENOLAKAN
+  // =====================================
+
+  $(".btn-reject-confirm")
+    ?.addEventListener("click", async (event) => {
+
+      event.preventDefault();
+
+      if (!recommendation || busy) return;
+
+      busy = true;
+
+      try {
+
+        const result = await api(
+          "reject",
+          "POST",
+          {
+            id_rekomendasi:
+              recommendation.id_rekomendasi
+          }
+        );
+
+        closeReject();
+
+        feedback(result.message);
+
+        await load();
+
+      } catch (error) {
+
+        feedback(error.message, true);
+
+      } finally {
+
+        busy = false;
+      }
+    });
+
+  // =====================================
+  // INISIALISASI
+  // =====================================
+
+  load();
+
 })();
