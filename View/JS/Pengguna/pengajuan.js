@@ -1,194 +1,309 @@
-//Mengambil elemen HTML
+"use strict";
+
+// =============================================
+// SILAB - PENGAJUAN PENGGUNA
+// Integrasi API dan database MySQL
+// =============================================
+
+const API_PENGAJUAN = "API_pengajuan.php";
+
+// Elemen formulir
 const peminjamanForm = document.getElementById("peminjamanForm");
 const waktuMulaiInput = document.getElementById("waktuMulai");
 const waktuSelesaiInput = document.getElementById("waktuSelesai");
-
 const namaKegiatanInput = document.getElementById("namaKegiatan");
 
+// Container dinamis
+const dynamicRuleFields = document.getElementById("dynamicRuleFields");
+const dynamicRuleSummary = document.getElementById("dynamicRuleSummary");
+const facilityFields = document.getElementById("facilityFields");
+const facilityFieldsError = document.getElementById("facilityFieldsError");
 const feedbackElement = document.getElementById("applicationFeedback");
 
-// =========================================
-// KONFIGURASI KEPALA LAB
-// =========================================
+// Data konfigurasi
+let konfigurasiPengajuan = {
+  rules: [],
+  facilities: [],
+};
 
-function getAlgorithmConfig() {
-  const config = SILABStorage.get(SILABStorage.KEYS.ALGORITHM_CONFIG, null);
+let isSubmitting = false;
 
-  return {
-    rules: Array.isArray(config?.rules) ? config.rules : [],
+// =============================================
+// FUNGSI PESAN
+// =============================================
 
-    facilities: Array.isArray(config?.facilities) ? config.facilities : [],
-  };
+function showFeedback(message, type = "error") {
+  if (!feedbackElement) return;
+
+  feedbackElement.textContent = message;
+  feedbackElement.className = `application-feedback ${type}`;
 }
-// =========================================
-// DROPDOWN ATURAN DINAMIS
-// =========================================
 
-function renderDynamicRules() {
-  const container = document.getElementById("dynamicRuleFields");
+function showFieldError(fieldId, message) {
+  const input = document.getElementById(fieldId);
+  const error = document.getElementById(`${fieldId}Error`);
 
-  const summary = document.getElementById("dynamicRuleSummary");
-
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  if (summary) {
-    summary.innerHTML = "";
+  if (error) {
+    error.textContent = message;
+    error.classList.add("show");
   }
 
-  const config = getAlgorithmConfig();
+  if (input) {
+    input.classList.add("input-error");
+  }
+}
 
-  // Hanya aturan yang mempunyai kriteria
-  // yang ditampilkan sebagai dropdown.
-  const rules = config.rules.filter((rule) => {
-    return (
-      Array.isArray(rule.criteria) &&
-      rule.criteria.length > 0 &&
-      !String(rule.name).toLowerCase().includes("waktu pengajuan")
-    );
-  });
-  const activeRules = rules
-    .map((rule) => ({
-      ...rule,
-      criteria: rule.criteria.filter((item) => item.active !== false),
-    }))
-    .filter((rule) => rule.criteria.length > 0);
+function clearFieldError(fieldId) {
+  const input = document.getElementById(fieldId);
+  const error = document.getElementById(`${fieldId}Error`);
 
-  if (rules.length === 0) {
-    container.innerHTML = `
-      <p class="field-error">
-        Belum ada aturan pilihan yang dibuat Kepala Lab.
-      </p>
-    `;
+  if (error) {
+    error.textContent = "";
+    error.classList.remove("show");
+  }
+
+  if (input) {
+    input.classList.remove("input-error");
+  }
+}
+
+function clearAllFieldErrors() {
+  ["waktuMulai", "waktuSelesai", "namaKegiatan"].forEach(clearFieldError);
+
+  document
+    .querySelectorAll("#dynamicRuleFields select[data-rule-id]")
+    .forEach((select) => clearFieldError(select.id));
+
+  document
+    .querySelectorAll("#facilityFields input[data-facility-id]")
+    .forEach((input) => clearFieldError(input.id));
+
+  if (facilityFieldsError) {
+    facilityFieldsError.textContent = "";
+    facilityFieldsError.classList.remove("show");
+  }
+}
+
+// =============================================
+// 1. AMBIL DATA DARI API
+// =============================================
+
+async function muatKonfigurasiPengajuan() {
+  if (dynamicRuleFields) {
+    dynamicRuleFields.innerHTML = "<p>Memuat kelompok aturan...</p>";
+  }
+
+  if (facilityFields) {
+    facilityFields.innerHTML = "<p>Memuat fasilitas laboratorium...</p>";
+  }
+
+  try {
+    const response = await fetch(`${API_PENGAJUAN}?action=config`, {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Gagal mengambil konfigurasi.");
+    }
+
+    konfigurasiPengajuan = {
+      rules: Array.isArray(result.data.rules) ? result.data.rules : [],
+
+      facilities: Array.isArray(result.data.facilities)
+        ? result.data.facilities
+        : [],
+    };
+
+    console.log("Aturan dari database:", konfigurasiPengajuan.rules);
+
+    console.log("Fasilitas dari database:", konfigurasiPengajuan.facilities);
+
+    // Tampilkan data
+    renderDynamicRules();
+    renderDynamicFacilities();
+  } catch (error) {
+    console.error("Kesalahan mengambil konfigurasi:", error);
+
+    if (dynamicRuleFields) {
+      dynamicRuleFields.innerHTML = `<p class="field-error show">
+                    Gagal memuat aturan: ${error.message}
+                </p>`;
+    }
+
+    if (facilityFields) {
+      facilityFields.innerHTML = `<p class="field-error show">
+                    Gagal memuat fasilitas.
+                </p>`;
+    }
+
+    showFeedback("Data aturan dan fasilitas gagal dimuat.", "error");
+  }
+}
+
+// =============================================
+// 2. TAMPILKAN KELOMPOK ATURAN DAN KRITERIA
+// =============================================
+
+function renderDynamicRules() {
+  if (!dynamicRuleFields) {
+    console.error("Container dynamicRuleFields tidak ditemukan.");
     return;
   }
 
-  activeRules.forEach((rule) => {
-    const group = document.createElement("div");
+  dynamicRuleFields.innerHTML = "";
 
+  if (dynamicRuleSummary) {
+    dynamicRuleSummary.innerHTML = "";
+  }
+
+  const rules = konfigurasiPengajuan.rules.filter((rule) => {
+    const nama = String(rule.name || rule.nama_kelompok || "");
+
+    return (
+      Array.isArray(rule.criteria) &&
+      rule.criteria.length > 0 &&
+      !nama.toLowerCase().includes("waktu pengajuan")
+    );
+  });
+
+  if (rules.length === 0) {
+    dynamicRuleFields.innerHTML = `<p class="field-error show">
+                Belum ada kelompok aturan dan kriteria.
+            </p>`;
+    return;
+  }
+
+  rules.forEach((rule) => {
+    const ruleId = String(rule.id || rule.id_aturan);
+
+    const ruleName = String(rule.name || rule.nama_kelompok);
+
+    const criteria = rule.criteria || [];
+
+    if (criteria.length === 0) return;
+
+    const group = document.createElement("div");
     group.className = "application-group";
 
+    // Label kelompok
     const label = document.createElement("label");
 
-    const fieldId = `rule_${rule.id}`;
+    const selectId = `rule_${ruleId}`;
 
-    label.htmlFor = fieldId;
-    label.innerHTML = `${escapeHTML(rule.name)} <span>*</span>`;
+    label.htmlFor = selectId;
+    label.innerHTML = `${ruleName} <span>*</span>`;
 
+    // Dropdown
     const wrapper = document.createElement("div");
-
     wrapper.className = "application-select";
 
     const select = document.createElement("select");
 
-    select.id = fieldId;
+    select.id = selectId;
     select.name = "ruleSelections";
     select.className = "application-dynamic-select";
-
-    select.dataset.ruleId = rule.id;
-
+    select.dataset.ruleId = ruleId;
     select.required = true;
 
     const placeholder = document.createElement("option");
 
     placeholder.value = "";
-    placeholder.textContent = `Pilih ${rule.name}`;
+    placeholder.textContent = `Pilih ${ruleName}`;
 
     select.appendChild(placeholder);
 
-    const criteria = [...rule.criteria]
-      .filter((item) => item.active !== false)
-      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-
+    // Masukkan kriteria dari database
     criteria.forEach((item) => {
       const option = document.createElement("option");
 
-      option.value = item.id;
-      option.textContent = item.name;
+      option.value = String(item.id || item.id_aturan_kriteria);
+
+      option.textContent = String(item.name || item.nama_kriteria);
 
       select.appendChild(option);
     });
 
     wrapper.appendChild(select);
 
+    // Pesan kesalahan
     const error = document.createElement("small");
 
     error.className = "field-error";
-    error.id = `${fieldId}Error`;
+    error.id = `${selectId}Error`;
 
     group.append(label, wrapper, error);
 
-    container.appendChild(group);
+    dynamicRuleFields.appendChild(group);
 
-    // Panel Kategori hanya menampilkan kriteria Jenis Kegiatan.
-    if (summary && /jenis\s*kegiatan/i.test(rule.name)) {
-      criteria.forEach((criteriaItem) => {
-        const item = document.createElement("div");
+    // Tampilkan kategori di panel samping
+    if (dynamicRuleSummary && /jenis\s*kegiatan/i.test(ruleName)) {
+      criteria.forEach((item) => {
+        const category = document.createElement("div");
 
-        const description = document.createElement("p");
-        description.textContent = criteriaItem.name;
+        category.className = "application-category-item";
 
-        item.appendChild(description);
-        summary.appendChild(item);
+        const text = document.createElement("p");
+
+        text.textContent = item.name || item.nama_kriteria;
+
+        category.appendChild(text);
+
+        dynamicRuleSummary.appendChild(category);
       });
     }
   });
 }
 
-// Mencegah HTML dari nama aturan menjadi kode.
-function escapeHTML(value) {
-  return String(value ?? "").replace(
-    /[&<>"']/g,
-    (character) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;",
-      })[character],
-  );
-}
-
-// =========================================
-// DROPDOWN FASILITAS DINAMIS
-// =========================================
+// =============================================
+// 3. TAMPILKAN FASILITAS DARI DATABASE
+// =============================================
 
 function renderDynamicFacilities() {
-  const container = document.getElementById("facilityFields");
+  if (!facilityFields) {
+    console.error("Container facilityFields tidak ditemukan.");
+    return;
+  }
 
-  if (!container) return;
+  facilityFields.innerHTML = "";
 
-  container.innerHTML = "";
-
-  const config = getAlgorithmConfig();
-
-  const facilities = config.facilities.filter(
-    (facility) => facility.active !== false,
-  );
+  const facilities = konfigurasiPengajuan.facilities;
 
   if (facilities.length === 0) {
-    container.innerHTML = `
-      <p class="field-error show">
-        Belum ada fasilitas yang tersedia.
-      </p>
-    `;
+    facilityFields.innerHTML = `<p class="field-error show">
+                Belum ada fasilitas laboratorium.
+            </p>`;
+
     return;
   }
 
   facilities.forEach((facility) => {
+    const facilityId = String(facility.id || facility.id_fasilitas);
+
+    const facilityName = String(facility.name || facility.nama_fasilitas);
+
+    const capacity = Number(facility.capacity ?? facility.kapasitas_maksimum);
+
     const group = document.createElement("div");
 
     group.className = "application-group";
 
+    // Label fasilitas
     const label = document.createElement("label");
 
-    const inputId = `facility_${facility.id}`;
+    const inputId = `facility_${facilityId}`;
 
     label.htmlFor = inputId;
-    label.textContent = facility.name;
 
+    label.textContent = `${facilityName} (Maks. ${capacity})`;
+
+    // Input jumlah fasilitas
     const input = document.createElement("input");
 
     input.type = "number";
@@ -197,16 +312,17 @@ function renderDynamicFacilities() {
     input.className = "application-input";
 
     input.min = "0";
-    input.max = String(Number(facility.capacity) || 0);
+    input.max = String(capacity);
     input.step = "1";
     input.value = "0";
 
-    input.dataset.facilityId = facility.id;
-    input.dataset.facilityName = facility.name;
-    input.dataset.facilityCapacity = facility.capacity;
-
     input.placeholder = "Masukkan jumlah yang diperlukan";
 
+    input.dataset.facilityId = facilityId;
+    input.dataset.facilityName = facilityName;
+    input.dataset.facilityCapacity = String(capacity);
+
+    // Pesan kesalahan
     const error = document.createElement("small");
 
     error.className = "field-error";
@@ -214,322 +330,161 @@ function renderDynamicFacilities() {
 
     group.append(label, input, error);
 
-    container.appendChild(group);
+    facilityFields.appendChild(group);
   });
 }
 
-let isSubmitting = false;
+// =============================================
+// 4. AMBIL DATA FORMULIR
+// =============================================
 
-//Menampilkan pesan kepada pengguna
-function showFeedback(message, type = "error") {
-  feedbackElement.textContent = message;
-  feedbackElement.className = `application-feedback ${type}`;
-}
-
-// Menampilkan pesan kesalahan di bawah input
-function showFieldError(fieldId, message) {
-  const input = document.getElementById(fieldId);
-  const error = document.getElementById(fieldId + "Error");
-
-  if (!input || !error) return;
-
-  error.textContent = message;
-  input.classList.add("input-error");
-}
-
-// Menghapus pesan kesalahan
-function clearFieldError(fieldId) {
-  const input = document.getElementById(fieldId);
-  const error = document.getElementById(fieldId + "Error");
-
-  if (!input || !error) return;
-
-  error.textContent = "";
-  input.classList.remove("input-error");
-}
-
-// Menghapus seluruh pesan kesalahan
-function clearAllFieldErrors() {
-  const fields = [
-    "jumlahPC",
-    "jumlahKursi",
-    "waktuMulai",
-    "waktuSelesai",
-    "namaKegiatan",
-  ];
-
-  // Bersihkan error fasilitas dinamis.
-  document.querySelectorAll("#facilityFields .field-error").forEach((error) => {
-    error.textContent = "";
-    error.classList.remove("show");
-  });
-
-  // Hapus border merah seluruh input fasilitas.
-  document
-    .querySelectorAll("#facilityFields input[data-facility-id]")
-    .forEach((input) => {
-      input.classList.remove("input-error");
-    });
-
-  const facilityError = document.getElementById("facilityFieldsError");
-
-  if (facilityError) {
-    facilityError.textContent = "";
-    facilityError.classList.remove("show");
-  }
-
-  // Bersihkan error seluruh dropdown aturan.
-  document
-    .querySelectorAll("#dynamicRuleFields select[data-rule-id]")
-    .forEach((select) => clearFieldError(select.id));
-}
-
-// 3. Mengambil data dari formulir
 function getFormData() {
-  const ruleSelections = {};
+  const aturanKriteria = [
+    ...document.querySelectorAll("#dynamicRuleFields select[data-rule-id]"),
+  ]
+    .map((select) => select.value)
+    .filter((value) => value !== "");
 
-  document
-    .querySelectorAll("#dynamicRuleFields select[data-rule-id]")
-    .forEach((select) => {
-      const ruleId = select.dataset.ruleId;
-
-      const rule = getAlgorithmConfig().rules.find(
-        (item) => item.id === ruleId,
-      );
-
-      const criteria = rule?.criteria.find((item) => item.id === select.value);
-
-      ruleSelections[ruleId] = {
-        ruleId,
-        ruleName: rule?.name || "",
-        criteriaId: criteria?.id || "",
-        criteriaName: criteria?.name || "",
-      };
-    });
+  const fasilitas = [
+    ...document.querySelectorAll("#facilityFields input[data-facility-id]"),
+  ].map((input) => ({
+    id_fasilitas: Number(input.dataset.facilityId),
+    jumlah: Number(input.value || 0),
+  }));
 
   return {
-    waktuMulai: waktuMulaiInput.value,
-    waktuSelesai: waktuSelesaiInput.value,
+    namaKegiatan: namaKegiatanInput?.value.trim() || "",
 
-    tanggal: waktuMulaiInput.value ? waktuMulaiInput.value.split("T")[0] : "",
+    waktuMulai: waktuMulaiInput?.value || "",
 
-    ruleSelections,
+    waktuSelesai: waktuSelesaiInput?.value || "",
 
-    facilityRequests: [
-      ...document.querySelectorAll("#facilityFields input[data-facility-id]"),
-    ].map((input) => ({
-      facilityId: input.dataset.facilityId,
-      facilityName: input.dataset.facilityName,
-      quantity: input.value === "" ? 0 : Number(input.value),
-    })),
+    aturanKriteria,
 
-    namaKegiatan: namaKegiatanInput.value.trim(),
+    fasilitas,
   };
 }
 
-// =========================================
-// MENGAMBIL IDENTITAS PENGGUNA LOGIN
-// =========================================
-
-function getIdentitasPemohon(sesi) {
-  if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
-    return null;
-  }
-
-  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-  if (!Array.isArray(users)) return null;
-
-  const user = users.find(
-    (item) => String(item.nipNpm).trim() === String(sesi.identifier).trim(),
-  );
-
-  if (!user || user.status !== "aktif" || !user.id) {
-    return null;
-  }
-
-  return {
-    userId: user.id,
-    userIdentifier: user.nipNpm,
-    namaPemohon: user.nama,
-    nipNpm: user.nipNpm,
-  };
-}
-
-document
-  .getElementById("dynamicRuleFields")
-  ?.addEventListener("change", (event) => {
-    if (event.target.matches("select[data-rule-id]")) {
-      clearFieldError(event.target.id);
-    }
-  });
+// =============================================
+// 5. VALIDASI FORMULIR
+// =============================================
 
 function validateForm(data) {
-  let isValid = true;
+  let valid = true;
 
-  // Validasi waktu mulai
-  if (!SILABValidation.isRequired(data.waktuMulai)) {
+  if (!data.waktuMulai) {
     showFieldError("waktuMulai", "Waktu mulai wajib diisi.");
-    isValid = false;
+
+    valid = false;
   }
 
-  // Validasi waktu selesai
-  if (!SILABValidation.isRequired(data.waktuSelesai)) {
+  if (!data.waktuSelesai) {
     showFieldError("waktuSelesai", "Waktu selesai wajib diisi.");
-    isValid = false;
+
+    valid = false;
   }
 
-  // Validasi seluruh aturan dinamis.
-  Object.values(data.ruleSelections).forEach((selection) => {
-    if (!selection.criteriaId) {
-      showFieldError(
-        `rule_${selection.ruleId}`,
-        `Silakan pilih ${selection.ruleName}.`,
-      );
+  // Validasi kelompok aturan
+  const ruleSelects = [
+    ...document.querySelectorAll("#dynamicRuleFields select[data-rule-id]"),
+  ];
 
-      isValid = false;
+  ruleSelects.forEach((select) => {
+    if (!select.value) {
+      showFieldError(select.id, "Silakan pilih kriteria.");
+
+      valid = false;
     }
   });
 
-  // =====================================
-  // VALIDASI FASILITAS DINAMIS
-  // =====================================
+  if (ruleSelects.length === 0) {
+    showFeedback("Belum ada kelompok aturan yang tersedia.", "error");
 
-  const facilityInputs = document.querySelectorAll(
-    "#facilityFields input[data-facility-id]",
-  );
+    valid = false;
+  }
 
-  let totalFasilitasDiminta = 0;
+  // Validasi fasilitas
+  const facilityInputs = [
+    ...document.querySelectorAll("#facilityFields input[data-facility-id]"),
+  ];
+
+  let totalFasilitas = 0;
 
   facilityInputs.forEach((input) => {
-    const quantity = Number(input.value);
+    const jumlah = Number(input.value);
 
-    const error = document.getElementById(input.id + "Error");
+    const kapasitas = Number(input.dataset.facilityCapacity);
 
-    input.classList.remove("input-error");
+    if (!Number.isInteger(jumlah) || jumlah < 0) {
+      showFieldError(input.id, "Jumlah harus berupa bilangan bulat minimal 0.");
 
-    if (error) {
-      error.textContent = "";
-      error.classList.remove("show");
-    }
-
-    // Jumlah harus bilangan bulat dan tidak negatif.
-    if (!Number.isInteger(quantity) || quantity < 0) {
-      if (error) {
-        error.textContent = "Jumlah harus berupa bilangan bulat minimal 0.";
-
-        error.classList.add("show");
-      }
-
-      input.classList.add("input-error");
-
-      isValid = false;
-      return;
-    }
-    // Validasi batas maksimum fasilitas.
-    const maxCapacity = Number(input.dataset.facilityCapacity);
-
-    if (quantity > maxCapacity) {
-      if (error) {
-        error.textContent = `Jumlah melebihi batas maksimum. Maksimal ${maxCapacity} unit.`;
-
-        error.classList.add("show");
-      }
-
-      input.classList.add("input-error");
-
-      isValid = false;
+      valid = false;
       return;
     }
 
-    if (quantity > 0) {
-      totalFasilitasDiminta += quantity;
+    if (jumlah > kapasitas) {
+      showFieldError(input.id, `Jumlah melebihi kapasitas ${kapasitas}.`);
+
+      valid = false;
+      return;
     }
+
+    totalFasilitas += jumlah;
   });
 
-  // Minimal satu fasilitas harus diminta.
-  if (totalFasilitasDiminta === 0) {
-    const error = document.getElementById("facilityFieldsError");
+  if (facilityInputs.length === 0 || totalFasilitas < 1) {
+    if (facilityFieldsError) {
+      facilityFieldsError.textContent = "Pilih minimal satu fasilitas.";
 
-    if (error) {
-      error.textContent = "Pilih minimal satu fasilitas yang diperlukan.";
-
-      error.classList.add("show");
+      facilityFieldsError.classList.add("show");
     }
 
-    isValid = false;
-  }
-  // Validasi nama kegiatan
-  if (!SILABValidation.isRequired(data.namaKegiatan)) {
-    showFieldError("namaKegiatan", "Nama kegiatan wajib diisi.");
-    isValid = false;
+    valid = false;
   }
 
-  return isValid;
+  // Validasi nama kegiatan
+  if (!data.namaKegiatan) {
+    showFieldError("namaKegiatan", "Nama kegiatan wajib diisi.");
+
+    valid = false;
+  } else if (data.namaKegiatan.length > 150) {
+    showFieldError("namaKegiatan", "Nama kegiatan maksimal 150 karakter.");
+
+    valid = false;
+  }
+
+  return valid;
 }
 
-document
-  .getElementById("facilityFields")
-  ?.addEventListener("input", (event) => {
-    if (!event.target.matches("[data-facility-id]")) return;
+// =============================================
+// 6. VALIDASI WAKTU
+// =============================================
 
-    const error = document.getElementById("facilityFieldsError");
-
-    if (error) {
-      error.textContent = "";
-      error.classList.remove("show");
-    }
-
-    const fieldError = document.getElementById(event.target.id + "Error");
-
-    if (fieldError) {
-      fieldError.textContent = "";
-      fieldError.classList.remove("show");
-    }
-  });
-
-//validasi tanggal dan waktu
 function validateBookingTime(data) {
-  // Bersihkan pesan sebelumnya
-  clearFieldError("waktuMulai");
-  clearFieldError("waktuSelesai");
-
   const mulai = new Date(data.waktuMulai);
   const selesai = new Date(data.waktuSelesai);
   const sekarang = new Date();
 
-  //validasi format
-  if (Number.isNaN(mulai.getTime())) {
-    showFieldError("waktuMulai", "Tanggal dan waktu mulai tidak valid.");
-    return false;
-  }
-  if (Number.isNaN(selesai.getTime())) {
-    showFieldError("waktuSelesai", "Tanggal dan waktu selesai tidak valid.");
+  if (Number.isNaN(mulai.getTime()) || Number.isNaN(selesai.getTime())) {
+    showFeedback("Format waktu tidak valid.", "error");
     return false;
   }
 
-  let isValid = true;
-
-  //validasi waktu mulai
   if (mulai <= sekarang) {
     showFieldError(
       "waktuMulai",
       "Waktu mulai tidak boleh berada di masa lalu.",
     );
-    isValid = false;
-  } else {
-    const jamMulai = mulai.getHours() + mulai.getMinutes() / 60;
 
-    if (jamMulai < 6 || jamMulai >= 22) {
-      showFieldError(
-        "waktuMulai",
-        "Waktu mulai harus berada antara pukul 06.00–22.00 WIT.",
-      );
-      isValid = false;
-    }
+    return false;
   }
 
-  //pergantian tangal
+  if (selesai <= mulai) {
+    showFieldError("waktuSelesai", "Waktu selesai harus setelah waktu mulai.");
+
+    return false;
+  }
+
   const tanggalSama =
     mulai.getFullYear() === selesai.getFullYear() &&
     mulai.getMonth() === selesai.getMonth() &&
@@ -540,309 +495,154 @@ function validateBookingTime(data) {
       "waktuSelesai",
       "Peminjaman tidak boleh melewati pergantian tanggal.",
     );
+
     return false;
   }
 
-  if (selesai <= mulai) {
-    showFieldError(
-      "waktuSelesai",
-      "Waktu selesai harus lebih besar dari waktu mulai.",
-    );
-    return false;
-  }
+  const jamMulai = mulai.getHours() + mulai.getMinutes() / 60;
 
   const jamSelesai = selesai.getHours() + selesai.getMinutes() / 60;
+
+  if (jamMulai < 6 || jamMulai >= 22) {
+    showFieldError("waktuMulai", "Waktu mulai harus antara pukul 06.00–22.00.");
+
+    return false;
+  }
+
   if (jamSelesai > 22) {
     showFieldError(
       "waktuSelesai",
-      "Waktu selesai tidak boleh melewati pukul 22.00 WIT.",
+      "Waktu selesai tidak boleh melewati pukul 22.00.",
     );
-    isValid = false;
+
+    return false;
   }
 
-  return isValid;
+  return true;
 }
 
-//Membuat ID pengguna otomatis
-function generateSubmissionId(submissions) {
-  const sekarang = new Date();
+// =============================================
+// 7. KIRIM PENGAJUAN KE DATABASE
+// =============================================
 
-  const tahun = sekarang.getFullYear();
-  const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
-  const tanggal = String(sekarang.getDate()).padStart(2, "0");
+async function handleSubmit(event) {
+  event.preventDefault();
 
-  const tanggalID = `${tahun}${bulan}${tanggal}`;
+  if (isSubmitting) return;
 
-  const prefix = `REQ-${tanggalID}-`;
+  clearAllFieldErrors();
 
-  let nomorTerakhir = 0;
+  showFeedback("");
 
-  submissions.forEach((submission) => {
-    if (
-      typeof submission.id !== "string" ||
-      !submission.id.startsWith(prefix)
-    ) {
-      return;
-    }
+  const data = getFormData();
 
-    const nomor = Number(submission.id.substring(prefix.length));
+  if (!validateForm(data)) return;
 
-    if (Number.isInteger(nomor) && nomor > nomorTerakhir) {
-      nomorTerakhir = nomor;
-    }
-  });
+  if (!validateBookingTime(data)) return;
 
-  const nomorBaru = String(nomorTerakhir + 1).padStart(3, "0");
+  isSubmitting = true;
 
-  return `${prefix}${nomorBaru}`;
-}
+  const submitButton = peminjamanForm.querySelector('button[type="submit"]');
 
-//validasi input waktu
-[waktuMulaiInput, waktuSelesaiInput].forEach((input) => {
-  input.addEventListener("change", function () {
-    const data = getFormData();
+  const originalButtonHTML = submitButton?.innerHTML || "";
 
-    clearFieldError(input.id);
+  if (submitButton) {
+    submitButton.disabled = true;
 
-    if (data.waktuMulai && data.waktuSelesai) {
-      validateBookingTime(data);
-    }
-  });
-});
-
-// Menghapus error kategori ketika dipilih
-document.querySelectorAll('input[name="kategori"]').forEach((radio) => {
-  radio.addEventListener("change", function () {
-    clearFieldError("kategori");
-  });
-});
-
-// Menghapus error nama kegiatan ketika mulai diketik
-namaKegiatanInput.addEventListener("input", function () {
-  if (SILABValidation.isRequired(this.value)) {
-    clearFieldError("namaKegiatan");
+    submitButton.textContent = "Mengirim Pengajuan...";
   }
-});
 
-// Memasang event submit
+  try {
+    const response = await fetch(`${API_PENGAJUAN}?action=submit`, {
+      method: "POST",
+
+      credentials: "same-origin",
+
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+
+      body: JSON.stringify({
+        action: "submit",
+        ...data,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Pengajuan gagal disimpan.");
+    }
+
+    showFeedback(
+      `${result.message} Nomor pengajuan: ${result.data?.id_pengajuan ?? "-"}`,
+      "success",
+    );
+
+    peminjamanForm.reset();
+
+    console.log("Pengajuan berhasil disimpan:", result.data);
+  } catch (error) {
+    console.error("Kesalahan pengiriman:", error);
+
+    showFeedback(
+      error.message || "Terjadi kesalahan saat mengirim pengajuan.",
+      "error",
+    );
+  } finally {
+    isSubmitting = false;
+
+    if (submitButton) {
+      submitButton.disabled = false;
+
+      submitButton.innerHTML = originalButtonHTML;
+    }
+  }
+}
+
+// =============================================
+// 8. EVENT LISTENER
+// =============================================
+
 if (peminjamanForm) {
   peminjamanForm.addEventListener("submit", handleSubmit);
 } else {
   console.error("Form peminjaman tidak ditemukan.");
 }
 
-//submit pengajuan
-function handleSubmit(event) {
-  event.preventDefault();
+// Hapus pesan kesalahan ketika input diubah
 
-  if (isSubmitting) return;
+[waktuMulaiInput, waktuSelesaiInput].forEach((input) => {
+  input?.addEventListener("change", () => {
+    clearFieldError(input.id);
+  });
+});
 
-  // Bersihkan pesan sebelumnya
-  clearAllFieldErrors();
-  feedbackElement.textContent = "";
+namaKegiatanInput?.addEventListener("input", () => {
+  clearFieldError("namaKegiatan");
+});
 
-  // Mengambil data formulir
-  const data = getFormData();
-
-  //VALIDASI INPUT WAJIB
-  if (!validateForm(data)) {
-    return;
+dynamicRuleFields?.addEventListener("change", (event) => {
+  if (event.target.matches("select[data-rule-id]")) {
+    clearFieldError(event.target.id);
   }
+});
 
-  //VALIDASI TANGGAL DAN WAKTU
-  if (!validateBookingTime(data)) {
-    return;
+facilityFields?.addEventListener("input", (event) => {
+  if (event.target.matches("input[data-facility-id]")) {
+    clearFieldError(event.target.id);
+
+    if (facilityFieldsError) {
+      facilityFieldsError.textContent = "";
+
+      facilityFieldsError.classList.remove("show");
+    }
   }
+});
 
-  //MEMERIKSA SESI PENGGUNA
-  const sesi = sesiSILAB.ambil();
-  if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
-    showFeedback(
-      "Sesi pengguna tidak ditemukan. Silakan login kembali.",
-      "error",
-    );
-    return;
-  }
-  // =====================================
-  // MENGAMBIL IDENTITAS AKUN
-  // =====================================
+// =============================================
+// 9. JALANKAN SAAT HALAMAN DIBUKA
+// =============================================
 
-  const identitas = getIdentitasPemohon(sesi);
-
-  if (!identitas) {
-    showFeedback(
-      "Identitas akun tidak ditemukan atau akun tidak aktif. Silakan login kembali.",
-      "error",
-    );
-
-    return;
-  }
-
-  //MEMERIKSA LOCAL STORAGE
-  if (!SILABStorage.isAvailable()) {
-    showFeedback("Penyimpanan tidak tersedia. Silakan coba kembali.", "error");
-    return;
-  }
-
-  // Mengambil data pengajuan sebelumnya
-  const submissions = SILABStorage.get(SILABStorage.KEYS.SUBMISSIONS, []);
-  if (!Array.isArray(submissions)) {
-    showFeedback("Data pengajuan sebelumnya tidak valid.", "error");
-    return;
-  }
-
-  //MEMBUAT DATA PENGAJUAN
-
-  const pengajuanBaru = {
-    // Identitas pengajuan
-    id: generateSubmissionId(submissions),
-
-    // Identitas pengguna
-    // IDENTITAS PEMOHON
-    userId: identitas.userId,
-    userIdentifier: identitas.userIdentifier,
-    namaPemohon: identitas.namaPemohon,
-    nipNpm: identitas.nipNpm,
-    role: "pengguna",
-
-    // Tanggal peminjaman
-    tanggal: data.tanggal,
-
-    // Waktu
-    waktuMulai: data.waktuMulai,
-    waktuSelesai: data.waktuSelesai,
-
-    // Kegiatan
-    // Aturan dan pilihan dari Kepala Lab.
-    ruleSelections: data.ruleSelections,
-
-    // Kompatibilitas dengan riwayat lama.
-    kategori:
-      Object.values(data.ruleSelections).find((item) =>
-        /kategori|jenis kegiatan/i.test(item.ruleName),
-      )?.criteriaName || "",
-
-    // Daftar fasilitas dan jumlah yang diminta.
-    // Daftar seluruh fasilitas yang diminta.
-    facilityRequests: data.facilityRequests.filter((item) => item.quantity > 0),
-
-    // Kompatibilitas dengan sistem lama.
-    facilityId:
-      data.facilityRequests.find((item) => item.quantity > 0)?.facilityId || "",
-
-    facilityName:
-      data.facilityRequests.find((item) => item.quantity > 0)?.facilityName ||
-      "",
-
-    // Nama kegiatan.
-    namaKegiatan: data.namaKegiatan,
-
-    // Status awal
-    status: "menunggu_verifikasi",
-
-    createdAt: new Date().toISOString(),
-  };
-
-  // Mencegah pengiriman berulang
-  isSubmitting = true;
-
-  const submitButton = peminjamanForm.querySelector('button[type="submit"]');
-
-  submitButton.disabled = true;
-  submitButton.innerHTML = `
-    <span>Mengirim Pengajuan...</span>
-  `;
-
-  // Tambahkan pengajuan baru
-  submissions.push(pengajuanBaru);
-
-  // Simpan ke LocalStorage
-  const berhasil = SILABStorage.set(SILABStorage.KEYS.SUBMISSIONS, submissions);
-
-  // Jika penyimpanan gagal
-  if (!berhasil) {
-    isSubmitting = false;
-
-    submitButton.disabled = false;
-    submitButton.innerHTML = `
-      Kirim Pengajuan Peminjaman
-      <i class="bi bi-send"></i>
-    `;
-
-    showFeedback("Gagal menyimpan pengajuan. Silakan coba kembali.", "error");
-
-    return;
-  }
-
-  // Jika penyimpanan berhasil
-  showFeedback(
-    `Pengajuan berhasil dikirim. ID: ${pengajuanBaru.id}`,
-    "success",
-  );
-
-  console.log("Pengajuan berhasil disimpan:", pengajuanBaru);
-}
-
-/* =========================================
-   IDENTITAS NAVBAR PENGGUNA
-========================================= */
-
-function tampilkanIdentitasNavbar() {
-  const sesi = sesiSILAB.ambil();
-
-  if (!sesi || sesi.role !== "pengguna") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-  if (!Array.isArray(users)) return null;
-
-  const akun = users.find(
-    (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
-  );
-
-  if (!akun || akun.status !== "aktif") {
-    window.location.href = "../auth/login.html";
-    return null;
-  }
-
-  const navbarName = document.getElementById("userNavbarName");
-  const profileName = document.getElementById("profileUserName");
-
-  if (navbarName) {
-    navbarName.textContent = akun.nama;
-  }
-
-  if (profileName) {
-    profileName.textContent = akun.nama;
-  }
-
-  return akun;
-}
-
-// Memuat konfigurasi Kepala Lab.
-renderDynamicRules();
-
-renderDynamicFacilities();
-
-// Jalankan identitas navbar
-const akunLogin = tampilkanIdentitasNavbar();
-
-const config = getAlgorithmConfig();
-
-console.log("DATA ATURAN:", config.rules);
-console.log("DATA FASILITAS:", config.facilities);
-
-console.log(
-  "JUMLAH DROPDOWN ATURAN:",
-  document.querySelectorAll("#dynamicRuleFields select").length,
-);
-
-console.log(
-  "JUMLAH INPUT FASILITAS:",
-  document.querySelectorAll("#facilityFields input[data-facility-id]").length,
-);
-
-console.log("DATA INPUT FASILITAS:", getFormData().facilityRequests);
+muatKonfigurasiPengajuan();
