@@ -1,246 +1,293 @@
 /* =========================================
-  SILAB - DASHBOARD PENGGUNA
-  TAMPILAN DAN PENGELOLAAN JADWAL HARI INI
+   SILAB - DASHBOARD PENGGUNA
+   JADWAL PEMINJAMAN HARI INI
 ========================================= */
 
 (() => {
   "use strict";
 
+  const el = {
+    jadwal: document.getElementById("user-slot-list"),
+    jumlah: document.getElementById("user-jumlah-jadwal"),
+    info: document.getElementById("user-info-pagination"),
+    pagination: document.getElementById("user-pagination"),
+  };
 
-  //  REFERENSI ELEMEN HTML
+  const PER_HALAMAN = 5;
 
-  const tanggalElement = document.getElementById(
-    "user-current-date"
-  );
+  let dataJadwal = [];
+  let halamanAktif = 1;
+  let sedangMemuat = false;
 
-  const slotContainer = document.getElementById(
-    "user-slot-list"
-  );
-
-  // =====================================
-  // 3. FUNGSI TANGGAL HARI INI
-  // =====================================
-
-  function getTanggalHariIni() {
-    const sekarang = new Date();
-
-    const tahun = sekarang.getFullYear();
-    const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
-
-    const tanggal = String(sekarang.getDate()).padStart(2, "0");
-
-    return `${tahun}-${bulan}-${tanggal}`;
+  if (!el.jadwal || !el.jumlah || !el.info || !el.pagination) {
+    console.error("SILAB: Elemen jadwal pengguna belum lengkap.");
+    return;
   }
 
-  function renderTanggal() {
-    if (!tanggalElement) return;
-
-    const sekarang = new Date();
-
-    tanggalElement.textContent = new Intl.DateTimeFormat("id-ID", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
+  // Mengambil tanggal berdasarkan WIT.
+  function tanggalHariIni() {
+    const bagian = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jayapura",
       year: "numeric",
-    }).format(sekarang);
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+    return bagian;
   }
 
-  // =====================================
-  // 4. FORMAT WAKTU
-  // =====================================
+  // Mengambil jam sekarang berdasarkan WIT.
+  function menitSekarang() {
+    const bagian = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Jayapura",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(new Date());
 
-  function formatWaktu(waktu) {
-    return waktu.replace(":", ".");
-  }
-
-  function toMinutes(waktu) {
-    if (typeof waktu !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(waktu)) {
-      return null;
-    }
-
-    const [jam, menit] = waktu.split(":").map(Number);
+    const [jam, menit] = bagian.split(":").map(Number);
 
     return jam * 60 + menit;
   }
 
-  // =====================================
-  // 5. STATUS OTOMATIS
-  // =====================================
+  function konversiMenit(jam) {
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(jam || "")) {
+      return null;
+    }
 
-  function getStatusJadwal(item) {
-    const sekarang = new Date();
+    const [h, m] = jam.split(":").map(Number);
+    return h * 60 + m;
+  }
 
-    const menitSekarang = sekarang.getHours() * 60 + sekarang.getMinutes();
+  function formatJam(jam) {
+    return jam.replace(":", ".");
+  }
 
-    const mulai = toMinutes(item.mulai);
-    const selesai = toMinutes(item.selesai);
+  // Menentukan status berdasarkan waktu.
+  function statusJadwal(item) {
+    const sekarang = menitSekarang();
+    const mulai = konversiMenit(item.waktuMulai);
+    const selesai = konversiMenit(item.waktuSelesai);
 
     if (mulai === null || selesai === null || mulai >= selesai) {
       return {
-        teks: "Waktu tidak valid",
-        className: "user-status-invalid",
+        teks: "Waktu Tidak Valid",
+        kelas: "user-status-invalid",
       };
     }
 
-    if (menitSekarang < mulai) {
+    if (sekarang < mulai) {
       return {
         teks: "Disetujui",
-        className: "user-status-approved",
+        kelas: "user-status-approved",
       };
     }
 
-    if (menitSekarang < selesai) {
+    if (sekarang < selesai) {
       return {
         teks: "Sedang Berlangsung",
-        className: "user-status-ongoing",
+        kelas: "user-status-ongoing",
       };
     }
 
     return {
       teks: "Selesai",
-      className: "user-status-finished",
+      kelas: "user-status-finished",
     };
   }
 
-  // =====================================
-  // 6. MEMBUAT ELEMEN HTML
-  // =====================================
+  // Membuat elemen secara aman.
+  function buatElemen(tag, kelas, teks) {
+    const node = document.createElement(tag);
 
-  function buatElemen(tag, className, text) {
-    const element = document.createElement(tag);
+    if (kelas) node.className = kelas;
+    if (teks !== undefined) node.textContent = teks;
 
-    if (className) {
-      element.className = className;
+    return node;
+  }
+
+  function buatBaris(item) {
+    const row = buatElemen("div", "user-jadwal-row");
+
+    // JAM / SESI
+    const jam = buatElemen("div", "user-jadwal-jam");
+
+    jam.appendChild(
+      buatElemen(
+        "strong",
+        "",
+        `${formatJam(item.waktuMulai)} – ${formatJam(item.waktuSelesai)} WIT`,
+      ),
+    );
+
+    // NAMA PEMOHON
+    const pemohon = buatElemen("div", "user-jadwal-pemohon");
+
+    pemohon.appendChild(buatElemen("strong", "", item.namaPemohon || "-"));
+
+    // NAMA KEGIATAN
+    const kegiatan = buatElemen("div", "user-jadwal-kegiatan");
+
+    kegiatan.appendChild(buatElemen("strong", "", item.namaKegiatan || "-"));
+
+    row.append(jam, pemohon, kegiatan);
+
+    return row;
+  }
+
+  // Kondisi ketika tidak ada jadwal.
+  function tampilkanKosong() {
+    const kosong = buatElemen("div", "user-schedule-empty");
+
+    kosong.appendChild(buatElemen("i", "bi bi-calendar-x"));
+
+    kosong.appendChild(
+      buatElemen("p", "", "Belum ada jadwal peminjaman hari ini."),
+    );
+
+    el.jadwal.replaceChildren(kosong);
+  }
+
+  // Tombol pagination.
+  function buatTombol(label, halaman, nonaktif, aktif = false) {
+    const tombol = buatElemen(
+      "button",
+      aktif ? "user-page-number active" : "user-page-button",
+      label,
+    );
+
+    tombol.type = "button";
+    tombol.disabled = nonaktif;
+
+    tombol.addEventListener("click", () => {
+      halamanAktif = halaman;
+      tampilkanJadwal();
+    });
+
+    return tombol;
+  }
+
+  function tampilkanPagination() {
+    const totalHalaman = Math.max(
+      1,
+      Math.ceil(dataJadwal.length / PER_HALAMAN),
+    );
+
+    halamanAktif = Math.min(halamanAktif, totalHalaman);
+
+    const awal = dataJadwal.length ? (halamanAktif - 1) * PER_HALAMAN + 1 : 0;
+
+    const akhir = Math.min(halamanAktif * PER_HALAMAN, dataJadwal.length);
+
+    el.info.textContent = dataJadwal.length
+      ? `Menampilkan ${awal}–${akhir} dari ${dataJadwal.length} jadwal`
+      : "Menampilkan 0 jadwal";
+
+    el.pagination.replaceChildren();
+
+    el.pagination.appendChild(
+      buatTombol(
+        "Sebelumnya",
+        Math.max(1, halamanAktif - 1),
+        halamanAktif === 1,
+      ),
+    );
+
+    for (let i = 1; i <= totalHalaman; i++) {
+      el.pagination.appendChild(
+        buatTombol(String(i), i, false, i === halamanAktif),
+      );
     }
 
-    if (text !== undefined) {
-      element.textContent = text;
-    }
-
-    return element;
+    el.pagination.appendChild(
+      buatTombol(
+        "Berikutnya",
+        Math.min(totalHalaman, halamanAktif + 1),
+        halamanAktif === totalHalaman,
+      ),
+    );
   }
 
-  // =====================================
-  // 7. RENDER SATU KARTU JADWAL
-  // =====================================
+  // Menampilkan data ke tabel.
+  function tampilkanJadwal() {
+    el.jadwal.replaceChildren();
 
-  function renderKartuJadwal(item) {
-    const article = buatElemen("article", "user-slot-card");
-
-    // WAKTU
-    const waktu = buatElemen(
-      "div",
-      "user-slot-time",
-      `${formatWaktu(item.mulai)} – ${formatWaktu(item.selesai)}`,
-    );
-
-    // DETAIL JADWAL
-    const detail = buatElemen("div", "user-slot-detail");
-
-    const title = buatElemen("div", "user-slot-title");
-
-    const kegiatan = buatElemen("h4", "", item.kegiatan);
-
-    const badgePC = buatElemen(
-      "span",
-      "user-requirement-badge",
-      `Kebutuhan PC: ${item.pc}`,
-    );
-
-    const badgeKursi = buatElemen(
-      "span",
-      "user-requirement-badge",
-      `Kebutuhan Kursi: ${item.kursi}`,
-    );
-
-    title.append(kegiatan, badgePC, badgeKursi);
-
-    const informasi = buatElemen("p");
-
-    informasi.append(
-      document.createTextNode(item.kelas || "Penggunaan Laboratorium"),
-    );
-
-    const pemisah = buatElemen("span", "", "•");
-
-    informasi.append(
-      pemisah,
-      document.createTextNode(`Pemohon: ${item.pemohon}`),
-    );
-
-    detail.append(title, informasi);
-
-    // STATUS
-    const statusWrapper = buatElemen("div", "user-slot-status");
-
-    const statusData = getStatusJadwal(item);
-
-    const status = buatElemen("span", statusData.className);
-
-    const icon = buatElemen("i", "bi bi-circle-fill");
-
-    status.append(icon, document.createTextNode(statusData.teks));
-
-    statusWrapper.appendChild(status);
-
-    article.append(waktu, detail, statusWrapper);
-
-    return article;
-  }
-
-  // =====================================
-  // 8. RENDER KONDISI KOSONG
-  // =====================================
-
-  function renderKosong() {
-    const empty = buatElemen("div", "user-schedule-empty");
-
-    const icon = buatElemen("i", "bi bi-calendar-x");
-
-    const title = buatElemen("h4", "", "Belum Ada Jadwal Hari Ini");
-
-    const description = buatElemen(
-      "p",
-      "",
-      "Anda belum memiliki jadwal penggunaan laboratorium yang disetujui untuk hari ini.",
-    );
-
-    empty.append(icon, title, description);
-
-    slotContainer.replaceChildren(empty);
-  }
-
-  // =====================================
-  // 9. FILTER JADWAL PENGGUNA
-  // =====================================
-
-    function getJadwalHariIni() {
-  // Data akan diambil dari database
-  // melalui endpoint PHP pada tahap berikutnya.
-
-  return [];
-  }
-
-  // =====================================
-  // 10. RENDER SELURUH JADWAL
-  // =====================================
-
-  function renderJadwalHariIni() {
-    renderTanggal();
-
-    const jadwal = getJadwalHariIni();
-
-    slotContainer.replaceChildren();
-
-    if (jadwal.length === 0) {
-      renderKosong();
+    if (!dataJadwal.length) {
+      tampilkanKosong();
+      tampilkanPagination();
       return;
     }
 
-    jadwal.forEach((item) => {
-      slotContainer.appendChild(renderKartuJadwal(item));
+    const awal = (halamanAktif - 1) * PER_HALAMAN;
+    const dataHalaman = dataJadwal.slice(awal, awal + PER_HALAMAN);
+
+    const fragmen = document.createDocumentFragment();
+
+    dataHalaman.forEach((item) => {
+      fragmen.appendChild(buatBaris(item));
     });
+
+    el.jadwal.appendChild(fragmen);
+
+    tampilkanPagination();
   }
 
-  renderJadwalHariIni();
+  // Mengambil data dari API.
+  async function perbaruiJadwal() {
+    if (sedangMemuat) return;
+
+    sedangMemuat = true;
+
+    try {
+      const response = await fetch(
+        `jadwal_hari_ini.php?tanggal=${encodeURIComponent(tanggalHariIni())}`,
+        {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
+
+      const hasil = await response.json();
+
+      if (!response.ok || !hasil.success) {
+        throw new Error(hasil.message || "Gagal mengambil jadwal.");
+      }
+
+      if (!Array.isArray(hasil.data)) {
+        throw new Error("Format data jadwal tidak valid.");
+      }
+
+      dataJadwal = hasil.data;
+      el.jumlah.textContent = `${dataJadwal.length} Sesi Terjadwal`;
+
+      tampilkanJadwal();
+    } catch (error) {
+      console.error("SILAB Jadwal Pengguna:", error);
+
+      el.jadwal.replaceChildren(
+        buatElemen(
+          "p",
+          "user-schedule-empty",
+          "Jadwal belum dapat dimuat. Silakan coba kembali.",
+        ),
+      );
+    } finally {
+      sedangMemuat = false;
+    }
+  }
+
+  // Pembaruan otomatis.
+  perbaruiJadwal();
+
+  window.setInterval(perbaruiJadwal, 15000);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) perbaruiJadwal();
+  });
+
+  window.addEventListener("silab:data-changed", perbaruiJadwal);
 })();

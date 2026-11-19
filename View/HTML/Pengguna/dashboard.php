@@ -138,46 +138,51 @@ $namaPengguna = htmlspecialchars(
       </a>
     </section>
 
-    <!-- PANEL JADWAL -->
+ 
+<!-- PANEL JADWAL -->
+<section class="user-schedule-panel">
 
-    <section class="user-schedule-panel">
-      <!-- HEADER JADWAL -->
+    <div class="user-schedule-header">
 
-      <div class="user-schedule-header">
-        <h3>
-          Jadwal Penggunaan Lab Hari Ini
-          <span>•</span>
-          <span id="user-current-date">Memuat tanggal...</span>
-        </h3>
-
-        <div class="live-indicator">
-          <span class="live-dot"></span>
-          <span>Live Hari Ini</span>
+        <div>
+            <h3>Jadwal Peminjaman Hari Ini</h3>
+            <p>Daftar reservasi laboratorium hari ini.</p>
         </div>
-      </div>
 
-      <!-- DAFTAR SLOT -->
+        <div class="user-jumlah-badge">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span id="user-jumlah-jadwal">0 Sesi Terjadwal</span>
+        </div>
 
-      <div class="user-slot-list" id="user-slot-list">
-        <!-- Jadwal akan ditampilkan oleh JavaScript -->
-      </div>
+    </div>
 
-      <!-- KETERANGAN OPERASIONAL -->
+    <div class="user-schedule-table">
 
-      <div class="user-operational-note">
-        <p>
-          Lab RPL dapat dipakai dari pukul 07.30 s.d 18.00, Penggunaan lab di
-          jam 19.00 ke atas memerlukan otoritas
-          <br />
-          laboran dan kepala lab.
+<div class="user-jadwal-header">
+
+    <span>JAM / SESI</span>
+    <span>PEMOHON</span>
+    <span>KEGIATAN / MATA KULIAH</span>
+
+</div>
+
+        <div id="user-slot-list"></div>
+
+    </div>
+
+    <div class="user-pagination-container">
+
+        <p id="user-info-pagination">
+            Memuat jadwal...
         </p>
-      </div>
-    </section>
-  </main>
-  <script src="../../JS/shared/storage.js"></script>
-  <script src="../../JS/laboran/utils/waktu.js"></script>
-  <script src="../../JS/laboran/layanan.js"></script>
 
+        <div id="user-pagination"></div>
+
+    </div>
+
+</section>
+
+  </main>
   <script src="../../JS/Pengguna/dashboard_pengguna.js"></script>
 </body>
 

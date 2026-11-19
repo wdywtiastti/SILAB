@@ -638,3 +638,298 @@
   font-size: 11px;
   line-height: 1.7;
 }
+
+/* =========================================
+   TABEL JADWAL PENGGUNA
+========================================= */
+
+.user-schedule-header {
+  min-height: 85px;
+}
+
+.user-schedule-header h3 {
+  color: #202b40;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.user-schedule-header p {
+  margin-top: 4px;
+  color: #667a9b;
+  font-size: 11px;
+}
+
+.user-jumlah-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  color: #946900;
+  background: #fff3d6;
+  border: 1px solid #ffe19a;
+  border-radius: 25px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* HEADER TABEL */
+
+.user-schedule-table {
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  border: 1px solid #e1e1e5;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+.user-jadwal-header,
+.user-jadwal-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-jadwal-header {
+  min-height: 58px;
+  padding: 12px 20px;
+  background: #f7f7f9;
+  border-bottom: 1px solid #e1e1e5;
+  color: #667a9b;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* BARIS JADWAL */
+
+.user-jadwal-row {
+  min-height: 82px;
+  padding: 13px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #edf0f4;
+  text-align: center;
+}
+
+.user-jadwal-row:last-child {
+  border-bottom: none;
+}
+
+.user-jadwal-jam {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #202b40;
+  font-size: 13px;
+}
+
+.user-jadwal-jam strong {
+  font-weight: 800;
+}
+
+.user-jadwal-kegiatan {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  min-width: 0;
+}
+
+.user-jadwal-kegiatan strong {
+  color: #202b40;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.user-jadwal-kegiatan span {
+  color: #667a9b;
+  font-size: 11px;
+}
+
+.user-jadwal-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* STATUS */
+
+.user-status-approved,
+.user-status-ongoing,
+.user-status-finished,
+.user-status-invalid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.user-status-approved {
+  color: #946900;
+  background: #fff3d6;
+}
+
+.user-status-ongoing {
+  color: #18794e;
+  background: #e5f6ec;
+}
+
+.user-status-finished {
+  color: #667085;
+  background: #f0f1f3;
+}
+
+.user-status-invalid {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+/* DATA KOSONG */
+
+.user-schedule-empty {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.user-schedule-empty i {
+  color: #a5a3c7;
+  font-size: 28px;
+}
+
+.user-schedule-empty p {
+  color: #667a9b;
+  font-size: 12px;
+}
+
+/* PAGINATION */
+
+.user-pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 18px 25px;
+}
+
+#user-info-pagination {
+  color: #667a9b;
+  font-size: 11px;
+}
+
+#user-pagination {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.user-page-button,
+.user-page-number {
+  min-width: 38px;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid #e1e1e5;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #667a9b;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-page-number.active {
+  color: #ffffff;
+  background: #911e3f;
+  border-color: #911e3f;
+}
+
+.user-page-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+
+@media screen and (max-width: 700px) {
+  .user-schedule-header {
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .user-schedule-header h3 {
+    font-size: 13px;
+  }
+
+  .user-jumlah-badge {
+    font-size: 9px;
+    padding: 7px 9px;
+  }
+
+  .user-schedule-table {
+    width: calc(100% - 20px);
+    margin: 0 10px;
+    overflow-x: auto;
+  }
+
+  .user-jadwal-header,
+  .user-jadwal-row {
+    min-width: 540px;
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+
+  .user-pagination-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  #user-pagination {
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================================
+   KOLOM PEMOHON DAN KEGIATAN
+========================================= */
+
+.user-jadwal-header,
+.user-jadwal-row {
+  grid-template-columns: 1fr 1.2fr 1.5fr;
+}
+
+.user-jadwal-pemohon,
+.user-jadwal-kegiatan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.user-jadwal-pemohon strong,
+.user-jadwal-kegiatan strong {
+  color: #202b40;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 700px) {
+  .user-jadwal-header,
+  .user-jadwal-row {
+    min-width: 540px;
+    grid-template-columns: 1fr 1.2fr 1.5fr;
+  }
+}
