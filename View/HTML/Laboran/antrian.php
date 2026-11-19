@@ -554,19 +554,53 @@ $nipLaboran = htmlspecialchars(
 
             </div>
 
-            <!-- PANEL 3: BENTROK -->
+
+            <!-- PANEL 3: BENTROK DAN ESKALASI KEPALA LAB -->
             <section class="collision-box" data-panel="bentrok" hidden>
 
                 <div class="collision-heading">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-                    Pengajuan Mengalami Bentrokan
+                    <span>Pengajuan Mengalami Bentrokan</span>
                 </div>
 
-                <p data-field="pesan-bentrok"></p>
+                <p class="collision-description">
+                    Jadwal pengajuan ini beririsan dengan pengajuan atau
+                    booking lainnya. Kasus perlu diteruskan kepada Kepala Lab
+                    untuk mendapatkan keputusan.
+                </p>
 
-                <div class="collision-actions" data-area-aksi-konflik></div>
+                <div class="collision-detail">
+
+                    <strong class="collision-subtitle">
+                        Daftar Pengajuan yang Terlibat
+                    </strong>
+
+                    <div class="collision-list-container" data-area-daftar-konflik>
+                    </div>
+
+                </div>
+
+                <div class="collision-notice">
+                    <i class="bi bi-info-circle-fill"></i>
+
+                    <span>
+                        Laboran hanya bertugas mendeteksi dan meneruskan
+                        konflik. Keputusan persetujuan, penggeseran jadwal,
+                        dan override merupakan kewenangan Kepala Lab.
+                    </span>
+                </div>
+
+                <div class="collision-actions">
+
+                    <button type="button" class="btn-escalate" data-aksi-eskalasi-kepala>
+                        <i class="bi bi-send-fill"></i>
+                        Eskalasi ke Kepala Lab
+                    </button>
+
+                </div>
 
             </section>
+
 
             <!-- PANEL 4: BOOKING DISETUJUI YANG BENTROK -->
             <section class="collision-box" data-panel="bentrok-disetujui" hidden>
