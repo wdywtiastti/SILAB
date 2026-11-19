@@ -10,11 +10,11 @@ declare(strict_types=1);
 $zonaWaktu = new DateTimeZone("Asia/Jayapura");
 date_default_timezone_set("Asia/Jayapura");
 
+header("Content-Type: application/json; charset=UTF-8");
+
 // =========================================
 // 1. KONFIGURASI RESPONS JSON
 // =========================================
-
-header("Content-Type: application/json; charset=UTF-8");
 
 function kirimRespons(
     int $kode,
@@ -30,7 +30,7 @@ function kirimRespons(
             "message" => $message,
             "data" => $data
         ],
-        JSON_UNESCAPED_UNICODE
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
     );
 
     exit;
@@ -47,19 +47,11 @@ require_once __DIR__ . "/../../auth/sesi.php";
 // =========================================
 
 if (!sudahLogin()) {
-    kirimRespons(
-        401,
-        false,
-        "Silakan login terlebih dahulu."
-    );
+    kirimRespons(401, false, "Silakan login terlebih dahulu.");
 }
 
 if (($_SESSION["role"] ?? "") !== "laboran") {
-    kirimRespons(
-        403,
-        false,
-        "Anda tidak memiliki akses."
-    );
+    kirimRespons(403, false, "Anda tidak memiliki akses.");
 }
 
 // =========================================
@@ -68,12 +60,7 @@ if (($_SESSION["role"] ?? "") !== "laboran") {
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     header("Allow: GET");
-
-    kirimRespons(
-        405,
-        false,
-        "Metode request tidak diizinkan."
-    );
+    kirimRespons(405, false, "Metode request tidak diizinkan.");
 }
 
 // =========================================
@@ -99,11 +86,7 @@ if (
     !$formatTanggal ||
     $formatTanggal->format("Y-m-d") !== $tanggal
 ) {
-    kirimRespons(
-        400,
-        false,
-        "Format tanggal tidak valid."
-    );
+    kirimRespons(400, false, "Format tanggal tidak valid.");
 }
 
 // =========================================
@@ -113,14 +96,101 @@ if (
 require_once __DIR__ . "/../../../config/database.php";
 
 // =========================================
-// 7. MENGAMBIL DATA JADWAL
+// 7. STATUS YANG MENANDAKAN PRESENSI
+// =========================================
+
+$statusPresensiAktif = [
+    "hadir",
+    "presensi",
+    "sudah_presensi",
+    "tercatat",
+    "digunakan",
+    "sedang_berjalan",
+    "berlangsung",
+    "selesai",
+    "checked_in",
+    "check_in"
+];
+
+// =========================================
+// 8. PEMERIKSAAN BATAS WAKTU PRESENSI
 // =========================================
 
 try {
 
+    $pdo->beginTransaction();
+
+    // Waktu sekarang berdasarkan WIT.
+    $sekarang = new DateTimeImmutable(
+        "now",
+        $zonaWaktu
+    );
+
+    // Batas presensi adalah 15 menit setelah waktu mulai.
+    $batasWaktu = $sekarang
+        ->modify("-15 minutes")
+        ->format("Y-m-d H:i:s");
+
+    // -------------------------------------
+    // 8A. UPDATE BOOKING KADALUWARSA
+    // -------------------------------------
+
+    // Booking yang sudah melewati batas presensi
+    // dan belum melakukan presensi akan menjadi
+    // tidak_digunakan.
+
+    $queryUpdate = "
+        UPDATE booking b
+
+        INNER JOIN pengajuan p
+            ON p.id_pengajuan = b.id_pengajuan
+
+        SET b.status = 'tidak_digunakan'
+
+        WHERE b.status IN (
+            'terjadwal',
+            'disetujui'
+        )
+
+        AND p.waktu_mulai <= :batas_waktu
+
+        AND NOT EXISTS (
+            SELECT 1
+            FROM validasi_booking vb
+
+            WHERE vb.id_booking = b.id_booking
+
+            AND LOWER(TRIM(vb.status)) IN (
+                'hadir',
+                'presensi',
+                'sudah_presensi',
+                'tercatat',
+                'digunakan',
+                'sedang_berjalan',
+                'berlangsung',
+                'selesai',
+                'checked_in',
+                'check_in'
+            )
+        )
+    ";
+
+    $stmtUpdate = $pdo->prepare($queryUpdate);
+
+    $stmtUpdate->execute([
+        ":batas_waktu" => $batasWaktu
+    ]);
+
+    $jumlahTidakDigunakan = $stmtUpdate->rowCount();
+
+    // =====================================
+    // 9. MENGAMBIL DATA JADWAL
+    // =====================================
+
     $query = "
         SELECT
             b.id_booking AS id,
+
             p.id_pengajuan,
 
             DATE(p.waktu_mulai) AS tanggal,
@@ -158,12 +228,13 @@ try {
 
         WHERE DATE(p.waktu_mulai) = :tanggal
 
-          AND b.status IN (
-              'terjadwal',
-              'disetujui',
-              'digunakan',
-              'berlangsung'
-          )
+        AND b.status IN (
+            'terjadwal',
+            'disetujui',
+            'digunakan',
+            'berlangsung',
+            'tidak_digunakan'
+        )
 
         ORDER BY p.waktu_mulai ASC
     ";
@@ -177,7 +248,7 @@ try {
     $daftarJadwal = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // =====================================
-    // 8. MENYESUAIKAN FORMAT DATA JSON
+    // 10. MENYESUAIKAN FORMAT DATA JSON
     // =====================================
 
     $data = [];
@@ -212,7 +283,13 @@ try {
     }
 
     // =====================================
-    // 9. MENGIRIM RESPONS
+    // 11. COMMIT TRANSAKSI
+    // =====================================
+
+    $pdo->commit();
+
+    // =====================================
+    // 12. MENGIRIM RESPONS
     // =====================================
 
     kirimRespons(
@@ -222,29 +299,20 @@ try {
         $data
     );
 
-} catch (PDOException $e) {
-
-    error_log(
-        "SILAB API Jadwal - Database Error: " .
-        $e->getMessage()
-    );
-
-    kirimRespons(
-        500,
-        false,
-        "Terjadi kesalahan database saat mengambil jadwal."
-    );
-
 } catch (Throwable $e) {
 
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
     error_log(
-        "SILAB API Jadwal - Error: " .
+        "SILAB API Jadwal Laboran: " .
         $e->getMessage()
     );
 
     kirimRespons(
         500,
         false,
-        "Terjadi kesalahan pada sistem."
+        "Terjadi kesalahan saat memproses data jadwal."
     );
 }
