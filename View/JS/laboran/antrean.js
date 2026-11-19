@@ -1,12 +1,17 @@
-
 (function (window, document) {
     "use strict";
 
     // ==========================================
-    // 1. DEPENDENSI DAN ELEMEN HTML
+    // 1. KONFIGURASI API
     // ==========================================
 
-    const layanan = window.SILABService;
+    const API_ANTREAN = "api/antrean.php";
+    const API_TINDAKAN = "api/tindakan_antrean.php";
+
+    const DATA_HALAMAN = 6;
+    const INTERVAL_REFRESH = 30000;
+    const BATAS_PRESENSI_MENIT = 15;
+    const ZONA_WIT = "+09:00";
 
     const el = {
         tabel: document.getElementById("antrianBody"),
@@ -17,55 +22,38 @@
         sebelumnya: document.getElementById("prevPage"),
         berikutnya: document.getElementById("nextPage"),
         modal: document.getElementById("modalReview"),
-
         jumlahBelum: document.getElementById("jumlahBelumDisetujui"),
         jumlahSudah: document.getElementById("jumlahSudahDisetujui"),
-
-        filter: document.querySelectorAll("[data-filter-antrean]")
+        filter: document.querySelectorAll("[data-filter-antrean]"),
+        notifikasi: document.getElementById("wadahNotifikasi")
     };
 
-    if (!layanan || !el.tabel || !el.template || !el.modal) {
-        console.error(
-            "SILAB: Elemen atau layanan modul antrean tidak lengkap."
-        );
+    if (!el.tabel || !el.template || !el.modal) {
+        console.error("SILAB: Elemen HTML antrean tidak lengkap.");
         return;
     }
 
-
     // ==========================================
-    // 2. KONFIGURASI
+    // 2. KONFIGURASI STATUS
     // ==========================================
-
-    const DATA_HALAMAN = 6;
-
-    const ZONA_WIT = "+09:00";
-
-    const BATAS_TIMEOUT = 2147483647;
-
-    // Batas presensi setelah waktu mulai peminjaman.
-    const BATAS_PRESENSI_MENIT = 15;
 
     const STATUS = {
         verifikasi: {
-            label: "Verifikasi",
+            label: "Menunggu Verifikasi",
             kelas: "verify"
         },
-
         bentrok: {
             label: "Bentrok",
             kelas: "conflict"
         },
-
         tergeser: {
             label: "Tergeser",
             kelas: "displaced"
         },
-
         disetujui: {
             label: "Disetujui",
             kelas: "approved"
         },
-
         ditolak: {
             label: "Ditolak",
             kelas: "rejected"
@@ -73,54 +61,33 @@
     };
 
     const STATUS_BELUM_DISETUJUI = [
+        "menunggu",
         "verifikasi",
-        "bentrok"
+        "menunggu_verifikasi",
+        "bentrok",
+        "konflik",
+        "tergeser"
     ];
 
-    // Status presensi yang menandakan kehadiran tercatat.
-    const STATUS_PRESENSI_TERCATAT = new Set([
+    const STATUS_PRESENSI_TERCATAT = [
         "hadir",
         "presensi",
         "sudah_presensi",
         "tercatat",
-        "presensi_tercatat",
-        "sudah_hadir",
+        "digunakan",
+        "sedang_berjalan",
+        "berlangsung",
+        "selesai",
         "checked_in",
         "check_in"
-    ]);
-
-    // Status booking yang sudah tidak menunggu presensi.
-    const STATUS_PRESENSI_SELESAI = new Set([
-        "digunakan",
-        "tidak_digunakan",
-        "sedang_berjalan",
-        "berjalan",
-        "selesai"
-    ]);
-
-    // Status yang secara eksplisit menunjukkan ketidakhadiran.
-    const STATUS_TIDAK_HADIR = new Set([
-        "tidak_hadir",
-        "belum_hadir",
-        "belum_presensi",
-        "tidak_presensi",
-        "alpha",
-        "absen",
-        "tidak hadir"
-    ]);
+    ];
 
     let daftarAntrean = [];
-
     let halamanAktif = 1;
-
     let filterAktif = "belum-disetujui";
-
     let fokusSebelumnya = null;
-
-    let timerAntrean = null;
-
-    let intervalAntrean = null;
-
+    let intervalRefresh = null;
+    let sedangMemuat = false;
 
     // ==========================================
     // 3. FUNGSI BANTUAN
@@ -130,11 +97,12 @@
         if (!elemen) return;
 
         elemen.textContent =
-            nilai === null || nilai === undefined || nilai === ""
+            nilai === null ||
+            nilai === undefined ||
+            nilai === ""
                 ? "-"
                 : String(nilai);
     }
-
 
     function isiField(container, nama, nilai) {
         const elemen = container.querySelector(
@@ -144,394 +112,219 @@
         isiElemen(elemen, nilai);
     }
 
-
     function normalisasiStatus(status) {
         const nilai = String(status || "")
             .toLowerCase()
-            .trim();
+            .trim()
+            .replace(/\s+/g, "_");
 
         const alias = {
+            menunggu: "verifikasi",
             menunggu_verifikasi: "verifikasi",
+            pending: "verifikasi",
             konflik: "bentrok",
-            "menunggu presensi": "menunggu_presensi",
-            "sudah disetujui": "disetujui"
+            conflict: "bentrok",
+            approved: "disetujui",
+            rejected: "ditolak",
+            "sudah_disetujui": "disetujui"
         };
 
         return alias[nilai] || nilai;
     }
 
-
-    function formatAngka(nilai) {
-        const angka = Number(nilai);
-
-        return Number.isFinite(angka)
-            ? String(angka)
-            : "0";
+    function ambilStatusPengajuan(item) {
+        return normalisasiStatus(
+            item.statusPengajuan ||
+            item.status ||
+            "menunggu"
+        );
     }
 
+    function angka(nilai) {
+        if (
+            nilai === null ||
+            nilai === undefined ||
+            nilai === ""
+        ) {
+            return null;
+        }
 
-    function ambilPrioritas(data) {
-        const nilai = String(data.prioritas || "").toUpperCase();
+        const hasil = Number(nilai);
+
+        return Number.isFinite(hasil) ? hasil : null;
+    }
+
+    function formatAngka(nilai) {
+        const hasil = angka(nilai);
+
+        return hasil === null ? "-" : String(hasil);
+    }
+
+    function ambilPrioritas(item) {
+        const nilai = String(
+            item.prioritas || ""
+        ).toUpperCase();
 
         const cocok = nilai.match(/P([1-5])/);
 
         return cocok ? Number(cocok[1]) : 99;
     }
 
-
-    function ambilSkor(data) {
-        const skor = Number(data.skor);
-
-        return Number.isFinite(skor) ? skor : 0;
+    function ambilSkor(item) {
+        return angka(item.skor) ?? 0;
     }
 
-
-    function formatWaktu(data) {
-        const tanggal = data.tanggal
-            ? `${data.tanggal} | `
+    function formatWaktu(item) {
+        const tanggal = item.tanggal
+            ? `${formatTanggal(item.tanggal)} | `
             : "";
 
-        return `${tanggal}${data.waktuMulai || "-"} - ${
-            data.waktuSelesai || "-"
+        return `${tanggal}${item.waktuMulai || "-"} - ${
+            item.waktuSelesai || "-"
         } WIT`;
     }
 
+    function formatTanggal(tanggal) {
+        if (!tanggal) return "-";
 
-    // ==========================================
-    // 4. PENGELOLAAN TIMESTAMP WIT
-    // ==========================================
+        const bagian = String(tanggal).split("T")[0];
+        const cocok = bagian.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
-    // Mengubah tanggal dan waktu menjadi timestamp.
-    // Mendukung tanggal lengkap maupun tanggal terpisah.
+        if (!cocok) return bagian;
 
-    function ambilTimestampWaktu(nilaiWaktu, nilaiTanggal) {
-        if (!nilaiWaktu) return null;
+        return `${cocok[3]}-${cocok[2]}-${cocok[1]}`;
+    }
 
-        const waktu = String(nilaiWaktu).trim();
+    function ambilTanggal(item) {
+        return String(item.tanggal || "").split("T")[0];
+    }
 
-        // Format tanggal dan waktu lengkap.
-        // Contoh: 2026-11-17T05:00
-        // Contoh: 2026-11-17T05:00:00+09:00
+    function ambilTimestampMulai(item) {
+        const tanggal = ambilTanggal(item);
+        const waktu = String(item.waktuMulai || "");
 
-        const tanggalLengkap = waktu.match(
-            /^(\d{4}-\d{2}-\d{2})[T ](.+)$/
-        );
-
-        if (tanggalLengkap) {
-            let nilaiLengkap = waktu.replace(" ", "T");
-
-            // Jika belum memiliki zona waktu,
-            // gunakan zona waktu WIT.
-            const memilikiZona = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(
-                nilaiLengkap
-            );
-
-            if (!memilikiZona) {
-                nilaiLengkap += ZONA_WIT;
-            }
-
-            const timestamp = Date.parse(nilaiLengkap);
-
-            return Number.isFinite(timestamp)
-                ? timestamp
-                : null;
-        }
-
-        // Format jam terpisah.
-        // Contoh: 05:00 atau 05:00:00
-
-        const tanggal = String(
-            nilaiTanggal || ""
-        ).split("T")[0];
-
-        if (!tanggal) return null;
-
-        const cocok = waktu.match(
-            /^([01]?\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/
-        );
-
-        if (!cocok) return null;
-
-        const jam = String(cocok[1]).padStart(2, "0");
-
-        const menit = cocok[2];
-
-        const detik = cocok[3] || "00";
+        if (!tanggal || !waktu) return null;
 
         const timestamp = Date.parse(
-            `${tanggal}T${jam}:${menit}:${detik}${ZONA_WIT}`
+            `${tanggal}T${waktu.slice(0, 8).length === 5
+                ? waktu + ":00"
+                : waktu}${ZONA_WIT}`
         );
 
-        return Number.isFinite(timestamp)
-            ? timestamp
-            : null;
+        return Number.isFinite(timestamp) ? timestamp : null;
     }
 
+    function sudahPresensi(item) {
+        const status = String(
+            item.statusPresensi || ""
+        ).toLowerCase().trim();
 
-    // Mengambil waktu mulai peminjaman.
-
-    function ambilTimestampMulai(data) {
-        if (!data) return null;
-
-        return ambilTimestampWaktu(
-            data.waktuMulai || data.mulai,
-            data.tanggalMulai || data.tanggal
-        );
+        return STATUS_PRESENSI_TERCATAT.includes(status);
     }
 
+    function batasPresensiHabis(item) {
+        const mulai = ambilTimestampMulai(item);
 
-    // Mengambil waktu selesai peminjaman.
+        if (mulai === null) return false;
 
-    function ambilTimestampSelesai(data) {
-        if (!data) return null;
+        const batas = mulai +
+            BATAS_PRESENSI_MENIT * 60 * 1000;
 
-        return ambilTimestampWaktu(
-            data.waktuSelesai || data.selesai,
-            data.tanggalSelesai || data.tanggal
-        );
+        return Date.now() >= batas;
     }
 
+    function masihMenungguPresensi(item) {
+        if (sudahPresensi(item)) return false;
 
-    // Menghitung batas presensi.
-    // Waktu mulai + 15 menit.
+        if (batasPresensiHabis(item)) return false;
 
-    function ambilBatasPresensi(data) {
-        const waktuMulai = ambilTimestampMulai(data);
-
-        if (waktuMulai === null) return null;
-
-        return (
-            waktuMulai +
-            BATAS_PRESENSI_MENIT * 60 * 1000
-        );
-    }
-
-
-    // Memeriksa apakah batas presensi sudah habis.
-
-    function batasPresensiSudahHabis(data) {
-        const batasWaktu = ambilBatasPresensi(data);
-
-        if (batasWaktu === null) return false;
-
-        return Date.now() >= batasWaktu;
-    }
-
-
-    // Memeriksa apakah waktu penggunaan sudah selesai.
-
-    function sudahMelewatiMasaPenggunaan(data) {
-        const waktuSelesai = ambilTimestampSelesai(data);
-
-        if (waktuSelesai === null) return false;
-
-        return Date.now() >= waktuSelesai;
-    }
-
-
-    // ==========================================
-    // 5. PENGELOLAAN BOOKING DAN PRESENSI
-    // ==========================================
-
-    function ambilBookingPengajuan(pengajuanId) {
-        const bookings = layanan.getAll("bookings");
-
-        if (!Array.isArray(bookings)) {
-            return null;
-        }
-
-        return bookings.find((booking) =>
-            String(booking.sourceSubmissionId) ===
-                String(pengajuanId) ||
-            String(booking.id) ===
-                `BOOK-${pengajuanId}`
-        ) || null;
-    }
-
-
-    // Memeriksa apakah pemohon sudah melakukan presensi.
-
-    function sudahMelakukanPresensi(pengajuan) {
-        if (!pengajuan) return false;
-
-        const booking = ambilBookingPengajuan(
-            pengajuan.id
-        );
-
-        // --------------------------------------
-        // A. PERIKSA PENANDA PRESENSI LANGSUNG
-        // --------------------------------------
-
-        if (
-            booking?.presensi === true ||
-            booking?.sudahPresensi === true ||
-            booking?.presensi?.hadir === true ||
-            pengajuan.presensi === true ||
-            pengajuan.sudahPresensi === true
-        ) {
-            return true;
-        }
-
-        // --------------------------------------
-        // B. PERIKSA STATUS PRESENSI
-        // --------------------------------------
-
-        const nilaiPresensi =
-            typeof booking?.presensi === "string"
-                ? booking.presensi
-                : booking?.presensi?.status ||
-                  booking?.statusPresensi ||
-                  pengajuan?.presensi?.status ||
-                  pengajuan?.statusPresensi ||
-                  "";
-
-        const statusPresensi = normalisasiStatus(
-            nilaiPresensi
-        );
-
-        if (
-            STATUS_PRESENSI_TERCATAT.has(statusPresensi)
-        ) {
-            return true;
-        }
-
-        // --------------------------------------
-        // C. PERIKSA STATUS AKHIR BOOKING
-        // --------------------------------------
-
-        const statusBooking = normalisasiStatus(
-            booking?.status
-        );
-
-        if (
-            STATUS_PRESENSI_SELESAI.has(statusBooking)
-        ) {
-            return true;
-        }
-
-        // --------------------------------------
-        // D. PERIKSA DATA ATTENDANCE
-        // --------------------------------------
-
-        const attendance = layanan.getAll("attendance");
-
-        if (!Array.isArray(attendance)) {
-            return false;
-        }
-
-        const idBooking = String(
-            booking?.id || `BOOK-${pengajuan.id}`
-        );
-
-        const idPengajuan = String(pengajuan.id);
-
-        return attendance.some((catatan) => {
-            const cocokBooking =
-                String(
-                    catatan.bookingId ||
-                    catatan.booking_id ||
-                    ""
-                ) === idBooking;
-
-            const cocokPengajuan =
-                String(
-                    catatan.sourceSubmissionId ||
-                    catatan.pengajuanId ||
-                    catatan.submissionId ||
-                    catatan.idPengajuan ||
-                    ""
-                ) === idPengajuan;
-
-            if (!cocokBooking && !cocokPengajuan) {
-                return false;
-            }
-
-            const statusCatatan = normalisasiStatus(
-                catatan.status ||
-                catatan.kehadiran ||
-                catatan.statusPresensi ||
-                ""
-            );
-
-            // Catatan ketidakhadiran bukan presensi hadir.
-            if (
-                STATUS_TIDAK_HADIR.has(statusCatatan)
-            ) {
-                return false;
-            }
-
-            // Data attendance yang terhubung dengan booking
-            // dianggap sebagai catatan presensi.
-            return true;
-        });
-    }
-
-
-    // Menentukan apakah booking masih boleh
-    // muncul pada antrean Sudah Disetujui.
-
-    function masihMenungguPresensi(pengajuan) {
-
-        // Jika sudah presensi, langsung hilangkan.
-        if (sudahMelakukanPresensi(pengajuan)) {
-            return false;
-        }
-
-        // Jika batas 15 menit sudah habis, hilangkan.
-        if (batasPresensiSudahHabis(pengajuan)) {
-            return false;
-        }
-
-        // Jika data waktu tidak valid,
-        // jangan sembunyikan pengajuan secara sembarangan.
         return true;
     }
 
+    function escapeHTML(nilai) {
+        return String(nilai ?? "").replace(
+            /[&<>"']/g,
+            karakter => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            })[karakter]
+        );
+    }
 
     // ==========================================
-    // 6. MENGAMBIL DATA ANTREAN
+    // 4. KOMUNIKASI API
     // ==========================================
 
-    function ambilDataAntrean() {
-        const data = layanan.getAll("antrean");
+    async function requestAPI(url, opsi = {}) {
+        const response = await fetch(url, {
+            credentials: "same-origin",
+            cache: "no-store",
+            ...opsi
+        });
 
-        if (!Array.isArray(data)) {
+        const teks = await response.text();
+
+        let hasil;
+
+        try {
+            hasil = JSON.parse(teks);
+        } catch {
             throw new Error(
-                "Data pengajuan tidak berbentuk array."
+                "Respons server bukan JSON. Periksa session, URL API, atau error PHP."
             );
         }
 
-        return data.filter((pengajuan) => {
-            const status = normalisasiStatus(
-                pengajuan.status
+        if (!response.ok || hasil.success === false) {
+            throw new Error(
+                hasil.message ||
+                `Permintaan gagal. HTTP ${response.status}`
             );
+        }
 
-            // Pengajuan belum disetujui tetap ditampilkan.
-            if (
-                STATUS_BELUM_DISETUJUI.includes(status)
-            ) {
-                return true;
-            }
-
-            // Pengajuan disetujui hanya ditampilkan
-            // selama belum presensi dan belum melewati 15 menit.
-            if (status === "disetujui") {
-                return masihMenungguPresensi(pengajuan);
-            }
-
-            return false;
-        });
+        return hasil;
     }
 
+    async function ambilDataAntrean() {
+        const hasil = await requestAPI(API_ANTREAN, {
+            method: "GET"
+        });
+
+        if (!Array.isArray(hasil.data)) {
+            throw new Error(
+                "Format data antrean dari API tidak valid."
+            );
+        }
+
+        return hasil.data;
+    }
+
+    async function kirimTindakan(aksi, idPengajuan, alasan = "") {
+        const hasil = await requestAPI(API_TINDAKAN, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                aksi: aksi,
+                idPengajuan: Number(idPengajuan),
+                alasan: alasan
+            })
+        });
+
+        return hasil;
+    }
 
     // ==========================================
-    // 7. PENGURUTAN PRIORITAS DAN SKOR
+    // 5. PENGELOLAAN ANTREAN
     // ==========================================
 
     function urutkanAntrean(data) {
         return [...data].sort((a, b) => {
             const prioritasA = ambilPrioritas(a);
-
             const prioritasB = ambilPrioritas(b);
 
             if (prioritasA !== prioritasB) {
@@ -542,124 +335,95 @@
         });
     }
 
-
-    // ==========================================
-    // 8. FILTER KATEGORI ANTREAN
-    // ==========================================
-
     function ambilDataFilter() {
-        return daftarAntrean.filter((pengajuan) => {
-            const status = normalisasiStatus(
-                pengajuan.status
-            );
+        return daftarAntrean.filter(item => {
+            const status = ambilStatusPengajuan(item);
 
             if (filterAktif === "belum-disetujui") {
-                return STATUS_BELUM_DISETUJUI.includes(status);
+                return STATUS_BELUM_DISETUJUI.includes(status) ||
+                    status === "verifikasi";
             }
 
             if (filterAktif === "sudah-disetujui") {
-                return status === "disetujui";
+                return (
+                    status === "disetujui" &&
+                    masihMenungguPresensi(item)
+                );
             }
 
             return false;
         });
     }
 
-
     function perbaruiJumlahKategori() {
-        const belumDisetujui = daftarAntrean.filter(
-            (item) =>
-                STATUS_BELUM_DISETUJUI.includes(
-                    normalisasiStatus(item.status)
-                )
+        const belum = daftarAntrean.filter(item =>
+            STATUS_BELUM_DISETUJUI.includes(
+                ambilStatusPengajuan(item)
+            )
         ).length;
 
-        const sudahDisetujui = daftarAntrean.filter(
-            (item) =>
-                normalisasiStatus(item.status) === "disetujui"
+        const sudah = daftarAntrean.filter(item =>
+            ambilStatusPengajuan(item) === "disetujui" &&
+            masihMenungguPresensi(item)
         ).length;
 
-        isiElemen(el.jumlahBelum, belumDisetujui);
-
-        isiElemen(el.jumlahSudah, sudahDisetujui);
+        isiElemen(el.jumlahBelum, belum);
+        isiElemen(el.jumlahSudah, sudah);
     }
 
-
     function pilihFilter(kategori) {
-        if (
-            ![
-                "belum-disetujui",
-                "sudah-disetujui"
-            ].includes(kategori)
-        ) {
+        if (![
+            "belum-disetujui",
+            "sudah-disetujui"
+        ].includes(kategori)) {
             return;
         }
 
         filterAktif = kategori;
-
         halamanAktif = 1;
 
-        el.filter.forEach((tombol) => {
+        el.filter.forEach(tombol => {
             const aktif =
                 tombol.dataset.filterAntrean === kategori;
 
             tombol.classList.toggle("active", aktif);
-
-            tombol.setAttribute(
-                "aria-pressed",
-                String(aktif)
-            );
+            tombol.setAttribute("aria-pressed", String(aktif));
         });
 
         tampilkanAntrean();
     }
 
-
-    el.filter.forEach((tombol) => {
+    el.filter.forEach(tombol => {
         tombol.addEventListener("click", () => {
             pilihFilter(tombol.dataset.filterAntrean);
         });
     });
 
-
     // ==========================================
-    // 9. MEMBUAT BARIS TABEL
+    // 6. MEMBUAT BARIS TABEL
     // ==========================================
 
-    function buatBaris(pengajuan) {
+    function buatBaris(item) {
         const baris =
             el.template.content.firstElementChild.cloneNode(true);
 
-        const status = normalisasiStatus(
-            pengajuan.status
-        );
-
+        const status = ambilStatusPengajuan(item);
         const konfigurasi = STATUS[status];
 
-        const kebutuhanPC = Number(
-            pengajuan.kebutuhanPC ??
-            pengajuan.jumlahPC ??
-            0
-        );
-
-        const kebutuhanKursi = Number(
-            pengajuan.kebutuhanKursi ??
-            pengajuan.jumlahKursi ??
-            0
-        );
-
         const namaPemohon =
-            pengajuan.namaPemohon ||
-            pengajuan.nama ||
-            pengajuan.userIdentifier ||
+            item.namaPemohon ||
+            item.nama ||
             "-";
 
-        isiField(baris, "id", `#${pengajuan.id}`);
+        const kebutuhanPC = item.kebutuhanPC;
+        const kebutuhanKursi = item.kebutuhanKursi;
+
+        isiField(baris, "id", `#${item.idPengajuan || item.id}`);
 
         isiField(
             baris,
             "nama-kegiatan",
-            pengajuan.namaKegiatan || "-"
+            item.namaKegiatan || "-"
         );
 
         isiField(baris, "pemohon", namaPemohon);
@@ -667,15 +431,13 @@
         isiField(
             baris,
             "rentang-waktu",
-            formatWaktu(pengajuan)
+            formatWaktu(item)
         );
 
         isiField(
             baris,
             "kebutuhan",
-            `PC: ${formatAngka(kebutuhanPC)} | Kursi: ${formatAngka(
-                kebutuhanKursi
-            )}`
+            `PC: ${formatAngka(kebutuhanPC)} | Kursi: ${formatAngka(kebutuhanKursi)}`
         );
 
         const badgePrioritas = baris.querySelector(
@@ -684,56 +446,61 @@
 
         if (badgePrioritas) {
             badgePrioritas.textContent =
-                pengajuan.prioritas || "-";
+                item.prioritas || "Belum dihitung";
         }
 
         isiField(
             baris,
             "skor",
-            `Skor: ${formatAngka(ambilSkor(pengajuan))}`
+            item.skor === null || item.skor === undefined
+                ? "Skor belum dihitung"
+                : `Skor: ${item.skor}`
         );
 
         const badgeStatus = baris.querySelector(
             '[data-field="status"]'
         );
 
-        if (badgeStatus && konfigurasi) {
-            badgeStatus.className =
-                `status-badge ${konfigurasi.kelas}`;
+        if (badgeStatus) {
+            badgeStatus.className = "status-badge";
 
-            badgeStatus.textContent =
-                konfigurasi.label;
+            if (konfigurasi) {
+                badgeStatus.classList.add(konfigurasi.kelas);
+                badgeStatus.textContent = konfigurasi.label;
+            } else {
+                badgeStatus.textContent = status;
+            }
         }
 
-        const tombol = baris.querySelector(
-            "[data-aksi-detail]"
-        );
+        const tombol = baris.querySelector("[data-aksi-detail]");
 
         if (tombol) {
-            tombol.dataset.id = pengajuan.id;
+            tombol.dataset.id = item.idPengajuan || item.id;
 
-            if (status === "disetujui") {
-                tombol.innerHTML =
-                    '<i class="bi bi-eye"></i> Lihat Detail';
-            } else {
-                tombol.innerHTML =
-                    '<i class="bi bi-search"></i> Periksa &amp; Proses';
-            }
+            tombol.innerHTML =
+                status === "disetujui"
+                    ? '<i class="bi bi-eye"></i> Lihat Detail'
+                    : '<i class="bi bi-search"></i> Periksa &amp; Proses';
         }
 
         return baris;
     }
 
-
     // ==========================================
-    // 10. MENAMPILKAN TABEL ANTREAN
+    // 7. MENAMPILKAN TABEL
     // ==========================================
 
     function tampilkanAntrean() {
         const dataFilter = ambilDataFilter();
 
-        const awal =
-            (halamanAktif - 1) * DATA_HALAMAN;
+        const jumlahHalaman = Math.max(
+            1,
+            Math.ceil(dataFilter.length / DATA_HALAMAN)
+        );
+
+        halamanAktif = Math.min(halamanAktif, jumlahHalaman);
+
+        const awal = (halamanAktif - 1) * DATA_HALAMAN;
 
         const dataHalaman = dataFilter.slice(
             awal,
@@ -744,27 +511,22 @@
 
         if (dataHalaman.length === 0) {
             const baris = document.createElement("tr");
-
             const kolom = document.createElement("td");
 
             kolom.colSpan = 6;
 
+            kolom.className = "empty-message";
+
             kolom.textContent =
                 filterAktif === "belum-disetujui"
                     ? "Belum ada pengajuan yang menunggu persetujuan."
-                    : "Belum ada pengajuan yang sudah disetujui.";
-
-            kolom.className = "empty-message";
+                    : "Belum ada booking yang menunggu presensi.";
 
             baris.append(kolom);
-
             fragment.append(baris);
-
         } else {
-            dataHalaman.forEach((pengajuan) => {
-                fragment.append(
-                    buatBaris(pengajuan)
-                );
+            dataHalaman.forEach(item => {
+                fragment.append(buatBaris(item));
             });
         }
 
@@ -773,24 +535,20 @@
         perbaruiPagination();
     }
 
-
     // ==========================================
-    // 11. PAGINATION
+    // 8. PAGINATION
     // ==========================================
 
     function perbaruiPagination() {
-        const dataFilter = ambilDataFilter();
-
-        const total = dataFilter.length;
+        const total = ambilDataFilter().length;
 
         const jumlahHalaman = Math.ceil(
             total / DATA_HALAMAN
         );
 
-        const awal =
-            total === 0
-                ? 0
-                : (halamanAktif - 1) * DATA_HALAMAN + 1;
+        const awal = total === 0
+            ? 0
+            : (halamanAktif - 1) * DATA_HALAMAN + 1;
 
         const akhir = Math.min(
             halamanAktif * DATA_HALAMAN,
@@ -804,128 +562,303 @@
             `Menampilkan ${awal}–${akhir} dari ${total} pengajuan`
         );
 
-        if (el.sebelumnya) {
-            el.sebelumnya.disabled =
-                halamanAktif <= 1;
-        }
+        el.sebelumnya.disabled = halamanAktif <= 1;
 
-        if (el.berikutnya) {
-            el.berikutnya.disabled =
-                halamanAktif >= jumlahHalaman;
-        }
+        el.berikutnya.disabled =
+            jumlahHalaman === 0 ||
+            halamanAktif >= jumlahHalaman;
 
-        if (el.nomorHalaman) {
-            el.nomorHalaman.replaceChildren();
+        el.nomorHalaman.replaceChildren();
 
-            for (let i = 1; i <= jumlahHalaman; i++) {
-                const tombol = document.createElement("button");
+        for (let i = 1; i <= jumlahHalaman; i++) {
+            const tombol = document.createElement("button");
 
-                tombol.type = "button";
+            tombol.type = "button";
+            tombol.className = "pagination-btn";
+            tombol.textContent = i;
 
-                tombol.className = "pagination-btn";
-
-                tombol.textContent = i;
-
-                if (i === halamanAktif) {
-                    tombol.classList.add("active");
-
-                    tombol.setAttribute(
-                        "aria-current",
-                        "page"
-                    );
-                }
-
-                tombol.addEventListener("click", () => {
-                    halamanAktif = i;
-
-                    tampilkanAntrean();
-                });
-
-                el.nomorHalaman.append(tombol);
+            if (i === halamanAktif) {
+                tombol.classList.add("active");
+                tombol.setAttribute("aria-current", "page");
             }
-        }
-    }
 
-
-    if (el.sebelumnya) {
-        el.sebelumnya.addEventListener("click", () => {
-            if (halamanAktif > 1) {
-                halamanAktif--;
-
+            tombol.addEventListener("click", () => {
+                halamanAktif = i;
                 tampilkanAntrean();
-            }
-        });
-    }
+            });
 
-
-    if (el.berikutnya) {
-        el.berikutnya.addEventListener("click", () => {
-            const jumlahHalaman = Math.ceil(
-                ambilDataFilter().length / DATA_HALAMAN
-            );
-
-            if (halamanAktif < jumlahHalaman) {
-                halamanAktif++;
-
-                tampilkanAntrean();
-            }
-        });
-    }
-
-
-    // ==========================================
-    // 12. PENJADWALAN PEMBERSIHAN ANTREAN
-    // ==========================================
-
-    function jadwalkanPembersihanAntrean() {
-        if (timerAntrean !== null) {
-            window.clearTimeout(timerAntrean);
-
-            timerAntrean = null;
+            el.nomorHalaman.append(tombol);
         }
+    }
 
-        const sekarang = Date.now();
+    el.sebelumnya.addEventListener("click", () => {
+        if (halamanAktif > 1) {
+            halamanAktif--;
+            tampilkanAntrean();
+        }
+    });
 
-        // Cari batas presensi paling dekat.
-        const waktuTerdekat = daftarAntrean
-            .filter(
-                (item) =>
-                    normalisasiStatus(item.status) === "disetujui"
-            )
-            .map(ambilBatasPresensi)
-            .filter(
-                (timestamp) =>
-                    timestamp !== null &&
-                    timestamp > sekarang
-            )
-            .sort((a, b) => a - b)[0];
-
-        if (!waktuTerdekat) return;
-
-        const jeda = Math.min(
-            Math.max(waktuTerdekat - sekarang + 50, 0),
-            BATAS_TIMEOUT
+    el.berikutnya.addEventListener("click", () => {
+        const jumlahHalaman = Math.ceil(
+            ambilDataFilter().length / DATA_HALAMAN
         );
 
-        // Jalankan pembaruan tepat setelah batas presensi.
-        timerAntrean = window.setTimeout(() => {
-            timerAntrean = null;
+        if (halamanAktif < jumlahHalaman) {
+            halamanAktif++;
+            tampilkanAntrean();
+        }
+    });
 
-            muatAntrean();
+    // ==========================================
+    // 9. NOTIFIKASI
+    // ==========================================
 
-        }, jeda);
+    function tampilkanNotifikasi(pesan, jenis = "success") {
+        if (!el.notifikasi) {
+            window.alert(pesan);
+            return;
+        }
+
+        const notifikasi = document.createElement("div");
+
+        notifikasi.className = `notifikasi-antrean ${jenis}`;
+        notifikasi.setAttribute("role", "status");
+        notifikasi.textContent = pesan;
+
+        el.notifikasi.replaceChildren(notifikasi);
+
+        window.setTimeout(() => {
+            notifikasi.remove();
+        }, 3500);
     }
 
+    function tampilkanPesan(modal, pesan, jenis = "error") {
+        let feedback = modal.querySelector(".aksi-feedback");
+
+        if (!feedback) {
+            feedback = document.createElement("div");
+            feedback.className = "aksi-feedback";
+
+            const konten = modal.querySelector(".review-modal-content");
+
+            if (konten) {
+                konten.append(feedback);
+            } else {
+                modal.append(feedback);
+            }
+        }
+
+        feedback.className = `aksi-feedback ${jenis}`;
+        feedback.setAttribute("role", "alert");
+        feedback.textContent = pesan;
+    }
 
     // ==========================================
-    // 13. MEMUAT ULANG DATA ANTREAN
+    // 10. PANEL MODAL
     // ==========================================
 
-    function muatAntrean() {
-        try {
-            daftarAntrean = urutkanAntrean(
-                ambilDataAntrean()
+    function tampilkanPanel(namaPanel) {
+        el.modal.querySelectorAll("[data-panel]").forEach(panel => {
+            panel.hidden = panel.dataset.panel !== namaPanel;
+        });
+    }
+
+    function ambilPengajuan(id) {
+        return daftarAntrean.find(item =>
+            String(item.idPengajuan || item.id) === String(id)
+        ) || null;
+    }
+
+    // ==========================================
+    // 11. MEMBUKA MODAL
+    // ==========================================
+
+    function tampilkanDetail(id) {
+        const item = ambilPengajuan(id);
+
+        if (!item) {
+            tampilkanNotifikasi(
+                "Data pengajuan tidak ditemukan. Muat ulang antrean.",
+                "error"
             );
+            return;
+        }
+
+        const modal = el.modal;
+        const status = ambilStatusPengajuan(item);
+        const konfigurasi = STATUS[status];
+
+        modal.dataset.pengajuanId = item.idPengajuan || item.id;
+
+        isiField(modal, "label-id",
+            `ID PENGAJUAN #${item.idPengajuan || item.id}`);
+
+        isiField(modal, "judul-kegiatan", item.namaKegiatan);
+
+        isiField(modal, "nama-pemohon", item.namaPemohon);
+
+        isiField(modal, "identifier", item.identifier);
+
+        isiField(modal, "waktu", formatWaktu(item));
+
+        isiField(
+            modal,
+            "jumlah-peserta",
+            formatAngka(item.jumlahPeserta)
+        );
+
+        isiField(
+            modal,
+            "kategori",
+            item.kategori || "Belum ditentukan"
+        );
+
+        isiField(
+            modal,
+            "kebutuhan-pc",
+            formatAngka(item.kebutuhanPC)
+        );
+
+        isiField(
+            modal,
+            "kebutuhan-kursi",
+            formatAngka(item.kebutuhanKursi)
+        );
+
+        isiField(
+            modal,
+            "skor-detail",
+            item.skor === null || item.skor === undefined
+                ? "Belum dihitung"
+                : item.skor
+        );
+
+        const badgePrioritas = modal.querySelector(
+            '[data-field="prioritas-detail"]'
+        );
+
+        if (badgePrioritas) {
+            badgePrioritas.textContent =
+                item.prioritas || "Belum dihitung";
+        }
+
+        const badgeStatus = modal.querySelector(
+            '[data-field="status-detail"]'
+        );
+
+        if (badgeStatus) {
+            badgeStatus.className = "status-badge";
+
+            if (konfigurasi) {
+                badgeStatus.classList.add(konfigurasi.kelas);
+                badgeStatus.textContent = konfigurasi.label;
+            } else {
+                badgeStatus.textContent = status;
+            }
+        }
+
+        modal.querySelector(".aksi-feedback")?.remove();
+        modal.querySelector(".form-alasan-penolakan")?.remove();
+
+        if (status === "verifikasi") {
+            tampilkanPanel("verifikasi");
+
+        } else if (status === "bentrok") {
+            tampilkanPanel("bentrok");
+
+            isiField(
+                modal,
+                "pesan-bentrok",
+                "Pengajuan mengalami bentrokan jadwal. Konflik perlu diperiksa sebelum keputusan diberikan."
+            );
+
+        } else if (status === "tergeser") {
+            tampilkanPanel("tergeser");
+
+            isiField(
+                modal,
+                "pesan-tergeser",
+                "Pengajuan mengalami penggeseran jadwal."
+            );
+
+        } else if (status === "disetujui") {
+            tampilkanPanel("disetujui");
+
+            const tombolBatal = modal.querySelector(
+                "[data-aksi-batalkan-persetujuan]"
+            );
+
+            const bolehBatal =
+                item.statusBooking === "terjadwal" &&
+                !sudahPresensi(item) &&
+                !batasPresensiHabis(item);
+
+            if (tombolBatal) {
+                tombolBatal.hidden = !bolehBatal;
+                tombolBatal.disabled = !bolehBatal;
+            }
+
+        } else {
+            tampilkanPanel("lainnya");
+        }
+
+        fokusSebelumnya = document.activeElement;
+
+        modal.hidden = false;
+        modal.setAttribute("aria-hidden", "false");
+        modal.classList.add("is-open");
+
+        modal.style.display = "flex";
+        modal.style.visibility = "visible";
+        modal.style.opacity = "1";
+        modal.style.pointerEvents = "auto";
+        modal.style.zIndex = "9999";
+
+        modal.querySelector(".review-modal-content")?.focus();
+    }
+
+    // ==========================================
+    // 12. MENUTUP MODAL
+    // ==========================================
+
+    function tutupModal() {
+        const modal = el.modal;
+
+        modal.classList.remove("is-open");
+        modal.hidden = true;
+
+        modal.setAttribute("aria-hidden", "true");
+
+        modal.style.display = "none";
+        modal.style.visibility = "hidden";
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+
+        delete modal.dataset.pengajuanId;
+
+        if (
+            fokusSebelumnya &&
+            document.contains(fokusSebelumnya)
+        ) {
+            fokusSebelumnya.focus();
+        }
+
+        fokusSebelumnya = null;
+    }
+
+    // ==========================================
+    // 13. MEMUAT ULANG DATA DARI DATABASE
+    // ==========================================
+
+    async function muatAntrean() {
+        if (sedangMemuat) return;
+
+        sedangMemuat = true;
+
+        try {
+            const data = await ambilDataAntrean();
+
+            daftarAntrean = urutkanAntrean(data);
 
             const jumlahHalaman = Math.max(
                 1,
@@ -940,778 +873,85 @@
             );
 
             perbaruiJumlahKategori();
-
             tampilkanAntrean();
 
-            // Jadwalkan pemeriksaan berikutnya
-            // berdasarkan batas presensi 15 menit.
-            jadwalkanPembersihanAntrean();
-
-        } catch (error) {
-            console.error(
-                "SILAB: Gagal memuat antrean.",
-                error
-            );
-
-            isiElemen(
-                el.total,
-                "Gagal memuat data"
-            );
-        }
-    }
-
-
-    // ==========================================
-    // 14. IDENTIFIKASI KELOMPOK KONFLIK
-    // ==========================================
-
-    function ambilMenitWaktu(nilai) {
-        if (!nilai) return null;
-
-        const bagian = String(nilai).includes("T")
-            ? String(nilai).split("T")[1]
-            : String(nilai);
-
-        const cocok = bagian.match(
-            /^(\d{1,2}):(\d{2})/
-        );
-
-        if (!cocok) return null;
-
-        return (
-            Number(cocok[1]) * 60 +
-            Number(cocok[2])
-        );
-    }
-
-
-    function tanggalPengajuan(item) {
-        if (item.tanggal) {
-            return String(item.tanggal).split("T")[0];
-        }
-
-        return String(
-            item.waktuMulai || ""
-        ).split("T")[0];
-    }
-
-
-    function waktuMulaiPengajuan(item) {
-        return ambilMenitWaktu(
-            item.waktuMulai || item.mulai
-        );
-    }
-
-
-    function waktuSelesaiPengajuan(item) {
-        return ambilMenitWaktu(
-            item.waktuSelesai || item.selesai
-        );
-    }
-
-
-    function ambilKelompokKonflik(idAktif) {
-        const aktif = layanan.getById(
-            "antrean",
-            idAktif
-        );
-
-        if (!aktif) {
-            throw new Error(
-                "Pengajuan tidak ditemukan."
-            );
-        }
-
-        if (
-            normalisasiStatus(aktif.status) !== "bentrok"
-        ) {
-            throw new Error(
-                "Pengajuan ini tidak berstatus bentrok."
-            );
-        }
-
-        const mulaiAktif =
-            waktuMulaiPengajuan(aktif);
-
-        const selesaiAktif =
-            waktuSelesaiPengajuan(aktif);
-
-        const tanggalAktif =
-            tanggalPengajuan(aktif);
-
-        if (
-            mulaiAktif === null ||
-            selesaiAktif === null ||
-            !tanggalAktif
-        ) {
-            throw new Error(
-                "Data tanggal atau waktu pengajuan tidak lengkap."
-            );
-        }
-
-        const semua = layanan.getAll("antrean");
-
-        const kelompok = semua.filter((item) => {
-            if (
-                normalisasiStatus(item.status) !== "bentrok"
-            ) {
-                return false;
-            }
-
-            if (
-                tanggalPengajuan(item) !== tanggalAktif
-            ) {
-                return false;
-            }
-
-            const mulai =
-                waktuMulaiPengajuan(item);
-
-            const selesai =
-                waktuSelesaiPengajuan(item);
-
-            if (
-                mulai === null ||
-                selesai === null
-            ) {
-                return false;
-            }
-
-            return (
-                mulai < selesaiAktif &&
-                selesai > mulaiAktif
-            );
-        });
-
-        if (
-            !kelompok.some(
-                (item) =>
-                    String(item.id) === String(idAktif)
-            )
-        ) {
-            kelompok.push(aktif);
-        }
-
-        if (kelompok.length < 2) {
-            throw new Error(
-                "Belum ditemukan minimal dua pengajuan yang waktunya bertumpang tindih."
-            );
-        }
-
-        return kelompok;
-    }
-
-
-    // ==========================================
-    // 15. TOMBOL TERUSKAN KONFLIK
-    // ==========================================
-
-    function tampilkanTombolTeruskanKonflik(id) {
-        const panel = el.modal.querySelector(
-            '[data-panel="bentrok"]'
-        );
-
-        if (!panel) return;
-
-        const wadahAksi = panel.querySelector(
-            ".collision-actions"
-        );
-
-        if (!wadahAksi) {
-            console.error(
-                "SILAB: Wadah tombol penerusan konflik tidak ditemukan."
-            );
-
-            return;
-        }
-
-        let tombol = wadahAksi.querySelector(
-            "[data-aksi-eskalasi]"
-        );
-
-        if (!tombol) {
-            tombol = document.createElement("button");
-
-            tombol.type = "button";
-
-            tombol.dataset.aksiEskalasi = "true";
-
-            tombol.className = "btn-eskalasi";
-
-            wadahAksi.replaceChildren(tombol);
-        }
-
-        tombol.textContent =
-            "Teruskan Konflik ke Kepala Lab";
-
-        tombol.dataset.id = id;
-
-        tombol.disabled = false;
-    }
-
-
-    // ==========================================
-    // 16. MENGAMBIL DETAIL PENGAJUAN
-    // ==========================================
-
-    function ambilPengajuan(id) {
-        if (!id) return null;
-
-        return layanan.getById(
-            "antrean",
-            id
-        );
-    }
-
-
-    // ==========================================
-    // 17. PEMERIKSAAN KELAYAKAN PEMBATALAN
-    // ==========================================
-
-    function periksaKelayakanPembatalan(pengajuanId) {
-        const pengajuan = ambilPengajuan(pengajuanId);
-
-        if (!pengajuan) {
-            return {
-                boleh: false,
-                pesan: "Data pengajuan tidak ditemukan."
-            };
-        }
-
-        if (
-            normalisasiStatus(pengajuan.status) !== "disetujui"
-        ) {
-            return {
-                boleh: false,
-                pesan: "Pengajuan tidak berstatus disetujui."
-            };
-        }
-
-        // Periksa apakah sudah melakukan presensi.
-        if (sudahMelakukanPresensi(pengajuan)) {
-            return {
-                boleh: false,
-                pesan:
-                    "Presensi sudah tercatat. Persetujuan tidak dapat dibatalkan."
-            };
-        }
-
-        // Periksa apakah batas presensi sudah habis.
-        if (batasPresensiSudahHabis(pengajuan)) {
-            return {
-                boleh: false,
-                pesan:
-                    "Batas waktu presensi 15 menit sudah habis. Pembatalan tidak dapat dilakukan."
-            };
-        }
-
-        // Periksa waktu selesai penggunaan.
-        if (sudahMelewatiMasaPenggunaan(pengajuan)) {
-            return {
-                boleh: false,
-                pesan:
-                    "Masa penggunaan laboratorium sudah berakhir. Pembatalan tidak dapat dilakukan."
-            };
-        }
-
-        const booking = ambilBookingPengajuan(
-            pengajuanId
-        );
-
-        if (!booking) {
-            return {
-                boleh: false,
-                pesan:
-                    "Data booking tidak ditemukan. Pembatalan tidak dapat dilakukan."
-            };
-        }
-
-        // Gunakan layanan sebagai sumber kebenaran.
-        if (
-            typeof layanan.bolehBatalkanPersetujuan !== "function"
-        ) {
-            return {
-                boleh: false,
-                pesan:
-                    "Fungsi pemeriksaan pembatalan belum tersedia."
-            };
-        }
-
-        const boleh =
-            layanan.bolehBatalkanPersetujuan(
-                pengajuanId
-            );
-
-        if (boleh) {
-            return {
-                boleh: true,
-                pesan:
-                    "Booking masih menunggu presensi dan dapat dibatalkan.",
-                booking
-            };
-        }
-
-        const statusBooking = normalisasiStatus(
-            booking.status
-        );
-
-        if (
-            STATUS_PRESENSI_SELESAI.has(statusBooking)
-        ) {
-            return {
-                boleh: false,
-                pesan:
-                    "Booking sudah memiliki status penggunaan akhir dan tidak dapat dibatalkan."
-            };
-        }
-
-        return {
-            boleh: false,
-            pesan:
-                "Pembatalan hanya diperbolehkan untuk booking yang masih menunggu presensi."
-        };
-    }
-
-
-    function aturTampilanPembatalan(modal, pengajuanId) {
-        const informasi = modal.querySelector(
-            '.review-information[data-panel="disetujui"]'
-        );
-
-        const tombol = modal.querySelector(
-            "[data-aksi-batalkan-persetujuan]"
-        );
-
-        const keterangan = informasi?.querySelector("span");
-
-        if (!tombol) {
-            console.warn(
-                "SILAB: Tombol Batalkan Persetujuan tidak ditemukan pada HTML."
-            );
-
-            return;
-        }
-
-        const hasil = periksaKelayakanPembatalan(
-            pengajuanId
-        );
-
-        tombol.hidden = !hasil.boleh;
-
-        tombol.disabled = !hasil.boleh;
-
-        if (keterangan) {
-            keterangan.textContent = hasil.pesan;
-        }
-    }
-
-
-    // ==========================================
-    // 18. MENAMPILKAN PANEL BERDASARKAN STATUS
-    // ==========================================
-
-    function tampilkanPanel(namaPanel) {
-        el.modal.querySelectorAll("[data-panel]").forEach(
-            (panel) => {
-                panel.hidden =
-                    panel.dataset.panel !== namaPanel;
-            }
-        );
-    }
-
-
-    // ==========================================
-    // 19. NOTIFIKASI DAN FEEDBACK
-    // ==========================================
-
-    function tampilkanPesan(
-        modal,
-        pesan,
-        jenis = "error"
-    ) {
-        const konten = modal.querySelector(
-            ".review-modal-content"
-        );
-
-        if (!konten) return;
-
-        let feedback = konten.querySelector(
-            ".aksi-feedback"
-        );
-
-        if (!feedback) {
-            feedback = document.createElement("div");
-
-            feedback.className = "aksi-feedback";
-
-            konten.append(feedback);
-        }
-
-        feedback.className =
-            `aksi-feedback ${jenis}`;
-
-        feedback.setAttribute("role", "alert");
-
-        feedback.textContent = pesan;
-    }
-
-
-    function tampilkanNotifikasi(pesan) {
-        let notifikasi = document.getElementById(
-            "notifikasiAntrean"
-        );
-
-        if (!notifikasi) {
-            notifikasi = document.createElement("div");
-
-            notifikasi.id = "notifikasiAntrean";
-
-            notifikasi.className = "notifikasi-antrean";
-
-            notifikasi.setAttribute("role", "status");
-
-            notifikasi.setAttribute(
-                "aria-live",
-                "polite"
-            );
-
-            document.body.append(notifikasi);
-        }
-
-        notifikasi.textContent = pesan;
-
-        notifikasi.classList.add("aktif");
-
-        window.setTimeout(() => {
-            notifikasi.classList.remove("aktif");
-        }, 3000);
-    }
-
-
-    // ==========================================
-    // 20. MEMBUKA MODAL DETAIL
-    // ==========================================
-
-    function tampilkanDetail(id) {
-        if (!id) {
-            console.error(
-                "SILAB: ID pengajuan tidak ditemukan."
-            );
-
-            return;
-        }
-
-        try {
-            const pengajuan = ambilPengajuan(id);
-
-            if (!pengajuan) {
-                throw new Error(
-                    `Pengajuan ${id} tidak ditemukan.`
-                );
-            }
-
-            const modal = el.modal;
-
-            const status = normalisasiStatus(
-                pengajuan.status
-            );
-
-            const konfigurasi = STATUS[status];
-
-            modal.dataset.pengajuanId =
-                pengajuan.id;
-
-            isiField(
-                modal,
-                "label-id",
-                `ID PENGAJUAN #${pengajuan.id}`
-            );
-
-            isiField(
-                modal,
-                "judul-kegiatan",
-                pengajuan.namaKegiatan || "-"
-            );
-
-            isiField(
-                modal,
-                "nama-pemohon",
-                pengajuan.namaPemohon ||
-                    pengajuan.nama ||
-                    pengajuan.userIdentifier ||
-                    "-"
-            );
-
-            isiField(
-                modal,
-                "identifier",
-                pengajuan.nipNpm ||
-                    pengajuan.userIdentifier ||
-                    "-"
-            );
-
-            isiField(
-                modal,
-                "waktu",
-                formatWaktu(pengajuan)
-            );
-
-            isiField(
-                modal,
-                "jumlah-peserta",
-                formatAngka(
-                    pengajuan.jumlahPeserta ??
-                    pengajuan.jumlahKursi ??
-                    0
-                )
-            );
-
-            isiField(
-                modal,
-                "kategori",
-                pengajuan.kategori || "-"
-            );
-
-            isiField(
-                modal,
-                "kebutuhan-pc",
-                formatAngka(
-                    pengajuan.kebutuhanPC ??
-                    pengajuan.jumlahPC ??
-                    0
-                )
-            );
-
-            isiField(
-                modal,
-                "kebutuhan-kursi",
-                formatAngka(
-                    pengajuan.kebutuhanKursi ??
-                    pengajuan.jumlahKursi ??
-                    0
-                )
-            );
-
-            isiField(
-                modal,
-                "skor-detail",
-                formatAngka(
-                    ambilSkor(pengajuan)
-                )
-            );
-
-            const badgePrioritas = modal.querySelector(
-                '[data-field="prioritas-detail"]'
-            );
-
-            if (badgePrioritas) {
-                badgePrioritas.textContent =
-                    pengajuan.prioritas || "-";
-            }
-
-            const badgeStatus = modal.querySelector(
-                '[data-field="status-detail"]'
-            );
-
-            if (badgeStatus && konfigurasi) {
-                badgeStatus.className =
-                    `status-badge ${konfigurasi.kelas}`;
-
-                badgeStatus.textContent =
-                    konfigurasi.label;
-            }
-
-            // Bersihkan feedback dan form sebelumnya.
-            modal.querySelector(
-                ".aksi-feedback"
-            )?.remove();
-
-            modal.querySelector(
-                ".form-alasan-penolakan"
-            )?.remove();
-
-            // Tampilkan panel berdasarkan status.
-            if (status === "verifikasi") {
-                tampilkanPanel("verifikasi");
-
-            } else if (status === "bentrok") {
-                tampilkanPanel("bentrok");
-
-                isiField(
-                    modal,
-                    "pesan-bentrok",
-                    "Pengajuan mengalami bentrokan jadwal. Teruskan kelompok konflik kepada Kepala Laboratorium untuk mendapatkan keputusan."
-                );
-
-                tampilkanTombolTeruskanKonflik(
-                    pengajuan.id
-                );
-
-            } else if (status === "tergeser") {
-                tampilkanPanel("tergeser");
-
-                isiField(
-                    modal,
-                    "pesan-tergeser",
-                    "Pengajuan mengalami penggeseran jadwal dan memerlukan rekomendasi jadwal pengganti."
-                );
-
-            } else if (status === "disetujui") {
-                tampilkanPanel("disetujui");
-
-                aturTampilanPembatalan(
-                    modal,
-                    pengajuan.id
-                );
-
-            } else {
-                tampilkanPanel("lainnya");
-            }
-
-            // Membuka modal.
-            fokusSebelumnya = document.activeElement;
-
-            modal.hidden = false;
-
-            modal.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-
-            modal.classList.add("is-open");
-
-            modal.style.display = "flex";
-
-            modal.style.visibility = "visible";
-
-            modal.style.opacity = "1";
-
-            modal.style.pointerEvents = "auto";
-
-            modal.style.zIndex = "9999";
-
-            const konten = modal.querySelector(
-                ".review-modal-content"
-            );
-
-            if (konten) konten.focus();
-
             console.log(
-                "SILAB: Detail berhasil dibuka:",
-                pengajuan.id
+                `[SILAB] ${daftarAntrean.length} data antrean berhasil dimuat dari MySQL.`
             );
 
         } catch (error) {
             console.error(
-                "SILAB: Gagal membuka detail pengajuan.",
+                "SILAB: Gagal mengambil data antrean.",
                 error
             );
 
-            tampilkanNotifikasi(error.message);
+            isiElemen(el.total, "Gagal memuat data");
+
+            el.tabel.innerHTML = `
+                <tr>
+                    <td colspan="6" class="empty-message">
+                        ${escapeHTML(error.message)}
+                    </td>
+                </tr>
+            `;
+
+            tampilkanNotifikasi(
+                error.message,
+                "error"
+            );
+
+        } finally {
+            sedangMemuat = false;
         }
     }
 
-
     // ==========================================
-    // 21. MENUTUP MODAL
-    // ==========================================
-
-    function tutupModal() {
-        const modal = el.modal;
-
-        modal.style.display = "none";
-
-        modal.style.visibility = "hidden";
-
-        modal.style.opacity = "0";
-
-        modal.style.pointerEvents = "none";
-
-        modal.classList.remove("is-open");
-
-        modal.hidden = true;
-
-        modal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        delete modal.dataset.pengajuanId;
-
-        if (
-            fokusSebelumnya &&
-            typeof fokusSebelumnya.focus === "function" &&
-            document.contains(fokusSebelumnya)
-        ) {
-            fokusSebelumnya.focus();
-        }
-
-        fokusSebelumnya = null;
-    }
-
-
-    // ==========================================
-    // 22. PERSETUJUAN PENGAJUAN
+    // 14. SETUJUI PENGAJUAN
     // ==========================================
 
-    function setujui(modal, id) {
+    async function setujuiPengajuan(id) {
+        const tombol = el.modal.querySelector(".btn-approve");
+
         try {
-            const pengajuan = ambilPengajuan(id);
+            if (tombol) tombol.disabled = true;
 
-            if (!pengajuan) {
-                throw new Error(
-                    "Data pengajuan tidak ditemukan."
-                );
-            }
-
-            if (
-                normalisasiStatus(pengajuan.status) !==
-                "verifikasi"
-            ) {
-                throw new Error(
-                    "Pengajuan tidak berada dalam antrean verifikasi."
-                );
-            }
-
-            layanan.setujuiPengajuan(id);
+            const hasil = await kirimTindakan(
+                "setujui",
+                id
+            );
 
             tutupModal();
 
-            muatAntrean();
+            await muatAntrean();
 
             tampilkanNotifikasi(
-                "Pengajuan berhasil disetujui."
+                hasil.message || "Pengajuan berhasil disetujui."
             );
 
         } catch (error) {
-            tampilkanPesan(
-                modal,
-                error.message
-            );
+            tampilkanPesan(el.modal, error.message);
+
+        } finally {
+            if (tombol) tombol.disabled = false;
         }
     }
 
-
     // ==========================================
-    // 23. FORM PENOLAKAN PENGAJUAN
+    // 15. FORM PENOLAKAN
     // ==========================================
 
-    function tampilkanFormPenolakan(modal, id) {
-        const konten = modal.querySelector(
+    function tampilkanFormPenolakan(id) {
+        const konten = el.modal.querySelector(
             ".review-modal-content"
         );
 
-        const aksi = modal.querySelector(
+        const aksi = el.modal.querySelector(
             '.verification-actions[data-panel="verifikasi"]'
         );
 
         if (!konten || !aksi) return;
 
-        if (
-            konten.querySelector(
-                ".form-alasan-penolakan"
-            )
-        ) {
+        if (konten.querySelector(".form-alasan-penolakan")) {
             return;
         }
 
@@ -1720,330 +960,170 @@
         form.className = "form-alasan-penolakan";
 
         const label = document.createElement("label");
-
         label.textContent = "Alasan Penolakan";
 
         const textarea = document.createElement("textarea");
 
-        textarea.name = "alasanPenolakan";
-
-        textarea.placeholder =
-            "Tuliskan alasan penolakan pengajuan...";
-
+        textarea.name = "alasan";
+        textarea.placeholder = "Tuliskan alasan penolakan...";
         textarea.rows = 3;
-
+        textarea.maxLength = 500;
         textarea.required = true;
 
-        textarea.maxLength = 500;
-
         const error = document.createElement("small");
-
         error.className = "alasan-error";
+        error.setAttribute("aria-live", "polite");
 
-        error.setAttribute(
-            "aria-live",
-            "polite"
-        );
+        const tombolKirim = document.createElement("button");
 
-        const tombol = document.createElement("button");
+        tombolKirim.type = "submit";
+        tombolKirim.className = "btn-konfirmasi-penolakan";
+        tombolKirim.textContent = "Konfirmasi Penolakan";
 
-        tombol.type = "submit";
+        const tombolBatal = document.createElement("button");
 
-        tombol.className = "btn-konfirmasi-penolakan";
-
-        tombol.textContent = "Konfirmasi Penolakan";
-
-        const batal = document.createElement("button");
-
-        batal.type = "button";
-
-        batal.className = "btn-batal-penolakan";
-
-        batal.textContent = "Batal";
+        tombolBatal.type = "button";
+        tombolBatal.className = "btn-batal-penolakan";
+        tombolBatal.textContent = "Batal";
 
         form.append(
             label,
             textarea,
             error,
-            tombol,
-            batal
+            tombolKirim,
+            tombolBatal
         );
 
         aksi.hidden = true;
-
         konten.append(form);
 
         textarea.focus();
 
-        batal.addEventListener("click", () => {
+        tombolBatal.addEventListener("click", () => {
             form.remove();
-
             aksi.hidden = false;
         });
 
-        form.addEventListener("submit", (event) => {
+        form.addEventListener("submit", async event => {
             event.preventDefault();
 
             const alasan = textarea.value.trim();
 
             if (!alasan) {
-                error.textContent =
-                    "Alasan penolakan wajib diisi.";
-
+                error.textContent = "Alasan penolakan wajib diisi.";
                 textarea.focus();
-
                 return;
             }
 
+            tombolKirim.disabled = true;
+
             try {
-                layanan.tolakPengajuan(id, alasan);
+                const hasil = await kirimTindakan(
+                    "tolak",
+                    id,
+                    alasan
+                );
 
                 tutupModal();
 
-                muatAntrean();
+                await muatAntrean();
 
                 tampilkanNotifikasi(
-                    "Pengajuan berhasil ditolak."
+                    hasil.message || "Pengajuan berhasil ditolak."
                 );
 
             } catch (kesalahan) {
-                error.textContent =
-                    kesalahan.message;
+                error.textContent = kesalahan.message;
+                tombolKirim.disabled = false;
             }
         });
     }
 
-
     // ==========================================
-    // 24. MEMBATALKAN PERSETUJUAN
+    // 16. BATALKAN PERSETUJUAN
     // ==========================================
 
-    function batalkanPersetujuan(modal, id) {
-        try {
-            const pengajuan = ambilPengajuan(id);
+    async function batalkanPersetujuan(id) {
+        const item = ambilPengajuan(id);
 
-            if (!pengajuan) {
-                throw new Error(
-                    "Data pengajuan tidak ditemukan."
-                );
-            }
-
-            if (
-                normalisasiStatus(pengajuan.status) !==
-                "disetujui"
-            ) {
-                throw new Error(
-                    "Pengajuan tidak berstatus disetujui."
-                );
-            }
-
-            // Pemeriksaan pertama sebelum konfirmasi.
-            const pemeriksaanAwal =
-                periksaKelayakanPembatalan(id);
-
-            if (!pemeriksaanAwal.boleh) {
-                throw new Error(
-                    pemeriksaanAwal.pesan
-                );
-            }
-
-            const konfirmasi = window.confirm(
-                "Apakah Anda yakin ingin membatalkan persetujuan booking ini? Booking yang masih menunggu presensi akan dikembalikan ke antrean Belum Disetujui."
+        if (!item) {
+            tampilkanPesan(
+                el.modal,
+                "Data pengajuan tidak ditemukan."
             );
+            return;
+        }
 
-            if (!konfirmasi) return;
+        if (
+            item.statusBooking !== "terjadwal" ||
+            sudahPresensi(item) ||
+            batasPresensiHabis(item)
+        ) {
+            tampilkanPesan(
+                el.modal,
+                "Booking tidak dapat dibatalkan karena tidak lagi memenuhi syarat pembatalan."
+            );
+            return;
+        }
 
-            // Pemeriksaan ulang setelah konfirmasi.
-            const pemeriksaanUlang =
-                periksaKelayakanPembatalan(id);
+        const konfirmasi = window.confirm(
+            "Apakah Anda yakin ingin membatalkan persetujuan booking ini? Pengajuan akan dikembalikan ke antrean verifikasi."
+        );
 
-            if (!pemeriksaanUlang.boleh) {
-                throw new Error(
-                    pemeriksaanUlang.pesan
-                );
-            }
+        if (!konfirmasi) return;
 
-            if (
-                typeof layanan.batalkanPersetujuan !== "function"
-            ) {
-                throw new Error(
-                    "Fungsi pembatalan persetujuan belum tersedia pada layanan SILAB."
-                );
-            }
+        const tombol = el.modal.querySelector(
+            "[data-aksi-batalkan-persetujuan]"
+        );
 
-            // Memanggil fungsi pembatalan yang sudah ada.
-            layanan.batalkanPersetujuan(id);
+        try {
+            if (tombol) tombol.disabled = true;
 
-            // Kembalikan tampilan ke Belum Disetujui.
-            filterAktif = "belum-disetujui";
-
-            el.filter.forEach((tombol) => {
-                const aktif =
-                    tombol.dataset.filterAntrean === filterAktif;
-
-                tombol.classList.toggle(
-                    "active",
-                    aktif
-                );
-
-                tombol.setAttribute(
-                    "aria-pressed",
-                    String(aktif)
-                );
-            });
-
-            halamanAktif = 1;
+            const hasil = await kirimTindakan(
+                "batalkan_persetujuan",
+                id
+            );
 
             tutupModal();
 
-            muatAntrean();
+            filterAktif = "belum-disetujui";
+            halamanAktif = 1;
+
+            pilihFilter("belum-disetujui");
+
+            await muatAntrean();
 
             tampilkanNotifikasi(
-                "Persetujuan berhasil dibatalkan. Pengajuan dikembalikan ke antrean Belum Disetujui."
+                hasil.message ||
+                "Persetujuan berhasil dibatalkan."
             );
 
         } catch (error) {
-            tampilkanPesan(
-                modal,
-                error.message
-            );
+            tampilkanPesan(el.modal, error.message);
 
-            console.error(
-                "SILAB: Gagal membatalkan persetujuan.",
-                error
-            );
+            if (tombol) tombol.disabled = false;
         }
     }
 
-
     // ==========================================
-    // 25. EVENT TOMBOL ANTREAN
+    // 17. EVENT TABEL
     // ==========================================
 
-    el.tabel.addEventListener("click", (event) => {
+    el.tabel.addEventListener("click", event => {
         const tombol = event.target.closest(
             "[data-aksi-detail]"
         );
 
-        if (
-            !tombol ||
-            !el.tabel.contains(tombol)
-        ) {
-            return;
-        }
+        if (!tombol) return;
 
-        event.preventDefault();
-
-        const id = tombol.dataset.id;
-
-        if (!id) {
-            console.error(
-                "SILAB: ID tombol detail tidak tersedia."
-            );
-
-            return;
-        }
-
-        tampilkanDetail(id);
+        tampilkanDetail(tombol.dataset.id);
     });
 
-
     // ==========================================
-    // 26. EVENT TOMBOL MODAL
+    // 18. EVENT MODAL
     // ==========================================
 
-    el.modal.addEventListener("click", (event) => {
-
-        // A. MEMBATALKAN PERSETUJUAN
-
-        const tombolBatalkan = event.target.closest(
-            "[data-aksi-batalkan-persetujuan]"
-        );
-
-        if (tombolBatalkan) {
-            const id = el.modal.dataset.pengajuanId;
-
-            if (id) {
-                batalkanPersetujuan(
-                    el.modal,
-                    id
-                );
-            }
-
-            return;
-        }
-
-
-        // B. MENERUSKAN KONFLIK KE KEPALA LAB
-
-        const tombolTeruskan = event.target.closest(
-            "[data-aksi-eskalasi]"
-        );
-
-        if (tombolTeruskan) {
-            const id = tombolTeruskan.dataset.id;
-
-            if (
-                typeof layanan.kirimKonflik !== "function"
-            ) {
-                tampilkanPesan(
-                    el.modal,
-                    "Fungsi penerusan konflik belum tersedia pada layanan SILAB."
-                );
-
-                return;
-            }
-
-            try {
-                const kelompok = ambilKelompokKonflik(id);
-
-                const pengajuanIds = [
-                    ...new Set(
-                        kelompok.map(
-                            (item) => String(item.id)
-                        )
-                    )
-                ];
-
-                tombolTeruskan.disabled = true;
-
-                tombolTeruskan.textContent =
-                    "Mengirim konflik...";
-
-                layanan.kirimKonflik(
-                    pengajuanIds
-                );
-
-                tutupModal();
-
-                muatAntrean();
-
-                tampilkanNotifikasi(
-                    `${pengajuanIds.length} pengajuan bentrok berhasil diteruskan ke Kepala Lab.`
-                );
-
-            } catch (error) {
-                tombolTeruskan.disabled = false;
-
-                tombolTeruskan.textContent =
-                    "Teruskan Konflik ke Kepala Lab";
-
-                tampilkanPesan(
-                    el.modal,
-                    error.message
-                );
-
-                console.error(
-                    "SILAB: Gagal meneruskan konflik.",
-                    error
-                );
-            }
-
-            return;
-        }
-
-
-        // C. MENUTUP MODAL
+    el.modal.addEventListener("click", event => {
 
         const tombolTutup = event.target.closest(
             "[data-tutup-modal]"
@@ -2051,12 +1131,8 @@
 
         if (tombolTutup) {
             tutupModal();
-
             return;
         }
-
-
-        // D. MENYETUJUI PENGAJUAN
 
         const tombolSetuju = event.target.closest(
             ".btn-approve"
@@ -2065,41 +1141,52 @@
         if (tombolSetuju) {
             const id = el.modal.dataset.pengajuanId;
 
-            if (id) {
-                setujui(
-                    el.modal,
-                    id
-                );
-            }
+            if (id) setujuiPengajuan(id);
 
             return;
         }
 
-
-        // E. MENOLAK PENGAJUAN
-
         const tombolTolak = event.target.closest(
-            ".btn-reject:not([data-aksi-batalkan-persetujuan])"
+            '[data-keputusan="ditolak"]'
         );
 
         if (tombolTolak) {
             const id = el.modal.dataset.pengajuanId;
 
-            if (id) {
-                tampilkanFormPenolakan(
-                    el.modal,
-                    id
-                );
-            }
+            if (id) tampilkanFormPenolakan(id);
+
+            return;
+        }
+
+        const tombolBatal = event.target.closest(
+            "[data-aksi-batalkan-persetujuan]"
+        );
+
+        if (tombolBatal) {
+            const id = el.modal.dataset.pengajuanId;
+
+            if (id) batalkanPersetujuan(id);
+
+            return;
+        }
+
+        const tombolKonflik = event.target.closest(
+            "[data-aksi-eskalasi], [data-aksi-kirim-konflik]"
+        );
+
+        if (tombolKonflik) {
+            tampilkanPesan(
+                el.modal,
+                "Fitur penerusan konflik akan dihubungkan pada modul konflik Kepala Lab."
+            );
         }
     });
 
-
     // ==========================================
-    // 27. MENUTUP MODAL DENGAN ESCAPE
+    // 19. EVENT KEYBOARD
     // ==========================================
 
-    document.addEventListener("keydown", (event) => {
+    document.addEventListener("keydown", event => {
         if (
             event.key === "Escape" &&
             !el.modal.hidden
@@ -2108,57 +1195,37 @@
         }
     });
 
-
     // ==========================================
-    // 28. SINKRONISASI DATA
+    // 20. SINKRONISASI DATA
     // ==========================================
 
-    // Sinkronisasi dari layanan SILAB.
-    window.addEventListener(
-        "silab:data-changed",
-        muatAntrean
-    );
-
-    // Sinkronisasi perubahan Local Storage dari tab lain.
-    window.addEventListener(
-        "storage",
-        muatAntrean
-    );
-
-    // Periksa ulang ketika pengguna kembali ke halaman.
-    document.addEventListener(
-        "visibilitychange",
-        () => {
-            if (!document.hidden) {
-                muatAntrean();
-            }
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            muatAntrean();
         }
+    });
+
+    window.addEventListener("focus", muatAntrean);
+
+    intervalRefresh = window.setInterval(
+        muatAntrean,
+        INTERVAL_REFRESH
     );
 
-    // Pemeriksaan berkala untuk mendeteksi presensi baru.
-    // Berguna ketika perubahan dilakukan pada tab yang sama.
-    intervalAntrean = window.setInterval(() => {
-        muatAntrean();
-    }, 30000);
-
-
     // ==========================================
-    // 29. INISIALISASI
+    // 21. INISIALISASI
     // ==========================================
 
     el.modal.hidden = true;
 
-    el.modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    el.modal.setAttribute("aria-hidden", "true");
 
     el.modal.style.display = "none";
 
     muatAntrean();
 
     console.log(
-        "SILAB: Modul antrean berhasil dimuat."
+        "SILAB: Modul antrean berbasis MySQL berhasil diinisialisasi."
     );
 
 })(window, document);

@@ -502,7 +502,7 @@
 
 .tabel-row .kolom-jam,
 .tabel-row .kolom-kegiatan,
-.tabel-row .kolom-kategori,
+.tabel-row .kolom-prioritas,
 .tabel-row .kolom-status {
     min-width: 0;
     text-align: center;
@@ -587,7 +587,7 @@
    9. BADGE KATEGORI
 ===================================================== */
 
-.badge-kategori {
+.badge-prioritas {
     display: inline-flex;
     align-items: center;
     justify-content: center;
