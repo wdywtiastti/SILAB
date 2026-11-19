@@ -258,7 +258,7 @@ $nipLaboran = htmlspecialchars(
 
                         <span>JAM / SESI</span>
                         <span>KEGIATAN & PEMOHON</span>
-                        <span class="kolom-kategori">KATEGORI</span>
+                        <span class="kolom-prioritas">PRIORITAS</span>
                         <span class="kolom-status">STATUS</span>
 
                     </div>
@@ -301,13 +301,13 @@ $nipLaboran = htmlspecialchars(
                     </div>
 
 
-                    <div class="kolom-kategori">
+                    <div class="kolom-prioritas">
 
-                        <span class="badge-kategori" data-field="kategori">
+                        <span class="badge-prioritas" data-field="prioritas">
 
-                            <i class="bi" data-field="ikon-kategori"></i>
+                            <i class="bi bi-bar-chart-fill" data-field="ikon-prioritas"></i>
 
-                            <span data-field="label-kategori"></span>
+                            <span data-field="label-prioritas"></span>
 
                         </span>
 
