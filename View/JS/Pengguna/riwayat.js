@@ -244,24 +244,6 @@ function getStatusLabel(status) {
 }
 
 /* =========================================
-   KETERANGAN PENGAJUAN
-========================================= */
-
-function getSubmissionDescription(status) {
-  const descriptions = {
-    menunggu_verifikasi: "Menunggu Konfirmasi",
-    menunggu: "Menunggu Konfirmasi",
-    direkomendasikan: "Rekomendasi Jadwal Diberikan",
-    disetujui: "Permintaan Disetujui",
-    ditolak: "Permintaan Ditolak",
-    dibatalkan: "Pengajuan Dibatalkan",
-    selesai: "Sesi Telah Tervalidasi",
-  };
-
-  return descriptions[status] || "Status Belum Diketahui";
-}
-
-/* =========================================
    TABEL KOSONG
 ========================================= */
 
@@ -273,7 +255,7 @@ function showEmptyHistory(message) {
   const row = document.createElement("tr");
   const cell = document.createElement("td");
 
-  cell.colSpan = 5;
+  cell.colSpan = 4;
   cell.textContent = message;
   cell.style.textAlign = "center";
   cell.style.padding = "25px";
@@ -291,30 +273,26 @@ function createHistoryRow(data) {
 
   // Kolom 1: Tanggal pengajuan
   const dateCell = document.createElement("td");
-
   dateCell.textContent = formatDate(data.createdAt);
 
   // Kolom 2: Waktu kegiatan
   const timeCell = document.createElement("td");
-
   timeCell.textContent = `${formatTime(data.waktuMulai)} - ${formatTime(data.waktuSelesai)}`;
 
   // Kolom 3: Nama kegiatan dan kategori
   const activityCell = document.createElement("td");
 
   const activityName = document.createElement("strong");
-
   activityName.textContent = safeString(data.namaKegiatan || data.nama) || "-";
 
   const categoryName = document.createElement("small");
-
   categoryName.textContent = safeString(data.kategori) || "-";
 
   categoryName.style.display = "block";
 
   activityCell.append(activityName, categoryName);
 
-  // Kolom 4: Status
+  // Kolom 4: Status pengajuan
   const statusCell = document.createElement("td");
 
   const statusBadge = document.createElement("span");
@@ -329,20 +307,14 @@ function createHistoryRow(data) {
     selesai: "status-completed",
   };
 
-  statusBadge.className = `status-badge ${
-    statusClasses[data.status] || "status-pending"
-  }`;
+  statusBadge.className = `status-badge ${statusClasses[data.status] || "status-pending"}`;
 
   statusBadge.textContent = getStatusLabel(data.status);
 
   statusCell.appendChild(statusBadge);
 
-  // Kolom 5: ID pengajuan
-  const actionCell = document.createElement("td");
-
-  actionCell.textContent = getSubmissionDescription(data.status);
-
-  row.append(dateCell, timeCell, activityCell, statusCell, actionCell);
+  // Masukkan hanya empat kolom
+  row.append(dateCell, timeCell, activityCell, statusCell);
 
   return row;
 }
@@ -413,72 +385,50 @@ function renderPaginationNumbers(totalPages) {
 }
 
 /* =========================================
-   MEMUAT DATA RIWAYAT
+   MEMUAT RIWAYAT DARI DATABASE MYSQL
 ========================================= */
 
-function loadHistory() {
+async function loadHistory() {
   if (!historyTableBody) return;
 
   historyTableBody.innerHTML = "";
 
+  showEmptyHistory("Memuat riwayat pengajuan...");
+
   try {
-    const sesi = sesiSILAB.ambil();
-
-    if (!sesi || !sesi.identifier || sesi.role !== "pengguna") {
-      allUserHistory = [];
-
-      showEmptyHistory("Sesi pengguna tidak ditemukan. Silakan login kembali.");
-
-      currentPage = 1;
-      updatePagination(0, 0, 0);
-
-      return;
-    }
-
-    const users = SILABStorage.get(SILABStorage.KEYS.USERS, []);
-
-    const akun = users.find(
-      (user) => String(user.nipNpm).trim() === String(sesi.identifier).trim(),
-    );
-
-    if (!akun || !akun.id || akun.status !== "aktif") {
-      allUserHistory = [];
-      showEmptyHistory("Identitas akun tidak ditemukan.");
-      currentPage = 1;
-      updatePagination(0, 0, 0);
-      return;
-    }
-    const submissions = SILABStorage.get(SILABStorage.KEYS.SUBMISSIONS, []);
-
-    if (!Array.isArray(submissions)) {
-      allUserHistory = [];
-
-      showEmptyHistory("Data riwayat tidak dapat dibaca.");
-
-      currentPage = 1;
-      updatePagination(0, 0, 0);
-
-      return;
-    }
-    // Filter berdasarkan ID akun yang sedang login
-    allUserHistory = submissions.filter((submission) => {
-      return (
-        submission &&
-        submission.userId &&
-        String(submission.userId) === String(akun.id)
-      );
+    const response = await fetch("API_pengajuan.php?action=history", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
     });
-    // Urutkan berdasarkan tanggal terbaru
-    allUserHistory.sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
 
-      return (
-        (Number.isNaN(dateB) ? 0 : dateB) - (Number.isNaN(dateA) ? 0 : dateA)
-      );
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Gagal mengambil riwayat.");
+    }
+
+    allUserHistory = Array.isArray(result.data.history)
+      ? result.data.history
+      : [];
+
+    // Urutkan berdasarkan waktu terbaru.
+    allUserHistory.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
     currentPage = 1;
+
+    if (allUserHistory.length === 0) {
+      showEmptyHistory("Kamu belum memiliki riwayat pengajuan.");
+
+      updatePagination(0, 0, 0);
+
+      return;
+    }
 
     renderHistory(allUserHistory);
   } catch (error) {
@@ -488,7 +438,9 @@ function loadHistory() {
     currentHistoryData = [];
     currentPage = 1;
 
-    showEmptyHistory("Terjadi kesalahan saat memuat data riwayat.");
+    showEmptyHistory(
+      "Gagal mengambil data riwayat. Silakan muat ulang halaman.",
+    );
 
     updatePagination(0, 0, 0);
   }
@@ -500,31 +452,27 @@ function loadHistory() {
 
 function initHistory() {
   if (!validateHistoryElements()) {
-    console.error("Elemen HTML riwayat tidak ditemukan. Periksa ID elemen.");
+    console.error("Elemen HTML riwayat tidak ditemukan.");
+
     return;
   }
 
-  // Tampilkan nama akun yang sedang login
-  const akunLogin = tampilkanIdentitasNavbar();
-
-  if (!akunLogin) return;
-
-  // Event pencarian
+  // Pencarian
   if (historySearch) {
     historySearch.addEventListener("input", searchHistory);
   }
 
-  // Tombol sebelumnya
+  // Halaman sebelumnya
   prevPageButton.addEventListener("click", () => {
     changePage(-1);
   });
 
-  // Tombol selanjutnya
+  // Halaman selanjutnya
   nextPageButton.addEventListener("click", () => {
     changePage(1);
   });
 
-  // Muat data riwayat
+  // Ambil data dari database
   loadHistory();
 }
 

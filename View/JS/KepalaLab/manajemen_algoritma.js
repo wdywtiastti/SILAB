@@ -1,6 +1,10 @@
 (() => {
   "use strict";
 
+  const FACILITY_API = "API/fasilitas.php";
+  const RULE_API = "API/aturan.php";
+  const CRITERIA_API = "API/kriteria.php";
+
   /*
    * SILAB - Manajemen Algoritma
    * Data simulasi disimpan melalui SILABStorage.
@@ -78,6 +82,210 @@
   // Menyalin objek agar data awal tidak berubah.
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
+  }
+
+  // =========================================
+  // KONEKSI API MANAJEMEN FASILITAS
+  // =========================================
+
+  async function facilityApiRequest(action, payload = null) {
+    try {
+      const options = {
+        method: payload ? "POST" : "GET",
+        headers: {},
+      };
+
+      let url = FACILITY_API;
+
+      if (payload) {
+        options.headers["Content-Type"] = "application/json";
+
+        options.body = JSON.stringify({
+          action,
+          ...payload,
+        });
+      }
+
+      const response = await fetch(url, options);
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Permintaan API gagal.");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Kesalahan API fasilitas:", error);
+
+      showMessage(error.message || "Gagal menghubungi server.", "error");
+
+      throw error;
+    }
+  }
+
+  // =========================================
+  // KONEKSI API MANAJEMEN ATURAN
+  // =========================================
+
+  async function ruleApiRequest(action, payload = null) {
+    try {
+      const options = {
+        method: payload ? "POST" : "GET",
+        headers: {},
+      };
+
+      let url = RULE_API;
+
+      if (payload) {
+        options.headers["Content-Type"] = "application/json";
+
+        options.body = JSON.stringify({
+          action,
+          ...payload,
+        });
+      }
+
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Permintaan API aturan gagal.");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Kesalahan API aturan:", error);
+
+      showMessage(error.message || "Gagal menghubungi server aturan.", "error");
+
+      throw error;
+    }
+  }
+
+  // =========================================
+  // KONEKSI API MANAJEMEN KRITERIA
+  // =========================================
+
+  async function criteriaApiRequest(action, payload = null, idAturan = null) {
+    try {
+      let url = CRITERIA_API;
+
+      if (idAturan !== null) {
+        url += `?id_aturan=${encodeURIComponent(idAturan)}`;
+      }
+
+      const options = {
+        method: payload ? "POST" : "GET",
+        headers: {},
+      };
+
+      if (payload) {
+        options.headers["Content-Type"] = "application/json";
+
+        options.body = JSON.stringify({
+          action,
+          ...payload,
+        });
+      }
+
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Permintaan API kriteria gagal.");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Kesalahan API kriteria:", error);
+
+      showMessage(
+        error.message || "Gagal menghubungi server kriteria.",
+        "error",
+      );
+
+      throw error;
+    }
+  }
+
+  // =========================================
+  // MENGAMBIL KELOMPOK ATURAN DARI DATABASE
+  // =========================================
+
+  // =========================================
+  // MENGAMBIL ATURAN DAN KRITERIA DARI DATABASE
+  // =========================================
+
+  async function loadRulesFromAPI() {
+    try {
+      const result = await ruleApiRequest("list");
+
+      const rules = await Promise.all(
+        result.data.map(async (item) => {
+          // Ambil kriteria berdasarkan kelompok aturan.
+          const criteriaResult = await criteriaApiRequest(
+            "list",
+            null,
+            item.id_aturan,
+          );
+
+          return {
+            id: String(item.id_aturan),
+            name: item.nama_kelompok,
+            description: item.catatan || "",
+            weight: Number(item.bobot) || 0,
+            ruleType: "scoring",
+
+            criteria: criteriaResult.data.map((criteria, index) => ({
+              id: String(criteria.id_aturan_kriteria),
+              order: index + 1,
+              name: criteria.nama_kriteria,
+              description: criteria.catatan || "",
+              weight: Number(criteria.bobot) || 0,
+              active: true,
+            })),
+          };
+        }),
+      );
+
+      state.config.rules = rules;
+
+      renderRules();
+      renderWeights();
+
+      console.log("Aturan dan kriteria berhasil dimuat:", rules);
+    } catch (error) {
+      console.error("Gagal memuat aturan dan kriteria:", error);
+    }
+  }
+
+  // Mengambil fasilitas dari database.
+
+  async function loadFacilitiesFromAPI() {
+    try {
+      const result = await facilityApiRequest("list");
+
+      state.config.facilities = result.data.map((item) => ({
+        id: String(item.id_fasilitas),
+        name: item.nama_fasilitas,
+        capacity: Number(item.kapasitas_maksimum),
+        weight: Number(item.bobot),
+        description: item.deskripsi || "",
+        active: true,
+      }));
+
+      // Ambil bobot utama fasilitas dari database.
+      if (result.data.length > 0) {
+        state.config.facilityGroupWeight =
+          Number(result.data[0].bobot_utama) || 0;
+      }
+
+      renderFacilities();
+      renderWeights();
+    } catch (error) {
+      console.error("Gagal memuat fasilitas:", error);
+    }
   }
 
   // Membuat ID otomatis.
@@ -428,17 +636,15 @@
   }
 
   // Menyimpan fasilitas baru atau perubahan fasilitas.
-  function saveFacility(event) {
+
+  async function saveFacility(event) {
     event.preventDefault();
 
     const form = elements.facilityForm;
-
     if (!form) return;
 
     const name = form.elements.facilityName.value.trim();
-
     const capacityInput = form.elements.facilityCapacity.value;
-
     const description = form.elements.facilityDescription.value.trim();
 
     const capacity = Number(capacityInput);
@@ -457,7 +663,7 @@
     // Validasi nama duplikat.
     const duplicate = state.config.facilities.some(
       (facility) =>
-        facility.id !== state.selectedFacilityId &&
+        String(facility.id) !== String(state.selectedFacilityId) &&
         facility.name.toLowerCase() === name.toLowerCase(),
     );
 
@@ -465,52 +671,41 @@
       return showMessage("Nama fasilitas sudah digunakan.", "error");
     }
 
-    // Mode edit.
-    if (state.selectedFacilityId) {
-      const facility = getFacility(state.selectedFacilityId);
+    try {
+      // MODE EDIT
+      if (state.selectedFacilityId) {
+        await facilityApiRequest("update", {
+          id_fasilitas: Number(state.selectedFacilityId),
+          nama_fasilitas: name,
+          kapasitas_maksimum: capacity,
+          deskripsi: description,
+        });
 
-      if (!facility) return;
-
-      const previous = { ...facility };
-
-      facility.name = name;
-      facility.capacity = capacity;
-      facility.description = description;
-
-      if (!saveConfig()) {
-        Object.assign(facility, previous);
-        return;
+        showMessage("Fasilitas berhasil diperbarui.");
       }
 
-      showMessage("Fasilitas berhasil diperbarui.");
-    }
+      // MODE TAMBAH
+      else {
+        await facilityApiRequest("create", {
+          nama_fasilitas: name,
+          kapasitas_maksimum: capacity,
+          deskripsi: description,
+        });
 
-    // Mode tambah.
-    else {
-      const facility = {
-        id: createId("FS", state.config.facilities),
-        name,
-        capacity,
-        description,
-        weight: 0,
-        active: true,
-      };
-
-      state.config.facilities.push(facility);
-
-      if (!saveConfig()) {
-        state.config.facilities.pop();
-        return;
+        showMessage("Fasilitas berhasil ditambahkan.");
       }
 
-      showMessage("Fasilitas berhasil ditambahkan.");
+      closeModal(elements.addFacilityToggle);
+
+      state.selectedFacilityId = null;
+
+      form.reset();
+
+      // Ambil ulang data terbaru dari database.
+      await loadFacilitiesFromAPI();
+    } catch (error) {
+      console.error("Gagal menyimpan fasilitas:", error);
     }
-
-    closeModal(elements.addFacilityToggle);
-
-    state.selectedFacilityId = null;
-
-    renderFacilities();
   }
 
   // Membuka konfirmasi hapus fasilitas.
@@ -523,34 +718,32 @@
   }
 
   // Menghapus fasilitas.
-  function deleteFacility() {
-    const facility = getFacility(state.deleteFacilityId);
 
-    if (!facility) return;
+  // Menghapus fasilitas melalui API database.
+  async function deleteFacility() {
+    const facilityId = state.deleteFacilityId;
 
-    const index = state.config.facilities.findIndex(
-      (item) => item.id === state.deleteFacilityId,
-    );
+    if (!facilityId) return;
 
-    if (index === -1) return;
+    try {
+      // Hapus fasilitas melalui API.
+      await facilityApiRequest("delete", {
+        id_fasilitas: Number(facilityId),
+      });
 
-    const deletedFacility = state.config.facilities[index];
+      // Tutup modal konfirmasi.
+      closeModal(elements.deleteFacilityToggle);
 
-    state.config.facilities.splice(index, 1);
+      // Reset ID fasilitas yang dipilih.
+      state.deleteFacilityId = null;
 
-    if (!saveConfig()) {
-      state.config.facilities.splice(index, 0, deletedFacility);
+      // Ambil ulang data dari database.
+      await loadFacilitiesFromAPI();
 
-      return;
+      showMessage("Fasilitas berhasil dihapus.");
+    } catch (error) {
+      console.error("Gagal menghapus fasilitas:", error);
     }
-
-    closeModal(elements.deleteFacilityToggle);
-
-    state.deleteFacilityId = null;
-
-    renderFacilities();
-
-    showMessage("Fasilitas berhasil dihapus.");
   }
 
   // Memperbarui ringkasan aturan dan kriteria.
@@ -969,7 +1162,9 @@
   }
 
   // Menyimpan bobot fasilitas.
-  function saveFacilityWeights() {
+
+  async function saveFacilityWeights() {
+    // Validasi total bobot harus tepat 100%.
     const total = updateFacilityWeightTotal();
 
     if (total === null) {
@@ -982,34 +1177,27 @@
       return;
     }
 
+    // Ambil seluruh input bobot fasilitas.
     const inputs = [...document.querySelectorAll(".facility-weight-input")];
 
-    const previousWeights = state.config.facilities.map((facility) => ({
-      id: facility.id,
-      weight: facility.weight,
+    const weights = inputs.map((input) => ({
+      id_fasilitas: Number(input.dataset.facilityId),
+      bobot: Number(input.value),
     }));
 
-    inputs.forEach((input) => {
-      const facility = getFacility(input.dataset.facilityId);
-
-      if (facility) {
-        facility.weight = Number(input.value);
-      }
-    });
-
-    if (!saveConfig()) {
-      previousWeights.forEach((item) => {
-        const facility = getFacility(item.id);
-
-        if (facility) {
-          facility.weight = item.weight;
-        }
+    try {
+      // Kirim bobot ke database melalui API.
+      await facilityApiRequest("save_weights", {
+        weights: weights,
       });
 
-      return;
-    }
+      // Ambil ulang data terbaru dari database.
+      await loadFacilitiesFromAPI();
 
-    showMessage("Pembobotan fasilitas berhasil disimpan.");
+      showMessage("Pembobotan fasilitas berhasil disimpan.");
+    } catch (error) {
+      console.error("Gagal menyimpan bobot fasilitas:", error);
+    }
   }
 
   // Menghitung total persentase kriteria, termasuk perubahan sementara.
@@ -1186,7 +1374,8 @@
 
   // Menyimpan aturan baru.
 
-  function saveNewRule() {
+  // Menyimpan kelompok aturan baru ke database.
+  async function saveNewRule() {
     const form = getModalForm(elements.addRuleToggle);
 
     if (!form) return;
@@ -1200,6 +1389,7 @@
       return showMessage(error, "error");
     }
 
+    // Validasi nama duplikat.
     const duplicate = state.config.rules.some(
       (rule) => rule.name.toLowerCase() === name.toLowerCase(),
     );
@@ -1208,32 +1398,29 @@
       return showMessage("Nama aturan tersebut sudah digunakan.", "error");
     }
 
-    const id = createId("RB", state.config.rules);
+    try {
+      // Simpan ke database melalui API.
+      await ruleApiRequest("create", {
+        nama_kelompok: name,
+        catatan: description,
+      });
 
-    state.config.rules.push({
-      id,
-      name,
-      description,
-      ruleType: "scoring",
-      weight: 0,
-      criteria: [],
-    });
-
-    if (saveConfig()) {
+      // Tutup modal dan kosongkan form.
       form.reset();
       closeModal(elements.addRuleToggle);
-      renderRules();
-      renderWeights();
-      renderSummary();
-      renderWeights();
 
-      showMessage("Aturan baru berhasil ditambahkan.");
+      // Ambil ulang data dari database.
+      await loadRulesFromAPI();
+
+      showMessage("Kelompok aturan berhasil ditambahkan.");
+    } catch (error) {
+      console.error("Gagal menambahkan kelompok aturan:", error);
     }
   }
 
   // Menyimpan perubahan aturan.
 
-  function saveEditedRule() {
+  async function saveEditedRule() {
     const rule = getRule(state.selectedRuleId);
     const form = getModalForm(elements.editRuleToggle);
 
@@ -1257,29 +1444,34 @@
       return showMessage("Nama aturan tersebut sudah digunakan.", "error");
     }
 
-    rule.name = name;
-    rule.description = description;
+    try {
+      await ruleApiRequest("update", {
+        id_aturan: Number(rule.id),
+        nama_kelompok: name,
+        catatan: description,
+      });
 
-    if (saveConfig()) {
       closeModal(elements.editRuleToggle);
-      renderRules();
-      renderWeights();
+
+      await loadRulesFromAPI();
 
       showMessage("Perubahan aturan berhasil disimpan.");
+    } catch (error) {
+      console.error("Gagal mengedit aturan:", error);
     }
   }
 
   // Menyimpan kriteria baru.
 
-  // Menyimpan kriteria baru.
-  function saveNewCriteria() {
+  // Menyimpan kriteria baru ke database.
+  async function saveNewCriteria() {
     const form = getModalForm(elements.addCriteriaToggle);
     if (!form) return;
 
     const rule = getRule(state.selectedRuleId);
 
     if (!rule) {
-      return showMessage("Kelompok tidak ditemukan.", "error");
+      return showMessage("Kelompok aturan tidak ditemukan.", "error");
     }
 
     const name = form.elements.criteriaName.value.trim();
@@ -1287,6 +1479,10 @@
 
     if (!name) {
       return showMessage("Nama kriteria wajib diisi.", "error");
+    }
+
+    if (name.length > 100) {
+      return showMessage("Nama kriteria maksimal 100 karakter.", "error");
     }
 
     const duplicate = rule.criteria.some(
@@ -1297,33 +1493,30 @@
       return showMessage("Nama kriteria sudah digunakan.", "error");
     }
 
-    const allCriteria = state.config.rules.flatMap((item) => item.criteria);
+    try {
+      // Simpan kriteria melalui API.
+      await criteriaApiRequest("create", {
+        id_aturan: Number(rule.id),
+        nama_kriteria: name,
+        catatan: description,
+      });
 
-    const nextOrder =
-      Math.max(0, ...rule.criteria.map((item) => Number(item.order) || 0)) + 1;
-
-    rule.criteria.push({
-      id: createId("CR", allCriteria),
-      order: nextOrder,
-      name,
-      description,
-      weight: 0,
-      active: true,
-    });
-
-    if (saveConfig()) {
+      // Tutup modal.
       closeModal(elements.addCriteriaToggle);
-      renderRules();
-      renderSummary();
+      form.reset();
 
-      showMessage("Kriteria berhasil ditambahkan. Silakan atur persentasenya.");
-    } else {
-      rule.criteria.pop();
+      // Ambil ulang data dari database.
+      await loadRulesFromAPI();
+
+      showMessage("Kriteria berhasil ditambahkan.");
+    } catch (error) {
+      console.error("Gagal menambahkan kriteria:", error);
     }
   }
 
   // Menyimpan perubahan informasi kriteria.
-  function saveEditedCriteria() {
+
+  async function saveEditedCriteria() {
     const rule = getRule(state.selectedRuleId);
     const criteria = getCriteria(rule, state.selectedCriteriaId);
     const form = getModalForm(elements.editCriteriaToggle);
@@ -1337,6 +1530,10 @@
       return showMessage("Nama kriteria wajib diisi.", "error");
     }
 
+    if (name.length > 100) {
+      return showMessage("Nama kriteria maksimal 100 karakter.", "error");
+    }
+
     const duplicate = rule.criteria.some(
       (item) =>
         item.id !== criteria.id &&
@@ -1347,73 +1544,95 @@
       return showMessage("Nama kriteria sudah digunakan.", "error");
     }
 
-    const previous = {
-      name: criteria.name,
-      description: criteria.description,
-    };
+    try {
+      // Simpan perubahan melalui API.
+      await criteriaApiRequest("update", {
+        id_aturan_kriteria: Number(criteria.id),
+        nama_kriteria: name,
+        catatan: description,
+      });
 
-    criteria.name = name;
-    criteria.description = description;
-
-    if (saveConfig()) {
+      // Tutup modal edit.
       closeModal(elements.editCriteriaToggle);
-      renderRules();
+
+      // Ambil ulang data dari database.
+      await loadRulesFromAPI();
 
       showMessage("Informasi kriteria berhasil diperbarui.");
-    } else {
-      criteria.name = previous.name;
-      criteria.description = previous.description;
+    } catch (error) {
+      console.error("Gagal memperbarui kriteria:", error);
     }
   }
 
   // Menghapus aturan atau kriteria terpilih.
-  function deleteSelectedTarget() {
+
+  async function deleteSelectedTarget() {
     if (!state.deleteTarget) return;
 
-    if (state.deleteTarget.type === "rule") {
-      state.config.rules = state.config.rules.filter(
-        (rule) => rule.id !== state.deleteTarget.ruleId,
-      );
-    } else {
-      const rule = getRule(state.deleteTarget.ruleId);
+    const target = state.deleteTarget;
 
-      if (rule) {
-        rule.criteria = rule.criteria.filter(
-          (item) => item.id !== state.deleteTarget.criteriaId,
-        );
+    try {
+      // =====================================
+      // HAPUS KELOMPOK ATURAN MELALUI API
+      // =====================================
 
-        // Merapikan nomor urut setelah penghapusan.
-        rule.criteria
-          .sort((a, b) => Number(a.order) - Number(b.order))
-          .forEach((item, index) => {
-            item.order = index + 1;
-          });
+      if (target.type === "rule") {
+        await ruleApiRequest("delete", {
+          id_aturan: Number(target.ruleId),
+        });
+
+        closeModal(elements.deleteRuleToggle);
+
+        state.deleteTarget = null;
+
+        await loadRulesFromAPI();
+
+        showMessage("Kelompok aturan berhasil dihapus.");
+
+        return;
       }
-    }
 
-    if (saveConfig()) {
-      closeModal(
-        state.deleteTarget.type === "rule"
-          ? elements.deleteRuleToggle
-          : elements.deleteCriteriaToggle,
-      );
+      // =====================================
+      // HAPUS KRITERIA MELALUI API DATABASE
+      // =====================================
 
-      state.deleteTarget = null;
+      if (target.type === "criteria") {
+        await criteriaApiRequest("delete", {
+          id_aturan_kriteria: Number(target.criteriaId),
+        });
 
-      renderRules();
-      renderWeights();
-      renderSummary();
+        // Tutup modal konfirmasi.
+        closeModal(elements.deleteCriteriaToggle);
 
-      showMessage("Data berhasil dihapus.");
+        // Bersihkan data sementara.
+        delete state.pendingCriteriaWeights[target.ruleId];
+
+        state.deleteTarget = null;
+
+        // Ambil ulang data dari database.
+        await loadRulesFromAPI();
+
+        showMessage("Kriteria berhasil dihapus.");
+
+        return;
+      }
+    } catch (error) {
+      console.error("Gagal menghapus data:", error);
     }
   }
 
   // Menyimpan pembobotan kriteria satu kelompok.
-  function saveCriteriaWeights(ruleId) {
+
+  // Menyimpan pembobotan kriteria satu kelompok ke database.
+  async function saveCriteriaWeights(ruleId) {
     const rule = getRule(ruleId);
     if (!rule) return;
 
     const pending = state.pendingCriteriaWeights[ruleId] || {};
+
+    if (rule.criteria.length === 0) {
+      return showMessage("Belum ada kriteria untuk kelompok ini.", "error");
+    }
 
     const proposedWeights = rule.criteria.map((criteria) => {
       const value = Object.prototype.hasOwnProperty.call(pending, criteria.id)
@@ -1426,6 +1645,7 @@
       };
     });
 
+    // Validasi bobot.
     const invalid = proposedWeights.some(
       (item) =>
         !Number.isInteger(item.weight) || item.weight < 0 || item.weight > 100,
@@ -1436,6 +1656,7 @@
       return;
     }
 
+    // Validasi total harus tepat 100%.
     const total = proposedWeights.reduce((sum, item) => sum + item.weight, 0);
 
     if (total !== 100) {
@@ -1443,50 +1664,59 @@
       return;
     }
 
-    const previousWeights = rule.criteria.map((criteria) => ({
-      id: criteria.id,
-      weight: criteria.weight,
-    }));
+    try {
+      // Simpan bobot melalui API database.
+      await criteriaApiRequest("save_weights", {
+        id_aturan: Number(rule.id),
 
-    proposedWeights.forEach((item) => {
-      const criteria = getCriteria(rule, item.id);
-      if (criteria) criteria.weight = item.weight;
-    });
-
-    if (!saveConfig()) {
-      previousWeights.forEach((item) => {
-        const criteria = getCriteria(rule, item.id);
-        if (criteria) criteria.weight = item.weight;
+        weights: proposedWeights.map((item) => ({
+          id_aturan_kriteria: Number(item.id),
+          bobot: item.weight,
+        })),
       });
 
-      return;
+      // Hapus perubahan sementara setelah berhasil.
+      delete state.pendingCriteriaWeights[ruleId];
+
+      // Ambil ulang data terbaru dari database.
+      await loadRulesFromAPI();
+
+      showMessage("Persentase kriteria berhasil disimpan ke database.");
+    } catch (error) {
+      console.error("Gagal menyimpan pembobotan kriteria:", error);
     }
-
-    delete state.pendingCriteriaWeights[ruleId];
-
-    renderRules();
-
-    showMessage("Persentase kriteria berhasil disimpan.");
   }
 
   // Menyimpan pembobotan kelompok.
 
-  function saveWeights() {
-    // Hitung total kedua kelompok.
+  async function saveWeights() {
     const total = updateWeightTotal();
 
-    // Validasi total harus tepat 100%.
     if (total !== 100) {
-      showMessage(
-        "Total bobot Jenis Kegiatan dan Fasilitas Laboratorium harus tepat 100%.",
-        "error",
-      );
+      showMessage(`Total bobot utama ${total}%. Harus tepat 100%.`, "error");
       return;
     }
 
-    // Simpan konfigurasi.
-    if (saveConfig()) {
-      showMessage("Pembobotan parameter berhasil disimpan.");
+    const weights = state.config.rules.map((rule) => ({
+      id_aturan: Number(rule.id),
+      bobot: Number(rule.weight),
+    }));
+
+    const facilityWeight = Number(elements.facilityGroupSlider?.value) || 0;
+
+    try {
+      await ruleApiRequest("save_main_weights", {
+        weights: weights,
+        bobot_utama_fasilitas: facilityWeight,
+      });
+
+      // Ambil ulang data dari database.
+      await loadRulesFromAPI();
+      await loadFacilitiesFromAPI();
+
+      showMessage("Seluruh bobot utama berhasil disimpan ke database.");
+    } catch (error) {
+      console.error("Gagal menyimpan bobot utama:", error);
     }
   }
 
@@ -1758,23 +1988,22 @@
   }
 
   // Inisialisasi halaman.
-  function init() {
+  async function init() {
     if (!elements.ruleList) {
       console.error("Elemen .rule-list tidak ditemukan.");
-
       return;
     }
 
     state.config = loadConfig();
 
-    renderRules();
-
-    renderWeights();
-
-    // Menampilkan data fasilitas.
-    renderFacilities();
-
+    // Memasang event listener.
     bindEvents();
+
+    // Mengambil kelompok aturan dari database.
+    await loadRulesFromAPI();
+
+    // Mengambil fasilitas langsung dari database.
+    await loadFacilitiesFromAPI();
 
     console.log("Manajemen Algoritma SILAB berhasil dimuat.");
   }

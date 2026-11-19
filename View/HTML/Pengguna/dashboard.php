@@ -74,7 +74,9 @@ $namaPengguna = htmlspecialchars(
         Dashboard Pengguna
       </a>
 
-      <a href="riwayat.html" class="nav-link"> Riwayat </a>
+      <a href="riwayat.php" class="nav-link">
+    Riwayat
+</a>
 
       <a href="rekomendasi.html" class="nav-link"> Rekomendasi </a>
     </nav>
@@ -130,7 +132,7 @@ $namaPengguna = htmlspecialchars(
         </p>
       </div>
 
-      <a href="pengajuan.html" class="user-apply-button">
+      <a href="pengajuan.php" class="user-apply-button">
         <i class="bi bi-plus-circle"></i>
         Buat Pengajuan Peminjaman
       </a>

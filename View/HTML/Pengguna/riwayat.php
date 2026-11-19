@@ -1,0 +1,198 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . "/../auth/sesi.php";
+
+wajibRole(
+    ["pengguna"],
+    "../auth/login.php"
+);
+
+$namaPengguna = htmlspecialchars(
+    (string) ($_SESSION["nama"] ?? "Pengguna"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+?>
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Riwayat Pengajuan | SILAB</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- BOOTSTRAP ICON -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- CSS NAVBAR BERSAMA -->
+    <link rel="stylesheet" href="../../CSS/pengguna/navbar.css" />
+
+    <!-- CSS RIWAYAT -->
+    <link rel="stylesheet" href="../../CSS/pengguna/riwayat.css" />
+  </head>
+
+  <body>
+    <!-- ======================================
+         NAVBAR PENGGUNA
+    ======================================= -->
+
+    <header class="navbar">
+      <div class="navbar-brand">
+        <img
+          src="../../Assets/Logo_RPL.svg"
+          alt="Logo SILAB"
+          class="navbar-logo"
+        />
+
+        <div class="brand-info">
+          <h1>SILAB</h1>
+          <p>Teknik Informatika - Universitas Khairun</p>
+        </div>
+      </div>
+
+      <nav class="navbar-menu">
+        <a href="dashboard.php" class="nav-link"> Dashboard Pengguna </a>
+
+        <a href="riwayat.html" class="nav-link active"> Riwayat </a>
+
+        <a href="rekomendasi.html" class="nav-link"> Rekomendasi </a>
+      </nav>
+
+      <div class="navbar-profile">
+<span class="user-navbar-name" id="userNavbarName">
+    <?= $namaPengguna ?>
+</span>
+
+        <details class="profile-dropdown">
+          <summary class="profile-trigger">
+            <i class="bi bi-person"></i>
+          </summary>
+
+            <div class="profile-menu">
+              <div class="profile-info">
+                <p id="profileUserName"><?= $namaPengguna ?></p>
+              <span>Akun Pengguna SILAB</span>
+            </div>
+            <div class="profile-divider"></div>
+
+            <a href="../auth/logout.php" class="logout-link">
+              <i class="bi bi-box-arrow-right"></i>
+              Keluar / Logout
+            </a>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <!-- ======================================
+         KONTEN RIWAYAT
+    ======================================= -->
+
+    <main class="history-container">
+      <!-- HEADER HALAMAN -->
+
+      <section class="history-welcome-card">
+        <div class="history-portal-label">
+          PORTAL MAHASISWA
+          <span>•</span>
+          PELACAKAN BERKAS
+        </div>
+
+        <h2>Riwayat &amp; Status Pengajuan</h2>
+
+        <p>
+          Pantau validasi disposisi ruangan Lab Rekayasa Perangkat Lunak dan
+          arsip kegiatan.
+        </p>
+      </section>
+
+      <!-- PANEL DAFTAR PENGAJUAN -->
+
+      <section class="history-panel">
+        <!-- HEADER PANEL -->
+
+        <div class="history-panel-header">
+          <h3 class="history-table-title">
+            <i class="bi bi-clipboard2-check"></i>
+            Daftar Pengajuan Ruangan
+          </h3>
+
+          <!-- PENCARIAN -->
+
+          <div class="history-search">
+            <i class="bi bi-search"></i>
+
+            <input
+              type="search"
+              id="historySearch"
+              placeholder="Cari Kegiatan & Kategori"
+              aria-label="Cari kegiatan dan kategori"
+            />
+          </div>
+        </div>
+
+        <!-- TABEL -->
+
+        <div class="history-table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                  <th>TANGGAL REQUEST</th>
+                  <th>WAKTU &amp; REQUEST</th>
+                  <th>KEGIATAN &amp; KATEGORI</th>
+                  <th>STATUS PENGAJUAN</th>
+              </tr>
+            </thead>
+
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- FOOTER TABEL -->
+
+        <div class="history-panel-footer">
+          <p id="historyInfo">Menampilkan 0 dari 0 pengajuan</p>
+
+          <div class="history-pagination">
+            <button
+              type="button"
+              id="prevPage"
+              class="pagination-btn"
+              aria-label="Halaman sebelumnya"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div id="paginationNumbers" class="pagination-numbers"></div>
+
+            <button
+              type="button"
+              id="nextPage"
+              class="pagination-btn"
+              aria-label="Halaman selanjutnya"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- JAVASCRIPT -->
+    <script src="../../JS/Pengguna/riwayat.js" defer></script>
+  </body>
+</html>
