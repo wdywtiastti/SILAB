@@ -84,7 +84,7 @@ $namaPengguna = htmlspecialchars(
 
             <div class="profile-divider"></div>
 
-            <a href="../auth/login.html" class="logout-link">
+            <a href="../auth/login.php" class="logout-link">
               <i class="bi bi-box-arrow-right"></i>
               Keluar / Logout
             </a>
