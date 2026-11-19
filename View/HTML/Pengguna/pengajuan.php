@@ -76,13 +76,13 @@ $namaPengguna = htmlspecialchars(
       <!-- MENU -->
 
       <nav class="navbar-menu">
-        <a href="dashboard.html" class="nav-link active">
+        <a href="dashboard.php" class="nav-link active">
           Dashboard Pengguna
         </a>
 
-        <a href="riwayat.html" class="nav-link"> Riwayat </a>
+        <a href="riwayat.php" class="nav-link"> Riwayat </a>
 
-        <a href="rekomendasi.html" class="nav-link"> Rekomendasi </a>
+        <a href="rekomendasi.php" class="nav-link"> Rekomendasi </a>
       </nav>
 
       <!-- PROFIL -->

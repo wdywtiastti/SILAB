@@ -237,13 +237,13 @@ try {
             id_booking,
             id_user_laboran,
             status,
-            waktu_divalidasi,
+            waktu_validasi,
             waktu_dibuat
         ) VALUES (
             :id_booking,
             :id_user_laboran,
             :status,
-            :waktu_divalidasi,
+            :waktu_validasi,
             :waktu_dibuat
         )
     ";
@@ -254,7 +254,7 @@ try {
         ":id_booking" => $idBooking,
         ":id_user_laboran" => $idLaboran,
         ":status" => $status,
-        ":waktu_divalidasi" => $waktuSekarang,
+        ":waktu_validasi" => $waktuSekarang,
         ":waktu_dibuat" => $waktuSekarang
     ]);
 

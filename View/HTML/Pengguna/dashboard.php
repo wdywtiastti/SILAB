@@ -78,7 +78,7 @@ $namaPengguna = htmlspecialchars(
     Riwayat
 </a>
 
-      <a href="rekomendasi.html" class="nav-link"> Rekomendasi </a>
+      <a href="rekomendasi.php" class="nav-link"> Rekomendasi </a>
     </nav>
 
     <!-- PROFIL -->

@@ -1,3 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . "/../auth/sesi.php";
+
+wajibRole(
+    ["laboran"],
+    "../auth/login.php"
+);
+
+$namaLaboran = htmlspecialchars(
+    (string) ($_SESSION["nama"] ?? "Laboran"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -50,16 +69,16 @@
 
         <div class="navbar-menu">
 
-            <a href="dashboard.html" class="nav-link">
+            <a href="dashboard.php" class="nav-link">
                 Dashboard Laboran
             </a>
 
-            <a href="antrian.html" class="nav-link">
+            <a href="antrian.php" class="nav-link">
                 Antrian
             </a>
 
             <a
-                href="rekomendasi_jadwal.html"
+                href="rekomendasi_jadwal.php"
                 class="nav-link active"
                 aria-current="page"
             >
@@ -70,10 +89,10 @@
 
         <div class="navbar-profile">
 
-            <div class="profile-info">
-                <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
-                <p>Laboran Lab RPL</p>
-            </div>
+<div class="profile-info">
+    <h3><?= $namaLaboran ?></h3>
+    <p>Laboran Lab RPL</p>
+</div>
 
             <details class="profile-dropdown">
 
@@ -82,20 +101,20 @@
                 </summary>
 
                 <div class="profile-menu">
+<div class="profile-info-dropdown">
+    <p><?= $namaLaboran ?></p>
 
-                    <div class="profile-info-dropdown">
-                        <p>Satria Dwi Pauwah S.T., M.Kom.</p>
-                        <span>NIP : 197804122005011003</span>
+    <span>Akun Laboran SILAB</span>
 
-                        <div class="profile-role">
-                            <i class="bi bi-check-circle-fill"></i>
-                            Laboran Lab
-                        </div>
-                    </div>
+    <div class="profile-role">
+        <i class="bi bi-check-circle-fill"></i>
+        Laboran Lab
+    </div>
+</div>
 
                     <div class="profile-divider"></div>
 
-                    <a href="../auth/login.html" class="logout-link">
+                    <a href="../auth/login.php" class="logout-link">
                         <i class="bi bi-box-arrow-right"></i>
                         Keluar/Logout
                     </a>
@@ -300,7 +319,7 @@
                             <div class="kolom-aksi">
 
                                 <a
-                                    href="buat_rekomendasi.html"
+                                    href="buat_rekomendasi.php"
                                     class="btn-rekomendasi"
                                     data-aksi-rekomendasi
                                 >
