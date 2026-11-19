@@ -1529,29 +1529,16 @@
     // 18. PENOLAKAN PENGAJUAN
     // ======================================================
 
-    function tolakPengajuan(
-        pengajuanId,
-        alasan = ""
-    ) {
+    function tolakPengajuan(pengajuanId) {
         if (!pengajuanId) {
             throw new Error(
                 "ID pengajuan tidak ditemukan."
             );
         }
 
-        const alasanPenolakan = String(alasan).trim();
-
-        if (!alasanPenolakan) {
-            throw new Error(
-                "Alasan penolakan wajib diisi."
-            );
-        }
-
         const submissions = ambilSemua("submissions");
-
         const index = submissions.findIndex(
-            (item) =>
-                String(item.id) === String(pengajuanId)
+            (item) => String(item.id) === String(pengajuanId)
         );
 
         if (index === -1) {
@@ -1562,28 +1549,23 @@
             submissions[index].status || ""
         ).toLowerCase();
 
-        if (
-            !STATUS_ANTREAN_AKTIF.has(status)
-        ) {
+        if (!STATUS_ANTREAN_AKTIF.has(status)) {
             throw new Error(
                 "Pengajuan tidak berada dalam status yang dapat ditolak."
             );
         }
 
+        // Penolakan hanya mengubah status tanpa menyimpan alasan.
+        const pengajuanDiperbarui = { ...submissions[index] };
+
         submissions[index] = {
-            ...submissions[index],
-
+            ...pengajuanDiperbarui,
             status: "ditolak",
-
-            alasanPenolakan,
-
             konflikAktif: false,
-
             diverifikasiPada: buatTimestamp()
         };
 
         simpanSemua("submissions", submissions);
-
         beriTahuBanyakPerubahan([
             { koleksi: "antrean", aksi: "ditolak" },
             { koleksi: "bookings", aksi: "ditolak" }
@@ -1775,12 +1757,7 @@
         }
 
         if (perubahan.status === "ditolak") {
-            return tolakPengajuan(
-                id,
-                perubahan.alasanPenolakan ||
-                perubahan.alasan ||
-                ""
-            );
+            return tolakPengajuan(id);
         }
 
         throw new Error(
