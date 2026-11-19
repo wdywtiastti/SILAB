@@ -262,22 +262,37 @@ function ambilKelompokKonflik(
             $row['status_booking'] ?? null
         );
 
-        $pending = in_array(
-            $statusP,
-            $pendingStatuses,
-            true
-        );
+$pending = in_array(
+    $statusP,
+    $pendingStatuses,
+    true
+);
 
-        $approved = in_array(
-            $statusB,
-            $activeBookingStatuses,
-            true
-        );
+$isDisplaced = in_array(
+    $statusP,
+    ['tergeser', 'displaced'],
+    true
+);
 
-        if ($pending || $approved) {
+$approved =
+    $statusP === 'disetujui'
+    ||
+    in_array(
+        $statusB,
+        $activeBookingStatuses,
+        true
+    );
 
-            $kandidat[(int) $row['id_pengajuan']] = $row;
-        }
+// Pengajuan tergeser tidak boleh
+// masuk kelompok konflik baru.
+
+if (
+    !$isDisplaced &&
+    ($pending || $approved)
+) {
+    $kandidat[(int) $row['id_pengajuan']] = $row;
+}
+
     }
 
     if (!isset($kandidat[$idTarget])) {
@@ -518,31 +533,32 @@ try {
         waktu_ditetapkan = NULL
         */
 
-        $stmt = $pdo->prepare("
-            INSERT INTO konflik (
-                id_user,
-                id_pengajuan_terpilih,
-                status,
-                waktu_dibuat,
-                waktu_dikirim,
-                id_user_kepala_lab,
-                waktu_ditetapkan
-            )
 
-            VALUES (
-                :laboran,
-                NULL,
-                'menunggu_keputusan',
-                NOW(),
-                NOW(),
-                NULL,
-                NULL
-            )
-        ");
+$stmt = $pdo->prepare("
+    INSERT INTO konflik (
+        id_user_laboran,
+        id_pengajuan_terpilih,
+        status,
+        waktu_dibuat,
+        waktu_dikirim,
+        id_user_kepala_lab,
+        waktu_ditetapkan
+    )
 
-        $stmt->execute([
-            ':laboran' => $idLaboran
-        ]);
+    VALUES (
+        :laboran,
+        NULL,
+        'menunggu_keputusan',
+        NOW(),
+        NOW(),
+        NULL,
+        NULL
+    )
+");
+
+$stmt->execute([
+    ':laboran' => $idLaboran
+]);
 
         $idKonflik = (int) $pdo->lastInsertId();
 

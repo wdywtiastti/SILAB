@@ -215,6 +215,144 @@ try {
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    /*
+==================================================
+AMBIL DETAIL PENGAJUAN DINAMIS
+==================================================
+*/
+
+$detailAturanMap = [];
+$detailFasilitasMap = [];
+$skorMap = [];
+
+$idsPengajuan = array_values(array_unique(
+    array_map(
+        fn($row) => (int) $row['id_pengajuan'],
+        $rows
+    )
+));
+
+if (!empty($idsPengajuan)) {
+
+    $placeholders = implode(
+        ',',
+        array_fill(0, count($idsPengajuan), '?')
+    );
+
+    /*
+    ==============================================
+    A. DETAIL ATURAN DAN JENIS KEGIATAN
+    ==============================================
+    */
+
+    $sqlAturan = "
+        SELECT
+            pa.id_pengajuan,
+            a.nama_kelompok,
+            ak.nama_kriteria
+
+        FROM pengajuan_aturan pa
+
+        INNER JOIN aturan_kriteria ak
+            ON ak.id_aturan_kriteria = pa.id_aturan_kriteria
+
+        INNER JOIN aturan a
+            ON a.id_aturan = ak.id_aturan
+
+        WHERE pa.id_pengajuan IN ($placeholders)
+
+        ORDER BY pa.id_pengajuan
+    ";
+
+    $stmtAturan = $pdo->prepare($sqlAturan);
+    $stmtAturan->execute($idsPengajuan);
+
+    while ($detail = $stmtAturan->fetch(PDO::FETCH_ASSOC)) {
+
+        $id = (int) $detail['id_pengajuan'];
+
+        $detailAturanMap[$id][] = [
+            'kelompok' => $detail['nama_kelompok'],
+            'nama' => $detail['nama_kriteria']
+        ];
+    }
+
+
+    /*
+    ==============================================
+    B. DETAIL FASILITAS
+    ==============================================
+    */
+
+    $sqlFasilitas = "
+        SELECT
+            pf.id_pengajuan,
+            f.id_fasilitas,
+            f.nama_fasilitas,
+            pf.jumlah
+
+        FROM pengajuan_fasilitas pf
+
+        INNER JOIN fasilitas f
+            ON f.id_fasilitas = pf.id_fasilitas
+
+        WHERE pf.id_pengajuan IN ($placeholders)
+
+        ORDER BY pf.id_pengajuan, f.nama_fasilitas
+    ";
+
+    $stmtFasilitas = $pdo->prepare($sqlFasilitas);
+    $stmtFasilitas->execute($idsPengajuan);
+
+    while ($detail = $stmtFasilitas->fetch(PDO::FETCH_ASSOC)) {
+
+        $id = (int) $detail['id_pengajuan'];
+
+        $detailFasilitasMap[$id][] = [
+            'idFasilitas' => (int) $detail['id_fasilitas'],
+            'nama' => $detail['nama_fasilitas'],
+            'jumlah' => (int) $detail['jumlah']
+        ];
+    }
+
+
+    /*
+    ==============================================
+    C. SKOR DAN PRIORITAS DECISION TREE
+    ==============================================
+    */
+
+    $sqlSkor = "
+        SELECT
+            id_pengajuan,
+            skor_jenis_kegiatan,
+            skor_fasilitas,
+            skor_akhir,
+            prioritas,
+            waktu_perhitungan_dilakukan
+
+        FROM skor_pengajuan
+
+        WHERE id_pengajuan IN ($placeholders)
+
+        ORDER BY
+            waktu_perhitungan_dilakukan DESC,
+            id_score_pengajuan DESC
+    ";
+
+    $stmtSkor = $pdo->prepare($sqlSkor);
+    $stmtSkor->execute($idsPengajuan);
+
+    while ($detail = $stmtSkor->fetch(PDO::FETCH_ASSOC)) {
+
+        $id = (int) $detail['id_pengajuan'];
+
+        // Ambil hasil perhitungan terbaru.
+        if (!isset($skorMap[$id])) {
+            $skorMap[$id] = $detail;
+        }
+    }
+}
 
     /*
     ==============================================
@@ -281,6 +419,9 @@ try {
     $pending = [];
 
     foreach ($rows as $row) {
+
+    $id = (int) $row['id_pengajuan'];
+
 
         $bookingStatus = statusNorm(
             $row['status_booking'] ?? null
@@ -359,6 +500,70 @@ try {
     foreach ($rows as $row) {
 
         $id = (int) $row['id_pengajuan'];
+
+        // Ambil detail milik pengajuan ini.
+
+        $detailAturan = $detailAturanMap[$id] ?? [];
+
+        $detailFasilitas = $detailFasilitasMap[$id] ?? [];
+
+        $detailSkor = $skorMap[$id] ?? null;
+
+
+        // Ambil kategori dari kelompok Jenis Kegiatan.
+
+        $kategori = null;
+
+        foreach ($detailAturan as $aturanDetail) {
+            if (
+                stripos(
+                    $aturanDetail['kelompok'],
+                    'jenis kegiatan'
+                ) !== false
+            ) {
+                $kategori = $aturanDetail['nama'];
+                break;
+            }
+        }
+
+
+        // Ambil kebutuhan PC dan kursi untuk kompatibilitas
+        // dengan bagian frontend yang lama.
+
+        $kebutuhanPC = null;
+        $kebutuhanKursi = null;
+
+        foreach ($detailFasilitas as $fasilitasDetail) {
+            $namaFasilitas = strtolower(
+                $fasilitasDetail['nama']
+            );
+
+            if (
+                $kebutuhanPC === null &&
+                preg_match('/\bpc\b/', $namaFasilitas)
+            ) {
+                $kebutuhanPC = $fasilitasDetail['jumlah'];
+            }
+
+            if (
+                $kebutuhanKursi === null &&
+                strpos($namaFasilitas, 'kursi') !== false
+            ) {
+                $kebutuhanKursi = $fasilitasDetail['jumlah'];
+            }
+        }
+
+
+        // Ambil skor dan prioritas dari algoritma.
+
+        $skorAkhir = $detailSkor['skor_akhir'] ?? null;
+
+        $prioritasAngka = $detailSkor['prioritas'] ?? null;
+
+        $prioritasLabel = $prioritasAngka !== null
+            ? 'P' . (int) $prioritasAngka
+            : null;
+
 
         $submissionStatus = statusNorm(
             $row['status_pengajuan'] ?? null
@@ -713,24 +918,32 @@ try {
             'waktuSelesai' =>
                 $selesai->format('H:i'),
 
+// DETAIL DINAMIS PENGAJUAN
 
-            // INFORMASI FASILITAS
+'detailAturan' => $detailAturan,
 
-            'kebutuhanPC' =>
-                null,
+'detailFasilitas' => $detailFasilitas,
 
-            'kebutuhanKursi' =>
-                null,
+'kategori' => $kategori,
 
-            'kategori' =>
-                null,
+'kebutuhanPC' => $kebutuhanPC,
 
-            'skor' =>
-                null,
+'kebutuhanKursi' => $kebutuhanKursi,
 
-            'prioritas' =>
-                null,
 
+// HASIL PENILAIAN
+
+'skorJenisKegiatan' =>
+    $detailSkor['skor_jenis_kegiatan'] ?? null,
+
+'skorFasilitas' =>
+    $detailSkor['skor_fasilitas'] ?? null,
+
+'skor' =>
+    $skorAkhir,
+
+'prioritas' =>
+    $prioritasLabel,
 
             // STATUS
 

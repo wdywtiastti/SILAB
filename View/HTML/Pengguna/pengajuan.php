@@ -86,25 +86,24 @@ $namaPengguna = htmlspecialchars(
       </nav>
 
       <!-- PROFIL -->
-
-      <div class="navbar-profile">
-        <span class="user-navbar-name" id="userNavbarName">
-          Memuat akun...
-        </span>
+    <div class="navbar-profile">
+      <span class="user-navbar-name" id="userNavbarName">
+        <?= $namaPengguna ?>
+      </span>
         <details class="profile-dropdown">
           <summary class="profile-trigger">
             <i class="bi bi-person"></i>
           </summary>
 
-          <div class="profile-menu">
-            <div class="profile-info">
-              <p id="profileUserName">Memuat akun...</p>
-              <span>Akun Pengguna SILAB</span>
-            </div>
+        <div class="profile-menu">
+          <div class="profile-info">
+            <p id="profileUserName"><?= $namaPengguna ?></p>
+            <span>Akun Pengguna SILAB</span>
+          </div>
 
             <div class="profile-divider"></div>
 
-            <a href="../auth/login.html" class="logout-link">
+            <a href="../auth/login.php" class="logout-link">
               <i class="bi bi-box-arrow-right"></i>
               Keluar / Logout
             </a>
@@ -204,7 +203,7 @@ $namaPengguna = htmlspecialchars(
 
           <!-- TOMBOL FORM -->
           <div class="application-actions">
-            <a href="dashboard.html" class="application-cancel"> Batal </a>
+            <a href="dashboard.php" class="application-cancel"> Batal </a>
 
             <button type="submit" class="application-submit">
               Kirim Pengajuan Peminjaman

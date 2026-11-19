@@ -462,25 +462,8 @@ $nipLaboran = htmlspecialchars(
                     <strong data-field="waktu"></strong>
                 </div>
 
-                <div class="detail-item">
-                    <small>Jumlah Peserta</small>
-                    <strong data-field="jumlah-peserta"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kategori</small>
-                    <strong data-field="kategori"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kebutuhan PC</small>
-                    <strong data-field="kebutuhan-pc"></strong>
-                </div>
-
-                <div class="detail-item">
-                    <small>Kebutuhan Kursi</small>
-                    <strong data-field="kebutuhan-kursi"></strong>
-                </div>
+                <!-- DETAIL PENGAJUAN DINAMIS -->
+<div class="detail-dinamis" data-detail-dinamis></div>
 
                 <div class="detail-item">
                     <small>Skor Sistem</small>
@@ -590,14 +573,12 @@ $nipLaboran = htmlspecialchars(
                     </span>
                 </div>
 
-                <div class="collision-actions">
 
-                    <button type="button" class="btn-escalate" data-aksi-eskalasi-kepala>
-                        <i class="bi bi-send-fill"></i>
-                        Eskalasi ke Kepala Lab
-                    </button>
+                <div class="collision-actions"
+     data-area-aksi-konflik="bentrok">
+</div>
 
-                </div>
+
 
             </section>
 
@@ -626,14 +607,9 @@ $nipLaboran = htmlspecialchars(
                     </span>
                 </div>
 
-                <div class="collision-actions">
-
-                    <button type="button" class="btn-reject" data-aksi-kirim-konflik>
-                        <i class="bi bi-send"></i>
-                        Kirim Konflik ke Kepala Lab
-                    </button>
-
-                </div>
+<div class="collision-actions"
+     data-area-aksi-konflik="bentrok-disetujui">
+</div>
 
             </section>
 
@@ -685,8 +661,8 @@ $nipLaboran = htmlspecialchars(
     <!-- ======================================
          10. JAVASCRIPT
     ======================================= -->
-
-    <script src="../../JS/laboran/antrean.js"></script>
+<!-- MODUL ANTREAN -->
+<script src="../../JS/laboran/antrean.js"></script>
 </body>
 
 </html>
