@@ -2,228 +2,98 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . "/../auth/sesi.php";
-
-wajibRole(
-    ["pengguna", "laboran", "kepala_lab"],
-    "../auth/login.php"
-);
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 $csrfToken = bin2hex(random_bytes(32));
 $_SESSION["csrf_password"] = $csrfToken;
 
 ?>
 
-<!doctype html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="password-modal" id="passwordModal">
 
-    <title>Ubah Password | SILAB</title>
+    <div class="password-modal-backdrop"
+         id="passwordBackdrop"></div>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <section class="password-modal-content"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="passwordTitle">
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <button type="button"
+                class="password-close"
+                id="closePasswordModal"
+                aria-label="Tutup">
+            <i class="bi bi-x-lg"></i>
+        </button>
 
-    <link rel="stylesheet"
-          href="../../CSS/shared/ubah_password.css">
-</head>
+        <div class="password-icon">
+            <i class="bi bi-lock-fill"></i>
+        </div>
 
-<body>
+        <h2 id="passwordTitle">Ubah Password</h2>
 
-    <main class="password-container">
+        <p class="password-description">
+            Masukkan password baru untuk akun SILAB Anda.
+        </p>
 
-        <section class="password-card">
+        <form id="passwordForm">
 
-            <div class="password-icon">
-                <i>🔐</i>
-            </div>
+            <input
+                type="hidden"
+                id="csrfToken"
+                value="<?= htmlspecialchars(
+                    $csrfToken,
+                    ENT_QUOTES,
+                    "UTF-8"
+                ) ?>"
+            >
 
-            <div class="password-heading">
-                <h2>Ubah Password</h2>
+            <div class="password-form-group">
 
-                <p>
-                    Buat password baru untuk menjaga
-                    keamanan akun SILAB Anda.
-                </p>
-            </div>
+                <label for="passwordBaru">
+                    Password Baru
+                </label>
 
-            <form id="passwordForm">
+                <div class="password-input-wrapper">
 
-                <input
-                    type="hidden"
-                    id="csrfToken"
-                    value="<?= htmlspecialchars(
-                        $csrfToken,
-                        ENT_QUOTES,
-                        "UTF-8"
-                    ) ?>"
-                >
+                    <input
+                        type="password"
+                        id="passwordBaru"
+                        placeholder="Masukkan password baru"
+                        minlength="8"
+                        maxlength="72"
+                        autocomplete="new-password"
+                        required
+                    >
 
-                <div class="form-group">
-
-                    <label for="passwordBaru">
-                        Password Baru
-                    </label>
-
-                    <div class="password-input-wrapper">
-
-                        <input
-                            type="password"
-                            id="passwordBaru"
-                            name="password_baru"
-                            placeholder="Masukkan password baru"
-                            autocomplete="new-password"
-                            minlength="8"
-                            maxlength="72"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="toggle-password"
+                    <button type="button"
                             id="togglePassword"
-                            aria-label="Tampilkan password"
-                        >
-                            Lihat
-                        </button>
-
-                    </div>
-
-                    <small>
-                        Gunakan minimal 8 karakter.
-                    </small>
+                            aria-label="Tampilkan password">
+                        <i class="bi bi-eye"></i>
+                    </button>
 
                 </div>
 
-                <div
-                    class="password-feedback"
-                    id="passwordFeedback"
-                    role="status"
-                    aria-live="polite"
-                ></div>
+                <small>Minimal 8 karakter.</small>
 
-                <button
-                    type="submit"
+            </div>
+
+            <div id="passwordFeedback"
+                 class="password-feedback"
+                 role="status"
+                 aria-live="polite"></div>
+
+            <button type="submit"
                     class="btn-save-password"
-                    id="btnSavePassword"
-                >
-                    Simpan Password Baru
-                </button>
+                    id="btnSavePassword">
+                Simpan Password Baru
+            </button>
 
-            </form>
+        </form>
 
-        </section>
+    </section>
+</div>
 
-    </main>
-
-    <script>
-    (() => {
-
-        "use strict";
-
-        const form = document.getElementById("passwordForm");
-        const password = document.getElementById("passwordBaru");
-        const toggle = document.getElementById("togglePassword");
-        const button = document.getElementById("btnSavePassword");
-        const feedback = document.getElementById("passwordFeedback");
-
-        function showFeedback(message, error = false) {
-
-            feedback.textContent = message;
-
-            feedback.className = "password-feedback show";
-
-            feedback.classList.toggle("error", error);
-        }
-
-        toggle.addEventListener("click", () => {
-
-            const visible = password.type === "text";
-
-            password.type = visible ? "password" : "text";
-
-            toggle.textContent = visible ? "Lihat" : "Sembunyikan";
-
-        });
-
-        form.addEventListener("submit", async (event) => {
-
-            event.preventDefault();
-
-            const value = password.value;
-
-            if (value.length < 8) {
-                showFeedback(
-                    "Password minimal 8 karakter.",
-                    true
-                );
-                return;
-            }
-
-            if (new TextEncoder().encode(value).length > 72) {
-                showFeedback(
-                    "Password terlalu panjang.",
-                    true
-                );
-                return;
-            }
-
-            button.disabled = true;
-            button.textContent = "Menyimpan...";
-
-            try {
-
-                const response = await fetch("API_password.php", {
-
-                    method: "POST",
-
-                    credentials: "same-origin",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        password_baru: value,
-                        csrf_token:
-                            document.getElementById("csrfToken").value
-                    })
-
-                });
-
-                const result = await response.json();
-
-                if (!response.ok || !result.success) {
-                    throw new Error(
-                        result.message || "Gagal mengubah password."
-                    );
-                }
-
-                form.reset();
-
-                showFeedback(
-                    "Password berhasil diperbarui."
-                );
-
-            } catch (error) {
-
-                showFeedback(error.message, true);
-
-            } finally {
-
-                button.disabled = false;
-                button.textContent = "Simpan Password Baru";
-
-            }
-
-        });
-
-    })();
-    </script>
-
-</body>
-</html>
+<script src="../../JS/shared/ubah_password.js" defer></script>

@@ -87,25 +87,31 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             <i class="bi bi-person"></i>
           </summary>
 
-          <div class="profile-menu">
+                   <div class="profile-menu">
+
             <div class="profile-info">
-              <p>Ir. Abdul Mubarak S.Kom., M.T.IPM.</p>
+
+              <p>
+                <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
+              </p>
+
               <span>
-    NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
-</span>
+                NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
+              </span>
 
               <div class="profile-role">
                 <i class="bi bi-shield-check"></i>
                 Kepala Lab RPL
               </div>
-            </div>
 
+            </div>
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
               <i class="bi bi-box-arrow-right"></i>
               Keluar / Logout
             </a>
+
           </div>
         </details>
       </div>

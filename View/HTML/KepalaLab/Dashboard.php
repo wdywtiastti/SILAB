@@ -122,8 +122,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
                 Kepala Lab RPL
               </div>
 
-            </div>
-
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
@@ -542,6 +540,5 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
     <script src="../../JS/laboran/layanan.js"></script>
 
     <script src="../../JS/KepalaLab/dashboard.js"></script>
-
   </body>
 </html>

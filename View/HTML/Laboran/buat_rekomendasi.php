@@ -54,15 +54,15 @@
 
         <div class="navbar-menu">
 
-            <a href="dashboard.html" class="nav-link">
+            <a href="dashboard.php" class="nav-link">
                 Dashboard Laboran
             </a>
 
-            <a href="antrian.html" class="nav-link">
+            <a href="antrian.php" class="nav-link">
                 Antrean
             </a>
 
-            <a href="rekomendasi_jadwal.html" class="nav-link active">
+            <a href="rekomendasi_jadwal.php" class="nav-link active">
                 Rekomendasi Jadwal
             </a>
 
@@ -100,7 +100,7 @@
 
                     <div class="profile-divider"></div>
 
-                    <a href="../auth/login.html" class="logout-link">
+                    <a href="../auth/login.php" class="logout-link">
                         <i class="bi bi-box-arrow-right"></i>
                         Keluar/Logout
                     </a>
@@ -625,7 +625,7 @@
                     <div class="footer-actions">
 
                         <a
-                            href="rekomendasi_jadwal.html"
+                            href="rekomendasi_jadwal.php"
                             class="btn-batal"
                         >
                             <i class="bi bi-arrow-left"></i>

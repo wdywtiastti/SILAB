@@ -97,30 +97,30 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         <summary class="profile-trigger">
             <i class="bi bi-person"></i>
         </summary>
+          <div class="profile-menu">
 
-        <div class="profile-menu">
             <div class="profile-info">
-                <p>
-                    <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-                </p>
 
-                <span>
-                    NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
-                </span>
+              <p>
+                <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
+              </p>
 
-                <div class="profile-role">
-                    <i class="bi bi-shield-check"></i>
-                    Kepala Lab RPL
-                </div>
-            </div>
+              <span>
+                NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
+              </span>
 
+              <div class="profile-role">
+                <i class="bi bi-shield-check"></i>
+                Kepala Lab RPL
+              </div>
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
-                <i class="bi bi-box-arrow-right"></i>
-                Keluar / Logout
+              <i class="bi bi-box-arrow-right"></i>
+              Keluar / Logout
             </a>
-        </div>
+
+          </div>
     </details>
 </div>
 
