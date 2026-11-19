@@ -72,11 +72,11 @@ $nipLaboran = htmlspecialchars(
                 Dashboard Laboran
             </a>
 
-            <a href="antrian.html" class="nav-link">
+            <a href="antrian.php" class="nav-link">
                 Antrian
             </a>
 
-            <a href="rekomendasi_jadwal.html" class="nav-link">
+            <a href="rekomendasi_jadwal.php" class="nav-link">
                 Rekomendasi Jadwal
             </a>
         </div>
