@@ -1,3 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+// =========================================
+// SILAB - HALAMAN ANTREAN LABORAN
+// =========================================
+
+require_once __DIR__ . "/../auth/sesi.php";
+
+// Halaman antrean hanya dapat diakses oleh Laboran.
+wajibRole(
+    ["laboran"],
+    "../auth/login.php"
+);
+
+// Identitas Laboran diambil dari session aktif.
+$namaLaboran = htmlspecialchars(
+    (string) ($_SESSION["nama"] ?? "Laboran"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+$nipLaboran = htmlspecialchars(
+    (string) ($_SESSION["nip_npm"] ?? "-"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
+?>
+
 
 <!doctype html>
 <html lang="id">
@@ -12,16 +43,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- BOOTSTRAP ICONS -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- CSS -->
     <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
@@ -39,11 +65,7 @@
 
         <div class="navbar-brand">
 
-            <img
-                src="../../Assets/Logo_RPL.svg"
-                alt="Logo SILAB"
-                class="navbar-logo"
-            >
+            <img src="../../Assets/Logo_RPL.svg" alt="Logo SILAB" class="navbar-logo">
 
             <div class="brand-info">
                 <h1>SILAB</h1>
@@ -54,15 +76,15 @@
 
         <div class="navbar-menu">
 
-            <a href="dashboard.html" class="nav-link">
+            <a href="dashboard.php" class="nav-link">
                 Dashboard Laboran
             </a>
 
-            <a href="antrian.html" class="nav-link active">
+            <a href="antrian.php" class="nav-link active">
                 Antrean
             </a>
 
-            <a href="rekomendasi_jadwal.html" class="nav-link">
+            <a href="rekomendasi_jadwal.php" class="nav-link">
                 Rekomendasi Jadwal
             </a>
 
@@ -71,7 +93,7 @@
         <div class="navbar-profile">
 
             <div class="profile-info">
-                <h3>Satria Dwi Pauwah S.T., M.Kom.</h3>
+                <h3><?= $namaLaboran ?></h3>
                 <p>Laboran Lab RPL</p>
             </div>
 
@@ -85,10 +107,10 @@
 
                     <div class="profile-info-dropdown">
 
-                        <p>Satria Dwi Pauwah S.T., M.Kom.</p>
+                        <p><?= $namaLaboran ?></p>
 
                         <span>
-                            NIP: 197804122005011003
+                            NIP: <?= $nipLaboran ?>
                         </span>
 
                         <div class="profile-role">
@@ -100,7 +122,7 @@
 
                     <div class="profile-divider"></div>
 
-                    <a href="../auth/login.html" class="logout-link">
+                    <a href="../auth/logout.php" class="logout-link">
                         <i class="bi bi-box-arrow-right"></i>
                         Keluar/Logout
                     </a>
@@ -197,20 +219,12 @@
                         </span>
                     </span>
 
-                    <div
-                        class="antrian-filter"
-                        role="group"
-                        aria-label="Filter status pengajuan"
-                    >
+                    <div class="antrian-filter" role="group" aria-label="Filter status pengajuan">
 
                         <!-- BELUM DISETUJUI -->
 
-                        <button
-                            type="button"
-                            class="antrian-filter-btn active"
-                            data-filter-antrean="belum-disetujui"
-                            aria-pressed="true"
-                        >
+                        <button type="button" class="antrian-filter-btn active" data-filter-antrean="belum-disetujui"
+                            aria-pressed="true">
 
                             <span class="filter-label">
                                 <i class="bi bi-hourglass-split"></i>
@@ -226,12 +240,8 @@
 
                         <!-- SUDAH DISETUJUI -->
 
-                        <button
-                            type="button"
-                            class="antrian-filter-btn"
-                            data-filter-antrean="sudah-disetujui"
-                            aria-pressed="false"
-                        >
+                        <button type="button" class="antrian-filter-btn" data-filter-antrean="sudah-disetujui"
+                            aria-pressed="false">
 
                             <span class="filter-label">
                                 <i class="bi bi-check-circle"></i>
@@ -272,10 +282,7 @@
 
                     </thead>
 
-                    <tbody
-                        id="antrianBody"
-                        aria-live="polite"
-                    ></tbody>
+                    <tbody id="antrianBody" aria-live="polite"></tbody>
 
                 </table>
 
@@ -288,35 +295,19 @@
 
             <div class="pagination-container">
 
-                <div
-                    class="pagination-info"
-                    id="paginationInfo"
-                >
+                <div class="pagination-info" id="paginationInfo">
                     Memuat antrean...
                 </div>
 
                 <div class="pagination-controls">
 
-                    <button
-                        type="button"
-                        class="pagination-btn"
-                        id="prevPage"
-                        disabled
-                    >
+                    <button type="button" class="pagination-btn" id="prevPage" disabled>
                         Sebelumnya
                     </button>
 
-                    <div
-                        class="pagination-numbers"
-                        id="paginationNumbers"
-                    ></div>
+                    <div class="pagination-numbers" id="paginationNumbers"></div>
 
-                    <button
-                        type="button"
-                        class="pagination-btn"
-                        id="nextPage"
-                        disabled
-                    >
+                    <button type="button" class="pagination-btn" id="nextPage" disabled>
                         Berikutnya
                     </button>
 
@@ -361,10 +352,7 @@
             <!-- ID PENGAJUAN -->
 
             <td>
-                <span
-                    class="request-id"
-                    data-field="id"
-                ></span>
+                <span class="request-id" data-field="id"></span>
             </td>
 
 
@@ -394,15 +382,9 @@
 
             <td>
 
-                <span
-                    class="priority-badge"
-                    data-field="prioritas"
-                ></span>
+                <span class="priority-badge" data-field="prioritas"></span>
 
-                <small
-                    class="score-text"
-                    data-field="skor"
-                ></small>
+                <small class="score-text" data-field="skor"></small>
 
             </td>
 
@@ -411,10 +393,7 @@
 
             <td>
 
-                <span
-                    class="status-badge"
-                    data-field="status"
-                ></span>
+                <span class="status-badge" data-field="status"></span>
 
             </td>
 
@@ -423,12 +402,7 @@
 
             <td>
 
-                <button
-                    type="button"
-                    class="btn-process"
-                    data-aksi-detail
-                    data-id=""
-                >
+                <button type="button" class="btn-process" data-aksi-detail data-id="">
 
                     <i class="bi bi-search"></i>
 
@@ -442,73 +416,35 @@
 
     </template>
 
-
     <!-- ======================================
-         8. MODAL DETAIL PENGAJUAN
-    ======================================= -->
+     8. MODAL DETAIL PENGAJUAN
+======================================= -->
 
-    <div
-        class="review-modal"
-        id="modalReview"
-        hidden
-        aria-hidden="true"
-    >
+    <div class="review-modal" id="modalReview" hidden aria-hidden="true">
 
         <!-- BACKDROP -->
+        <button type="button" class="modal-backdrop" data-tutup-modal aria-label="Tutup detail pengajuan">
+        </button>
 
-        <button
-            type="button"
-            class="modal-backdrop"
-            data-tutup-modal
-            aria-label="Tutup detail pengajuan"
-        ></button>
-
-
-        <div
-            class="review-modal-content"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="judulReview"
-            tabindex="-1"
-        >
-
+        <!-- KONTEN MODAL -->
+        <div class="review-modal-content" role="dialog" aria-modal="true" aria-labelledby="judulReview" tabindex="-1">
 
             <!-- HEADER MODAL -->
-
             <div class="review-modal-header">
 
-                <div>
+                <span class="review-label" data-field="label-id"></span>
 
-                    <span
-                        class="review-label"
-                        data-field="label-id"
-                    ></span>
-
-                    <h3
-                        id="judulReview"
-                        data-field="judul-kegiatan"
-                    ></h3>
-
-                </div>
-
-                <button
-                    type="button"
-                    class="modal-close"
-                    data-tutup-modal
-                    aria-label="Tutup"
-                >
-
-                    <i class="bi bi-x-lg"></i>
-
-                </button>
+                <h3 id="judulReview" data-field="judul-kegiatan"></h3>
 
             </div>
 
+            <button type="button" class="modal-close" data-tutup-modal aria-label="Tutup">
 
-            <!-- ==================================
-                 DETAIL DATA PENGAJUAN
-            =================================== -->
+                <i class="bi bi-x-lg"></i>
 
+            </button>
+
+            <!-- DETAIL DATA PENGAJUAN -->
             <div class="request-detail-box">
 
                 <div class="detail-item">
@@ -552,43 +488,23 @@
                 </div>
 
                 <div class="detail-item">
-
                     <small>Klasifikasi Prioritas</small>
-
                     <strong>
-                        <span
-                            class="priority-badge"
-                            data-field="prioritas-detail"
-                        ></span>
+                        <span class="priority-badge" data-field="prioritas-detail"></span>
                     </strong>
-
                 </div>
 
                 <div class="detail-item">
-
                     <small>Status Pengajuan</small>
-
                     <strong>
-                        <span
-                            class="status-badge"
-                            data-field="status-detail"
-                        ></span>
+                        <span class="status-badge" data-field="status-detail"></span>
                     </strong>
-
                 </div>
 
             </div>
 
-
-            <!-- ==================================
-                 PANEL 1: VERIFIKASI
-            =================================== -->
-
-            <section
-                class="review-information"
-                data-panel="verifikasi"
-                hidden
-            >
+            <!-- PANEL 1: VERIFIKASI -->
+            <section class="review-information" data-panel="verifikasi" hidden>
 
                 <i class="bi bi-info-circle-fill"></i>
 
@@ -601,151 +517,72 @@
 
             </section>
 
+            <div class="verification-actions" data-panel="verifikasi" hidden>
 
-            <!-- AKSI VERIFIKASI -->
-
-            <div
-                class="verification-actions"
-                data-panel="verifikasi"
-                hidden
-            >
-
-                <button
-                    type="button"
-                    class="btn-reject"
-                    data-keputusan="ditolak"
-                >
-
+                <button type="button" class="btn-reject" data-keputusan="ditolak">
                     <i class="bi bi-x-circle"></i>
-
                     Tolak Pengajuan
-
                 </button>
 
-                <button
-                    type="button"
-                    class="btn-approve"
-                    data-keputusan="disetujui"
-                >
-
+                <button type="button" class="btn-approve" data-keputusan="disetujui">
                     <i class="bi bi-check-circle"></i>
-
                     Setujui Pengajuan
-
                 </button>
 
             </div>
 
+            <!-- PANEL 2: SUDAH DISETUJUI -->
+            <section class="review-information" data-panel="disetujui" hidden>
 
-<!-- ==================================
-     PANEL 2: BOOKING DISETUJUI
-=================================== -->
+                <i class="bi bi-check-circle-fill"></i>
 
-<section
-    class="review-information"
-    data-panel="disetujui"
-    hidden
->
+                <span>
+                    Pengajuan ini sudah disetujui dan tercatat
+                    sebagai booking laboratorium.
+                    Booking masih dapat dibatalkan oleh Laboran
+                    selama pengguna belum melakukan presensi.
+                </span>
 
-    <i class="bi bi-check-circle-fill"></i>
+            </section>
 
-    <span>
-        Pengajuan ini sudah disetujui dan tercatat
-        sebagai booking laboratorium.
+            <div class="verification-actions" data-panel="disetujui" hidden>
 
-        Booking masih dapat dibatalkan oleh Laboran
-        selama pengguna belum melakukan presensi.
-    </span>
+                <button type="button" class="btn-reject" data-aksi-batalkan-persetujuan>
+                    <i class="bi bi-x-circle"></i>
+                    Batalkan Persetujuan
+                </button>
 
-</section>
+            </div>
 
-<!-- AKSI PEMBATALAN PERSETUJUAN -->
-
-<div
-    class="verification-actions"
-    data-panel="disetujui"
-    hidden
->
-
-    <button
-        type="button"
-        class="btn-reject"
-        data-aksi-batalkan-persetujuan
-    >
-
-        <i class="bi bi-x-circle"></i>
-
-        Batalkan Persetujuan
-
-    </button>
-
-</div>
-
-            
-            <!-- ==================================
-                 PANEL 3: BENTROK PENGAJUAN
-            =================================== -->
-
-            <section
-                class="collision-box"
-                data-panel="bentrok"
-                hidden
-            >
+            <!-- PANEL 3: BENTROK -->
+            <section class="collision-box" data-panel="bentrok" hidden>
 
                 <div class="collision-heading">
-
                     <i class="bi bi-exclamation-triangle-fill"></i>
-
                     Pengajuan Mengalami Bentrokan
-
                 </div>
 
                 <p data-field="pesan-bentrok"></p>
 
-
-                <!-- AKSI KONFLIK DINAMIS -->
-
-                <div
-                    class="collision-actions"
-                    data-area-aksi-konflik
-                ></div>
+                <div class="collision-actions" data-area-aksi-konflik></div>
 
             </section>
 
-
-            <!-- ==================================
-                 PANEL 4: BOOKING DISETUJUI
-                 YANG MENGALAMI BENTROKAN
-            =================================== -->
-
-            <section
-                class="collision-box"
-                data-panel="bentrok-disetujui"
-                hidden
-            >
+            <!-- PANEL 4: BOOKING DISETUJUI YANG BENTROK -->
+            <section class="collision-box" data-panel="bentrok-disetujui" hidden>
 
                 <div class="collision-heading">
-
                     <i class="bi bi-exclamation-triangle-fill"></i>
-
                     Booking Disetujui Mengalami Bentrokan
-
                 </div>
 
                 <p data-field="pesan-bentrok-disetujui">
                     Booking ini sebelumnya telah disetujui,
                     tetapi terdapat pengajuan baru yang
                     menggunakan waktu laboratorium yang sama.
-
-                    Status persetujuan tetap tersimpan sampai
-                    Kepala Lab memberikan keputusan.
                 </p>
 
-
-                <!-- INFORMASI PENYELESAIAN -->
-
                 <div class="review-information">
-
                     <i class="bi bi-info-circle-fill"></i>
 
                     <span>
@@ -753,61 +590,34 @@
                         kepada Kepala Lab. Booking tidak langsung
                         dibatalkan sebelum keputusan Kepala Lab.
                     </span>
-
                 </div>
-
-
-                <!-- AKSI KIRIM KONFLIK -->
 
                 <div class="collision-actions">
 
-                    <button
-                        type="button"
-                        class="btn-reject"
-                        data-aksi-kirim-konflik
-                    >
-
+                    <button type="button" class="btn-reject" data-aksi-kirim-konflik>
                         <i class="bi bi-send"></i>
-
                         Kirim Konflik ke Kepala Lab
-
                     </button>
 
                 </div>
 
             </section>
 
-
-            <!-- ==================================
-                 PANEL 5: PENGAJUAN TERGESER
-            =================================== -->
-
-            <section
-                class="collision-box displaced-box"
-                data-panel="tergeser"
-                hidden
-            >
+            <!-- PANEL 5: PENGAJUAN TERGESER -->
+            <section class="collision-box displaced-box" data-panel="tergeser" hidden>
 
                 <div class="collision-heading">
-
                     <i class="bi bi-calendar-x"></i>
-
                     Informasi Penggeseran Jadwal
-
                 </div>
 
                 <p data-field="pesan-tergeser"></p>
 
                 <div class="collision-actions">
 
-                    <a
-                        href="rekomendasi_jadwal.html"
-                        class="btn-recommend"
-                        data-tautan-rekomendasi
-                    >
+                    <a href="rekomendasi_jadwal.php" class="btn-recommend" data-tautan-rekomendasi>
 
                         <i class="bi bi-calendar-plus"></i>
-
                         Buat Rekomendasi Jadwal
 
                     </a>
@@ -816,16 +626,8 @@
 
             </section>
 
-
-            <!-- ==================================
-                 PANEL 6: STATUS LAINNYA
-            =================================== -->
-
-            <section
-                class="review-information"
-                data-panel="lainnya"
-                hidden
-            >
+            <!-- PANEL 6: STATUS LAINNYA -->
+            <section class="review-information" data-panel="lainnya" hidden>
 
                 <i class="bi bi-info-circle-fill"></i>
 
@@ -837,41 +639,20 @@
             </section>
 
         </div>
-
     </div>
-
 
     <!-- ======================================
          9. WADAH NOTIFIKASI
     ======================================= -->
 
-    <div
-        id="wadahNotifikasi"
-        class="wadah-notifikasi"
-        aria-live="polite"
-        aria-atomic="true"
-    ></div>
+    <div id="wadahNotifikasi" class="wadah-notifikasi" aria-live="polite" aria-atomic="true"></div>
 
 
     <!-- ======================================
          10. JAVASCRIPT
     ======================================= -->
 
-    <!-- SHARED STORAGE -->
-<script src="../../JS/shared/storage.js"></script>
-
-<!-- UTILITAS WAKTU -->
-<script src="../../JS/laboran/utils/waktu.js"></script>
-
-<!-- DATA SIMULASI -->
-<script src="../../JS/laboran/data_uji.js"></script>
-
-<!-- LAYANAN DATA -->
-<script src="../../JS/laboran/layanan.js"></script>
-
-<!-- MODUL ANTREAN -->
-<script src="../../JS/laboran/antrean.js"></script>
-
+    <script src="../../JS/laboran/antrean.js"></script>
 </body>
 
 </html>
