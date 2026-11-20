@@ -272,9 +272,8 @@ $nipLaboran = htmlspecialchars(
                     <thead>
 
                         <tr>
-                            <th>ID Pengajuan</th>
-                            <th>Kegiatan dan Pemohon</th>
-                            <th>Waktu dan Kebutuhan</th>
+                            <th>Nama Pemohon dan Kegiatan</th>
+                            <th>Waktu booking</th>
                             <th>Skor dan Prioritas</th>
                             <th>Status</th>
                             <th>Aksi Laboran</th>
@@ -345,76 +344,43 @@ $nipLaboran = htmlspecialchars(
          7. TEMPLATE BARIS ANTREAN
     ======================================= -->
 
-    <template id="templateBarisAntrian">
 
+    <template id="templateBarisAntrian">
         <tr>
 
-            <!-- ID PENGAJUAN -->
-
+            <!-- NAMA PEMOHON DAN KEGIATAN -->
             <td>
-                <span class="request-id" data-field="id"></span>
+                <strong data-field="pemohon"></strong>
+                <small data-field="nama-kegiatan"></small>
             </td>
 
-
-            <!-- KEGIATAN DAN PEMOHON -->
-
+            <!-- WAKTU BOOKING -->
             <td>
-
-                <strong data-field="nama-kegiatan"></strong>
-
-                <small data-field="pemohon"></small>
-
-            </td>
-
-
-            <!-- WAKTU DAN KEBUTUHAN -->
-
-            <td>
-
                 <strong data-field="rentang-waktu"></strong>
-
-                <small data-field="kebutuhan"></small>
-
             </td>
-
 
             <!-- SKOR DAN PRIORITAS -->
-
             <td>
-
                 <span class="priority-badge" data-field="prioritas"></span>
-
                 <small class="score-text" data-field="skor"></small>
-
             </td>
-
 
             <!-- STATUS -->
-
             <td>
-
                 <span class="status-badge" data-field="status"></span>
-
             </td>
 
-
             <!-- AKSI LABORAN -->
-
             <td>
-
                 <button type="button" class="btn-process" data-aksi-detail data-id="">
-
                     <i class="bi bi-search"></i>
-
                     Periksa &amp; Proses
-
                 </button>
-
             </td>
 
         </tr>
-
     </template>
+
 
     <!-- ======================================
      8. MODAL DETAIL PENGAJUAN
@@ -463,7 +429,7 @@ $nipLaboran = htmlspecialchars(
                 </div>
 
                 <!-- DETAIL PENGAJUAN DINAMIS -->
-<div class="detail-dinamis" data-detail-dinamis></div>
+                <div class="detail-dinamis" data-detail-dinamis></div>
 
                 <div class="detail-item">
                     <small>Skor Sistem</small>
@@ -574,9 +540,8 @@ $nipLaboran = htmlspecialchars(
                 </div>
 
 
-                <div class="collision-actions"
-     data-area-aksi-konflik="bentrok">
-</div>
+                <div class="collision-actions" data-area-aksi-konflik="bentrok">
+                </div>
 
 
 
@@ -607,9 +572,8 @@ $nipLaboran = htmlspecialchars(
                     </span>
                 </div>
 
-<div class="collision-actions"
-     data-area-aksi-konflik="bentrok-disetujui">
-</div>
+                <div class="collision-actions" data-area-aksi-konflik="bentrok-disetujui">
+                </div>
 
             </section>
 
@@ -661,8 +625,8 @@ $nipLaboran = htmlspecialchars(
     <!-- ======================================
          10. JAVASCRIPT
     ======================================= -->
-<!-- MODUL ANTREAN -->
-<script src="../../JS/laboran/antrean.js"></script>
+    <!-- MODUL ANTREAN -->
+    <script src="../../JS/laboran/antrean.js"></script>
 </body>
 
 </html>
