@@ -1,370 +1,3 @@
-<?php
-
-declare(strict_types=1);
-
-date_default_timezone_set('Asia/Jayapura');
-
-/*
-==================================================
-1. SESSION DAN DATABASE
-==================================================
-*/
-
-require_once __DIR__ . '/../auth/sesi.php';
-require_once __DIR__ . '/../../../config/database.php';
-
-/*
-==================================================
-2. VALIDASI LOGIN LABORAN
-==================================================
-*/
-
-if (!sudahLogin()) {
-    header('Location: ../auth/login.php');
-    exit;
-}
-
-$role = strtolower(trim($_SESSION['role'] ?? ''));
-
-if ($role !== 'laboran') {
-    http_response_code(403);
-    exit('Akses ditolak. Halaman ini hanya untuk Laboran.');
-}
-
-$idLaboran = (int) ($_SESSION['id_user'] ?? 0);
-
-if ($idLaboran <= 0) {
-    http_response_code(401);
-    exit('Identitas Laboran tidak valid.');
-}
-
-/*
-==================================================
-3. AMBIL ID PENGAJUAN DARI URL
-==================================================
-
-Contoh:
-buat_rekomendasi.php?id_pengajuan=2
-
-Mendukung:
-- id_pengajuan
-- id
-- kasusId
-*/
-
-$idPengajuan = filter_input(
-    INPUT_GET,
-    'id_pengajuan',
-    FILTER_VALIDATE_INT
-);
-
-if (!$idPengajuan) {
-    $idPengajuan = filter_input(
-        INPUT_GET,
-        'id',
-        FILTER_VALIDATE_INT
-    );
-}
-
-if (!$idPengajuan) {
-    $idPengajuan = filter_input(
-        INPUT_GET,
-        'kasusId',
-        FILTER_VALIDATE_INT
-    );
-}
-
-if (!$idPengajuan || $idPengajuan <= 0) {
-    http_response_code(400);
-    exit('ID pengajuan tidak ditemukan atau tidak valid.');
-}
-
-/*
-==================================================
-4. AMBIL DATA PENGAJUAN TERGESER
-==================================================
-*/
-
-try {
-
-    $sql = "
-
-        SELECT
-
-            p.id_pengajuan,
-            p.id_user,
-            p.nama_kegiatan,
-            p.waktu_mulai,
-            p.waktu_selesai,
-            p.status,
-
-            u.nama AS nama_pemohon,
-            u.nip_npm,
-
-            COALESCE((
-                SELECT SUM(
-                    CASE
-                        WHEN LOWER(f.nama_fasilitas) LIKE '%pc%'
-                        THEN pf.jumlah
-                        ELSE 0
-                    END
-                )
-                FROM pengajuan_fasilitas pf
-                INNER JOIN fasilitas f
-                    ON f.id_fasilitas = pf.id_fasilitas
-                WHERE pf.id_pengajuan = p.id_pengajuan
-            ), 0) AS kebutuhan_pc,
-
-            COALESCE((
-                SELECT SUM(
-                    CASE
-                        WHEN LOWER(f.nama_fasilitas) LIKE '%kursi%'
-                        THEN pf.jumlah
-                        ELSE 0
-                    END
-                )
-                FROM pengajuan_fasilitas pf
-                INNER JOIN fasilitas f
-                    ON f.id_fasilitas = pf.id_fasilitas
-                WHERE pf.id_pengajuan = p.id_pengajuan
-            ), 0) AS kebutuhan_kursi
-
-        FROM pengajuan p
-
-        INNER JOIN users u
-            ON u.id_user = p.id_user
-
-        WHERE p.id_pengajuan = :id_pengajuan
-
-        LIMIT 1
-
-    ";
-
-    $stmt = $pdo->prepare($sql);
-
-    $stmt->execute([
-        ':id_pengajuan' => $idPengajuan
-    ]);
-
-    $pengajuan = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$pengajuan) {
-        http_response_code(404);
-        exit('Data pengajuan tidak ditemukan.');
-    }
-
-    /*
-    ==============================================
-    5. VALIDASI STATUS PENGAJUAN
-    ==============================================
-    */
-
-    $statusPengajuan = strtolower(
-        trim($pengajuan['status'] ?? '')
-    );
-
-    $statusTergeser = [
-        'tergeser',
-        'pengguna_tergeser',
-        'tergeser_prioritas',
-        'menunggu_rekomendasi',
-        'displaced'
-    ];
-
-    if (!in_array($statusPengajuan, $statusTergeser, true)) {
-        http_response_code(422);
-        exit('Pengajuan ini tidak berada dalam status tergeser.');
-    }
-
-    /*
-    ==============================================
-    6. PERIKSA REKOMENDASI AKTIF
-    ==============================================
-    */
-
-    $stmt = $pdo->prepare("
-
-        SELECT
-
-            id_rekomendasi,
-            id_pengajuan,
-            status,
-            catatan,
-            waktu_dibuat,
-            waktu_dikirim,
-            batas_waktu
-
-        FROM rekomendasi
-
-        WHERE id_pengajuan = :id_pengajuan
-
-        ORDER BY id_rekomendasi DESC
-
-        LIMIT 1
-
-    ");
-
-    $stmt->execute([
-        ':id_pengajuan' => $idPengajuan
-    ]);
-
-    $rekomendasiLama = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    $statusRekomendasi = strtolower(
-        trim($rekomendasiLama['status'] ?? '')
-    );
-
-    $statusAktif = [
-        'menunggu',
-        'rekomendasi_dikirim',
-        'menunggu_persetujuan',
-        'menunggu_konfirmasi'
-    ];
-
-    if (
-        $rekomendasiLama &&
-        in_array($statusRekomendasi, $statusAktif, true)
-    ) {
-        http_response_code(409);
-        exit('Pengajuan ini sudah memiliki rekomendasi yang sedang menunggu konfirmasi.');
-    }
-
-    /*
-    ==============================================
-    7. AMBIL INFORMASI PENGAJUAN PENGGESER
-    ==============================================
-    */
-
-    $stmt = $pdo->prepare("
-
-        SELECT
-
-            k.id_konflik,
-            k.id_pengajuan_terpilih,
-
-            p2.nama_kegiatan AS kegiatan_penggeser,
-
-            u2.nama AS nama_penggeser
-
-        FROM pengajuan_konflik pk
-
-        INNER JOIN konflik k
-            ON k.id_konflik = pk.id_konflik
-
-        LEFT JOIN pengajuan p2
-            ON p2.id_pengajuan = k.id_pengajuan_terpilih
-
-        LEFT JOIN users u2
-            ON u2.id_user = p2.id_user
-
-        WHERE pk.id_pengajuan = :id_pengajuan
-
-          AND k.status = 'selesai'
-
-        ORDER BY
-            k.waktu_ditetapkan DESC,
-            k.id_konflik DESC
-
-        LIMIT 1
-
-    ");
-
-    $stmt->execute([
-        ':id_pengajuan' => $idPengajuan
-    ]);
-
-    $penggeser = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    /*
-    ==============================================
-    8. SIAPKAN DATA HALAMAN
-    ==============================================
-    */
-
-    $zonaWaktu = new DateTimeZone('Asia/Jayapura');
-
-    $waktuMulai = new DateTimeImmutable(
-        $pengajuan['waktu_mulai'],
-        $zonaWaktu
-    );
-
-    $waktuSelesai = new DateTimeImmutable(
-        $pengajuan['waktu_selesai'],
-        $zonaWaktu
-    );
-
-    $dataRekomendasiPage = [
-
-        'idPengajuan' => (int) $pengajuan['id_pengajuan'],
-
-        'namaPemohon' => $pengajuan['nama_pemohon'],
-
-        'nipNpm' => $pengajuan['nip_npm'],
-
-        'namaKegiatan' => $pengajuan['nama_kegiatan'],
-
-        'waktuMulaiAsal' => $pengajuan['waktu_mulai'],
-
-        'waktuSelesaiAsal' => $pengajuan['waktu_selesai'],
-
-        'jadwalAsalTanggal' => $waktuMulai->format('d-m-Y'),
-
-        'jadwalAsalJam' =>
-            $waktuMulai->format('H:i')
-            . ' - '
-            . $waktuSelesai->format('H:i')
-            . ' WIT',
-
-        'kebutuhanPC' => (int) $pengajuan['kebutuhan_pc'],
-
-        'kebutuhanKursi' => (int) $pengajuan['kebutuhan_kursi'],
-
-        'status' => $statusPengajuan,
-
-        'idKonflik' => $penggeser
-            ? (int) $penggeser['id_konflik']
-            : null,
-
-        'namaPenggeser' => $penggeser['nama_penggeser'] ?? '-',
-
-        'kegiatanPenggeser' =>
-            $penggeser['kegiatan_penggeser'] ?? '-',
-
-        'idPengajuanTerpilih' =>
-            isset($penggeser['id_pengajuan_terpilih'])
-            ? (int) $penggeser['id_pengajuan_terpilih']
-            : null,
-
-        'rekomendasiLama' => $rekomendasiLama ?: null
-
-    ];
-
-} catch (Throwable $e) {
-
-    error_log(
-        'HALAMAN BUAT REKOMENDASI: '
-        . $e->getMessage()
-    );
-
-    http_response_code(500);
-
-    exit(
-        'Terjadi kesalahan saat mengambil data pengajuan. Silakan periksa log server.'
-    );
-}
-
-?>
-
-<script>
-    window.DATA_REKOMENDASI = <?= json_encode(
-        $dataRekomendasiPage,
-        JSON_UNESCAPED_UNICODE |
-        JSON_HEX_TAG |
-        JSON_HEX_APOS |
-        JSON_HEX_AMP |
-        JSON_HEX_QUOT
-    ) ?>;
-</script>
 
 <!DOCTYPE html>
 <html lang="id">
@@ -379,11 +12,16 @@ try {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <!-- BOOTSTRAP ICONS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
 
     <!-- CSS -->
     <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
@@ -401,7 +39,11 @@ try {
 
         <div class="navbar-brand">
 
-            <img src="../../Assets/Logo_RPL.svg" alt="Logo SILAB" class="navbar-logo">
+            <img
+                src="../../Assets/Logo_RPL.svg"
+                alt="Logo SILAB"
+                class="navbar-logo"
+            >
 
             <div class="brand-info">
                 <h1>SILAB</h1>
@@ -513,7 +155,10 @@ try {
 
                 </div>
 
-                <span class="recommendation-status" id="statusRekomendasi">
+                <span
+                    class="recommendation-status"
+                    id="statusRekomendasi"
+                >
                     Menunggu Rekomendasi
                 </span>
 
@@ -556,7 +201,10 @@ try {
                         -
                     </span>
 
-                    <span class="priority-badge" data-detail="kategoriPrioritas">
+                    <span
+                        class="priority-badge"
+                        data-detail="kategoriPrioritas"
+                    >
                         -
                     </span>
 
@@ -640,7 +288,11 @@ try {
              4. FORM REKOMENDASI
         =================================== -->
 
-        <form id="formRekomendasi" class="recommendation-form" novalidate>
+        <form
+            id="formRekomendasi"
+            class="recommendation-form"
+            novalidate
+        >
 
 
             <!-- CARD ALOKASI JADWAL -->
@@ -672,8 +324,13 @@ try {
                             Slot Alternatif
                         </span>
 
-                        <button type="button" id="btnTambahAlternatif" class="btn-tambah-alternatif"
-                            aria-label="Tambah alternatif jadwal" title="Tambah alternatif jadwal">
+                        <button
+                            type="button"
+                            id="btnTambahAlternatif"
+                            class="btn-tambah-alternatif"
+                            aria-label="Tambah alternatif jadwal"
+                            title="Tambah alternatif jadwal"
+                        >
                             <i class="bi bi-plus-lg"></i>
                         </button>
 
@@ -702,7 +359,10 @@ try {
                      DAFTAR ALTERNATIF
                 =================================== -->
 
-                <div class="alternative-list" id="daftarAlternatif">
+                <div
+                    class="alternative-list"
+                    id="daftarAlternatif"
+                >
 
                     <!-- ALTERNATIF PERTAMA -->
 
@@ -740,9 +400,16 @@ try {
                                     Waktu Mulai
                                 </label>
 
-                                <input type="datetime-local" data-field="waktuMulai" required>
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuMulai"
+                                    required
+                                >
 
-                                <small class="field-error" data-error="waktuMulai"></small>
+                                <small
+                                    class="field-error"
+                                    data-error="waktuMulai"
+                                ></small>
 
                             </div>
 
@@ -755,9 +422,16 @@ try {
                                     Waktu Selesai
                                 </label>
 
-                                <input type="datetime-local" data-field="waktuSelesai" required>
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuSelesai"
+                                    required
+                                >
 
-                                <small class="field-error" data-error="waktuSelesai"></small>
+                                <small
+                                    class="field-error"
+                                    data-error="waktuSelesai"
+                                ></small>
 
                             </div>
 
@@ -797,8 +471,13 @@ try {
                                     Pilihan 2
                                 </span>
 
-                                <button type="button" class="btn-hapus-alternatif" data-hapus-alternatif
-                                    aria-label="Hapus alternatif jadwal" title="Hapus alternatif">
+                                <button
+                                    type="button"
+                                    class="btn-hapus-alternatif"
+                                    data-hapus-alternatif
+                                    aria-label="Hapus alternatif jadwal"
+                                    title="Hapus alternatif"
+                                >
                                     <i class="bi bi-trash3"></i>
                                 </button>
 
@@ -818,9 +497,16 @@ try {
                                     Waktu Mulai
                                 </label>
 
-                                <input type="datetime-local" data-field="waktuMulai" required>
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuMulai"
+                                    required
+                                >
 
-                                <small class="field-error" data-error="waktuMulai"></small>
+                                <small
+                                    class="field-error"
+                                    data-error="waktuMulai"
+                                ></small>
 
                             </div>
 
@@ -833,9 +519,16 @@ try {
                                     Waktu Selesai
                                 </label>
 
-                                <input type="datetime-local" data-field="waktuSelesai" required>
+                                <input
+                                    type="datetime-local"
+                                    data-field="waktuSelesai"
+                                    required
+                                >
 
-                                <small class="field-error" data-error="waktuSelesai"></small>
+                                <small
+                                    class="field-error"
+                                    data-error="waktuSelesai"
+                                ></small>
 
                             </div>
 
@@ -856,8 +549,13 @@ try {
                         Catatan Panduan untuk Pemohon
                     </label>
 
-                    <textarea id="catatan" name="catatan" rows="4" maxlength="500"
-                        placeholder="Tuliskan informasi atau arahan terkait jadwal alternatif yang ditawarkan."></textarea>
+                    <textarea
+                        id="catatan"
+                        name="catatan"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Tuliskan informasi atau arahan terkait jadwal alternatif yang ditawarkan."
+                    ></textarea>
 
                 </div>
 
@@ -866,7 +564,12 @@ try {
                      FEEDBACK VALIDASI
                 =================================== -->
 
-                <div id="feedbackRekomendasi" class="recommendation-feedback" role="status" aria-live="polite"></div>
+                <div
+                    id="feedbackRekomendasi"
+                    class="recommendation-feedback"
+                    role="status"
+                    aria-live="polite"
+                ></div>
 
 
                 <!-- ==================================
@@ -921,12 +624,19 @@ try {
 
                     <div class="footer-actions">
 
-                        <a href="rekomendasi_jadwal.php" class="btn-batal">
+                        <a
+                            href="rekomendasi_jadwal.php"
+                            class="btn-batal"
+                        >
                             <i class="bi bi-arrow-left"></i>
                             Kembali
                         </a>
 
-                        <button type="submit" id="btnKirimRekomendasi" class="btn-kirim-rekomendasi">
+                        <button
+                            type="submit"
+                            id="btnKirimRekomendasi"
+                            class="btn-kirim-rekomendasi"
+                        >
 
                             <i class="bi bi-send"></i>
 
@@ -951,7 +661,12 @@ try {
          5. NOTIFIKASI
     ======================================= -->
 
-    <div id="toastRekomendasi" class="toast-rekomendasi" role="status" aria-live="polite"></div>
+    <div
+        id="toastRekomendasi"
+        class="toast-rekomendasi"
+        role="status"
+        aria-live="polite"
+    ></div>
 
 
     <!-- ======================================
@@ -967,5 +682,4 @@ try {
     <script src="../../JS/laboran/rekomendasi'/buat_rekomendasi.js"></script>
 
 </body>
-
 </html>
