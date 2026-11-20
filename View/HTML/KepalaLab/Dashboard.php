@@ -441,7 +441,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
               <input
                 type="date"
-                id="tanggal-pdf"
+                id="tanggalPdf"
                 name="tanggal"
                 required
               />
@@ -454,10 +454,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
               <a href="#" class="btn-cancel">Batal</a>
 
-              <a href="#" class="btn-download pdf-button">
+              <<button
+    type="button"
+    class="btn-download pdf-button"
+    data-unduh-laporan="pdf"
+>
                 <i class="bi bi-download"></i>
                 Unduh Berkas Rekapan (PDF)
-              </a>
+              </button>
 
             </div>
 
@@ -503,7 +507,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
               <input
                 type="date"
-                id="tanggal-excel"
+                id="tanggalExcel"
                 name="tanggal"
                 required
               />
@@ -516,10 +520,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
               <a href="#" class="btn-cancel">Batal</a>
 
-              <a href="#" class="btn-download excel-button">
+              <button
+    type="button"
+    class="btn-download excel-button"
+    data-unduh-laporan="excel"
+>
                 <i class="bi bi-download"></i>
                 Unduh Berkas Rekapan (Excel)
-              </a>
+              </button>
 
             </div>
 
@@ -537,5 +545,15 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
     <script src="../../JS/laboran/layanan.js"></script>
 
     <script src="../../JS/KepalaLab/dashboard.js"></script>
+    <!-- LIBRARY EXCEL -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+<!-- LIBRARY PDF -->
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+
+<!-- MODUL LAPORAN DATABASE -->
+<script src="../../JS/laboran/laporan.js"></script>
   </body>
 </html>
