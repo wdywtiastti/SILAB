@@ -221,13 +221,13 @@ try {
                 id_booking,
                 id_user_laboran,
                 status,
-                waktu_divalidasi,
+                waktu_validasi,
                 waktu_dibuat
             ) VALUES (
                 :id_booking,
                 :id_user_laboran,
                 'tidak_digunakan',
-                :waktu_divalidasi,
+                :waktu_validasi,
                 :waktu_dibuat
             )
         ";
@@ -237,7 +237,7 @@ try {
         $stmtInsert->execute([
             ":id_booking" => $booking["id_booking"],
             ":id_user_laboran" => $idSistem,
-            ":waktu_divalidasi" => $waktuSekarang,
+            ":waktu_validasi" => $waktuSekarang,
             ":waktu_dibuat" => $waktuSekarang
         ]);
 

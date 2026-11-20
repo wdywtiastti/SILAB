@@ -364,9 +364,6 @@ $namaLaboran = htmlspecialchars(
     </main>
 
 
-    <!-- SHARED STORAGE -->
-    <script src="../../JS/shared/storage.js"></script>
-
     <!-- UTILITAS WAKTU -->
     <script src="../../JS/laboran/utils/waktu.js"></script>
 

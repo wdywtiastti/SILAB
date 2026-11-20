@@ -141,9 +141,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
               <i class="bi bi-building"></i>
               Fasilitas: 1 Ruangan Laboratorium Terpadu RPL
             </span>
-
-            <span class="badge-info">PC 36</span>
-            <span class="badge-info">Kursi 36</span>
           </div>
 
           <h2>Penyelesaian Konflik Jadwal Lab RPL</h2>

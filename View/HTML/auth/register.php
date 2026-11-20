@@ -178,9 +178,9 @@
 
               <span>
                 Saya setuju dengan
-                <a href="syarat_ketentuan.html">syarat dan ketentuan</a>
+                <a href="syarat_ketentuan.php">syarat dan ketentuan</a>
                 serta
-                <a href="kebijakan_privasi.html">kebijakan privasi</a>
+                <a href="kebijakan_privasi.php">kebijakan privasi</a>
               </span>
             </label>
             <small class="error-message" id="termsError"></small>

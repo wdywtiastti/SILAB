@@ -112,10 +112,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
               </div>
 
             </div>
-            <a href="../shared/ubah_password.php" class="profile-link">
-                <i class="bi bi-key"></i>
-                Ubah Password
-            </a>
 
             <div class="profile-divider"></div>
 
@@ -167,20 +163,20 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             </div>
           </div>
 
-          <h2>128</h2>
+          <h2 id="total-users">0</h2>
 
           <div class="summary-divider"></div>
 
           <div class="account-status">
-            <span class="status-active">
-              <i class="bi bi-circle-fill"></i>
-              122 Aktif
-            </span>
+<span class="status-active" id="active-users">
+    <i class="bi bi-circle-fill"></i>
+    0 Aktif
+</span>
 
-            <span class="status-inactive">
-              <i class="bi bi-circle-fill"></i>
-              6 Nonaktif
-            </span>
+<span class="status-inactive" id="inactive-users">
+    <i class="bi bi-circle-fill"></i>
+    0 Nonaktif
+</span>
           </div>
         </div>
 
@@ -215,7 +211,9 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         <div class="table-toolbar">
           <!-- DROPDOWN FILTER STATUS -->
           <details class="status-filter">
-            <summary class="filter-button">Semua (128)</summary>
+            <summary class="filter-button" id="filter-button">
+    Semua (0)
+</summary>
 
             <div class="filter-dropdown">
               <span class="filter-heading"> FILTER STATUS AKUN </span>
