@@ -224,10 +224,19 @@ try {
         INNER JOIN users u
             ON u.id_user = p.id_user
 
-       LEFT JOIN skor_pengajuan sp
+LEFT JOIN skor_pengajuan sp
     ON sp.id_pengajuan = p.id_pengajuan
 
-        WHERE DATE(p.waktu_mulai) = :tanggal
+LEFT JOIN (
+    SELECT
+        id_booking,
+        MAX(status) AS status
+    FROM validasi_booking
+    GROUP BY id_booking
+) vb
+    ON vb.id_booking = b.id_booking
+
+WHERE DATE(p.waktu_mulai) = :tanggal
 
         AND b.status IN (
             'terjadwal',

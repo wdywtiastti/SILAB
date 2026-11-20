@@ -746,7 +746,7 @@ $stmt->execute([
                 id_booking,
                 id_user_laboran,
                 status,
-                waktu_divalidasi,
+                waktu_validasi,
                 waktu_dibuat
             )
 
@@ -762,7 +762,7 @@ $stmt->execute([
 
                 id_user_laboran = VALUES(id_user_laboran),
                 status = 'disetujui',
-                waktu_divalidasi = NOW()
+                waktu_validasi = NOW()
         ");
 
         $stmt->execute([
@@ -1021,7 +1021,7 @@ $stmt->execute([
 
             SET
                 status = 'dibatalkan',
-                waktu_divalidasi = NOW()
+                waktu_validasi = NOW()
 
             WHERE id_booking = :id
         ");

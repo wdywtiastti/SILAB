@@ -395,7 +395,7 @@ async function ambilData() {
         }
 
         tombol.href =
-            `buat_rekomendasi.html?${parameter.toString()}`;
+            `buat_rekomendasi.php?${parameter.toString()}`;
 
         tombol.setAttribute(
             "aria-label",
