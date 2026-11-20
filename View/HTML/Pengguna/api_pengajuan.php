@@ -785,6 +785,119 @@ jsonResponse(
             throw $e;
         }
     }
+
+
+    // =========================================
+    // 3. AMBIL JADWAL PENGGUNA
+    // GET ?action=schedule
+    // =========================================
+
+    if ($method === "GET" && $action === "schedule") {
+
+        $stmt = $pdo->prepare("
+
+            SELECT
+                p.id_pengajuan,
+                p.nama_kegiatan,
+                p.waktu_mulai,
+                p.waktu_selesai,
+                p.status AS status_pengajuan,
+
+                b.id_booking,
+                b.status AS status_booking,
+
+                u.nama AS nama_pemohon,
+
+                (
+                    SELECT COALESCE(SUM(pf.jumlah), 0)
+                    FROM pengajuan_fasilitas pf
+                    INNER JOIN fasilitas f
+                        ON f.id_fasilitas = pf.id_fasilitas
+                    WHERE pf.id_pengajuan = p.id_pengajuan
+                      AND LOWER(f.nama_fasilitas) LIKE '%pc%'
+                ) AS kebutuhan_pc,
+
+                (
+                    SELECT COALESCE(SUM(pf.jumlah), 0)
+                    FROM pengajuan_fasilitas pf
+                    INNER JOIN fasilitas f
+                        ON f.id_fasilitas = pf.id_fasilitas
+                    WHERE pf.id_pengajuan = p.id_pengajuan
+                      AND LOWER(f.nama_fasilitas) LIKE '%kursi%'
+                ) AS kebutuhan_kursi
+
+            FROM booking b
+
+            INNER JOIN pengajuan p
+                ON p.id_pengajuan = b.id_pengajuan
+
+            INNER JOIN users u
+                ON u.id_user = p.id_user
+
+            WHERE p.id_user = :id_user
+
+              AND LOWER(b.status) = 'terjadwal'
+
+              AND p.waktu_selesai >= NOW()
+
+            ORDER BY
+                p.waktu_mulai ASC
+
+        ");
+
+        $stmt->execute([
+            ":id_user" => $idUser
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $jadwal = [];
+
+        foreach ($rows as $row) {
+
+            $jadwal[] = [
+
+                "id" => (int) $row["id_pengajuan"],
+
+                "kegiatan" => $row["nama_kegiatan"],
+
+                "tanggal" => date(
+                    "Y-m-d",
+                    strtotime($row["waktu_mulai"])
+                ),
+
+                "mulai" => date(
+                    "H:i",
+                    strtotime($row["waktu_mulai"])
+                ),
+
+                "selesai" => date(
+                    "H:i",
+                    strtotime($row["waktu_selesai"])
+                ),
+
+                "pc" => (int) $row["kebutuhan_pc"],
+
+                "kursi" => (int) $row["kebutuhan_kursi"],
+
+                "kelas" => "Penggunaan Laboratorium",
+
+                "pemohon" => $row["nama_pemohon"],
+
+                "status" => $row["status_booking"]
+
+            ];
+        }
+
+        jsonResponse(
+            true,
+            "Jadwal penggunaan laboratorium berhasil diambil.",
+            [
+                "jadwal" => $jadwal
+            ]
+        );
+    }
+
     // =========================================
     // ACTION TIDAK DIKENALI
     // =========================================

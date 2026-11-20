@@ -84,48 +84,89 @@ window.getGroupTime = function (pengajuan) {
     .join(", ");
 };
 
+
 /* =========================================
-   SILAB - DATA KONFLIK DARI STORAGE
+   SILAB - DATA KONFLIK DARI DATABASE API
 ========================================= */
 
-function ambilDataKonflikKepalaLab() {
-  if (
-    !window.SILABService ||
-    typeof window.SILABService.getKonflik !== "function"
-  ) {
-    console.error("SILABService.getKonflik belum tersedia.");
-    return [];
+const API_KONFLIK = "api/konflik_api.php";
+
+// Menyimpan data konflik dari database.
+let dataKonflikKepalaLab = [];
+
+// Mengambil data konflik melalui API.
+async function ambilDataKonflikKepalaLab() {
+  try {
+    const response = await fetch(
+      `${API_KONFLIK}?action=list`,
+      {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+      throw new Error(
+        hasil.message || "Gagal mengambil data konflik."
+      );
+    }
+
+    if (!Array.isArray(hasil.data)) {
+      throw new Error("Format data konflik tidak valid.");
+    }
+
+    dataKonflikKepalaLab = hasil.data
+      .filter(
+        (item) =>
+          item &&
+          Array.isArray(item.pengajuan)
+      )
+      .map((item) => ({
+        ...item,
+
+        id: Number(item.id ?? item.id_konflik),
+
+        pengajuan: item.pengajuan.map((p) => ({
+          ...p,
+
+          id: Number(p.id ?? p.id_pengajuan),
+
+          pemohon:
+            p.pemohon ||
+            p.namaPemohon ||
+            "-",
+
+          kegiatan:
+            p.kegiatan ||
+            p.namaKegiatan ||
+            "-",
+
+          mulai:
+            p.mulai ||
+            "-",
+
+          selesai:
+            p.selesai ||
+            "-",
+        })),
+      }));
+
+    return dataKonflikKepalaLab;
+
+  } catch (error) {
+    console.error(
+      "GAGAL MENGAMBIL DATA KONFLIK:",
+      error
+    );
+
+    throw error;
   }
-
-  const data = window.SILABService.getKonflik();
-
-  if (!Array.isArray(data)) return [];
-
-  return data
-    .filter(
-      (item) =>
-        item &&
-        item.status === "menunggu_keputusan" &&
-        Array.isArray(item.pengajuan),
-    )
-    .map((item) => ({
-      ...item,
-
-      pengajuan: item.pengajuan.map((p) => ({
-        ...p,
-
-        // Menyesuaikan format data Laboran
-        pemohon: p.pemohon || p.namaPemohon || p.nama || "-",
-
-        kegiatan: p.kegiatan || p.namaKegiatan || "-",
-
-        mulai: p.mulai || p.waktuMulai?.split("T")[1] || "-",
-
-        selesai: p.selesai || p.waktuSelesai?.split("T")[1] || "-",
-      })),
-    }));
 }
-
 /* =========================================
    SILAB - RENDER SESI KONFLIK DINAMIS
 ========================================= */
@@ -139,7 +180,41 @@ function ambilDataKonflikKepalaLab() {
   const expandedConflicts = new Set();
 
   // Menyimpan satu pengajuan terpilih untuk setiap sesi.
+  // Menyimpan banyak pengajuan terpilih untuk setiap kelompok konflik.
+  // Format: Map<idKonflik, Set<idPengajuan>>
   const selectedSubmissions = new Map();
+
+  function getSelectedSubmissionIds(groupId) {
+    return selectedSubmissions.get(groupId) ?? new Set();
+  }
+
+
+function getIntervalWaktu(pengajuan) {
+  const mulai =
+    pengajuan.waktuMulai ||
+    `${pengajuan.tanggal} ${pengajuan.mulai}:00`;
+
+  const selesai =
+    pengajuan.waktuSelesai ||
+    `${pengajuan.tanggal} ${pengajuan.selesai}:00`;
+
+  return {
+    mulai: String(mulai).replace("T", " "),
+    selesai: String(selesai).replace("T", " "),
+  };
+}
+
+function jadwalBeririsan(a, b) {
+  const waktuA = getIntervalWaktu(a);
+  const waktuB = getIntervalWaktu(b);
+
+  return (
+    waktuA.mulai < waktuB.selesai &&
+    waktuA.selesai > waktuB.mulai
+  );
+}
+
+
   let pendingConflictDecision = null;
   let accordionInitialized = false;
 
@@ -158,45 +233,64 @@ function ambilDataKonflikKepalaLab() {
    MODAL KONFIRMASI KEPUTUSAN
 ========================================= */
 
-  function openDecisionModal(group, selectedData) {
-    const modal = document.getElementById("decision-confirm-modal");
+  
+function openDecisionModal(group, selectedData) {
+  const modal = document.getElementById(
+    "decision-confirm-modal"
+  );
 
-    if (!modal) {
-      console.error("Modal keputusan tidak ditemukan.");
-      return;
-    }
-
-    pendingConflictDecision = {
-      groupId: group.id,
-      selectedId: selectedData.id,
-    };
-
-    const fields = {
-      "decision-selected-name":
-        selectedData.pemohon ?? selectedData.nama ?? "-",
-
-      "decision-selected-activity": selectedData.kegiatan ?? "-",
-
-      "decision-selected-time": `${selectedData.mulai ?? "-"} – ${selectedData.selesai ?? "-"} WIT`,
-
-      "decision-approved-count": 1,
-
-      "decision-shifted-count": group.pengajuan.length - 1,
-    };
-
-    Object.entries(fields).forEach(([id, value]) => {
-      const element = document.getElementById(id);
-
-      if (element) {
-        element.textContent = value;
-      }
-    });
-
-    modal.hidden = false;
-    document.body.style.overflow = "hidden";
-
-    document.getElementById("cancel-decision")?.focus();
+  if (!modal) {
+    console.error("Modal keputusan tidak ditemukan.");
+    return;
   }
+
+  const selectedIds = selectedData.map(
+    (item) => item.id
+  );
+
+  pendingConflictDecision = {
+    groupId: group.id,
+    selectedIds: selectedIds,
+  };
+
+  const fields = {
+    "decision-selected-name":
+      selectedData.map(
+        (item) => item.pemohon ?? item.nama ?? "-"
+      ).join(", "),
+
+    "decision-selected-activity":
+      selectedData.map(
+        (item) => item.kegiatan ?? "-"
+      ).join("; "),
+
+    "decision-selected-time":
+      selectedData.map(
+        (item) =>
+          `${item.mulai}–${item.selesai} WIT`
+      ).join("; "),
+
+    "decision-approved-count":
+      selectedData.length,
+
+    "decision-shifted-count":
+      group.pengajuan.length - selectedData.length,
+  };
+
+  Object.entries(fields).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.textContent = value;
+    }
+  });
+
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+
+  document.getElementById("cancel-decision")?.focus();
+}
+
 
   function closeDecisionModal() {
     const modal = document.getElementById("decision-confirm-modal");
@@ -215,41 +309,77 @@ function ambilDataKonflikKepalaLab() {
     }
   }
 
-  function confirmConflictDecision() {
-    if (!pendingConflictDecision) {
-      console.error("Belum ada keputusan yang dipilih.");
-      return;
+
+
+async function confirmConflictDecision() {
+  if (!pendingConflictDecision) {
+    console.error("Belum ada keputusan yang dipilih.");
+    return;
+  }
+
+  const groupId = pendingConflictDecision.groupId;
+  const selectedIds = pendingConflictDecision.selectedIds;
+
+  if (!Array.isArray(selectedIds) || selectedIds.length === 0) {
+    alert("Pilih minimal satu pengajuan.");
+    return;
+  }
+
+  const button = document.getElementById("confirm-decision");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Menyimpan Keputusan...";
+  }
+
+  try {
+    const response = await fetch(API_KONFLIK, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        action: "putuskan",
+        id_konflik: groupId,
+        id_pengajuan: selectedIds,
+      }),
+    });
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+      throw new Error(
+        hasil.message || "Keputusan gagal disimpan."
+      );
     }
 
-    const groupId = pendingConflictDecision.groupId;
-    const selectedId = pendingConflictDecision.selectedId;
+    console.log("KEPUTUSAN BERHASIL:", hasil.data);
 
-    try {
-      const hasil = window.SILABService.putuskanKonflik(groupId, selectedId);
+    selectedSubmissions.delete(groupId);
 
-      if (!hasil || !hasil.berhasil) {
-        throw new Error(hasil?.pesan || "Keputusan gagal disimpan.");
-      }
+    closeDecisionModal();
 
-      console.log("KEPUTUSAN BERHASIL:", hasil);
+    await renderKonflik();
 
-      // Bersihkan pilihan.
-      selectedSubmissions.delete(groupId);
+    alert("Keputusan konflik berhasil disimpan!");
 
-      pendingConflictDecision = null;
+  } catch (error) {
+    console.error("GAGAL MENYIMPAN KEPUTUSAN:", error);
 
-      // Tutup popup.
-      closeDecisionModal();
+    alert("Gagal menyimpan keputusan: " + error.message);
 
-      // Muat ulang data dari storage.
-      renderKonflik();
-
-      alert("Keputusan konflik berhasil disimpan!");
-    } catch (error) {
-      console.error("GAGAL MENYIMPAN KEPUTUSAN:", error);
-      alert("Gagal menyimpan keputusan: " + error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.innerHTML =
+        '<i class="bi bi-check2"></i> Tetapkan Keputusan';
     }
   }
+}
+
+
 
   // Pasang event listener satu kali.
   document
@@ -398,127 +528,169 @@ function ambilDataKonflikKepalaLab() {
     }
   });
 
-  function toggleSubmissionSelection(groupId, submissionId) {
-    const konflik = ambilDataKonflikKepalaLab();
+  
+  
+function toggleSubmissionSelection(groupId, submissionId) {
+  const group = dataKonflikKepalaLab.find(
+    (item) => item.id === groupId
+  );
 
-    const group = konflik.find((item) => item.id === groupId);
-
-    if (!group || group.status === "selesai") {
-      return;
-    }
-
-    const pengajuan = group.pengajuan.find((item) => item.id === submissionId);
-
-    if (!pengajuan) {
-      console.error("Pengajuan tidak ditemukan.");
-      return;
-    }
-
-    const selectedId = selectedSubmissions.get(groupId);
-
-    // Jika tombol yang sama diklik, batalkan pilihan.
-    if (selectedId === submissionId) {
-      selectedSubmissions.delete(groupId);
-    } else {
-      // Pilihan sebelumnya otomatis digantikan.
-      selectedSubmissions.set(groupId, submissionId);
-    }
-
-    renderKonflik();
+  if (!group || group.status !== "menunggu_keputusan") {
+    return;
   }
+
+  const pengajuan = group.pengajuan.find(
+    (item) => item.id === submissionId
+  );
+
+  if (!pengajuan) {
+    console.error("Pengajuan tidak ditemukan.");
+    return;
+  }
+
+  const selectedIds = new Set(
+    getSelectedSubmissionIds(groupId)
+  );
+
+  // Jika sudah dipilih, batalkan pilihan.
+  if (selectedIds.has(submissionId)) {
+    selectedIds.delete(submissionId);
+
+  } else {
+    // Ambil seluruh pengajuan yang sudah dipilih.
+    const selectedData = group.pengajuan.filter(
+      (item) => selectedIds.has(item.id)
+    );
+
+    // Pastikan tidak berbenturan dengan pilihan sebelumnya.
+    const bentrok = selectedData.find(
+      (item) => jadwalBeririsan(item, pengajuan)
+    );
+
+    if (bentrok) {
+      alert(
+        `Jadwal pengajuan ini berbenturan dengan ` +
+        `${bentrok.pemohon} (${bentrok.mulai}–${bentrok.selesai}).`
+      );
+
+      return;
+    }
+
+    selectedIds.add(submissionId);
+  }
+
+  if (selectedIds.size > 0) {
+    selectedSubmissions.set(groupId, selectedIds);
+  } else {
+    selectedSubmissions.delete(groupId);
+  }
+
+  renderKonflik();
+}
+
+
 
   // =====================================
   // 3. MEMBUAT BARIS PENGAJUAN
   // =====================================
 
-  function createSubmissionRow(pengajuan, groupId) {
-    const row = document.createElement("tr");
+  
+function createSubmissionRow(pengajuan, groupId) {
+  const row = document.createElement("tr");
 
-    row.dataset.submissionId = pengajuan.id ?? "";
+  row.dataset.submissionId = pengajuan.id ?? "";
 
-    const columns = [
-      pengajuan.pemohon ?? pengajuan.nama ?? "-",
-      pengajuan.kegiatan ?? "-",
-      `${pengajuan.mulai ?? "-"} – ${pengajuan.selesai ?? "-"} WIT`,
-    ];
+  const columns = [
+    pengajuan.pemohon ?? pengajuan.nama ?? "-",
+    pengajuan.kegiatan ?? "-",
+    `${pengajuan.mulai ?? "-"} – ${pengajuan.selesai ?? "-"} WIT`,
+  ];
 
-    columns.forEach((value) => {
-      row.appendChild(makeElement("td", "", value));
-    });
+  columns.forEach((value) => {
+    row.appendChild(makeElement("td", "", value));
+  });
 
-    const actionCell = document.createElement("td");
+  const actionCell = document.createElement("td");
 
-    const selectedId = selectedSubmissions.get(groupId);
-    const isSelected = selectedId === pengajuan.id;
+  const selectedIds = getSelectedSubmissionIds(groupId);
+  const isSelected = selectedIds.has(pengajuan.id);
 
-    const button = makeElement(
-      "button",
-      "btn-select-conflict",
-      isSelected ? "Terpilih" : "Pilih Jadwal",
+  const button = makeElement(
+    "button",
+    "btn-select-conflict",
+    isSelected ? "Terpilih" : "Pilih Jadwal"
+  );
+
+  button.type = "button";
+
+  if (isSelected) {
+    button.classList.add("selected");
+  }
+
+  button.addEventListener("click", () => {
+    toggleSubmissionSelection(
+      groupId,
+      pengajuan.id
+    );
+  });
+
+  actionCell.appendChild(button);
+  row.appendChild(actionCell);
+
+  row.classList.add("clickable-submission-row");
+  row.tabIndex = 0;
+
+  row.addEventListener("click", (event) => {
+    if (event.target.closest("button")) return;
+
+    openDetailPeminjaman(pengajuan);
+  });
+
+  row.addEventListener("keydown", (event) => {
+    if (event.target !== row) return;
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openDetailPeminjaman(pengajuan);
+    }
+  });
+
+  return row;
+}
+
+
+  
+function updateToggleAllButton(konflik) {
+  if (!toggleAllButton) return;
+
+  const pending = konflik.filter(
+    (item) => item.status === "menunggu_keputusan"
+  );
+
+  const allExpanded =
+    pending.length > 0 &&
+    pending.every((item) =>
+      expandedConflicts.has(item.id)
     );
 
-    button.type = "button";
+  const label = toggleAllButton.querySelector("span");
+  const icon = toggleAllButton.querySelector("i");
 
-    if (isSelected) {
-      button.classList.add("selected");
-    }
-
-    button.addEventListener("click", () => {
-      const current = selectedSubmissions.get(groupId);
-
-      if (current === pengajuan.id) {
-        selectedSubmissions.delete(groupId);
-      } else {
-        selectedSubmissions.set(groupId, pengajuan.id);
-      }
-
-      renderKonflik();
-    });
-
-    actionCell.appendChild(button);
-    row.appendChild(actionCell);
-
-    row.classList.add("clickable-submission-row");
-    row.tabIndex = 0;
-
-    row.addEventListener("click", (event) => {
-      if (event.target.closest("button")) return;
-      openDetailPeminjaman(pengajuan);
-    });
-
-    row.addEventListener("keydown", (event) => {
-      if (event.target !== row) return;
-
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openDetailPeminjaman(pengajuan);
-      }
-    });
-
-    return row;
+  if (label) {
+    label.textContent = allExpanded
+      ? "Tutup Semua"
+      : "Buka Semua";
   }
 
-  function updateToggleAllButton(totalGroups) {
-    if (!toggleAllButton) return;
-
-    const allExpanded =
-      totalGroups > 0 && expandedConflicts.size === totalGroups;
-
-    const label = toggleAllButton.querySelector("span");
-    const icon = toggleAllButton.querySelector("i");
-
-    if (label) {
-      label.textContent = allExpanded ? "Tutup Semua" : "Buka Semua";
-    }
-
-    if (icon) {
-      icon.className = allExpanded
-        ? "bi bi-arrows-collapse"
-        : "bi bi-arrows-expand";
-    }
-
-    toggleAllButton.disabled = totalGroups === 0;
+  if (icon) {
+    icon.className = allExpanded
+      ? "bi bi-arrows-collapse"
+      : "bi bi-arrows-expand";
   }
+
+  toggleAllButton.disabled = pending.length === 0;
+}
+
 
   function toggleConflict(groupId) {
     if (expandedConflicts.has(groupId)) {
@@ -732,14 +904,15 @@ function ambilDataKonflikKepalaLab() {
     // AREA KEPUTUSAN KEPALA LABORATORIUM
     const decisionArea = makeElement("div", "conflict-decision-area");
 
-    const selectedId = selectedSubmissions.get(group.id);
+    const selectedIds = getSelectedSubmissionIds(group.id);
+    const selectedCount = selectedIds.size;
 
     const selectedInfo = makeElement(
       "span",
       "conflict-selection-info",
-      selectedId
-        ? "1 pengajuan telah dipilih"
-        : "Belum ada pengajuan yang dipilih",
+      selectedCount > 0
+        ? `${selectedCount} pengajuan telah dipilih`
+        : "Belum ada pengajuan yang dipilih"
     );
 
     const decisionButton = makeElement(
@@ -748,25 +921,25 @@ function ambilDataKonflikKepalaLab() {
       "Tetapkan Keputusan",
     );
 
+    
     decisionButton.type = "button";
-    decisionButton.disabled = !selectedId;
+
+    decisionButton.disabled =
+      selectedCount === 0 ||
+      group.status !== "menunggu_keputusan";
 
     decisionButton.addEventListener("click", () => {
-      const selected = selectedSubmissions.get(group.id);
+      const selectedData = pengajuan.filter(
+        (item) => selectedIds.has(item.id)
+      );
 
-      if (!selected) {
-        return;
-      }
-
-      const selectedData = pengajuan.find((item) => item.id === selected);
-
-      if (!selectedData) {
-        console.error("Pengajuan tidak ditemukan.");
+      if (selectedData.length === 0) {
         return;
       }
 
       openDecisionModal(group, selectedData);
     });
+
 
     decisionArea.append(selectedInfo, decisionButton);
 
@@ -781,90 +954,147 @@ function ambilDataKonflikKepalaLab() {
   // 5. RENDER SELURUH KONFLIK
   // =====================================
 
-  function renderKonflik() {
-    const konflik = ambilDataKonflikKepalaLab();
+  
+async function renderKonflik() {
+  let konflik;
 
-    renderSummary(konflik);
-
-    // Pada render pertama, buka seluruh sesi.
-    if (!accordionInitialized) {
-      konflik.forEach((item) => {
-        expandedConflicts.add(item.id);
-      });
-
-      accordionInitialized = true;
-    }
-
-    // Hapus ID yang sudah tidak ada.
-    const validIds = new Set(konflik.map((item) => item.id));
-
-    for (const id of expandedConflicts) {
-      if (!validIds.has(id)) {
-        expandedConflicts.delete(id);
-      }
-    }
-
-    updateToggleAllButton(konflik.length);
+  try {
+    konflik = await ambilDataKonflikKepalaLab();
+  } catch (error) {
+    console.error("Gagal memuat konflik:", error);
 
     conflictList.replaceChildren();
 
-    if (konflik.length === 0) {
-      const empty = makeElement("div", "dynamic-conflict-empty");
+    const empty = makeElement(
+      "div",
+      "dynamic-conflict-empty"
+    );
 
-      empty.append(
-        makeElement("h3", "", "Tidak Ada Konflik yang Menunggu"),
-        makeElement(
-          "p",
-          "",
-          "Seluruh sesi konflik telah diputuskan atau belum ada pengajuan bentrok dari Laboran.",
-        ),
-      );
+    empty.append(
+      makeElement(
+        "h3",
+        "",
+        "Gagal Memuat Data Konflik"
+      ),
+      makeElement(
+        "p",
+        "",
+        "Periksa koneksi database dan API, kemudian muat ulang halaman."
+      )
+    );
 
-      conflictList.appendChild(empty);
-      return;
-    }
+    conflictList.appendChild(empty);
+    renderSummary([]);
 
-    konflik.forEach((group, index) => {
-      conflictList.appendChild(createConflictCard(group, index));
-    });
+    return;
   }
+
+  renderSummary(konflik);
+
+  const konflikAktif = konflik.filter(
+  (item) => item.status === "menunggu_keputusan"
+  );
+
+  
+  // Pada render pertama, buka seluruh konflik aktif.
+  if (!accordionInitialized) {
+    konflikAktif.forEach((item) => {
+      expandedConflicts.add(item.id);
+    });
+
+    accordionInitialized = true;
+  }
+
+  // Bersihkan state kelompok yang sudah tidak aktif.
+  const validIds = new Set(
+    konflikAktif.map((item) => item.id)
+  );
+
+  for (const id of expandedConflicts) {
+    if (!validIds.has(id)) {
+      expandedConflicts.delete(id);
+    }
+  }
+
+  for (const id of selectedSubmissions.keys()) {
+    if (!validIds.has(id)) {
+      selectedSubmissions.delete(id);
+    }
+  }
+
+  updateToggleAllButton(konflikAktif);
+
+  conflictList.replaceChildren();
+
+  if (konflikAktif.length === 0) {
+    const empty = makeElement(
+      "div",
+      "dynamic-conflict-empty"
+    );
+
+    empty.append(
+      makeElement(
+        "h3",
+        "",
+        "Tidak Ada Konflik yang Menunggu"
+      ),
+      makeElement(
+        "p",
+        "",
+        "Seluruh kelompok konflik telah diputuskan atau belum ada konflik baru."
+      )
+    );
+
+    conflictList.appendChild(empty);
+    return;
+  }
+
+  konflikAktif.forEach((group, index) => {
+    conflictList.appendChild(
+      createConflictCard(group, index)
+    );
+  });
+}
+
 
   // =====================================
   // 6. SINKRONISASI DENGAN DATA CONSOLE
   // =====================================
 
-  // Perubahan konflik dari layanan SILAB.
-  window.addEventListener("silab:conflicts-berubah", renderKonflik);
-
-  // Perubahan LocalStorage dari tab lain.
-  window.addEventListener("storage", (event) => {
-    if (event.key === SILABStorage.KEYS.CONFLICTS || event.key === null) {
+  // Sinkronisasi jika ada perubahan konflik dari modul lain.
+  window.addEventListener(
+    "silab:conflicts-berubah",
+    () => {
       renderKonflik();
     }
+  );
+  
+if (toggleAllButton) {
+  toggleAllButton.addEventListener("click", () => {
+    const konflik = dataKonflikKepalaLab.filter(
+      (item) => item.status === "menunggu_keputusan"
+    );
+
+    const allExpanded =
+      konflik.length > 0 &&
+      konflik.every((item) =>
+        expandedConflicts.has(item.id)
+      );
+
+    if (allExpanded) {
+      konflik.forEach((item) => {
+        expandedConflicts.delete(item.id);
+      });
+    } else {
+      konflik.forEach((item) => {
+        expandedConflicts.add(item.id);
+      });
+    }
+
+    renderKonflik();
   });
+}
 
-  if (toggleAllButton) {
-    toggleAllButton.addEventListener("click", () => {
-      // Ambil hanya sesi yang belum diputuskan.
-      const konflik = ambilDataKonflikKepalaLab();
-
-      renderSummary(konflik);
-
-      const allExpanded =
-        konflik.length > 0 &&
-        konflik.every((item) => expandedConflicts.has(item.id));
-
-      if (allExpanded) {
-        expandedConflicts.clear();
-      } else {
-        konflik.forEach((item) => {
-          expandedConflicts.add(item.id);
-        });
-      }
-
-      renderKonflik();
-    });
-  }
 
   renderKonflik();
 })();

@@ -10,7 +10,8 @@
     // 1. DEPENDENSI DAN ELEMEN
     // ==========================================
 
-    const layanan = window.SILABService;
+    const API_REKOMENDASI =
+    "API/rekomendasi_api.php";
 
     const el = {
         tabel: document.getElementById("tabelBody"),
@@ -52,8 +53,7 @@
 
     // Memastikan seluruh elemen tersedia.
     if (
-        !layanan ||
-        Object.values(el).some(elemen => !elemen)
+    Object.values(el).some(elemen => !elemen)
     ) {
         console.error(
             "SILAB: Elemen modul rekomendasi belum lengkap."
@@ -113,29 +113,125 @@
     // 3. PENGAMBILAN DATA
     // ==========================================
 
-    function ambilData() {
-        try {
-            semuaKasus = layanan.getAll("penggunaTergeser");
+    
+// ==========================================
+// 3. PENGAMBILAN DATA DARI DATABASE API
+// ==========================================
 
-            semuaRekomendasi = layanan.getAll("rekomendasi");
+async function ambilData() {
+    try {
+        const [responseKasus, responseRekomendasi] =
+            await Promise.all([
+                fetch(
+                    `${API_REKOMENDASI}?action=list_tergeser`,
+                    {
+                        method: "GET",
+                        credentials: "same-origin",
+                        headers: {
+                            Accept: "application/json"
+                        }
+                    }
+                ),
 
-            // Mengurutkan berdasarkan prioritas.
-            semuaKasus.sort((a, b) => {
-                return (
-                    urutanPrioritas(a.prioritas) -
-                    urutanPrioritas(b.prioritas)
-                );
-            });
+                fetch(
+                    `${API_REKOMENDASI}?action=list_rekomendasi`,
+                    {
+                        method: "GET",
+                        credentials: "same-origin",
+                        headers: {
+                            Accept: "application/json"
+                        }
+                    }
+                )
+            ]);
 
-            perbaruiHalaman();
+        const [hasilKasus, hasilRekomendasi] =
+            await Promise.all([
+                responseKasus.json(),
+                responseRekomendasi.json()
+            ]);
 
-        } catch (error) {
-            console.error(
-                "SILAB: Gagal mengambil data rekomendasi.",
-                error
+        if (!responseKasus.ok || !hasilKasus.success) {
+            throw new Error(
+                hasilKasus.message ||
+                "Gagal mengambil pengajuan tergeser."
             );
         }
+
+        if (!responseRekomendasi.ok || !hasilRekomendasi.success) {
+            throw new Error(
+                hasilRekomendasi.message ||
+                "Gagal mengambil data rekomendasi."
+            );
+        }
+
+        if (
+            !Array.isArray(hasilKasus.data) ||
+            !Array.isArray(hasilRekomendasi.data)
+        ) {
+            throw new Error(
+                "Format data dari API tidak valid."
+            );
+        }
+
+        // Data pengajuan tergeser dari database.
+        semuaKasus = hasilKasus.data.map(item => ({
+            ...item,
+            id: Number(item.id ?? item.id_pengajuan),
+            kasusId: Number(item.kasusId ?? item.id_pengajuan)
+        }));
+
+        // Riwayat rekomendasi dari database.
+        semuaRekomendasi = hasilRekomendasi.data.map(item => ({
+            ...item,
+            id: Number(item.id),
+            kasusId: Number(item.kasusId)
+        }));
+
+        // Mengurutkan berdasarkan prioritas.
+        semuaKasus.sort((a, b) => {
+            return (
+                urutanPrioritas(a.prioritas) -
+                urutanPrioritas(b.prioritas)
+            );
+        });
+
+        perbaruiHalaman();
+
+        console.log(
+            "SILAB: Data rekomendasi berhasil diambil dari database.",
+            {
+                jumlahPengajuan: semuaKasus.length,
+                jumlahRekomendasi: semuaRekomendasi.length
+            }
+        );
+
+    } catch (error) {
+        console.error(
+            "SILAB: Gagal mengambil data dari API rekomendasi.",
+            error
+        );
+
+        el.tabel.replaceChildren();
+
+        const pesan = document.createElement("div");
+        pesan.className = "tabel-row tabel-empty";
+        pesan.textContent =
+            "Gagal memuat data rekomendasi. Silakan muat ulang halaman.";
+
+        el.tabel.append(pesan);
+
+        aturStatistik("total", "0 Pengguna");
+        aturStatistik("pending", "0 Perlu Solusi Slot");
+        aturStatistik("selesai", "0 Selesai Direkomendasikan");
+
+        el.infoPagination.textContent =
+            "Data gagal dimuat.";
+        
+        el.pagination.replaceChildren();
     }
+}
+
 
 
     // ==========================================
