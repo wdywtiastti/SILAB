@@ -41,6 +41,29 @@
   };
 
   // =====================================
+  // STATISTIK DARI DATABASE MYSQL
+  // =====================================
+
+  const statistikDatabase = {
+    jadwal: {
+      totalSesi: 0,
+      sesiBerlangsung: 0,
+      jadwalMulai: null,
+      jadwalSelesai: null,
+    },
+
+    peminjaman: {
+      totalPengajuan: 0,
+      disetujui: 0,
+    },
+
+    konflik: {
+      totalKonflik: 0,
+      menungguKeputusan: 0,
+    },
+  };
+
+  // =====================================
   // 2. PERHITUNGAN STATISTIK
   // =====================================
 
@@ -115,26 +138,29 @@
     if (!card) return;
 
     const value = card.querySelector(".card-value strong");
-
     const time = card.querySelector(".card-value span");
 
-    const jadwal = dashboardData.jadwal;
+    const jadwal = statistikDatabase.jadwal;
 
     if (value) {
-      value.textContent = `${jadwal.length} Sesi`;
+      value.textContent = `${jadwal.totalSesi} Sesi`;
     }
 
-    if (time && jadwal.length > 0) {
-      const sorted = [...jadwal].sort((a, b) => a.mulai.localeCompare(b.mulai));
+    if (time) {
+      if (jadwal.jadwalMulai && jadwal.jadwalSelesai) {
+        const mulai = jadwal.jadwalMulai.substring(11, 16);
+        const selesai = jadwal.jadwalSelesai.substring(11, 16);
 
-      time.textContent = `${formatWaktu(sorted[0].mulai)} – ${formatWaktu(sorted[sorted.length - 1].selesai)} WIT`;
+        time.textContent = `${formatWaktu(mulai)} – ${formatWaktu(selesai)} WIT`;
+      } else {
+        time.textContent = "Belum ada jadwal";
+      }
     }
 
-    const berlangsung = jadwal.filter(
-      (item) => item.status === "berlangsung",
-    ).length;
-
-    setDeskripsi(card, `${berlangsung} sesi sedang berlangsung di Lab RPL`);
+    setDeskripsi(
+      card,
+      `${jadwal.sesiBerlangsung} sesi sedang berlangsung di Lab RPL`,
+    );
   }
 
   // =====================================
@@ -146,24 +172,20 @@
 
     if (!card) return;
 
-    const stats = hitungStatistik();
+    const data = statistikDatabase.peminjaman;
 
     const value = card.querySelector(".card-value strong");
-
     const unit = card.querySelector(".card-value span");
 
     if (value) {
-      value.textContent = formatAngka(stats.totalPengajuan);
+      value.textContent = formatAngka(data.totalPengajuan);
     }
 
     if (unit) {
       unit.textContent = "Pengajuan";
     }
 
-    setDeskripsi(
-      card,
-      `${formatAngka(stats.disetujui)} pengajuan sudah terjadwal`,
-    );
+    setDeskripsi(card, `${formatAngka(data.disetujui)} Pengajuan Disetujui`);
   }
 
   // =====================================
@@ -175,23 +197,22 @@
 
     if (!card) return;
 
-    const stats = hitungStatistik();
+    const data = statistikDatabase.konflik;
 
     const value = card.querySelector(".card-value strong");
-
     const unit = card.querySelector(".card-value span");
 
     if (value) {
-      value.textContent = `${stats.konflik} Kasus`;
+      value.textContent = `${formatAngka(data.totalKonflik)} Kasus`;
     }
 
     if (unit) {
-      unit.textContent = "Perlu Otorisasi";
+      unit.textContent = "Konflik Aktif";
     }
 
     setDeskripsi(
       card,
-      `${stats.pengajuanTerdampak} pengajuan terlibat konflik`,
+      `${formatAngka(data.menungguKeputusan)} Kasus Menunggu Keputusan`,
     );
   }
 
@@ -487,6 +508,48 @@
   }
 
   // =====================================
+  // STATISTIK REALTIME DARI MYSQL
+  // =====================================
+
+  let sedangMemuatStatistik = false;
+
+  async function ambilStatistikDashboard() {
+    if (sedangMemuatStatistik) return;
+
+    sedangMemuatStatistik = true;
+
+    try {
+      const response = await fetch("api/statistik_dashboard.php", {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const hasil = await response.json();
+
+      if (!response.ok || !hasil.success) {
+        throw new Error(hasil.message || "Gagal mengambil statistik.");
+      }
+
+      statistikDatabase.jadwal = hasil.data.jadwal;
+      statistikDatabase.peminjaman = hasil.data.peminjaman;
+      statistikDatabase.konflik = hasil.data.konflik;
+
+      renderRingkasanJadwal();
+      renderRingkasanPeminjaman();
+      renderRingkasanKonflik();
+
+      console.log("Statistik Dashboard berhasil diperbarui.", hasil.data);
+    } catch (error) {
+      console.error("Gagal memperbarui statistik Dashboard:", error);
+    } finally {
+      sedangMemuatStatistik = false;
+    }
+  }
+  // =====================================
   // 12. RENDER SELURUH DASHBOARD
   // =====================================
 
@@ -580,4 +643,8 @@
   });
 
   window.setInterval(sinkronkanJadwal, 15000);
+  // Statistik database diperbarui setiap 15 detik
+  ambilStatistikDashboard();
+
+  window.setInterval(ambilStatistikDashboard, 15000);
 })();
