@@ -9,6 +9,7 @@ declare(strict_types=1);
 // Session dan koneksi database
 require_once __DIR__ . "/../auth/sesi.php";
 require_once __DIR__ . "/../../config/database.php";
+require_once __DIR__ . "/../../config/algoritma_silab.php";
 
 header("Content-Type: application/json; charset=UTF-8");
 
@@ -755,16 +756,25 @@ try {
             }
 
             // 6. Semua penyimpanan berhasil.
+// 6. HITUNG SKOR DAN KLASIFIKASI PRIORITAS
 
-            $pdo->commit();
+$hasilSkor = hitungSkorPengajuan(
+    $pdo,
+    $idPengajuan
+);
 
-            jsonResponse(
-                true,
-                "Pengajuan peminjaman berhasil dikirim.",
-                [
-                    "id_pengajuan" => $idPengajuan
-                ]
-            );
+// 7. SIMPAN SELURUH TRANSAKSI
+
+$pdo->commit();
+
+jsonResponse(
+    true,
+    "Pengajuan berhasil dikirim dan skor berhasil dihitung.",
+    [
+        "id_pengajuan" => $idPengajuan,
+        "penilaian" => $hasilSkor
+    ]
+);
 
         } catch (Throwable $e) {
 
@@ -796,14 +806,14 @@ try {
         $pdo->rollBack();
     }
 
-    jsonResponse(
-        false,
-        "Terjadi kesalahan pada database.",
-        [],
-        500
-    );
+jsonResponse(
+    false,
+    "ERROR DATABASE: " . $e->getMessage(),
+    [],
+    500
+);;
 
-} catch (Throwable $e) {
+}catch (Throwable $e) {
 
     error_log(
         "API PENGAJUAN ERROR: " . $e->getMessage()
@@ -815,7 +825,7 @@ try {
 
     jsonResponse(
         false,
-        "Terjadi kesalahan pada sistem.",
+        "ERROR DEBUG: " . $e->getMessage(),
         [],
         500
     );
