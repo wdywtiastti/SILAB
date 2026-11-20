@@ -60,12 +60,14 @@ try {
 
         WHERE DATE(p.waktu_mulai) = :tanggal
 
-        AND LOWER(TRIM(b.status)) IN (
-            'terjadwal',
-            'disetujui',
-            'digunakan',
-            'berlangsung'
-        )
+AND LOWER(TRIM(b.status)) IN (
+    'terjadwal',
+    'disetujui',
+    'digunakan',
+    'berlangsung',
+    'tidak_digunakan',
+    'tidak digunakan'
+)
 
         ORDER BY p.waktu_mulai ASC
     ";
@@ -81,7 +83,8 @@ $hasil[] = [
     "waktuMulai" => date("H:i", strtotime($row["waktu_mulai"])),
     "waktuSelesai" => date("H:i", strtotime($row["waktu_selesai"])),
     "namaKegiatan" => $row["nama_kegiatan"],
-    "namaPemohon" => $row["nama_pemohon"]
+    "namaPemohon" => $row["nama_pemohon"],
+    "status" => $row["status"]
 ];
     }
 

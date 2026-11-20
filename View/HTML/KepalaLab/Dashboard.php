@@ -161,9 +161,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             Fasilitas: 1 Ruangan Laboratorium Terpadu RPL
           </span>
 
-          <span class="info-tag"> PC 36 </span>
-          <span class="info-tag"> Kursi 36 </span>
-
         </div>
 
         <!-- JUDUL DASHBOARD -->
@@ -306,14 +303,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
             <table class="schedule-table">
 
-              <thead>
-                <tr>
-                  <th>WAKTU</th>
-                  <th>KEGIATAN & PEMOHON</th>
-                  <th>KATEGORI & REQUEST</th>
-                  <th>STATUS</th>
-                </tr>
-              </thead>
+             <thead>
+    <tr>
+        <th>JAM / SESI</th>
+        <th>KEGIATAN & PEMOHON</th>
+        <th>PRIORITAS</th>
+        <th>STATUS</th>
+    </tr>
+</thead>
 
               <tbody id="jadwalKepalaLab">
                 <tr>

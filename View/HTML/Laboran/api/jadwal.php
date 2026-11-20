@@ -50,10 +50,11 @@ if (!sudahLogin()) {
     kirimRespons(401, false, "Silakan login terlebih dahulu.");
 }
 
-if (($_SESSION["role"] ?? "") !== "laboran") {
+$role = (string) ($_SESSION["role"] ?? "");
+
+if (!in_array($role, ["laboran", "kepala_lab"], true)) {
     kirimRespons(403, false, "Anda tidak memiliki akses.");
 }
-
 // =========================================
 // 4. PEMERIKSAAN METODE REQUEST
 // =========================================
@@ -211,7 +212,7 @@ try {
 
             b.status AS status,
 
-            NULL AS prioritas,
+            sp.prioritas AS prioritas,
 
             vb.status AS status_presensi
 
@@ -223,8 +224,8 @@ try {
         INNER JOIN users u
             ON u.id_user = p.id_user
 
-        LEFT JOIN validasi_booking vb
-            ON vb.id_booking = b.id_booking
+       LEFT JOIN skor_pengajuan sp
+    ON sp.id_pengajuan = p.id_pengajuan
 
         WHERE DATE(p.waktu_mulai) = :tanggal
 

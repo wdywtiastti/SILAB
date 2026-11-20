@@ -246,33 +246,42 @@
       createElement("small", "", item.pemohon),
     );
 
-    const fasilitasCell = document.createElement("td");
+    const prioritasCell = document.createElement("td");
 
-    fasilitasCell.append(
-      createElement("strong", "", item.kategori),
+    const prioritas = item.prioritas;
+
+    prioritasCell.appendChild(
       createElement(
-        "small",
-        "",
-        `Kebutuhan PC : ${item.pc > 0 ? item.pc : "-"}`,
-      ),
-      createElement(
-        "small",
-        "",
-        `Kebutuhan Kursi : ${item.kursi > 0 ? item.kursi : "-"}`,
+        "strong",
+        prioritas ? `priority-badge p${prioritas}` : "",
+        prioritas ? `P${prioritas}` : "Belum Dihitung",
       ),
     );
-
     const statusCell = document.createElement("td");
 
+    const konfigurasiStatus = {
+      terjadwal: {
+        label: "Terjadwal",
+        kelas: "status-confirmed",
+      },
+      berlangsung: {
+        label: "Sedang Berlangsung",
+        kelas: "status-active",
+      },
+      tidak_digunakan: {
+        label: "Tidak Digunakan",
+        kelas: "status-unused",
+      },
+    };
+
+    const statusInfo =
+      konfigurasiStatus[item.status] || konfigurasiStatus.terjadwal;
+
     statusCell.appendChild(
-      createElement(
-        "span",
-        item.status === "berlangsung" ? "status-active" : "status-confirmed",
-        item.status === "berlangsung" ? "Aktif" : "Terjadwal",
-      ),
+      createElement("span", statusInfo.kelas, statusInfo.label),
     );
 
-    row.append(waktuCell, kegiatanCell, fasilitasCell, statusCell);
+    row.append(waktuCell, kegiatanCell, prioritasCell, statusCell);
 
     return row;
   }
@@ -363,7 +372,9 @@
     if (!tbody) return;
 
     const jadwalTampil = dashboardData.jadwal
-      .filter((item) => ["terjadwal", "berlangsung"].includes(item.status))
+      .filter((item) =>
+        ["terjadwal", "berlangsung", "tidak_digunakan"].includes(item.status),
+      )
       .sort((a, b) => a.mulai.localeCompare(b.mulai));
 
     const totalPages = Math.ceil(jadwalTampil.length / ITEMS_PER_PAGE);
@@ -400,75 +411,79 @@
   }
 
   // =====================================
-  // DATA BOOKING DARI LOCAL STORAGE
+  // DATA JADWAL REALTIME DARI DATABASE
   // =====================================
 
-  function tanggalLokal() {
-    const sekarang = new Date();
+  let sedangMemuatJadwal = false;
 
-    const tahun = sekarang.getFullYear();
-    const bulan = String(sekarang.getMonth() + 1).padStart(2, "0");
-    const hari = String(sekarang.getDate()).padStart(2, "0");
+  async function ambilJadwalHariIni() {
+    const response = await fetch("../Laboran/api/jadwal.php", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-    return `${tahun}-${bulan}-${hari}`;
-  }
+    const hasil = await response.json();
 
-  function ambilJadwalHariIni() {
-    const STATUS_AKTIF = ["disetujui", "terjadwal", "digunakan", "berlangsung"];
-
-    if (!window.SILABService) {
-      console.error("SILABService belum tersedia.");
-      return [];
+    if (!response.ok || !hasil.success) {
+      throw new Error(hasil.message || "Gagal mengambil jadwal.");
     }
 
-    const sekarang = new Date();
+    if (!Array.isArray(hasil.data)) {
+      throw new Error("Format data jadwal tidak valid.");
+    }
 
-    const tanggalHariIni = [
-      sekarang.getFullYear(),
-      String(sekarang.getMonth() + 1).padStart(2, "0"),
-      String(sekarang.getDate()).padStart(2, "0"),
-    ].join("-");
+    return hasil.data.map((item) => {
+      const statusAsli = String(item.status || "")
+        .toLowerCase()
+        .trim();
 
-    return SILABService.getAll("bookings")
-      .filter((item) => {
-        const status = String(item.status || "")
-          .toLowerCase()
-          .trim();
+      let status = "terjadwal";
 
-        return item.tanggal === tanggalHariIni && STATUS_AKTIF.includes(status);
-      })
-      .map((item) => {
-        const statusAsli = String(item.status || "")
-          .toLowerCase()
-          .trim();
+      if (["digunakan", "berlangsung"].includes(statusAsli)) {
+        status = "berlangsung";
+      } else if (["tidak_digunakan", "tidak digunakan"].includes(statusAsli)) {
+        status = "tidak_digunakan";
+      }
 
-        return {
-          id: item.id,
-          pemohon: item.namaPemohon || item.pemohon || "-",
-          kegiatan: item.namaKegiatan || item.kegiatan || "-",
-          kategori: item.kategori || "-",
-          mulai: item.waktuMulai || item.mulai || "00:00",
-          selesai: item.waktuSelesai || item.selesai || "00:00",
-          pc: Number(item.kebutuhanPC ?? item.pc ?? 0),
-          kursi: Number(item.kebutuhanKursi ?? item.kursi ?? 0),
-          status: ["digunakan", "berlangsung"].includes(statusAsli)
-            ? "berlangsung"
-            : "terjadwal",
-        };
-      })
-      .sort((a, b) => a.mulai.localeCompare(b.mulai));
+      return {
+        id: item.id,
+        idPengajuan: item.idPengajuan,
+        pemohon: item.namaPemohon || "-",
+        kegiatan: item.namaKegiatan || "-",
+        kategori: item.kategori || "-",
+        mulai: item.waktuMulai || "00:00",
+        selesai: item.waktuSelesai || "00:00",
+        pc: Number(item.pc || 0),
+        kursi: Number(item.kursi || 0),
+        prioritas: item.prioritas || null,
+        status: status,
+      };
+    });
   }
 
-  function sinkronkanJadwal() {
-    dashboardData.jadwal = ambilJadwalHariIni();
-    currentPage = 1;
+  async function sinkronkanJadwal() {
+    if (sedangMemuatJadwal) return;
 
-    renderDashboard();
+    sedangMemuatJadwal = true;
 
-    console.log(
-      "Jadwal Kepala Lab berhasil disinkronkan:",
-      dashboardData.jadwal.length,
-    );
+    try {
+      dashboardData.jadwal = await ambilJadwalHariIni();
+
+      renderDashboard();
+
+      console.log(
+        "Jadwal Kepala Lab berhasil diperbarui:",
+        dashboardData.jadwal.length,
+      );
+    } catch (error) {
+      console.error("Gagal memperbarui jadwal Kepala Lab:", error);
+    } finally {
+      sedangMemuatJadwal = false;
+    }
   }
 
   // =====================================
