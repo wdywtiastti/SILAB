@@ -240,29 +240,6 @@
 
                 </article>
 
-
-                <!-- PENGAJUAN PENGGESER -->
-
-                <article class="detail-card">
-
-                    <small>Pengajuan Prioritas yang Menggeser</small>
-
-                    <strong data-detail="namaPenggeser">
-                        -
-                    </strong>
-
-                    <p data-detail="alasan">
-                        Jadwal tergeser akibat pengajuan
-                        dengan prioritas lebih tinggi.
-                    </p>
-
-                    <span class="priority-badge yellow-priority">
-                        <i class="bi bi-circle-fill"></i>
-                        Pengajuan Prioritas Lebih Tinggi
-                    </span>
-
-                </article>
-
             </div>
 
 

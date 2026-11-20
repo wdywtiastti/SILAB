@@ -533,19 +533,12 @@
 
     const config = konfigurasiStatus(item);
 
-    isiField(row, "id", `#${ambilId(item)}`);
+    isiField(row, "pemohon", item.namaPemohon);
 
     isiField(row, "nama-kegiatan", item.namaKegiatan);
 
-    isiField(row, "pemohon", item.namaPemohon);
-
     isiField(row, "rentang-waktu", formatWaktu(item));
 
-    isiField(
-      row,
-      "kebutuhan",
-      `PC: ${teks(item.kebutuhanPC)} | Kursi: ${teks(item.kebutuhanKursi)}`,
-    );
 
     isiField(row, "prioritas", item.prioritas || "Belum dihitung");
 
