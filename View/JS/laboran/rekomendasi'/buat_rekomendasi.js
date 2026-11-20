@@ -19,7 +19,7 @@
     // 1. DEPENDENSI DAN ELEMEN HTML
     // ==========================================
 
-    const layanan = window.SILABService;
+    const API_REKOMENDASI = "api/rekomendasi_api.php";
 
     const el = {
         form: document.getElementById("formRekomendasi"),
@@ -46,17 +46,16 @@
     };
 
     if (
-        !layanan ||
-        !el.form ||
-        !el.daftarAlternatif ||
-        !el.tombolTambah
-    ) {
-        console.error(
-            "SILAB: Elemen formulir atau SILABService tidak ditemukan."
-        );
+    !el.form ||
+    !el.daftarAlternatif ||
+    !el.tombolTambah
+) {
+    console.error(
+        "SILAB: Elemen formulir rekomendasi tidak ditemukan."
+    );
 
-        return;
-    }
+    return;
+}
 
 
     // ==========================================
@@ -68,10 +67,12 @@
     const ZONA_WAKTU = "Asia/Jayapura";
 
     const STATUS_AKTIF = new Set([
-        "menunggu_persetujuan",
-        "rekomendasi_dikirim",
-        "menunggu_konfirmasi"
-    ]);
+    "menunggu",
+    "dikirim",
+    "menunggu_persetujuan",
+    "rekomendasi_dikirim",
+    "menunggu_konfirmasi"
+]);
 
     let kasusAktif = null;
     let modeEdit = false;
@@ -952,113 +953,221 @@
     // ==========================================
 
     function bentukDataRekomendasi() {
-        const alternatif = validasiAlternatif();
+    const alternatif = validasiAlternatif();
 
-        if (!alternatif) return null;
+    if (!alternatif) return null;
 
-        return {
-            pengajuanId:
-                kasusAktif.pengajuanId || kasusAktif.id,
+    return {
+        id_pengajuan: Number(
+            kasusAktif.pengajuanId ||
+            kasusAktif.id_pengajuan ||
+            kasusAktif.id
+        ),
 
-            alternatifJadwal: alternatif,
+        alternatif: alternatif.map(item => ({
+            waktu_mulai:
+                item.waktuMulai.replace("T", " ") + ":00",
 
-            catatan: el.catatan?.value.trim() || ""
-        };
-    }
+            waktu_selesai:
+                item.waktuSelesai.replace("T", " ") + ":00"
+        })),
 
+        catatan: el.catatan?.value.trim() || ""
+    };
+}
 
     // ==========================================
     // 18. MEMUAT DATA KASUS TERGESER
     // ==========================================
 
-    function muatKasus(id) {
-        if (!id) {
-            throw new Error(
-                "ID kasus tergeser tidak ditemukan."
-            );
-        }
-
-        const kasus = layanan.getKasusTergeserById(id);
-
-        if (!kasus) {
-            throw new Error(
-                "Data kasus tergeser tidak ditemukan."
-            );
-        }
-
-        kasusAktif = kasus;
-
-        el.form.dataset.kasusId = id;
-
-        tampilkanDetailKasus(kasus);
-
-        return kasus;
+    
+async function muatKasus(id) {
+    if (!id) {
+        throw new Error(
+            "ID kasus tergeser tidak ditemukan."
+        );
     }
+
+    const response = await fetch(
+        `${API_REKOMENDASI}?action=detail&id_pengajuan=${encodeURIComponent(id)}`,
+        {
+            method: "GET",
+            credentials: "same-origin",
+            headers: {
+                Accept: "application/json"
+            }
+        }
+    );
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+        throw new Error(
+            hasil.message || "Gagal mengambil data pengajuan."
+        );
+    }
+
+    if (!hasil.data) {
+        throw new Error(
+            "Data pengajuan tidak ditemukan."
+        );
+    }
+
+    const data = hasil.data;
+
+    kasusAktif = {
+        ...data,
+
+        id: Number(data.id_pengajuan ?? data.id),
+
+        pengajuanId: Number(
+            data.id_pengajuan ?? data.id
+        ),
+
+        namaPemohon:
+            data.namaPemohon ?? data.nama_pemohon ?? "-",
+
+        namaKegiatan:
+            data.namaKegiatan ?? data.nama_kegiatan ?? "-",
+
+        kebutuhanPC: Number(data.kebutuhanPC ?? 0),
+
+        kebutuhanKursi: Number(data.kebutuhanKursi ?? 0),
+
+        jadwalAsal: data.waktu_mulai
+    };
+
+    el.form.dataset.kasusId = id;
+
+    tampilkanDetailKasus(kasusAktif);
+
+    return kasusAktif;
+}
+
 
 
     // ==========================================
     // 19. MENGAMBIL REKOMENDASI TERBARU
     // ==========================================
 
-    function ambilRekomendasiTerbaru(kasus) {
-        return kasus.rekomendasiTerbaru || null;
+    async function ambilRekomendasiTerbaru(kasus) {
+    const idPengajuan =
+        kasus.pengajuanId ??
+        kasus.id_pengajuan ??
+        kasus.id;
+
+    if (!idPengajuan) {
+        throw new Error("ID pengajuan tidak ditemukan.");
     }
 
+    const response = await fetch(
+        `${API_REKOMENDASI}?action=riwayat&id_pengajuan=${encodeURIComponent(idPengajuan)}`,
+        {
+            method: "GET",
+            credentials: "same-origin",
+            headers: {
+                Accept: "application/json"
+            }
+        }
+    );
+
+    const hasil = await response.json();
+
+    if (!response.ok || !hasil.success) {
+        throw new Error(
+            hasil.message || "Gagal mengambil riwayat rekomendasi."
+        );
+    }
+
+    if (!Array.isArray(hasil.data)) {
+        throw new Error("Format riwayat rekomendasi tidak valid.");
+    }
+
+    // Ambil rekomendasi terbaru yang masih aktif.
+    const rekomendasiAktif = hasil.data.find((item) =>
+        STATUS_AKTIF.has(normalisasi(item.status))
+    );
+
+    if (!rekomendasiAktif) {
+        return null;
+    }
+
+    return {
+        ...rekomendasiAktif,
+
+        id: Number(rekomendasiAktif.id_rekomendasi),
+
+        alternatifJadwal: (
+            Array.isArray(rekomendasiAktif.alternatif)
+                ? rekomendasiAktif.alternatif
+                : []
+        ).map((item) => {
+            const waktuMulai = String(
+                item.waktu_mulai ?? ""
+            );
+
+            const waktuSelesai = String(
+                item.waktu_selesai ?? ""
+            );
+
+            return {
+                ...item,
+
+                tanggal:
+                    item.tanggal ??
+                    waktuMulai.substring(0, 10),
+
+                waktuMulai:
+                    item.waktuMulai ??
+                    waktuMulai.substring(11, 16),
+
+                waktuSelesai:
+                    item.waktuSelesai ??
+                    waktuSelesai.substring(11, 16)
+            };
+        }).slice(0, 2)
+    };
+}
 
     // ==========================================
     // 20. MODE EDIT REKOMENDASI
     // ==========================================
 
-    function muatEditRekomendasi(kasus) {
-        const rekomendasi = ambilRekomendasiTerbaru(
-            kasus
-        );
+    async function muatEditRekomendasi(kasus) {
+    const rekomendasi = await ambilRekomendasiTerbaru(kasus);
 
-        if (!rekomendasi) {
-            throw new Error(
-                "Data rekomendasi sebelumnya tidak ditemukan."
-            );
-        }
-
-        const status = normalisasi(
-            rekomendasi.status
-        );
-
-        if (!STATUS_AKTIF.has(status)) {
-            throw new Error(
-                "Rekomendasi ini sudah tidak dapat diedit."
-            );
-        }
-
-        modeEdit = true;
-
-        let alternatif = rekomendasi.alternatifJadwal;
-
-        // Kompatibilitas dengan data rekomendasi lama.
-        if (
-            !Array.isArray(alternatif) ||
-            alternatif.length === 0
-        ) {
-            alternatif = [{
-                tanggal: rekomendasi.tanggal,
-                waktuMulai: rekomendasi.waktuMulai,
-                waktuSelesai: rekomendasi.waktuSelesai
-            }];
-        }
-
-        tampilkanAlternatif(alternatif);
-
-        if (el.catatan) {
-            el.catatan.value =
-                rekomendasi.catatan || "";
-        }
-
-        perbaruiStatus("Mengubah Rekomendasi");
-
-        ubahLabelSubmit(
-            "Simpan Perubahan Rekomendasi"
+    if (!rekomendasi) {
+        throw new Error(
+            "Rekomendasi sebelumnya tidak ditemukan."
         );
     }
+
+    // Edit hanya diperbolehkan jika status Menunggu.
+    if (normalisasi(rekomendasi.status) !== "menunggu") {
+        throw new Error(
+            "Hanya rekomendasi berstatus Menunggu yang dapat diedit."
+        );
+    }
+
+    modeEdit = true;
+
+    tampilkanAlternatif(
+        rekomendasi.alternatifJadwal
+    );
+
+    if (el.catatan) {
+        el.catatan.value = rekomendasi.catatan || "";
+    }
+
+    // Simpan ID rekomendasi untuk proses update.
+    kasusAktif.rekomendasiTerbaru = rekomendasi;
+
+    perbaruiStatus("Mengubah Rekomendasi");
+
+    ubahLabelSubmit(
+        "Simpan Perubahan Rekomendasi"
+    );
+}
 
 
     // ==========================================
@@ -1100,10 +1209,8 @@
     }
 
 
-    function muatLihatRekomendasi(kasus) {
-        const rekomendasi = ambilRekomendasiTerbaru(
-            kasus
-        );
+    async function muatLihatRekomendasi(kasus) {
+        const rekomendasi = await ambilRekomendasiTerbaru(kasus);
 
         if (!rekomendasi) {
             throw new Error(
@@ -1142,116 +1249,213 @@
     // 22. MENGIRIM REKOMENDASI
     // ==========================================
 
-    function kirimFormulir(event) {
-        event.preventDefault();
+    
+async function kirimFormulir(event) {
+    event.preventDefault();
 
-        if (sedangMengirim || modeLihat) return;
+    if (sedangMengirim || modeLihat) return;
 
-        hapusFeedback();
+    hapusFeedback();
 
-        if (!kasusAktif) {
-            tampilkanFeedback(
-                "Data kasus tergeser belum dimuat."
-            );
+    if (!kasusAktif) {
+        tampilkanFeedback(
+            "Data kasus tergeser belum dimuat."
+        );
+        return;
+    }
 
-            return;
+    const tombol = ambilTombolSubmit();
+
+    try {
+        const detail = bentukDataRekomendasi();
+
+        if (!detail) return;
+
+        sedangMengirim = true;
+
+        if (tombol) {
+            tombol.disabled = true;
         }
 
-        try {
-            const detail = bentukDataRekomendasi();
+        ubahLabelSubmit(
+            modeEdit
+                ? "Memperbarui rekomendasi..."
+                : "Menyimpan rekomendasi..."
+        );
 
-            if (!detail) return;
+        // Helper komunikasi dengan API.
+        async function requestAPI(data) {
+            const response = await fetch(API_REKOMENDASI, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json"
+                },
+                body: JSON.stringify(data)
+            });
 
-            sedangMengirim = true;
+            const hasil = await response.json();
 
-            const tombol = ambilTombolSubmit();
+            if (!response.ok || !hasil.success) {
+                throw new Error(
+                    hasil.message ||
+                    "Permintaan ke API gagal."
+                );
+            }
 
+            return hasil.data;
+        }
+
+        let idRekomendasi;
+
+        // ==================================
+        // 1. SIMPAN ATAU EDIT REKOMENDASI
+        // ==================================
+
+        if (modeEdit) {
+            const rekomendasiLama =
+                await ambilRekomendasiTerbaru(kasusAktif);
+
+            idRekomendasi = Number(
+                rekomendasiLama?.id_rekomendasi ??
+                rekomendasiLama?.id
+            );
+
+            if (!idRekomendasi) {
+                throw new Error(
+                    "ID rekomendasi sebelumnya tidak ditemukan."
+                );
+            }
+
+            await requestAPI({
+                action: "edit",
+                id_rekomendasi: idRekomendasi,
+                catatan: detail.catatan,
+                alternatif: detail.alternatif
+            });
+
+        } else {
+            const hasilSimpan = await requestAPI({
+                action: "simpan",
+                ...detail
+            });
+
+            idRekomendasi = Number(
+                hasilSimpan.id_rekomendasi ??
+                hasilSimpan.id
+            );
+
+            if (!idRekomendasi) {
+                throw new Error(
+                    "ID rekomendasi tidak diterima dari server."
+                );
+            }
+
+            // Simpan identitas rekomendasi yang baru dibuat.
+            kasusAktif.rekomendasiTerbaru = {
+                id_rekomendasi: idRekomendasi,
+                status: "Menunggu"
+            };
+        }
+
+        // ==================================
+        // 2. KIRIM REKOMENDASI
+        // ==================================
+
+        ubahLabelSubmit("Mengirim rekomendasi...");
+
+        await requestAPI({
+            action: "kirim",
+            id_rekomendasi: idRekomendasi
+        });
+
+        // ==================================
+        // 3. PERBARUI STATE
+        // ==================================
+
+        kasusAktif.rekomendasiTerbaru = {
+            ...kasusAktif.rekomendasiTerbaru,
+            id_rekomendasi: idRekomendasi,
+            status: "Dikirim"
+        };
+
+        modeEdit = false;
+
+        tampilkanFeedback(
+            "Rekomendasi berhasil disimpan dan dikirim kepada pemohon.",
+            "sukses"
+        );
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "silab:rekomendasi-berhasil",
+                {
+                    detail: {
+                        kasusId: kasusAktif.id,
+                        rekomendasi:
+                            kasusAktif.rekomendasiTerbaru
+                    }
+                }
+            )
+        );
+
+        el.form.dataset.selesai = "true";
+
+        perbaruiStatus(
+            "Rekomendasi Berhasil Dikirim"
+        );
+
+        ubahLabelSubmit("Berhasil Dikirim");
+
+        aturModeBacaSaja();
+
+    } catch (error) {
+        console.error(
+            "SILAB: Gagal memproses rekomendasi.",
+            error
+        );
+
+        tampilkanFeedback(
+            error.message ||
+            "Terjadi kesalahan saat memproses rekomendasi."
+        );
+
+        // Jika penyimpanan sudah berhasil tetapi pengiriman
+        // gagal, gunakan mode edit agar tidak membuat duplikat.
+        if (
+            kasusAktif?.rekomendasiTerbaru?.id_rekomendasi
+        ) {
+            modeEdit = true;
+
+            el.form.dataset.selesai = "false";
+
+            perbaruiStatus(
+                "Rekomendasi Tersimpan - Pengiriman Belum Berhasil"
+            );
+
+            ubahLabelSubmit(
+                "Coba Kirim Kembali"
+            );
+        }
+
+    } finally {
+        sedangMengirim = false;
+
+        if (el.form.dataset.selesai !== "true") {
             if (tombol) {
-                tombol.disabled = true;
+                tombol.disabled = false;
             }
 
             ubahLabelSubmit(
                 modeEdit
-                    ? "Menyimpan perubahan..."
-                    : "Mengirim rekomendasi..."
+                    ? "Simpan Perubahan Rekomendasi"
+                    : "Kirim Rekomendasi"
             );
-
-            const hasil = modeEdit
-                ? layanan.editRekomendasi(
-                    kasusAktif.id,
-                    detail
-                )
-                : layanan.kirimRekomendasi(
-                    kasusAktif.id,
-                    detail
-                );
-
-            if (!hasil || !hasil.success) {
-                throw new Error(
-                    "Rekomendasi gagal diproses."
-                );
-            }
-
-            kasusAktif = hasil;
-
-            tampilkanFeedback(
-                modeEdit
-                    ? "Rekomendasi berhasil diperbarui."
-                    : "Rekomendasi berhasil dikirim kepada pengguna.",
-                "sukses"
-            );
-
-            window.dispatchEvent(
-                new CustomEvent(
-                    "silab:rekomendasi-berhasil",
-                    {
-                        detail: {
-                            kasusId: kasusAktif.id,
-                            rekomendasi:
-                                hasil.rekomendasiTerbaru
-                        }
-                    }
-                )
-            );
-
-            el.form.dataset.selesai = "true";
-
-            perbaruiStatus("Rekomendasi Berhasil Diproses");
-
-            ubahLabelSubmit("Berhasil Diproses");
-
-            aturModeBacaSaja();
-
-        } catch (error) {
-            console.error(
-                "SILAB: Gagal memproses rekomendasi.",
-                error
-            );
-
-            tampilkanFeedback(
-                error.message || "Terjadi kesalahan saat memproses rekomendasi."
-            );
-
-        } finally {
-            sedangMengirim = false;
-
-            if (
-                el.form.dataset.selesai !== "true"
-            ) {
-                const tombol = ambilTombolSubmit();
-
-                if (tombol) {
-                    tombol.disabled = false;
-                }
-
-                ubahLabelSubmit(
-                    modeEdit
-                        ? "Simpan Perubahan Rekomendasi"
-                        : "Kirim Rekomendasi"
-                );
-            }
         }
     }
+}
+
 
 
     // ==========================================
@@ -1339,7 +1543,7 @@
     // 28. INISIALISASI HALAMAN
     // ==========================================
 
-    function inisialisasi() {
+    async function inisialisasi() {
         try {
             // Menampilkan satu alternatif secara default.
             tampilkanAlternatif([{}]);
@@ -1352,7 +1556,7 @@
                 );
             }
 
-            const kasus = muatKasus(idKasus);
+            const kasus = await muatKasus(idKasus);
 
             const modeURL = normalisasi(
                 ambilParameterURL("mode")
@@ -1366,10 +1570,10 @@
                 modeURL === "lihat";
 
             if (lihatAktif) {
-                muatLihatRekomendasi(kasus);
+                await muatLihatRekomendasi(kasus);
 
             } else if (editAktif) {
-                muatEditRekomendasi(kasus);
+                await muatEditRekomendasi(kasus);
 
             } else {
                 perbaruiStatus("Menunggu Rekomendasi");

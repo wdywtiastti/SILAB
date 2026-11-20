@@ -93,9 +93,9 @@ try {
                 ON p.id_pengajuan = r.id_pengajuan
             SET r.status = 'Kedaluwarsa'
             WHERE p.id_user = :id_user
-              AND r.status = 'Menunggu'
-              AND r.batas_waktu IS NOT NULL
-              AND r.batas_waktu <= NOW()
+            AND r.status = 'Dikirim'
+            AND r.batas_waktu IS NOT NULL
+            AND r.batas_waktu <= NOW()
         ");
 
         $stmt->execute([":id_user" => $idUser]);
@@ -130,11 +130,11 @@ try {
                 ON p.id_pengajuan = r.id_pengajuan
 
             WHERE p.id_user = :id_user
-              AND r.status = 'Menunggu'
-              AND (
-                  r.batas_waktu IS NULL
-                  OR r.batas_waktu > NOW()
-              )
+                AND r.status = 'Dikirim'
+                AND (
+                    r.batas_waktu IS NULL
+                    OR r.batas_waktu > NOW()
+                )
 
             ORDER BY
                 r.waktu_dikirim DESC,
@@ -262,7 +262,7 @@ try {
                 );
             }
 
-            if ($rekomendasi["status"] !== "Menunggu") {
+            if ($rekomendasi["status"] !== "Dikirim") {
                 throw new DomainException(
                     "Rekomendasi sudah tidak dapat diproses."
                 );
@@ -384,6 +384,26 @@ try {
                 ":id_user" => $idUser
             ]);
 
+            // Buat booking agar jadwal yang diterima
+            // muncul pada halaman jadwal Laboran.
+            // UNIQUE(id_pengajuan) mencegah booking ganda.
+            $stmt = $pdo->prepare("
+                INSERT INTO booking (
+                    id_pengajuan,
+                    status
+                ) VALUES (
+                    :id_pengajuan,
+                    'terjadwal'
+                )
+                ON DUPLICATE KEY UPDATE
+                    status = 'terjadwal'
+            ");
+
+            $stmt->execute([
+                ":id_pengajuan" =>
+                    (int) $rekomendasi["id_pengajuan"]
+            ]);
+
             $pdo->commit();
 
             jsonResponse(
@@ -448,7 +468,7 @@ try {
                 );
             }
 
-            if ($rekomendasi["status"] !== "Menunggu") {
+            if ($rekomendasi["status"] !== "Dikirim") {
                 throw new DomainException(
                     "Rekomendasi sudah tidak dapat ditolak."
                 );

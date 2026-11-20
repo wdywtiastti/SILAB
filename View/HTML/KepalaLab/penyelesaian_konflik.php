@@ -276,14 +276,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         <i class="bi bi-envelope-paper"></i>
       </div>
 
-      <!-- DESKRIPSI -->
       <p>
-        Apakah kamu yakin ingin mengirim rekomendasi jadwal kepada Laboran?
+        Apakah kamu yakin ingin menetapkan keputusan penyelesaian konflik ini?
       </p>
 
       <p class="recommendation-description">
-        Laboran akan menerima rekomendasi jadwal untuk ditinjau dan
-        ditindaklanjuti.
+        Pengajuan yang tidak terpilih dan mengalami bentrokan
+        akan diteruskan ke Laboran untuk mendapatkan
+        alternatif jadwal pengganti.
       </p>
 
       <!-- TOMBOL AKSI -->
