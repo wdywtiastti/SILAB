@@ -921,10 +921,10 @@ jsonResponse(
 
 jsonResponse(
     false,
-    "ERROR DATABASE: " . $e->getMessage(),
+    "Terjadi kesalahan saat memproses pengajuan.",
     [],
     500
-);;
+);
 
 }catch (Throwable $e) {
 
@@ -936,10 +936,10 @@ jsonResponse(
         $pdo->rollBack();
     }
 
-    jsonResponse(
-        false,
-        "ERROR DEBUG: " . $e->getMessage(),
-        [],
-        500
-    );
+jsonResponse(
+    false,
+    "Terjadi kesalahan saat memproses pengajuan.",
+    [],
+    500
+);
 }

@@ -273,8 +273,10 @@
 
     prioritasCell.appendChild(
       createElement(
-        "strong",
-        prioritas ? `priority-badge p${prioritas}` : "",
+        "span",
+        prioritas
+          ? `schedule-priority-badge priority-level-p${prioritas}`
+          : "schedule-priority-empty",
         prioritas ? `P${prioritas}` : "Belum Dihitung",
       ),
     );

@@ -1285,3 +1285,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================
+   BADGE PRIORITAS TABEL JADWAL KEPALA LAB
+========================================= */
+
+.schedule-table .schedule-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 42px;
+  height: 27px;
+  padding: 0 12px;
+
+  border-radius: 20px;
+
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+/* PRIORITAS P1 */
+.schedule-table .priority-level-p1 {
+  background-color: #33266a;
+}
+
+/* PRIORITAS P2 */
+.schedule-table .priority-level-p2 {
+  background-color: #34445b;
+}
+
+/* PRIORITAS P3 */
+.schedule-table .priority-level-p3 {
+  background-color: #585e9a;
+}
+
+/* PRIORITAS P4 */
+.schedule-table .priority-level-p4 {
+  background-color: #f8b916;
+  color: #33266a;
+}
+
+/* BELUM DIHITUNG */
+.schedule-table .schedule-priority-empty {
+  color: #8793a7;
+  font-size: 11px;
+  font-weight: 500;
+}
