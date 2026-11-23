@@ -372,7 +372,7 @@ $namaLaboran = htmlspecialchars(
 
     <!-- LAYANAN DATA -->
     <script src="../../JS/laboran/layanan.js"></script>
-
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
     <!-- MODUL REKOMENDASI -->
     <script src="../../JS/laboran/rekomendasi'/rekomen.js"></script>
 

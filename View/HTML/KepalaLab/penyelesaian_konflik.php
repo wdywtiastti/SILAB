@@ -341,59 +341,112 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
      POPUP DETAIL PEMINJAMAN
 ===================================== -->
 
-  <div id="submission-detail-modal" class="submission-detail-modal" hidden>
-    <div class="submission-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
-      <div class="submission-detail-header">
-        <div>
-          <h3 id="detail-modal-title">Detail Peminjaman</h3>
 
-          <p>Informasi lengkap pengajuan penggunaan laboratorium.</p>
-        </div>
+<div id="submission-detail-modal"
+     class="submission-detail-modal"
+     hidden>
 
-        <button type="button" id="close-submission-detail" class="close-detail-modal" aria-label="Tutup detail">
-          &times;
-        </button>
+  <div class="submission-detail-dialog"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="detail-modal-title">
+
+    <div class="submission-detail-header">
+      <div>
+        <span id="detail-id-pengajuan"
+              class="detail-id-label">
+          ID PENGAJUAN
+        </span>
+
+        <h3 id="detail-modal-title">
+          Detail Peminjaman
+        </h3>
+
+        <p>Informasi lengkap pengajuan penggunaan laboratorium.</p>
       </div>
 
-      <div class="submission-detail-body">
-        <div class="detail-borrower">
-          <span>PEMINJAM</span>
-          <h4 id="detail-peminjam">-</h4>
-          <p id="detail-kegiatan">-</p>
+      <button type="button"
+              id="close-submission-detail"
+              class="close-detail-modal">
+        &times;
+      </button>
+    </div>
+
+    <div class="submission-detail-body">
+
+      <div class="detail-borrower">
+        <span>PEMINJAM</span>
+        <h4 id="detail-peminjam">-</h4>
+        <p id="detail-kegiatan">-</p>
+      </div>
+
+      <div class="detail-section">
+        <h4>Informasi Penggunaan</h4>
+
+        <div class="detail-grid">
+
+          <div class="detail-item">
+            <span>NIP/NPM</span>
+            <strong id="detail-nip-npm">-</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Waktu Penggunaan</span>
+            <strong id="detail-waktu">-</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Status Pengajuan</span>
+            <strong id="detail-status">-</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Klasifikasi Prioritas</span>
+            <strong id="detail-prioritas">-</strong>
+          </div>
+
         </div>
+      </div>
 
-        <div class="detail-section">
-          <h4>Informasi Penggunaan</h4>
+      <div class="detail-section">
+        <h4>Rincian Jenis Kegiatan dan Fasilitas</h4>
 
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span>Waktu Penggunaan</span>
-              <strong id="detail-waktu">-</strong>
-            </div>
-
-            <div class="detail-item">
-              <span>Jumlah PC</span>
-              <strong id="detail-pc">-</strong>
-            </div>
-
-            <div class="detail-item">
-              <span>Jumlah Kursi</span>
-              <strong id="detail-kursi">-</strong>
-            </div>
+        <div class="detail-grid" id="detail-dinamis">
+          <div class="detail-item">
+            <span>Detail Pengajuan</span>
+            <strong>Memuat detail...</strong>
           </div>
         </div>
+      </div>
 
-        <div class="detail-score">
-          <span>TOTAL SKOR PRIORITAS SEMENTARA</span>
-          <strong id="detail-skor">-</strong>
-          <p>
-            Nilai simulasi yang nantinya berasal dari perhitungan Rule Base
-            SILAB.
-          </p>
+      <div class="detail-section">
+        <h4>Hasil Penilaian Sistem</h4>
+
+        <div class="detail-grid detail-score-grid">
+
+          <div class="detail-item">
+            <span>Skor Jenis Kegiatan</span>
+            <strong id="detail-skor-jenis">-</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Skor Fasilitas</span>
+            <strong id="detail-skor-fasilitas">-</strong>
+          </div>
+
         </div>
       </div>
+
+      <div class="detail-score">
+        <span>TOTAL SKOR PRIORITAS</span>
+        <strong id="detail-skor">Belum dihitung</strong>
+        <p>Nilai berdasarkan hasil perhitungan Rule Base SILAB.</p>
+      </div>
+
     </div>
   </div>
+</div>
+
 
   <!-- =====================================
      MODAL KONFIRMASI KEPUTUSAN
@@ -471,6 +524,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
   <!-- MODUL PENYELESAIAN KONFLIK -->
   <script src="../../JS/kepalaLab/penyelesaian_konflik.js"></script>
+  <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 </body>
 
 </html>

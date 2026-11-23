@@ -182,59 +182,145 @@ function statusNorm(?string $status): string
 ==================================================
 */
 
+
 function ambilAnggotaKonflik(
     PDO $pdo,
     int $idKonflik
 ): array {
 
     $sql = "
-
         SELECT
-
             p.id_pengajuan,
             p.id_user,
             p.nama_kegiatan,
             p.waktu_mulai,
             p.waktu_selesai,
             p.status AS status_pengajuan,
-            p.waktu_dibuat,
-
             u.nama AS nama_pemohon,
-            u.nip_npm AS nip_npm,
-
+            u.nip_npm,
             b.id_booking,
             b.status AS status_booking
-
         FROM pengajuan_konflik pk
-
         INNER JOIN pengajuan p
             ON p.id_pengajuan = pk.id_pengajuan
-
         LEFT JOIN users u
             ON u.id_user = p.id_user
-
         LEFT JOIN booking b
             ON b.id_pengajuan = p.id_pengajuan
-
         WHERE pk.id_konflik = :id_konflik
-
-        ORDER BY
-            p.waktu_mulai ASC,
-            p.id_pengajuan ASC
-
+        ORDER BY p.waktu_mulai ASC
     ";
 
     $stmt = $pdo->prepare($sql);
-
     $stmt->execute([
         ':id_konflik' => $idKonflik
     ]);
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    if (!$rows) {
+        return [];
+    }
+
+    $ids = array_values(array_unique(array_map(
+        fn($row) => (int) $row['id_pengajuan'],
+        $rows
+    )));
+
+    $placeholder = implode(
+        ',',
+        array_fill(0, count($ids), '?')
+    );
+
+    $aturanMap = [];
+    $fasilitasMap = [];
+    $skorMap = [];
+
+    // DETAIL JENIS KEGIATAN
+    $sqlAturan = "
+        SELECT
+            pa.id_pengajuan,
+            a.nama_kelompok,
+            ak.nama_kriteria
+        FROM pengajuan_aturan pa
+        INNER JOIN aturan_kriteria ak
+            ON ak.id_aturan_kriteria = pa.id_aturan_kriteria
+        INNER JOIN aturan a
+            ON a.id_aturan = ak.id_aturan
+        WHERE pa.id_pengajuan IN ($placeholder)
+    ";
+
+    $stmt = $pdo->prepare($sqlAturan);
+    $stmt->execute($ids);
+
+    while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $id = (int) $item['id_pengajuan'];
+
+        $aturanMap[$id][] = [
+            'kelompok' => $item['nama_kelompok'],
+            'nama' => $item['nama_kriteria']
+        ];
+    }
+
+    // DETAIL FASILITAS
+    $sqlFasilitas = "
+        SELECT
+            pf.id_pengajuan,
+            f.id_fasilitas,
+            f.nama_fasilitas,
+            pf.jumlah
+        FROM pengajuan_fasilitas pf
+        INNER JOIN fasilitas f
+            ON f.id_fasilitas = pf.id_fasilitas
+        WHERE pf.id_pengajuan IN ($placeholder)
+        ORDER BY f.nama_fasilitas
+    ";
+
+    $stmt = $pdo->prepare($sqlFasilitas);
+    $stmt->execute($ids);
+
+    while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $id = (int) $item['id_pengajuan'];
+
+        $fasilitasMap[$id][] = [
+            'idFasilitas' => (int) $item['id_fasilitas'],
+            'nama' => $item['nama_fasilitas'],
+            'jumlah' => (int) $item['jumlah']
+        ];
+    }
+
+    // HASIL SKOR
+    $sqlSkor = "
+        SELECT
+            id_pengajuan,
+            skor_jenis_kegiatan,
+            skor_fasilitas,
+            skor_akhir,
+            prioritas,
+            waktu_perhitungan_dilakukan
+        FROM skor_pengajuan
+        WHERE id_pengajuan IN ($placeholder)
+        ORDER BY
+            waktu_perhitungan_dilakukan DESC,
+            id_score_pengajuan DESC
+    ";
+
+    $stmt = $pdo->prepare($sqlSkor);
+    $stmt->execute($ids);
+
+    while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $id = (int) $item['id_pengajuan'];
+
+        if (!isset($skorMap[$id])) {
+            $skorMap[$id] = $item;
+        }
+    }
+
     $hasil = [];
 
     foreach ($rows as $row) {
+
+        $id = (int) $row['id_pengajuan'];
 
         $mulai = new DateTimeImmutable(
             $row['waktu_mulai'],
@@ -246,42 +332,104 @@ function ambilAnggotaKonflik(
             new DateTimeZone('Asia/Jayapura')
         );
 
+        $aturan = $aturanMap[$id] ?? [];
+        $fasilitas = $fasilitasMap[$id] ?? [];
+        $skor = $skorMap[$id] ?? null;
+
+        $kategori = null;
+
+        foreach ($aturan as $item) {
+            if (
+                stripos(
+                    $item['kelompok'],
+                    'jenis kegiatan'
+                ) !== false
+            ) {
+                $kategori = $item['nama'];
+                break;
+            }
+        }
+
+        $jumlahPC = null;
+        $jumlahKursi = null;
+
+        foreach ($fasilitas as $item) {
+
+            $nama = strtolower($item['nama']);
+
+            if (
+                $jumlahPC === null &&
+                preg_match('/\bpc\b/', $nama)
+            ) {
+                $jumlahPC = $item['jumlah'];
+            }
+
+            if (
+                $jumlahKursi === null &&
+                strpos($nama, 'kursi') !== false
+            ) {
+                $jumlahKursi = $item['jumlah'];
+            }
+        }
+
         $hasil[] = [
-
-            'id' => (int) $row['id_pengajuan'],
-
-            'id_pengajuan' => (int) $row['id_pengajuan'],
-
+            'id' => $id,
+            'id_pengajuan' => $id,
             'id_user' => (int) $row['id_user'],
 
             'pemohon' => $row['nama_pemohon'] ?? '-',
-
             'namaPemohon' => $row['nama_pemohon'] ?? '-',
-
             'nipNpm' => $row['nip_npm'] ?? '-',
 
             'kegiatan' => $row['nama_kegiatan'],
-
             'namaKegiatan' => $row['nama_kegiatan'],
 
             'tanggal' => $mulai->format('Y-m-d'),
-
             'mulai' => $mulai->format('H:i'),
-
             'selesai' => $selesai->format('H:i'),
 
             'waktuMulai' => $row['waktu_mulai'],
-
             'waktuSelesai' => $row['waktu_selesai'],
 
+            'detailAturan' => $aturan,
+            'detailFasilitas' => $fasilitas,
+
+            'kategori' => $kategori,
+            'pc' => $jumlahPC,
+            'jumlahPC' => $jumlahPC,
+            'kursi' => $jumlahKursi,
+            'jumlahKursi' => $jumlahKursi,
+
+            'skorJenisKegiatan' =>
+                $skor['skor_jenis_kegiatan'] ?? null,
+
+            'skorFasilitas' =>
+                $skor['skor_fasilitas'] ?? null,
+
+            'skorAkhir' =>
+                $skor['skor_akhir'] ?? null,
+
+            'skor' =>
+                $skor['skor_akhir'] ?? null,
+
+            'skorSementara' =>
+                $skor['skor_akhir'] ?? null,
+
+            'prioritas' =>
+                isset($skor['prioritas'])
+                    ? 'P' . (int) $skor['prioritas']
+                    : null,
+
             'status' => $row['status_pengajuan'],
+            'statusPengajuan' =>
+                statusNorm($row['status_pengajuan']),
 
             'id_booking' => $row['id_booking']
                 ? (int) $row['id_booking']
                 : null,
 
-            'status_booking' => $row['status_booking'] ?? null
-
+            'status_booking' =>
+                $row['status_booking'] ?? null
         ];
     }
 
