@@ -125,7 +125,8 @@ try {
 
     // Buat session
     session_regenerate_id(true);
-
+    $_SESSION["login_time"] = time();
+    $_SESSION["last_activity"] = time();
     $_SESSION["id_user"] = $user["id_user"];
     $_SESSION["role"] = $user["role"];
     $_SESSION["nip_npm"] = $user["nip_npm"];

@@ -88,7 +88,7 @@
                         <p>Satria Dwi Pauwah S.T., M.Kom.</p>
 
                         <span>
-                            NIP: 197804122005011003
+                            NIP: 002
                         </span>
 
                         <div class="profile-role">

@@ -184,6 +184,7 @@ $namaPengguna = htmlspecialchars(
 
   </main>
   <script src="../../JS/Pengguna/dashboard_pengguna.js"></script>
+  <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 </body>
 
 </html>

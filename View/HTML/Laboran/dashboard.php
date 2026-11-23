@@ -518,6 +518,7 @@ $nipLaboran = htmlspecialchars(
     <script src="../../JS/laboran/dashboard/presensi.js"></script>
 
     <!-- MODUL LAPORAN -->
+     <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
     <script src="../../JS/laboran/laporan.js"></script>
 
 

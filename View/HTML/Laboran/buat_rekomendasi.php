@@ -88,7 +88,7 @@
                         <p>Satria Dwi Pauwah S.T., M.Kom.</p>
 
                         <span>
-                            NIP: 197804122005011003
+                            NIP: 002
                         </span>
 
                         <div class="profile-role">
@@ -655,6 +655,7 @@
     <script src="../../JS/laboran/utils/waktu.js"></script>
 
     <script src="../../JS/laboran/layanan.js"></script>
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 
     <script src="../../JS/laboran/rekomendasi'/buat_rekomendasi.js"></script>
 

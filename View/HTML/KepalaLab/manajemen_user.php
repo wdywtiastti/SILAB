@@ -518,5 +518,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
     <!-- JAVASCRIPT MANAJEMEN USER -->
     <script src="../../JS/kepalaLab/manajemen_user.js" defer></script>
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
   </body>
 </html>

@@ -237,5 +237,6 @@ $namaPengguna = htmlspecialchars(
 
     <!-- JAVASCRIPT -->
     <script src="../../JS/Pengguna/pengajuan.js" defer></script>
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
   </body>
 </html>

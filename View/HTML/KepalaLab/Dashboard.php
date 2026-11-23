@@ -554,6 +554,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 
 <!-- MODUL LAPORAN DATABASE -->
+ <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 <script src="../../JS/laboran/laporan.js"></script>
   </body>
 </html>

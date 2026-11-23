@@ -626,6 +626,7 @@ $nipLaboran = htmlspecialchars(
          10. JAVASCRIPT
     ======================================= -->
     <!-- MODUL ANTREAN -->
+     <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
     <script src="../../JS/laboran/antrean.js"></script>
 </body>
 

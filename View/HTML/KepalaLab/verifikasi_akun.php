@@ -328,5 +328,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
     </div>
 <!-- VERIFIKASI AKUN -->
 <script src="../../JS/kepalaLab/verifikasi_akun.js" defer></script>
+<script src="/SILAB/View/JS/auth/session_timeout.js"></script>
   </body>
 </html>
