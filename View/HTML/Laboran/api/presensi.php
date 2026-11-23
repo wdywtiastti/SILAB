@@ -10,6 +10,8 @@ declare(strict_types=1);
 $zonaWaktu = new DateTimeZone("Asia/Jayapura");
 date_default_timezone_set("Asia/Jayapura");
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 // =========================================
 // 1. KONFIGURASI RESPONS JSON
 // =========================================
@@ -146,11 +148,13 @@ try {
         trim($booking["status_booking"])
     );
 
-    if (!in_array(
-        $statusBooking,
-        ["terjadwal", "disetujui"],
-        true
-    )) {
+    if (
+        !in_array(
+            $statusBooking,
+            ["terjadwal", "disetujui"],
+            true
+        )
+    ) {
         $pdo->rollBack();
 
         kirimRespons(

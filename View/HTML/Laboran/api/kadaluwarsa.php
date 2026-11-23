@@ -10,11 +10,13 @@ declare(strict_types=1);
 $zonaWaktu = new DateTimeZone("Asia/Jayapura");
 date_default_timezone_set("Asia/Jayapura");
 
-// =========================================
-// 1. KONFIGURASI RESPONS JSON
-// =========================================
-
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 header("Content-Type: application/json; charset=UTF-8");
+
+// =========================================
+// 1. RESPONS JSON
+// =========================================
 
 function kirimRespons(
     int $kode,
@@ -22,28 +24,30 @@ function kirimRespons(
     string $message,
     int $jumlah = 0
 ): void {
+
     http_response_code($kode);
 
     echo json_encode([
         "success" => $success,
         "message" => $message,
         "jumlah_kedaluwarsa" => $jumlah
-    ]);
+    ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 
     exit;
 }
 
 // =========================================
-// 2. MEMANGGIL SESSION
+// 2. SESSION
 // =========================================
 
 require_once __DIR__ . "/../../auth/sesi.php";
 
 // =========================================
-// 3. PEMERIKSAAN AUTENTIKASI
+// 3. AUTENTIKASI
 // =========================================
 
 if (!sudahLogin()) {
+
     kirimRespons(
         401,
         false,
@@ -52,6 +56,7 @@ if (!sudahLogin()) {
 }
 
 if (($_SESSION["role"] ?? "") !== "laboran") {
+
     kirimRespons(
         403,
         false,
@@ -60,10 +65,11 @@ if (($_SESSION["role"] ?? "") !== "laboran") {
 }
 
 // =========================================
-// 4. PEMERIKSAAN METODE REQUEST
+// 4. METODE REQUEST
 // =========================================
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+
     header("Allow: POST");
 
     kirimRespons(
@@ -74,13 +80,13 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 // =========================================
-// 5. MEMANGGIL DATABASE
+// 5. DATABASE
 // =========================================
 
 require_once __DIR__ . "/../../../config/database.php";
 
 // =========================================
-// 6. PROSES PEMERIKSAAN KEDALUWARSA
+// 6. PEMERIKSAAN KEDALUWARSA
 // =========================================
 
 try {
@@ -99,6 +105,13 @@ try {
         ->setTime(0, 0, 0)
         ->format("Y-m-d H:i:s");
 
+    // Batas maksimal presensi adalah 15 menit
+    // setelah waktu mulai penggunaan laboratorium.
+
+    $batasValidasi = $sekarang
+        ->modify("-15 minutes")
+        ->format("Y-m-d H:i:s");
+
     $waktuSekarang = $sekarang->format("Y-m-d H:i:s");
 
     $jumlahKedaluwarsa = 0;
@@ -109,45 +122,21 @@ try {
 
     $pdo->beginTransaction();
 
-    // Mengambil identitas akun sistem.
-
-    $querySistem = "
-        SELECT id_user
-        FROM users
-        WHERE role = 'sistem'
-          AND nip_npm = 'SILAB-SYSTEM'
-          AND status = 'nonaktif'
-        LIMIT 1
-        FOR UPDATE
-    ";
-
-    $stmtSistem = $pdo->prepare($querySistem);
-    $stmtSistem->execute();
-
-    $akunSistem = $stmtSistem->fetch();
-
-    if (!$akunSistem) {
-        $pdo->rollBack();
-
-        kirimRespons(
-            500,
-            false,
-            "Akun sistem belum tersedia."
-        );
-    }
-
-    $idSistem = (int) $akunSistem["id_user"];
-
     // =====================================
-    // 8. MENGAMBIL BOOKING HARI INI
+    // 8. MENGAMBIL BOOKING KEDALUWARSA
     // =====================================
 
     $queryBooking = "
+
         SELECT
             b.id_booking,
             b.status AS status_booking,
+
             p.waktu_mulai,
-            p.waktu_selesai
+            p.waktu_selesai,
+
+            vb.id_validasi_booking,
+            vb.status AS status_presensi
 
         FROM booking b
 
@@ -157,139 +146,256 @@ try {
         LEFT JOIN validasi_booking vb
             ON vb.id_booking = b.id_booking
 
-        WHERE b.status IN ('terjadwal', 'disetujui')
+        WHERE b.status IN (
+            'terjadwal',
+            'disetujui'
+        )
 
-          AND p.waktu_mulai >= :awal_hari
-          AND p.waktu_mulai < :awal_besok
+        AND p.waktu_mulai >= :awal_hari
 
-          AND vb.id_booking IS NULL
+        AND p.waktu_mulai < :awal_besok
+
+        AND p.waktu_mulai <= :batas_validasi
+
+        AND p.waktu_selesai > p.waktu_mulai
+
+        AND (
+            vb.id_validasi_booking IS NULL
+            OR vb.status = 'disetujui'
+        )
+
+        ORDER BY p.waktu_mulai ASC
 
         FOR UPDATE
+
     ";
 
     $stmtBooking = $pdo->prepare($queryBooking);
 
     $stmtBooking->execute([
+
         ":awal_hari" => $awalHari,
-        ":awal_besok" => $awalBesok
+
+        ":awal_besok" => $awalBesok,
+
+        ":batas_validasi" => $batasValidasi
+
     ]);
 
-    $daftarBooking = $stmtBooking->fetchAll();
+    $daftarBooking = $stmtBooking->fetchAll(PDO::FETCH_ASSOC);
 
     // =====================================
-    // 9. MEMERIKSA BATAS VALIDASI 15 MENIT
+    // 9. MENYIAPKAN AKUN SISTEM
+    // =====================================
+
+    $idSistem = null;
+
+    foreach ($daftarBooking as $booking) {
+
+        if ($booking["id_validasi_booking"] === null) {
+
+            $querySistem = "
+
+                SELECT id_user
+
+                FROM users
+
+                WHERE role = 'sistem'
+
+                  AND nip_npm = 'SILAB-SYSTEM'
+
+                  AND status = 'nonaktif'
+
+                LIMIT 1
+
+                FOR UPDATE
+
+            ";
+
+            $stmtSistem = $pdo->prepare($querySistem);
+
+            $stmtSistem->execute();
+
+            $akunSistem = $stmtSistem->fetch(PDO::FETCH_ASSOC);
+
+            if (!$akunSistem) {
+
+                throw new RuntimeException(
+                    "Akun sistem belum tersedia."
+                );
+
+            }
+
+            $idSistem = (int) $akunSistem["id_user"];
+
+            break;
+        }
+    }
+
+    // =====================================
+    // 10. MEMPROSES SETIAP BOOKING
     // =====================================
 
     foreach ($daftarBooking as $booking) {
 
-        // Mengambil waktu mulai langsung dari DATETIME.
+        $idBooking = (int) $booking["id_booking"];
 
-        $waktuMulai = new DateTimeImmutable(
-            $booking["waktu_mulai"],
-            $zonaWaktu
-        );
+        // ---------------------------------
+        // A. BOOKING BELUM MEMILIKI VALIDASI
+        // ---------------------------------
 
-        // Mengambil waktu selesai langsung dari DATETIME.
+        if ($booking["id_validasi_booking"] === null) {
 
-        $waktuSelesai = new DateTimeImmutable(
-            $booking["waktu_selesai"],
-            $zonaWaktu
-        );
+            $queryInsert = "
 
-        // Memastikan rentang waktu valid.
+                INSERT INTO validasi_booking (
 
-        if ($waktuMulai >= $waktuSelesai) {
-            continue;
+                    id_booking,
+
+                    id_user_laboran,
+
+                    status,
+
+                    waktu_validasi,
+
+                    waktu_dibuat
+
+                ) VALUES (
+
+                    :id_booking,
+
+                    :id_user_laboran,
+
+                    'tidak_digunakan',
+
+                    :waktu_validasi,
+
+                    :waktu_dibuat
+
+                )
+
+            ";
+
+            $stmtInsert = $pdo->prepare($queryInsert);
+
+            $stmtInsert->execute([
+
+                ":id_booking" => $idBooking,
+
+                ":id_user_laboran" => $idSistem,
+
+                ":waktu_validasi" => $waktuSekarang,
+
+                ":waktu_dibuat" => $waktuSekarang
+
+            ]);
+
         }
 
-        // Menghitung batas validasi 15 menit.
+        // ---------------------------------
+        // B. BOOKING SUDAH DISETUJUI
+        // ---------------------------------
+        else {
 
-        $batasValidasi = $waktuMulai->modify("+15 minutes");
+            $queryUpdateValidasi = "
 
-        // Belum melewati batas validasi.
+                UPDATE validasi_booking
 
-        if ($sekarang < $batasValidasi) {
-            continue;
+                SET status = 'tidak_digunakan'
+
+                WHERE id_booking = :id_booking
+
+                  AND status = 'disetujui'
+
+            ";
+
+            $stmtUpdateValidasi = $pdo->prepare(
+                $queryUpdateValidasi
+            );
+
+            $stmtUpdateValidasi->execute([
+
+                ":id_booking" => $idBooking
+
+            ]);
+
         }
 
-        // =================================
-        // 10. MENYIMPAN VALIDASI OTOMATIS
-        // =================================
+        // ---------------------------------
+        // C. SINKRONISASI STATUS BOOKING
+        // ---------------------------------
 
-        $insert = "
-            INSERT INTO validasi_booking (
-                id_booking,
-                id_user_laboran,
-                status,
-                waktu_validasi,
-                waktu_dibuat
-            ) VALUES (
-                :id_booking,
-                :id_user_laboran,
-                'tidak_digunakan',
-                :waktu_validasi,
-                :waktu_dibuat
-            )
+        $queryUpdateBooking = "
+
+            UPDATE booking
+
+            SET status = 'tidak_digunakan'
+
+            WHERE id_booking = :id_booking
+
+              AND status IN (
+                  'terjadwal',
+                  'disetujui'
+              )
+
         ";
 
-        $stmtInsert = $pdo->prepare($insert);
+        $stmtUpdateBooking = $pdo->prepare(
+            $queryUpdateBooking
+        );
 
-        $stmtInsert->execute([
-            ":id_booking" => $booking["id_booking"],
-            ":id_user_laboran" => $idSistem,
-            ":waktu_validasi" => $waktuSekarang,
-            ":waktu_dibuat" => $waktuSekarang
+        $stmtUpdateBooking->execute([
+
+            ":id_booking" => $idBooking
+
         ]);
 
         $jumlahKedaluwarsa++;
+
     }
 
     // =====================================
-    // 11. MENYELESAIKAN TRANSAKSI
+    // 11. COMMIT TRANSAKSI
     // =====================================
 
     $pdo->commit();
 
     kirimRespons(
+
         200,
+
         true,
+
         $jumlahKedaluwarsa > 0
-        ? "Pemeriksaan berhasil. Presensi kedaluwarsa berhasil dicatat."
+
+        ? "Pemeriksaan berhasil. Presensi kedaluwarsa berhasil diperbarui."
+
         : "Pemeriksaan berhasil. Tidak ada presensi kedaluwarsa.",
+
         $jumlahKedaluwarsa
-    );
 
-} catch (PDOException $e) {
-
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-
-    error_log(
-        "SILAB API Kedaluwarsa - Database Error: " .
-        $e->getMessage()
-    );
-
-    kirimRespons(
-        500,
-        false,
-        "Terjadi kesalahan database saat memeriksa presensi."
     );
 
 } catch (Throwable $e) {
 
     if ($pdo->inTransaction()) {
+
         $pdo->rollBack();
+
     }
 
     error_log(
-        "SILAB API Kedaluwarsa - Error: " .
-        $e->getMessage()
+        "SILAB API Kedaluwarsa: " . $e->getMessage()
     );
 
     kirimRespons(
+
         500,
+
         false,
-        "Terjadi kesalahan pada pemeriksaan presensi."
+
+        "Terjadi kesalahan saat memproses presensi kedaluwarsa."
+
     );
+
 }

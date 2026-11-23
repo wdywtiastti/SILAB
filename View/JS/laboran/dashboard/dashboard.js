@@ -2,33 +2,42 @@
 (function (window, document) {
   "use strict";
 
+  // =========================================
+  // 1. REFERENSI ELEMEN HTML
+  // =========================================
+
   const waktu = window.SILABWaktu;
 
   const el = {
     presensi: document.getElementById("wadahPresensi"),
     templatePresensi: document.getElementById("templatePresensi"),
-    jadwal: document.getElementById("jadwalBody"),
-    templateBaris: document.getElementById("templateBarisJadwal"),
-    jumlah: document.getElementById("jumlahJadwal"),
-    infoHalaman: document.getElementById("infoPagination"),
-    kontrolHalaman: document.getElementById("kontrolPagination"),
   };
 
   const BATAS_VALIDASI = 15;
-  const BATAS_PER_HALAMAN = 5;
 
-  let halamanAktif = 1;
   let sedangMemperbarui = false;
+  let perluMemperbarui = false;
 
-  // Memeriksa ketersediaan utilitas dan elemen HTML.
-  if (!waktu || Object.values(el).some((item) => !item)) {
+  // =========================================
+  // 2. PEMERIKSAAN ELEMEN
+  // =========================================
+
+  if (
+    !waktu ||
+    !el.presensi ||
+    !el.templatePresensi
+  ) {
     console.error(
-      "SILAB: Elemen atau utilitas waktu dashboard belum tersedia."
+      "SILAB: Elemen atau utilitas waktu presensi belum tersedia."
     );
+
     return;
   }
 
-  // Mengambil status akhir presensi.
+  // =========================================
+  // 3. MENGAMBIL STATUS PRESENSI
+  // =========================================
+
   function statusPresensi(booking) {
     const status = booking.presensi?.status;
 
@@ -39,7 +48,10 @@
         : null;
   }
 
-  // Memeriksa rentang waktu peminjaman.
+  // =========================================
+  // 4. MEMERIKSA RENTANG WAKTU
+  // =========================================
+
   function rentangWaktu(booking) {
     return waktu.validasiRentang(
       booking.tanggal,
@@ -48,114 +60,53 @@
     );
   }
 
-  // Mengambil jadwal hari ini melalui API PHP.
+  // =========================================
+  // 5. MENGAMBIL DATA JADWAL DARI API
+  // =========================================
+
   async function ambilJadwalHariIni(tanggal) {
     const response = await fetch(
-      `api/jadwal.php?tanggal=${encodeURIComponent(tanggal)}`,
-      {
-        method: "GET",
-        credentials: "same-origin",
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    `api/jadwal.php?tanggal=${encodeURIComponent(tanggal)}`,
+    {
+      method: "GET",
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
 
     let hasil;
 
     try {
       hasil = await response.json();
     } catch {
-      throw new Error("Respons API jadwal bukan JSON yang valid.");
+      throw new Error(
+        "Respons API jadwal bukan JSON yang valid."
+      );
     }
 
     if (!response.ok || !hasil.success) {
       throw new Error(
-        hasil.message || "Gagal mengambil jadwal laboratorium."
+        hasil.message ||
+        "Gagal mengambil data presensi."
       );
     }
 
     if (!Array.isArray(hasil.data)) {
-      throw new Error("Format data jadwal tidak valid.");
+      throw new Error(
+        "Format data jadwal tidak valid."
+      );
     }
 
     return hasil.data;
   }
 
-  // Menentukan status yang ditampilkan pada tabel.
-  function statusJadwal(booking, rentang, sekarang) {
-    const presensi = statusPresensi(booking);
+  // =========================================
+  // 6. MENGISI INFORMASI CARD
+  // =========================================
 
-    if (presensi === "digunakan") {
-      const selesai = sekarang >= rentang.selesai;
-
-      return {
-        kode: selesai ? "selesai" : "aktif",
-        label: selesai ? "Selesai Digunakan" : "Aktif di Lab",
-        ikon: "bi-check-circle-fill",
-      };
-    }
-
-    if (presensi === "tidak_digunakan") {
-      return {
-        kode: "tidak-digunakan",
-        label: "Tidak Digunakan",
-        ikon: "bi-x-circle-fill",
-      };
-    }
-
-    return {
-      kode: "menunggu",
-      label: "Menunggu Presensi",
-      ikon: "bi-hourglass-split",
-    };
-  }
-
-  // Menentukan keterangan waktu pada setiap baris.
-  function keteranganJadwal(
-    booking,
-    rentang,
-    status,
-    sekarang,
-    idBerikutnya
-  ) {
-    if (status.kode === "tidak-digunakan") {
-      return "Slot Dibuka";
-    }
-
-    if (status.kode === "aktif") {
-      return "Sedang Berjalan";
-    }
-
-    if (status.kode === "selesai") {
-      const durasi = Math.round(
-        (rentang.selesai - rentang.mulai) / 60000
-      );
-
-      return `Selesai • ${durasi} mnt`;
-    }
-
-    if (
-      sekarang >= rentang.mulai &&
-      sekarang < rentang.selesai
-    ) {
-      return "Sedang Berjalan";
-    }
-
-    if (booking.id === idBerikutnya) {
-      return "Sesi Berikutnya";
-    }
-
-    const jam = Number(booking.waktuMulai.slice(0, 2));
-
-    return jam >= 18
-      ? "Malam Hari"
-      : jam >= 15
-        ? "Sore Hari"
-        : "Sesi Berikutnya";
-  }
-
-  // Mengisi teks pada template.
   function isi(parent, selector, nilai) {
     const target = parent.querySelector(selector);
 
@@ -164,314 +115,16 @@
     }
   }
 
-  // Mengatur ikon pada template.
-  function aturIkon(parent, selector, nama) {
-    const target = parent.querySelector(selector);
+  // =========================================
+  // 7. MENAMPILKAN CARD PRESENSI
+  // =========================================
 
-    if (target) {
-      target.className = `bi ${nama}`;
-    }
-  }
-
-  // Membuat label prioritas dari hasil pembobotan.
-  function formatPrioritas(prioritas) {
-    if (
-      prioritas === null ||
-      prioritas === undefined ||
-      prioritas === ""
-    ) {
-      return "Belum Dihitung";
-    }
-
-    return `Prioritas ${prioritas}`;
-  }
-
-  // Membuat satu baris jadwal dari template HTML.
-  function buatBarisJadwal(booking, sekarang, idBerikutnya) {
-    const rentang = rentangWaktu(booking);
-
-    if (!rentang.valid) return null;
-
-    const fragmen = el.templateBaris.content.cloneNode(true);
-    const baris = fragmen.querySelector("[data-jadwal-row]");
-
-    if (!baris) return null;
-
-    const status = statusJadwal(booking, rentang, sekarang);
-
-    // Mengambil prioritas dari hasil API pembobotan.
-    const prioritas = booking.prioritas;
-    const labelPrioritas = formatPrioritas(prioritas);
-
-    isi(
-      baris,
-      '[data-field="waktu"]',
-      waktu.formatRentangJam(
-        booking.waktuMulai,
-        booking.waktuSelesai
-      )
-    );
-
-    isi(
-      baris,
-      '[data-field="keterangan"]',
-      keteranganJadwal(
-        booking,
-        rentang,
-        status,
-        sekarang,
-        idBerikutnya
-      )
-    );
-
-    isi(
-      baris,
-      '[data-field="nama-kegiatan"]',
-      booking.namaKegiatan
-    );
-
-    isi(
-      baris,
-      '[data-field="pemohon"]',
-      booking.namaPemohon
-    );
-
-    isi(
-      baris,
-      '[data-field="label-prioritas"]',
-      labelPrioritas
-    );
-
-    isi(
-      baris,
-      '[data-field="label-status"]',
-      status.label
-    );
-
-    // Mengatur ikon waktu.
-    aturIkon(
-      baris,
-      '[data-field="ikon-jam"]',
-      status.kode === "aktif"
-        ? "bi-clock-fill"
-        : "bi-clock"
-    );
-
-    // Mengatur ikon prioritas.
-    aturIkon(
-      baris,
-      '[data-field="ikon-prioritas"]',
-      "bi-bar-chart-fill"
-    );
-
-    // Mengatur ikon status.
-    aturIkon(
-      baris,
-      '[data-field="ikon-status"]',
-      status.ikon
-    );
-
-    // Mengatur atribut badge prioritas.
-    const badgePrioritas = baris.querySelector(
-      '[data-field="prioritas"]'
-    );
-
-    if (badgePrioritas) {
-      badgePrioritas.dataset.prioritas =
-        prioritas === null ||
-        prioritas === undefined ||
-        prioritas === ""
-          ? "belum-dihitung"
-          : String(prioritas);
-    }
-
-    // Mengatur atribut badge status.
-    const badgeStatus = baris.querySelector(
-      '[data-field="status"]'
-    );
-
-    if (badgeStatus) {
-      badgeStatus.dataset.status = status.kode;
-      badgeStatus.classList.add(`status-${status.kode}`);
-    }
-
-    baris.dataset.status = status.kode;
-
-    return fragmen;
-  }
-
-  // Membuat tombol navigasi halaman.
-  function tombolHalaman(
-    label,
-    halaman,
-    nonaktif,
-    aktif,
-    ariaLabel
-  ) {
-    const tombol = document.createElement("button");
-
-    tombol.type = "button";
-
-    const angkaHalaman = /^\d+$/.test(label);
-
-    tombol.className = angkaHalaman
-      ? "page-number"
-      : "page-btn";
-
-    tombol.textContent = label;
-    tombol.disabled = nonaktif;
-    tombol.setAttribute("aria-label", ariaLabel);
-
-    if (aktif) {
-      tombol.classList.add("active");
-      tombol.setAttribute("aria-current", "page");
-    }
-
-    tombol.addEventListener("click", () => {
-      if (nonaktif || halaman === halamanAktif) return;
-
-      halamanAktif = halaman;
-      perbaruiDashboard();
-    });
-
-    return tombol;
-  }
-
-  // Menampilkan informasi dan tombol pagination.
-  function tampilkanPagination(jumlah) {
-    const totalHalaman = Math.max(
-      1,
-      Math.ceil(jumlah / BATAS_PER_HALAMAN)
-    );
-
-    halamanAktif = Math.min(
-      halamanAktif,
-      totalHalaman
-    );
-
-    el.kontrolHalaman.replaceChildren();
-
-    const awal = jumlah
-      ? (halamanAktif - 1) * BATAS_PER_HALAMAN + 1
-      : 0;
-
-    const akhir = Math.min(
-      halamanAktif * BATAS_PER_HALAMAN,
-      jumlah
-    );
-
-    el.infoHalaman.textContent = jumlah
-      ? `Menampilkan ${awal}–${akhir} dari ${jumlah} jadwal`
-      : "Belum ada jadwal peminjaman hari ini.";
-
-    el.kontrolHalaman.append(
-      tombolHalaman(
-        "Sebelumnya",
-        Math.max(1, halamanAktif - 1),
-        halamanAktif === 1,
-        false,
-        "Halaman sebelumnya"
-      )
-    );
-
-    for (
-      let nomor = 1;
-      nomor <= totalHalaman;
-      nomor++
-    ) {
-      el.kontrolHalaman.append(
-        tombolHalaman(
-          String(nomor),
-          nomor,
-          false,
-          nomor === halamanAktif,
-          `Halaman ${nomor}`
-        )
-      );
-    }
-
-    el.kontrolHalaman.append(
-      tombolHalaman(
-        "Berikutnya",
-        Math.min(totalHalaman, halamanAktif + 1),
-        halamanAktif === totalHalaman,
-        false,
-        "Halaman berikutnya"
-      )
-    );
-  }
-
-  // Menampilkan jadwal sesuai halaman yang dipilih.
-  function tampilkanJadwal(data, sekarang) {
-    const fragmen = document.createDocumentFragment();
-
-    const berikutnya = data.find((item) => {
-      const rentang = rentangWaktu(item);
-
-      return (
-        !statusPresensi(item) &&
-        rentang.valid &&
-        rentang.mulai > sekarang
-      );
-    })?.id;
-
-    const awal = (halamanAktif - 1) * BATAS_PER_HALAMAN;
-
-    data
-      .slice(awal, awal + BATAS_PER_HALAMAN)
-      .forEach((booking) => {
-        const baris = buatBarisJadwal(
-          booking,
-          sekarang,
-          berikutnya
-        );
-
-        if (baris) {
-          fragmen.append(baris);
-        }
-      });
-
-    el.jadwal.replaceChildren(fragmen);
-
-    if (!data.length) {
-      const kosong = document.createElement("p");
-
-      kosong.className = "jadwal-kosong";
-      kosong.textContent =
-        "Belum ada jadwal peminjaman hari ini.";
-
-      el.jadwal.append(kosong);
-    }
-
-    tampilkanPagination(data.length);
-  }
-
-  // Menampilkan kondisi ketika pengambilan data gagal.
-  function tampilkanErrorJadwal() {
-    el.jumlah.textContent = "-";
-
-    el.jadwal.replaceChildren();
-
-    const pesan = document.createElement("p");
-
-    pesan.className = "jadwal-kosong";
-    pesan.textContent =
-      "Jadwal belum dapat dimuat. Silakan coba kembali.";
-
-    el.jadwal.append(pesan);
-
-    el.presensi.replaceChildren();
-
-    el.infoHalaman.textContent = "Gagal memuat jadwal.";
-    el.kontrolHalaman.replaceChildren();
-  }
-
-  // Menampilkan card hanya selama validasi masih tersedia.
   function tampilkanPresensi(data, sekarang) {
     const fragmen = document.createDocumentFragment();
 
     data.forEach((booking) => {
-      // Card tidak ditampilkan jika presensi sudah dicatat.
+
+      // Tidak menampilkan booking yang sudah divalidasi.
       if (statusPresensi(booking)) return;
 
       const rentang = rentangWaktu(booking);
@@ -481,7 +134,7 @@
       // Menunggu waktu mulai peminjaman.
       if (sekarang < rentang.mulai) return;
 
-      // Card tidak ditampilkan setelah sesi berakhir.
+      // Tidak menampilkan sesi yang sudah berakhir.
       if (sekarang >= rentang.selesai) return;
 
       // Menghitung batas validasi 15 menit.
@@ -489,9 +142,10 @@
         rentang.mulai.getTime() +
         BATAS_VALIDASI * 60000;
 
-      // Menutup tampilan card setelah batas validasi.
+      // Tidak menampilkan card setelah batas validasi.
       if (sekarang.getTime() >= batas) return;
 
+      // Membuat card berdasarkan template HTML.
       const isiTemplate =
         el.templatePresensi.content.cloneNode(true);
 
@@ -501,6 +155,7 @@
 
       kartu.dataset.bookingId = booking.id;
 
+      // Mengisi rentang waktu.
       isi(
         kartu,
         '[data-field="rentang-jam"]',
@@ -510,18 +165,21 @@
         )
       );
 
+      // Mengisi nama kegiatan.
       isi(
         kartu,
         '[data-field="nama-kegiatan"]',
         booking.namaKegiatan
       );
 
+      // Mengisi nama pemohon.
       isi(
         kartu,
         '[data-field="pemohon"]',
         booking.namaPemohon
       );
 
+      // Mengisi informasi batas validasi.
       const feedback = kartu.querySelector(
         "[data-presensi-feedback]"
       );
@@ -536,68 +194,106 @@
       fragmen.append(isiTemplate);
     });
 
+    // Memperbarui wadah card presensi.
     el.presensi.replaceChildren(fragmen);
   }
 
-  // Memperbarui seluruh tampilan dashboard.
-  async function perbaruiDashboard() {
-    if (sedangMemperbarui) return;
+  // =========================================
+  // 8. MENAMPILKAN KONDISI KESALAHAN
+  // =========================================
+
+  function tampilkanErrorPresensi() {
+    const pesan = document.createElement("p");
+
+    pesan.className = "jadwal-kosong";
+
+    pesan.textContent =
+      "Data presensi belum dapat dimuat. Silakan coba kembali.";
+
+    el.presensi.replaceChildren(pesan);
+  }
+
+  // =========================================
+  // 9. MEMPERBARUI CARD PRESENSI
+  // =========================================
+
+  async function perbaruiPresensi() {
+
+    if (sedangMemperbarui) {
+        perluMemperbarui = true;
+        return;
+    }
 
     sedangMemperbarui = true;
 
     try {
-      const tanggal = waktu.tanggalHariIni();
-      const sekarang = new Date();
 
-      const data = await ambilJadwalHariIni(tanggal);
+        const tanggal = waktu.tanggalHariIni();
+        const sekarang = new Date();
 
-      el.jumlah.textContent = String(data.length);
+        const data = await ambilJadwalHariIni(tanggal);
 
-      tampilkanJadwal(data, sekarang);
-      tampilkanPresensi(data, sekarang);
+        tampilkanPresensi(data, sekarang);
 
     } catch (error) {
-      console.error(
-        "SILAB: Gagal memperbarui dashboard.",
-        error
-      );
 
-      tampilkanErrorJadwal();
+        console.error(
+            "SILAB: Gagal memperbarui card presensi.",
+            error
+        );
+
+        tampilkanErrorPresensi();
 
     } finally {
-      sedangMemperbarui = false;
-    }
-  }
 
-  // Memperbarui dashboard ketika data berubah.
+        sedangMemperbarui = false;
+
+        if (perluMemperbarui) {
+            perluMemperbarui = false;
+            perbaruiPresensi();
+        }
+    }
+}
+
+  // =========================================
+  // 10. EVENT PERUBAHAN DATA
+  // =========================================
+
   window.addEventListener(
     "silab:data-changed",
-    () => {
-      if (!sedangMemperbarui) {
-        perbaruiDashboard();
-      }
-    }
-  );
+    perbaruiPresensi
+);
 
-  // Memperbarui dashboard ketika pengguna kembali ke halaman.
+  // =========================================
+  // 11. EVENT KETIKA HALAMAN DIBUKA KEMBALI
+  // =========================================
+
   document.addEventListener(
     "visibilitychange",
     () => {
       if (!document.hidden) {
-        perbaruiDashboard();
+        perbaruiPresensi();
       }
     }
   );
 
-  // Memeriksa perubahan waktu setiap 15 detik.
+  // =========================================
+  // 12. PEMERIKSAAN BERKALA
+  // =========================================
+
   window.setInterval(
-    perbaruiDashboard,
+    perbaruiPresensi,
     15000
   );
 
-  // Menampilkan data ketika dashboard pertama kali dibuka.
-  perbaruiDashboard();
+  // =========================================
+  // 13. INISIALISASI
+  // =========================================
 
-  console.log("SILAB: Dashboard Laboran berhasil dimuat.");
+  perbaruiPresensi();
 
-})(window, document)
+  console.log(
+    "SILAB: Modul tampilan presensi berhasil dimuat."
+  );
+
+})(window, document);

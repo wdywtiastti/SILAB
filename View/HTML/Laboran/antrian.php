@@ -512,7 +512,7 @@ $nipLaboran = htmlspecialchars(
                     <span>Pengajuan Mengalami Bentrokan</span>
                 </div>
 
-                <p class="collision-description">
+                <p class="collision-description" data-field="pesan-bentrok">
                     Jadwal pengajuan ini beririsan dengan pengajuan atau
                     booking lainnya. Kasus perlu diteruskan kepada Kepala Lab
                     untuk mendapatkan keputusan.
@@ -626,7 +626,7 @@ $nipLaboran = htmlspecialchars(
          10. JAVASCRIPT
     ======================================= -->
     <!-- MODUL ANTREAN -->
-     <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
     <script src="../../JS/laboran/antrean.js"></script>
 </body>
 

@@ -258,7 +258,7 @@ $nipLaboran = htmlspecialchars(
 
                         <span>JAM / SESI</span>
                         <span>KEGIATAN & PEMOHON</span>
-                        <span class="kolom-prioritas">PRIORITAS</span>
+                        <span class="kolom-kategori">KATEGORI</span>
                         <span class="kolom-status">STATUS</span>
 
                     </div>
@@ -301,13 +301,13 @@ $nipLaboran = htmlspecialchars(
                     </div>
 
 
-                    <div class="kolom-prioritas">
+                    <div class="kolom-kategori">
 
-                        <span class="badge-prioritas" data-field="prioritas">
+                        <span class="badge-kategori" data-field="kategori">
 
-                            <i class="bi bi-bar-chart-fill" data-field="ikon-prioritas"></i>
+                            <i class="bi bi-tag-fill" data-field="ikon-kategori"></i>
 
-                            <span data-field="label-prioritas"></span>
+                            <span data-field="label-kategori"></span>
 
                         </span>
 
@@ -515,10 +515,10 @@ $nipLaboran = htmlspecialchars(
 
     <!-- MODUL DASHBOARD -->
     <script src="../../JS/laboran/dashboard/dashboard.js"></script>
+    <script src="../../JS/laboran/dashboard/jadwal.js"></script>
     <script src="../../JS/laboran/dashboard/presensi.js"></script>
-
     <!-- MODUL LAPORAN -->
-     <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
+    <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
     <script src="../../JS/laboran/laporan.js"></script>
 
 

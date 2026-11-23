@@ -325,37 +325,34 @@ textarea {
   font-family: inherit;
 }
 
-/* Pembagian lebar kolom */
+
+/* Pembagian lebar 5 kolom tabel antrean */
 
 .antrian-table th:nth-child(1),
 .antrian-table td:nth-child(1) {
-  width: 12%;
+    width: 24%;
 }
 
 .antrian-table th:nth-child(2),
 .antrian-table td:nth-child(2) {
-  width: 27%;
+    width: 26%;
 }
 
 .antrian-table th:nth-child(3),
 .antrian-table td:nth-child(3) {
-  width: 19%;
+    width: 20%;
 }
 
 .antrian-table th:nth-child(4),
 .antrian-table td:nth-child(4) {
-  width: 15%;
+    width: 15%;
 }
 
 .antrian-table th:nth-child(5),
 .antrian-table td:nth-child(5) {
-  width: 12%;
+    width: 15%;
 }
 
-.antrian-table th:nth-child(6),
-.antrian-table td:nth-child(6) {
-  width: 15%;
-}
 
 /* Judul kolom */
 

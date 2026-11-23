@@ -47,21 +47,35 @@ require_once __DIR__ . "/../../auth/sesi.php";
 // =========================================
 
 if (!sudahLogin()) {
-    kirimRespons(401, false, "Silakan login terlebih dahulu.");
+    kirimRespons(
+        401,
+        false,
+        "Silakan login terlebih dahulu."
+    );
 }
 
 $role = (string) ($_SESSION["role"] ?? "");
 
 if (!in_array($role, ["laboran", "kepala_lab"], true)) {
-    kirimRespons(403, false, "Anda tidak memiliki akses.");
+    kirimRespons(
+        403,
+        false,
+        "Anda tidak memiliki akses."
+    );
 }
+
 // =========================================
 // 4. PEMERIKSAAN METODE REQUEST
 // =========================================
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     header("Allow: GET");
-    kirimRespons(405, false, "Metode request tidak diizinkan.");
+
+    kirimRespons(
+        405,
+        false,
+        "Metode request tidak diizinkan."
+    );
 }
 
 // =========================================
@@ -87,7 +101,11 @@ if (
     !$formatTanggal ||
     $formatTanggal->format("Y-m-d") !== $tanggal
 ) {
-    kirimRespons(400, false, "Format tanggal tidak valid.");
+    kirimRespons(
+        400,
+        false,
+        "Format tanggal tidak valid."
+    );
 }
 
 // =========================================
@@ -97,103 +115,20 @@ if (
 require_once __DIR__ . "/../../../config/database.php";
 
 // =========================================
-// 7. STATUS YANG MENANDAKAN PRESENSI
-// =========================================
-
-$statusPresensiAktif = [
-    "hadir",
-    "presensi",
-    "sudah_presensi",
-    "tercatat",
-    "digunakan",
-    "sedang_berjalan",
-    "berlangsung",
-    "selesai",
-    "checked_in",
-    "check_in"
-];
-
-// =========================================
-// 8. PEMERIKSAAN BATAS WAKTU PRESENSI
+// 7. MENGAMBIL DATA JADWAL
 // =========================================
 
 try {
 
-    $pdo->beginTransaction();
-
-    // Waktu sekarang berdasarkan WIT.
-    $sekarang = new DateTimeImmutable(
-        "now",
-        $zonaWaktu
-    );
-
-    // Batas presensi adalah 15 menit setelah waktu mulai.
-    $batasWaktu = $sekarang
-        ->modify("-15 minutes")
-        ->format("Y-m-d H:i:s");
-
-    // -------------------------------------
-    // 8A. UPDATE BOOKING KADALUWARSA
-    // -------------------------------------
-
-    // Booking yang sudah melewati batas presensi
-    // dan belum melakukan presensi akan menjadi
-    // tidak_digunakan.
-
-    $queryUpdate = "
-        UPDATE booking b
-
-        INNER JOIN pengajuan p
-            ON p.id_pengajuan = b.id_pengajuan
-
-        SET b.status = 'tidak_digunakan'
-
-        WHERE b.status IN (
-            'terjadwal',
-            'disetujui'
-        )
-
-        AND p.waktu_mulai <= :batas_waktu
-
-        AND NOT EXISTS (
-            SELECT 1
-            FROM validasi_booking vb
-
-            WHERE vb.id_booking = b.id_booking
-
-            AND LOWER(TRIM(vb.status)) IN (
-                'hadir',
-                'presensi',
-                'sudah_presensi',
-                'tercatat',
-                'digunakan',
-                'sedang_berjalan',
-                'berlangsung',
-                'selesai',
-                'checked_in',
-                'check_in'
-            )
-        )
-    ";
-
-    $stmtUpdate = $pdo->prepare($queryUpdate);
-
-    $stmtUpdate->execute([
-        ":batas_waktu" => $batasWaktu
-    ]);
-
-    $jumlahTidakDigunakan = $stmtUpdate->rowCount();
-
-    // =====================================
-    // 9. MENGAMBIL DATA JADWAL
-    // =====================================
+    // API ini hanya bertugas mengambil data jadwal.
+    // Tidak melakukan perubahan status booking.
+    // Pemeriksaan presensi kedaluwarsa ditangani
+    // sepenuhnya oleh kadaluwarsa.php.
 
     $query = "
         SELECT
             b.id_booking AS id,
-
             p.id_pengajuan,
-
             DATE(p.waktu_mulai) AS tanggal,
 
             TIME_FORMAT(
@@ -207,12 +142,45 @@ try {
             ) AS waktuSelesai,
 
             p.nama_kegiatan AS namaKegiatan,
-
             u.nama AS namaPemohon,
-
             b.status AS status,
 
-            sp.prioritas AS prioritas,
+            ak.nama_kriteria AS kategori,
+
+        CASE
+            -- K1: Mata Kuliah Wajib
+            WHEN LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'mata kuliah wajib%'
+                THEN 'K1'
+
+            -- K2: Kelas Mata Kuliah Pengganti
+            WHEN LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'kelas pengganti%'
+                OR LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'mata kuliah pengganti%'
+                THEN 'K2'
+
+            -- K3: Praktikum dan Asistensi
+            WHEN LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'praktikum%'
+                OR LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'asistensi%'
+                THEN 'K3'
+
+            -- K4: Organisasi HMTI
+            WHEN LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'hmti%'
+                OR LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'organisasi%'
+                THEN 'K4'
+
+            -- K5: Belajar Mandiri Mahasiswa
+            WHEN LOWER(TRIM(ak.nama_kriteria))
+                LIKE 'belajar mandiri%'
+                THEN 'K5'
+
+            ELSE NULL
+        END AS kodeKategori,
 
             vb.status AS status_presensi
 
@@ -224,27 +192,47 @@ try {
         INNER JOIN users u
             ON u.id_user = p.id_user
 
-LEFT JOIN skor_pengajuan sp
-    ON sp.id_pengajuan = p.id_pengajuan
+        LEFT JOIN pengajuan_aturan pa
+            ON pa.id_pengajuan_aturan = (
+                SELECT MIN(pa2.id_pengajuan_aturan)
+                FROM pengajuan_aturan pa2
 
-LEFT JOIN (
-    SELECT
-        id_booking,
-        MAX(status) AS status
-    FROM validasi_booking
-    GROUP BY id_booking
-) vb
-    ON vb.id_booking = b.id_booking
+                INNER JOIN aturan_kriteria ak2
+                    ON ak2.id_aturan_kriteria =
+                       pa2.id_aturan_kriteria
 
-WHERE DATE(p.waktu_mulai) = :tanggal
+                INNER JOIN aturan a2
+                    ON a2.id_aturan = ak2.id_aturan
 
-        AND b.status IN (
-            'terjadwal',
-            'disetujui',
-            'digunakan',
-            'berlangsung',
-            'tidak_digunakan'
-        )
+                WHERE pa2.id_pengajuan = p.id_pengajuan
+                  AND a2.nama_kelompok = 'Jenis Kegiatan'
+            )
+
+        LEFT JOIN aturan_kriteria ak
+            ON ak.id_aturan_kriteria = pa.id_aturan_kriteria
+
+        LEFT JOIN aturan a
+            ON a.id_aturan = ak.id_aturan
+           AND a.nama_kelompok = 'Jenis Kegiatan'
+
+        LEFT JOIN (
+            SELECT
+                id_booking,
+                MAX(status) AS status
+            FROM validasi_booking
+            GROUP BY id_booking
+        ) vb
+            ON vb.id_booking = b.id_booking
+
+        WHERE DATE(p.waktu_mulai) = :tanggal
+
+          AND b.status IN (
+              'terjadwal',
+              'disetujui',
+              'digunakan',
+              'berlangsung',
+              'tidak_digunakan'
+          )
 
         ORDER BY p.waktu_mulai ASC
     ";
@@ -258,7 +246,7 @@ WHERE DATE(p.waktu_mulai) = :tanggal
     $daftarJadwal = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // =====================================
-    // 10. MENYESUAIKAN FORMAT DATA JSON
+    // 8. MENYESUAIKAN FORMAT DATA JSON
     // =====================================
 
     $data = [];
@@ -280,7 +268,9 @@ WHERE DATE(p.waktu_mulai) = :tanggal
 
             "namaPemohon" => $booking["namaPemohon"],
 
-            "prioritas" => $booking["prioritas"],
+            "kategori" => $booking["kategori"],
+
+            "kodeKategori" => $booking["kodeKategori"],
 
             "status" => $booking["status"],
 
@@ -293,13 +283,7 @@ WHERE DATE(p.waktu_mulai) = :tanggal
     }
 
     // =====================================
-    // 11. COMMIT TRANSAKSI
-    // =====================================
-
-    $pdo->commit();
-
-    // =====================================
-    // 12. MENGIRIM RESPONS
+    // 9. MENGIRIM RESPONS
     // =====================================
 
     kirimRespons(
@@ -310,10 +294,6 @@ WHERE DATE(p.waktu_mulai) = :tanggal
     );
 
 } catch (Throwable $e) {
-
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
 
     error_log(
         "SILAB API Jadwal Laboran: " .

@@ -227,10 +227,13 @@
 
   function isApproved(item) {
     return (
-      statusPengajuan(item) === "disetujui" ||
-      STATUS_BOOKING_AKTIF.includes(statusBooking(item))
+        !isDisplaced(item) &&
+        (
+            statusPengajuan(item) === "disetujui" ||
+            STATUS_BOOKING_AKTIF.includes(statusBooking(item))
+        )
     );
-  }
+}
 
   function isPending(item) {
     return !isApproved(item) && STATUS_PENDING.includes(statusItem(item));
@@ -247,11 +250,11 @@
 
   function isEscalated(item) {
     return (
-      item.sedangEskalasi === true ||
-      item.sedangEskalasi === 1 ||
-      (item.idKonflikAktif !== null && item.idKonflikAktif !== undefined)
+        item.sedangEskalasi === true ||
+        item.sedangEskalasi === 1 ||
+        item.sedangEskalasi === "1"
     );
-  }
+}
 
   function mengalamiKonflik(item) {
     return (
@@ -272,12 +275,11 @@
       item.sudahDieskalasi === 1 ||
       item.sudahDieskalasi === "1" ||
       [
-        "dikirim",
-        "terkirim",
-        "menunggu_kepala_lab",
-        "menunggu_keputusan",
-        "diproses",
-        "selesai",
+          "dikirim",
+          "terkirim",
+          "menunggu_kepala_lab",
+          "menunggu_keputusan",
+          "diproses",
       ].includes(status)
     );
   }
@@ -646,8 +648,8 @@
       const row = document.createElement("tr");
       const cell = document.createElement("td");
 
-      cell.colSpan = 6;
-      cell.className = "empty-message";
+      cell.colSpan = 5;
+      cell.className = "empty-state";
 
       cell.textContent =
         filterAktif === "belum-disetujui"
@@ -1031,8 +1033,8 @@ function tampilkanAksiEskalasi(item) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
 
-      cell.colSpan = 6;
-      cell.className = "empty-message";
+      cell.colSpan = 5;
+      cell.className = "empty-state";
       cell.textContent = error.message;
 
       row.append(cell);
@@ -1251,7 +1253,7 @@ function tampilkanAksiEskalasi(item) {
        * 5. Mencatat status pengiriman kepada Kepala Lab.
        */
 
-      const result = await kirimTindakan("eskalasi_konflik", id);
+      const result = await kirimTindakan("kirim_konflik", id);
 
       await muatAntrean();
 

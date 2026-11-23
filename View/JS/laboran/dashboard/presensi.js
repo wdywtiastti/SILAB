@@ -262,17 +262,36 @@
             );
 
         } catch (error) {
-            tampilkanPesan(
-                kartu,
-                error.message || "Terjadi kesalahan saat menyimpan presensi.",
-                "error"
-            );
 
-            // Mengaktifkan kembali tombol jika proses gagal.
-            aturTombol(kartu, false);
+    // Jika validasi ternyata sudah tercatat,
+    // minta dashboard membaca ulang status database.
+    if (
+        error.message &&
+        error.message.toLowerCase().includes("sudah tercatat")
+    ) {
+        tampilkanPesan(
+            kartu,
+            "Presensi sudah tercatat. Memperbarui status jadwal...",
+            "info"
+        );
 
-            console.error("SILAB Presensi:", error);
-        }
+        window.dispatchEvent(
+            new CustomEvent("silab:data-changed")
+        );
+
+        return;
+    }
+
+    tampilkanPesan(
+        kartu,
+        error.message || "Terjadi kesalahan saat menyimpan presensi.",
+        "error"
+    );
+
+    aturTombol(kartu, false);
+
+    console.error("SILAB Presensi:", error);
+}
     });
 
     // =========================================

@@ -221,31 +221,31 @@ AMBIL DETAIL PENGAJUAN DINAMIS
 ==================================================
 */
 
-$detailAturanMap = [];
-$detailFasilitasMap = [];
-$skorMap = [];
+    $detailAturanMap = [];
+    $detailFasilitasMap = [];
+    $skorMap = [];
 
-$idsPengajuan = array_values(array_unique(
-    array_map(
-        fn($row) => (int) $row['id_pengajuan'],
-        $rows
-    )
-));
+    $idsPengajuan = array_values(array_unique(
+        array_map(
+            fn($row) => (int) $row['id_pengajuan'],
+            $rows
+        )
+    ));
 
-if (!empty($idsPengajuan)) {
+    if (!empty($idsPengajuan)) {
 
-    $placeholders = implode(
-        ',',
-        array_fill(0, count($idsPengajuan), '?')
-    );
+        $placeholders = implode(
+            ',',
+            array_fill(0, count($idsPengajuan), '?')
+        );
 
-    /*
-    ==============================================
-    A. DETAIL ATURAN DAN JENIS KEGIATAN
-    ==============================================
-    */
+        /*
+        ==============================================
+        A. DETAIL ATURAN DAN JENIS KEGIATAN
+        ==============================================
+        */
 
-    $sqlAturan = "
+        $sqlAturan = "
         SELECT
             pa.id_pengajuan,
             a.nama_kelompok,
@@ -264,27 +264,27 @@ if (!empty($idsPengajuan)) {
         ORDER BY pa.id_pengajuan
     ";
 
-    $stmtAturan = $pdo->prepare($sqlAturan);
-    $stmtAturan->execute($idsPengajuan);
+        $stmtAturan = $pdo->prepare($sqlAturan);
+        $stmtAturan->execute($idsPengajuan);
 
-    while ($detail = $stmtAturan->fetch(PDO::FETCH_ASSOC)) {
+        while ($detail = $stmtAturan->fetch(PDO::FETCH_ASSOC)) {
 
-        $id = (int) $detail['id_pengajuan'];
+            $id = (int) $detail['id_pengajuan'];
 
-        $detailAturanMap[$id][] = [
-            'kelompok' => $detail['nama_kelompok'],
-            'nama' => $detail['nama_kriteria']
-        ];
-    }
+            $detailAturanMap[$id][] = [
+                'kelompok' => $detail['nama_kelompok'],
+                'nama' => $detail['nama_kriteria']
+            ];
+        }
 
 
-    /*
-    ==============================================
-    B. DETAIL FASILITAS
-    ==============================================
-    */
+        /*
+        ==============================================
+        B. DETAIL FASILITAS
+        ==============================================
+        */
 
-    $sqlFasilitas = "
+        $sqlFasilitas = "
         SELECT
             pf.id_pengajuan,
             f.id_fasilitas,
@@ -301,28 +301,28 @@ if (!empty($idsPengajuan)) {
         ORDER BY pf.id_pengajuan, f.nama_fasilitas
     ";
 
-    $stmtFasilitas = $pdo->prepare($sqlFasilitas);
-    $stmtFasilitas->execute($idsPengajuan);
+        $stmtFasilitas = $pdo->prepare($sqlFasilitas);
+        $stmtFasilitas->execute($idsPengajuan);
 
-    while ($detail = $stmtFasilitas->fetch(PDO::FETCH_ASSOC)) {
+        while ($detail = $stmtFasilitas->fetch(PDO::FETCH_ASSOC)) {
 
-        $id = (int) $detail['id_pengajuan'];
+            $id = (int) $detail['id_pengajuan'];
 
-        $detailFasilitasMap[$id][] = [
-            'idFasilitas' => (int) $detail['id_fasilitas'],
-            'nama' => $detail['nama_fasilitas'],
-            'jumlah' => (int) $detail['jumlah']
-        ];
-    }
+            $detailFasilitasMap[$id][] = [
+                'idFasilitas' => (int) $detail['id_fasilitas'],
+                'nama' => $detail['nama_fasilitas'],
+                'jumlah' => (int) $detail['jumlah']
+            ];
+        }
 
 
-    /*
-    ==============================================
-    C. SKOR DAN PRIORITAS DECISION TREE
-    ==============================================
-    */
+        /*
+        ==============================================
+        C. SKOR DAN PRIORITAS DECISION TREE
+        ==============================================
+        */
 
-    $sqlSkor = "
+        $sqlSkor = "
         SELECT
             id_pengajuan,
             skor_jenis_kegiatan,
@@ -340,19 +340,19 @@ if (!empty($idsPengajuan)) {
             id_score_pengajuan DESC
     ";
 
-    $stmtSkor = $pdo->prepare($sqlSkor);
-    $stmtSkor->execute($idsPengajuan);
+        $stmtSkor = $pdo->prepare($sqlSkor);
+        $stmtSkor->execute($idsPengajuan);
 
-    while ($detail = $stmtSkor->fetch(PDO::FETCH_ASSOC)) {
+        while ($detail = $stmtSkor->fetch(PDO::FETCH_ASSOC)) {
 
-        $id = (int) $detail['id_pengajuan'];
+            $id = (int) $detail['id_pengajuan'];
 
-        // Ambil hasil perhitungan terbaru.
-        if (!isset($skorMap[$id])) {
-            $skorMap[$id] = $detail;
+            // Ambil hasil perhitungan terbaru.
+            if (!isset($skorMap[$id])) {
+                $skorMap[$id] = $detail;
+            }
         }
     }
-}
 
     /*
     ==============================================
@@ -400,28 +400,15 @@ if (!empty($idsPengajuan)) {
 
 
     /*
-    ==============================================
-    C. KELOMPOKKAN DATA
-    ==============================================
-
-    PENTING:
-
-    Pengajuan yang sedang dieskalasikan tidak boleh
-    masuk kelompok pending maupun booking aktif
-    untuk pemeriksaan konflik antrean.
-
-    Pengajuan tergeser juga tidak boleh dianggap
-    sebagai pengajuan pending.
-    */
+==================================================
+C. KELOMPOKKAN DATA
+==================================================
+*/
 
     $activeBookings = [];
-
     $pending = [];
 
     foreach ($rows as $row) {
-
-    $id = (int) $row['id_pengajuan'];
-
 
         $bookingStatus = statusNorm(
             $row['status_booking'] ?? null
@@ -441,30 +428,29 @@ if (!empty($idsPengajuan)) {
         );
 
         $isApproved =
-            $submissionStatus === 'disetujui'
-            ||
-            in_array(
-                $bookingStatus,
-                $activeBookingStatuses,
-                true
+            !$isDisplaced &&
+            (
+                $submissionStatus === 'disetujui' ||
+                in_array(
+                    $bookingStatus,
+                    $activeBookingStatuses,
+                    true
+                )
             );
 
-
-        // Abaikan pengajuan yang sudah dieskalasikan.
-
-        if ($sedangEskalasi) {
-            continue;
-        }
-
-
-        // Pengajuan tergeser tidak masuk pending.
-
+        // Pengajuan tergeser tidak ikut pemeriksaan konflik.
         if ($isDisplaced) {
             continue;
         }
 
+        /*
+        ----------------------------------------------
+        BOOKING AKTIF
+        ----------------------------------------------
 
-        // Booking aktif untuk pemeriksaan bentrok.
+        Booking aktif tetap diperhitungkan meskipun
+        terlibat dalam kasus konflik yang dieskalasikan.
+        */
 
         if ($isApproved) {
 
@@ -473,8 +459,18 @@ if (!empty($idsPengajuan)) {
             continue;
         }
 
+        /*
+        ----------------------------------------------
+        PENGAJUAN PENDING
+        ----------------------------------------------
 
-        // Pengajuan yang masih menunggu pemeriksaan.
+        Pengajuan pending yang sudah dieskalasikan
+        tidak dimasukkan kembali ke antrean pemeriksaan.
+        */
+
+        if ($sedangEskalasi) {
+            continue;
+        }
 
         if (
             in_array(
@@ -918,32 +914,32 @@ if (!empty($idsPengajuan)) {
             'waktuSelesai' =>
                 $selesai->format('H:i'),
 
-// DETAIL DINAMIS PENGAJUAN
+            // DETAIL DINAMIS PENGAJUAN
 
-'detailAturan' => $detailAturan,
+            'detailAturan' => $detailAturan,
 
-'detailFasilitas' => $detailFasilitas,
+            'detailFasilitas' => $detailFasilitas,
 
-'kategori' => $kategori,
+            'kategori' => $kategori,
 
-'kebutuhanPC' => $kebutuhanPC,
+            'kebutuhanPC' => $kebutuhanPC,
 
-'kebutuhanKursi' => $kebutuhanKursi,
+            'kebutuhanKursi' => $kebutuhanKursi,
 
 
-// HASIL PENILAIAN
+            // HASIL PENILAIAN
 
-'skorJenisKegiatan' =>
-    $detailSkor['skor_jenis_kegiatan'] ?? null,
+            'skorJenisKegiatan' =>
+                $detailSkor['skor_jenis_kegiatan'] ?? null,
 
-'skorFasilitas' =>
-    $detailSkor['skor_fasilitas'] ?? null,
+            'skorFasilitas' =>
+                $detailSkor['skor_fasilitas'] ?? null,
 
-'skor' =>
-    $skorAkhir,
+            'skor' =>
+                $skorAkhir,
 
-'prioritas' =>
-    $prioritasLabel,
+            'prioritas' =>
+                $prioritasLabel,
 
             // STATUS
 
@@ -987,7 +983,7 @@ if (!empty($idsPengajuan)) {
 
                 $sedangEskalasi
 
-                ? 'Pengajuan sudah dikirim kepada Kepala Lab dan sedang menunggu keputusan.'
+                ? 'Pengajuan ini sudah menjadi bagian dari kasus konflik dan sedang menunggu keputusan Kepala Lab.'
 
                 : (
 
@@ -995,7 +991,8 @@ if (!empty($idsPengajuan)) {
 
                     ? 'Jadwal beririsan dengan '
                     . count($conflicts)
-                    . ' pengajuan atau booking lainnya.'
+                    . ' pengajuan atau booking lainnya. '
+                    . 'Pengajuan perlu diteruskan kepada Kepala Lab.'
 
                     : null
                 ),
