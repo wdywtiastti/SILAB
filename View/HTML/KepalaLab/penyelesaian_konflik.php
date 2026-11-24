@@ -345,7 +345,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 <div id="submission-detail-modal"
      class="submission-detail-modal"
      hidden>
-
   <div class="submission-detail-dialog"
        role="dialog"
        aria-modal="true"

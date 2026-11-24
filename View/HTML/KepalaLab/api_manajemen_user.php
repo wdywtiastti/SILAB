@@ -447,12 +447,33 @@ if ($action === "delete") {
     // HAPUS AKUN
     // =================================
 
-    $stmt = $pdo->prepare("
-        DELETE FROM users
-        WHERE id_user = :id
-        AND status IN ('aktif', 'nonaktif')
-        AND role != 'kepala_lab'
-    ");
+
+$stmt = $pdo->prepare("
+    UPDATE users
+    SET status = 'dihapus'
+    WHERE id_user = :id
+    AND status IN ('aktif', 'nonaktif')
+    AND role != 'kepala_lab'
+");
+
+$stmt->execute([
+    ":id" => $id
+]);
+
+if ($stmt->rowCount() !== 1) {
+    jsonResponse(
+        false,
+        "Pengguna gagal dihapus atau tidak ditemukan.",
+        [],
+        404
+    );
+}
+
+jsonResponse(
+    true,
+    "Akun berhasil dihapus. Riwayat transaksi tetap tersimpan."
+);
+
 
     $stmt->execute([
         ":id" => $id
@@ -473,19 +494,47 @@ if ($action === "delete") {
 
     jsonResponse(false, "Aksi tidak dikenali.", [], 400);
 
+
 } catch (PDOException $e) {
 
     error_log("MANAJEMEN USER POST: " . $e->getMessage());
 
     if ($e->getCode() === "23000") {
-        jsonResponse(false, "NIP/NPM sudah terdaftar.", [], 409);
+
+        // Jika error terjadi saat menghapus akun
+        if ($action === "delete") {
+            jsonResponse(
+                false,
+                "Akun tidak dapat dihapus karena masih memiliki data terkait.",
+                [],
+                409
+            );
+        }
+
+        // Jika error terjadi saat menambah atau mengedit
+        jsonResponse(
+            false,
+            "NIP/NPM sudah terdaftar.",
+            [],
+            409
+        );
     }
 
-    jsonResponse(false, "Terjadi kesalahan pada database.", [], 500);
+    jsonResponse(
+        false,
+        "Terjadi kesalahan pada database.",
+        [],
+        500
+    );
 
 } catch (Throwable $e) {
 
     error_log("MANAJEMEN USER ERROR: " . $e->getMessage());
 
-    jsonResponse(false, "Terjadi kesalahan pada sistem.", [], 500);
+    jsonResponse(
+        false,
+        "Terjadi kesalahan pada sistem.",
+        [],
+        500
+    );
 }

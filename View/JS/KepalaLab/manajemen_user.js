@@ -6,7 +6,7 @@
   // =========================================
 
   const API_URL = "api_manajemen_user.php";
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 5;
 
   const state = {
     users: [],
@@ -382,12 +382,11 @@
   function renderPagination(total) {
     if (!el.pagination) return;
 
-    const pages = Math.ceil(total / ITEMS_PER_PAGE);
+    const pages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
 
     el.pagination.innerHTML = "";
 
-    if (pages <= 1) return;
-
+    // TOMBOL SEBELUMNYA
     const previous = document.createElement("button");
 
     previous.type = "button";
@@ -398,6 +397,7 @@
 
     el.pagination.appendChild(previous);
 
+    // NOMOR HALAMAN
     for (let i = 1; i <= pages; i++) {
       const button = document.createElement("button");
 
@@ -413,6 +413,7 @@
       el.pagination.appendChild(button);
     }
 
+    // TOMBOL BERIKUTNYA
     const next = document.createElement("button");
 
     next.type = "button";
