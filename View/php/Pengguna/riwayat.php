@@ -15,6 +15,12 @@ $namaPengguna = htmlspecialchars(
     "UTF-8"
 );
 
+$identitasPengguna = htmlspecialchars(
+    (string) ($_SESSION["nip_npm"] ?? "-"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
 ?>
 <!doctype html>
 <html lang="id">
@@ -39,6 +45,7 @@ $namaPengguna = htmlspecialchars(
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
 
+     <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
     <!-- CSS NAVBAR BERSAMA -->
     <link rel="stylesheet" href="../../CSS/pengguna/navbar.css" />
 
@@ -73,30 +80,55 @@ $namaPengguna = htmlspecialchars(
         <a href="rekomendasi.php" class="nav-link"> Rekomendasi </a>
       </nav>
 
-      <div class="navbar-profile">
-<span class="user-navbar-name" id="userNavbarName">
-    <?= $namaPengguna ?>
-</span>
+ <div class="navbar-profile">
 
-        <details class="profile-dropdown">
-          <summary class="profile-trigger">
+    <div class="profile-info">
+        <h3><?= $namaPengguna ?></h3>
+        <p>Pengguna SILAB</p>
+    </div>
+
+    <details class="profile-dropdown">
+
+        <summary class="profile-trigger">
             <i class="bi bi-person"></i>
-          </summary>
+        </summary>
 
-            <div class="profile-menu">
-              <div class="profile-info">
-                <p id="profileUserName"><?= $namaPengguna ?></p>
-              <span>Akun Pengguna SILAB</span>
+        <div class="profile-menu">
+
+            <div class="profile-info-dropdown">
+
+                <p><?= $namaPengguna ?></p>
+
+                <span>NPM/NIP : <?= $identitasPengguna ?></span>
+
+                <div class="profile-role">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Pengguna
+                </div>
+
             </div>
+
+            <div class="profile-divider"></div>
+
+            <button type="button"
+                    class="logout-link profile-link"
+                    data-open-profile>
+                <i class="bi bi-person-gear"></i>
+                Edit Profile
+            </button>
+
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
-              <i class="bi bi-box-arrow-right"></i>
-              Keluar / Logout
+                <i class="bi bi-box-arrow-right"></i>
+                Keluar/Logout
             </a>
-          </div>
-        </details>
-      </div>
+
+        </div>
+
+    </details>
+
+</div>
     </header>
 
     <!-- ======================================
@@ -192,6 +224,11 @@ $namaPengguna = htmlspecialchars(
         </div>
       </section>
     </main>
+      <?php
+require_once __DIR__ . "/../edit_profile/modal.php";
+?>
+
+<script src="../../JS/edit_profile/profile.js"></script>
     <!-- JAVASCRIPT -->
     <script src="../../JS/Pengguna/riwayat.js" defer></script>
     <script src="/SILAB/View/JS/auth/session_timeout.js"></script>

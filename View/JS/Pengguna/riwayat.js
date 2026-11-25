@@ -22,7 +22,7 @@ function tampilkanIdentitasNavbar() {
   const sesi = sesiSILAB.ambil();
 
   if (!sesi || sesi.role !== "pengguna") {
-    window.location.href = "../auth/login.html";
+    window.location.href = "../auth/login.php";
     return null;
   }
 
@@ -35,7 +35,7 @@ function tampilkanIdentitasNavbar() {
   );
 
   if (!akun || akun.status !== "aktif") {
-    window.location.href = "../auth/login.html";
+    window.location.href = "../auth/login.php";
     return null;
   }
 
@@ -323,7 +323,7 @@ function tampilkanIdentitasNavbar() {
   const sesi = sesiSILAB.ambil();
 
   if (!sesi || sesi.role !== "pengguna") {
-    window.location.href = "../auth/login.html";
+    window.location.href = "../auth/login.php";
     return null;
   }
 
@@ -334,7 +334,7 @@ function tampilkanIdentitasNavbar() {
   );
 
   if (!akun || akun.status !== "aktif") {
-    window.location.href = "../auth/login.html";
+    window.location.href = "../auth/login.php";
     return null;
   }
 

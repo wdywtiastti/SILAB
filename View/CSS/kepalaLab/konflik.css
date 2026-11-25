@@ -2015,3 +2015,17 @@
     width: 100%;
   }
 }
+
+/* Dua kartu statistik konflik */
+.conflict-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .conflict-stats {
+    grid-template-columns: 1fr;
+  }
+}

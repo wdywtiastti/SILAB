@@ -6,7 +6,7 @@
 
     <title>Login | SILAB</title>
 
-    <!-- GOOGLE FONT: PLUS JAKARTA SANS -->
+    <!-- GOOGLE FONT -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
@@ -27,55 +27,46 @@
 
   <body>
     <main class="login-container">
-      <!-- =================================
-            BAGIAN KIRI: BACKGROUND DAN LOGO
-        ================================== -->
 
+      <!-- BAGIAN KIRI -->
       <section class="visual-panel">
-        <!-- BACKGROUND LABORATORIUM -->
+
         <img
           src="../../Assets/Background.svg"
           alt=""
           class="visual-background"
         />
 
-        <!-- IDENTITAS SILAB -->
         <div class="brand">
-          <!-- LOGO -->
+
           <img
             src="../../Assets/Logo_RPL.svg"
             alt="Logo SILAB"
             class="brand-logo"
           />
 
-          <!-- NAMA APLIKASI -->
           <div class="brand-text">
             <h1>SILAB</h1>
-
             <p>Sistem Peminjaman Laboratorium</p>
-
             <p>Universitas Khairun</p>
           </div>
+
         </div>
       </section>
 
-      <!-- =================================
-            BAGIAN KANAN: FORM LOGIN
-        ================================== -->
-
+      <!-- BAGIAN KANAN -->
       <section class="form-panel">
         <div class="form-content">
-          <!-- JUDUL LOGIN -->
+
           <header class="form-header">
             <h2>Selamat Datang!</h2>
-
             <p>Silahkan login untuk melanjutkan</p>
           </header>
 
           <!-- FORM LOGIN -->
-          <!--bagian ini diubah laili ya-->
           <form class="login-form" id="loginForm" novalidate>
-            <!-- INPUT NIP/NPM -->
+
+            <!-- NIP/NPM -->
             <div class="input-group">
               <i class="bi bi-person"></i>
 
@@ -91,8 +82,7 @@
               />
             </div>
 
-            <!-- INPUT PASSWORD -->
-            <!--TAMBAHAN: fitur lihat password -laili-->
+            <!-- PASSWORD -->
             <div class="input-group">
               <i class="bi bi-lock"></i>
 
@@ -105,7 +95,6 @@
                 required
               />
 
-              <!-- Tombol untuk menampilkan atau menyembunyikan password -->
               <button
                 type="button"
                 class="toggle-password"
@@ -121,27 +110,30 @@
             <!-- INGAT SAYA -->
             <label class="remember">
               <input type="checkbox" name="remember" />
-
               <span>Ingat Saya</span>
             </label>
 
-            <!--penyesuaian rute login - laili-->
-            <!--Pengalihan akan dilakukan JavaScript berdasarkan hasil pemeriksaan identitas dan password.-->
             <!-- TOMBOL LOGIN -->
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login">
+              Login
+            </button>
+
+            <!-- PESAN LOGIN -->
             <p id="loginMessage" role="alert" aria-live="polite"></p>
 
           </form>
 
-          <!-- FOOTER LOGIN -->
+          <!-- FOOTER -->
           <div class="form-footer">
             <p>
               Belum punya akun?
-              <a href="register.html">Daftar di sini</a>
+              <a href="register.php">Daftar di sini</a>
             </p>
           </div>
+
         </div>
       </section>
+
     </main>
 
     <!-- MODAL STATUS AKUN -->
@@ -154,9 +146,14 @@
       aria-describedby="accountStatusDescription"
       hidden
     >
+
       <div class="account-status-modal">
+
         <div id="accountStatusIcon" class="account-status-icon">
-          <i id="accountStatusIconSymbol" class="bi bi-clock-history"></i>
+          <i
+            id="accountStatusIconSymbol"
+            class="bi bi-clock-history"
+          ></i>
         </div>
 
         <h2 id="accountStatusTitle"></h2>
@@ -170,13 +167,15 @@
         >
           Mengerti
         </button>
+
       </div>
     </div>
 
-    <!--Penghubung dengan bagian auth di js -laili-->
+    <!-- JAVASCRIPT -->
     <script src="../../JS/shared/storage.js"></script>
     <script src="../../JS/auth/sesi.js"></script>
     <script src="../../JS/auth/masuk.js"></script>
     <script src="../../JS/auth/liat_psswd.js"></script>
+
   </body>
 </html>

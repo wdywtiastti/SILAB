@@ -374,23 +374,22 @@ async function ambilDataKonflikKepalaLab() {
   // =====================================
 
   function renderSummary(konflik) {
-    const waiting = konflik.filter(
+    // Mengambil kelompok konflik yang masih aktif.
+    const konflikAktif = konflik.filter(
       (item) => item.status === "menunggu_keputusan",
-    ).length;
+    );
 
-    const resolved = konflik.filter((item) => item.status === "selesai").length;
-
-    const totalSubmissions = konflik.reduce((jumlah, item) => {
+    // Menghitung seluruh pengajuan dalam kelompok aktif.
+    const totalSubmissions = konflikAktif.reduce((total, item) => {
       return (
-        jumlah + (Array.isArray(item.pengajuan) ? item.pengajuan.length : 0)
+        total + (Array.isArray(item.pengajuan) ? item.pengajuan.length : 0)
       );
     }, 0);
 
     const values = {
-      "total-conflict-groups": konflik.length,
-      "waiting-conflict-count": waiting,
-      "resolved-conflict-count": resolved,
-      "pending-conflict-count": waiting,
+      "total-conflict-groups": konflikAktif.length,
+      "waiting-conflict-count": konflikAktif.length,
+      "pending-conflict-count": konflikAktif.length,
       "total-conflict-submissions": totalSubmissions,
     };
 
@@ -754,11 +753,7 @@ async function ambilDataKonflikKepalaLab() {
 
     const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
 
-    const info = makeElement(
-      "span",
-      "conflict-pagination-info",
-      `Menampilkan ${start}–${end} dari ${totalItems} pengajuan`,
-    );
+    const info = makeElement("span", "conflict-pagination-info");
 
     footer.appendChild(info);
 
@@ -845,7 +840,6 @@ async function ambilDataKonflikKepalaLab() {
         "dynamic-conflict-time",
         getGroupTime(pengajuan) + " WIT",
       ),
-      makeElement("p", "dynamic-conflict-location", group.laboratorium ?? "-"),
     );
 
     const headerActions = makeElement("div", "conflict-accordion-actions");
@@ -884,7 +878,7 @@ async function ambilDataKonflikKepalaLab() {
     const description = makeElement(
       "div",
       "dynamic-conflict-description",
-      `${pengajuan.length} pengajuan dalam kelompok ${group.id}`,
+      `${pengajuan.length} pengajuan dalam kelompok ${index + 1}`,
     );
 
     const tableWrapper = makeElement("div", "dynamic-conflict-table-wrapper");

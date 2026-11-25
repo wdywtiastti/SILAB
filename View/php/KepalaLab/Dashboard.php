@@ -202,6 +202,9 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
       <!-- =====================================
              3. KARTU RINGKASAN
       ====================================== -->
+  <section class="dashboard-content">
+
+    <div class="dashboard-left">
 
       <section class="summary-cards">
 
@@ -227,31 +230,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
           <p class="card-description">
             <i class="bi bi-circle-fill"></i>
             1 Sesi sedang berlangsung di Lab RPL
-          </p>
-
-        </article>
-
-        <!-- PEMINJAMAN -->
-        <article class="summary-card booking-card">
-
-          <div class="card-top">
-            <div>
-              <h3>PEMINJAMAN LAB</h3>
-              <p>Total Pengajuan Masuk</p>
-            </div>
-
-            <div class="card-icon yellow-icon">
-              <i class="bi bi-clipboard"></i>
-            </div>
-          </div>
-
-          <div class="card-value">
-            <strong>12</strong>
-            <span>Pengajuan</span>
-          </div>
-
-          <p class="card-description">
-            10 Disetujui Otomatis
           </p>
 
         </article>
@@ -286,8 +264,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
       <!-- =====================================
           4. AREA JADWAL DAN PANEL KANAN
       ====================================== -->
-
-      <section class="dashboard-content">
 
         <!-- PANEL JADWAL -->
         <article class="schedule-panel">
@@ -340,10 +316,13 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
           <div class="schedule-pagination"></div>
 
-        </article>
+    </article>
 
-        <!-- PANEL KANAN -->
-        <aside class="right-panel">
+    </div>
+    <!-- AKHIR KOLOM KIRI -->
+
+    <!-- PANEL KANAN -->
+    <aside class="right-panel">
 
           <!-- ATURAN PRIORITAS -->
           <article class="priority-panel">

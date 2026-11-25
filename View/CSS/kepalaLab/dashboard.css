@@ -106,8 +106,8 @@
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 35px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
   margin-bottom: 16px;
 }
 
@@ -1385,7 +1385,6 @@
   border-radius: 8px;
 }
 
-
 /* =========================================
    KOLOM KATEGORI JADWAL KEPALA LAB
 ========================================= */
@@ -1398,4 +1397,174 @@
   color: #202b40;
   line-height: 1.5;
   text-align: center;
+}
+
+/* =========================================
+   LAYOUT DASHBOARD KEPALA LAB
+========================================= */
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr);
+  gap: 14px;
+  align-items: start;
+  width: 100%;
+}
+
+/* KOLOM KIRI */
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* DUA KARTU RINGKASAN */
+.dashboard-left .summary-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+}
+
+/* TABEL JADWAL */
+.dashboard-left .schedule-panel {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+/* KOLOM KANAN */
+.dashboard-content > .right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+/* PANEL PRIORITAS DAN LAPORAN */
+.right-panel .priority-panel,
+.right-panel .report-panel {
+  width: 100%;
+  margin: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 750px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-left .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   CARD STATISTIK KONFLIK - DESAIN RINGKAS
+========================================= */
+
+.conflict-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 20px;
+}
+
+/* CARD UTAMA */
+.conflict-stats .stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 76px;
+  padding: 10px 14px;
+
+  background: #ffffff;
+  border: 1px solid #dce1e9;
+  border-radius: 12px;
+
+  box-shadow: 0 2px 4px rgba(30, 41, 59, 0.08);
+}
+
+/* KONTEN CARD */
+.conflict-stats .stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* JUDUL CARD */
+.conflict-stats .stat-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.2px;
+}
+
+/* ANGKA */
+.conflict-stats .stat-content h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #30266f;
+}
+
+/* DESKRIPSI */
+.conflict-stats .stat-content p {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+/* IKON CARD */
+.conflict-stats .stat-icon {
+  width: 45px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+/* IKON TOTAL BENTROK */
+.conflict-stats .stat-total .stat-icon {
+  color: #e11d48;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+}
+
+/* IKON MENUNGGU KEPUTUSAN */
+.conflict-stats .stat-collision .stat-icon {
+  color: #f59e0b;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+
+/* WARNA DESKRIPSI */
+.conflict-stats .stat-total .stat-content p {
+  color: #be123c;
+}
+
+.conflict-stats .stat-collision .stat-content p {
+  color: #b45309;
+}
+
+/* RESPONSIVE HP */
+@media (max-width: 600px) {
+  .conflict-stats {
+    grid-template-columns: 1fr;
+  }
 }

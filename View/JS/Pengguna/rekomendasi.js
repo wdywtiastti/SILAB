@@ -1,4 +1,3 @@
-
 /* =========================================
    SILAB - REKOMENDASI PENGGUNA
    TERHUBUNG DENGAN DATABASE MYSQL
@@ -43,10 +42,8 @@
   // =====================================
 
   async function api(action, method = "GET", data = {}) {
-
-    const url = method === "GET"
-      ? `${API}?action=${encodeURIComponent(action)}`
-      : API;
+    const url =
+      method === "GET" ? `${API}?action=${encodeURIComponent(action)}` : API;
 
     const response = await fetch(url, {
       method: method,
@@ -56,19 +53,17 @@
       headers: {
         Accept: "application/json",
 
-        ...(method === "POST"
-          ? { "Content-Type": "application/json" }
-          : {})
+        ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
       },
 
       ...(method === "POST"
         ? {
             body: JSON.stringify({
               action,
-              ...data
-            })
+              ...data,
+            }),
           }
-        : {})
+        : {}),
     });
 
     let result;
@@ -77,14 +72,12 @@
       result = await response.json();
     } catch {
       throw new Error(
-        "Server tidak mengirim JSON. Periksa API_rekomendasi.php."
+        "Server tidak mengirim JSON. Periksa API_rekomendasi.php.",
       );
     }
 
     if (!response.ok || !result.success) {
-      throw new Error(
-        result.message || "Permintaan gagal diproses."
-      );
+      throw new Error(result.message || "Permintaan gagal diproses.");
     }
 
     return result;
@@ -97,9 +90,7 @@
   function formatDate(value) {
     if (!value) return "-";
 
-    const date = new Date(
-      String(value).replace(" ", "T")
-    );
+    const date = new Date(String(value).replace(" ", "T"));
 
     if (Number.isNaN(date.getTime())) return "-";
 
@@ -107,7 +98,7 @@
       weekday: "long",
       day: "2-digit",
       month: "long",
-      year: "numeric"
+      year: "numeric",
     });
   }
 
@@ -118,16 +109,14 @@
   function formatTime(value) {
     if (!value) return "-";
 
-    const date = new Date(
-      String(value).replace(" ", "T")
-    );
+    const date = new Date(String(value).replace(" ", "T"));
 
     if (Number.isNaN(date.getTime())) return "-";
 
     return date.toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false
+      hour12: false,
     });
   }
 
@@ -146,7 +135,6 @@
   // =====================================
 
   function empty(message) {
-
     options.replaceChildren();
 
     const paragraph = document.createElement("p");
@@ -157,15 +145,9 @@
 
     acceptButton.disabled = true;
 
-    setVisible(
-      $("#recommendation-action"),
-      false
-    );
+    setVisible($("#recommendation-action"), false);
 
-    setVisible(
-      $(".recommendation-reject"),
-      false
-    );
+    setVisible($(".recommendation-reject"), false);
   }
 
   // =====================================
@@ -173,15 +155,11 @@
   // =====================================
 
   function render(data) {
-
     recommendation = data;
     selected = null;
 
     if (!data) {
-
-      empty(
-        "Saat ini belum ada rekomendasi jadwal yang menunggu respons."
-      );
+      empty("Saat ini belum ada rekomendasi jadwal yang menunggu respons.");
 
       $(".context-heading span").textContent =
         "Tidak ada tawaran rekomendasi aktif.";
@@ -192,8 +170,7 @@
       $(".response-deadline span").textContent =
         "Tidak ada batas respons aktif";
 
-      $("#selected-schedule-name").textContent =
-        "Belum ada jadwal dipilih";
+      $("#selected-schedule-name").textContent = "Belum ada jadwal dipilih";
 
       $("#selected-schedule-time").textContent =
         "Silakan tunggu rekomendasi dari Laboran.";
@@ -210,32 +187,26 @@
       "Laboran memberikan pilihan jadwal pengganti untuk pengajuan Anda.";
 
     // Batas waktu respons.
-    $(".response-deadline span").textContent =
-      data.batas_waktu
-        ? `Batas respons: ${new Date(
-            data.batas_waktu.replace(" ", "T")
-          ).toLocaleString("id-ID")}`
-        : "Batas respons belum ditentukan";
+    $(".response-deadline span").textContent = data.batas_waktu
+      ? `Batas respons: ${new Date(
+          data.batas_waktu.replace(" ", "T"),
+        ).toLocaleString("id-ID")}`
+      : "Batas respons belum ditentukan";
 
-    $("#selected-schedule-name").textContent =
-      "Belum ada jadwal dipilih";
+    $("#selected-schedule-name").textContent = "Belum ada jadwal dipilih";
 
     $("#selected-schedule-time").textContent =
       "Silakan pilih salah satu rekomendasi.";
 
     options.replaceChildren();
 
-    if (
-      !Array.isArray(data.alternatives) ||
-      data.alternatives.length === 0
-    ) {
+    if (!Array.isArray(data.alternatives) || data.alternatives.length === 0) {
       empty("Laboran belum menambahkan alternatif jadwal.");
       return;
     }
 
     // Buat kartu alternatif.
     data.alternatives.forEach((item, index) => {
-
       const card = document.createElement("label");
 
       card.className = "recommendation-option";
@@ -248,8 +219,7 @@
 
       const content = document.createElement("div");
 
-      content.className =
-        "recommendation-option-content";
+      content.className = "recommendation-option-content";
 
       const heading = document.createElement("div");
 
@@ -257,8 +227,7 @@
 
       const title = document.createElement("h3");
 
-      title.textContent =
-        `Pilihan Jadwal ${index + 1}`;
+      title.textContent = `Pilihan Jadwal ${index + 1}`;
 
       const status = document.createElement("span");
 
@@ -285,14 +254,11 @@
 
       // Pilih alternatif.
       radio.addEventListener("change", () => {
-
         selected = item;
 
-        $("#selected-schedule-name").textContent =
-          title.textContent;
+        $("#selected-schedule-name").textContent = title.textContent;
 
-        $("#selected-schedule-time").textContent =
-          session.textContent;
+        $("#selected-schedule-time").textContent = session.textContent;
 
         acceptButton.disabled = false;
 
@@ -306,15 +272,9 @@
       });
     });
 
-    setVisible(
-      $("#recommendation-action"),
-      true
-    );
+    setVisible($("#recommendation-action"), true);
 
-    setVisible(
-      $(".recommendation-reject"),
-      true
-    );
+    setVisible($(".recommendation-reject"), true);
 
     acceptButton.disabled = true;
   }
@@ -324,24 +284,30 @@
   // =====================================
 
   async function load() {
-
     empty("Memuat rekomendasi jadwal...");
 
     try {
-
       const result = await api("list");
 
-      const nama =
-        result.data.nama_pengguna || "Pengguna";
+      const nama = result.data.nama_pengguna || "Pengguna";
 
-      $("#userNavbarName").textContent = nama;
+      // Perbarui nama navbar jika elemennya tersedia.
+      const navbarName = $("#userNavbarName");
 
-      $("#profileUserName").textContent = nama;
+      if (navbarName) {
+        navbarName.textContent = nama;
+      }
 
+      // Perbarui nama dropdown jika elemennya tersedia.
+      const profileName = $("#profileUserName");
+
+      if (profileName) {
+        profileName.textContent = nama;
+      }
+
+      // Tampilkan rekomendasi.
       render(result.data.recommendation);
-
     } catch (error) {
-
       empty(error.message);
 
       feedback(error.message, true);
@@ -365,153 +331,116 @@
   // =====================================
 
   acceptButton.addEventListener("click", () => {
-
     if (!recommendation || !selected || busy) {
-
-      feedback(
-        "Pilih salah satu jadwal terlebih dahulu.",
-        true
-      );
+      feedback("Pilih salah satu jadwal terlebih dahulu.", true);
 
       return;
     }
 
-    $("#confirmation-name").textContent =
-      $("#selected-schedule-name").textContent;
+    $("#confirmation-name").textContent = $(
+      "#selected-schedule-name",
+    ).textContent;
 
-    $("#confirmation-time").textContent =
-      $("#selected-schedule-time").textContent;
+    $("#confirmation-time").textContent = $(
+      "#selected-schedule-time",
+    ).textContent;
 
     modal.classList.add("show");
   });
 
-  $("#btn-cancel-accept")
-    ?.addEventListener("click", closeAccept);
+  $("#btn-cancel-accept")?.addEventListener("click", closeAccept);
 
-  $(".recommendation-modal-backdrop")
-    ?.addEventListener("click", closeAccept);
+  $(".recommendation-modal-backdrop")?.addEventListener("click", closeAccept);
 
   // =====================================
   // KONFIRMASI PENERIMAAN
   // =====================================
 
-  $("#btn-confirm-accept")
-    ?.addEventListener("click", async () => {
+  $("#btn-confirm-accept")?.addEventListener("click", async () => {
+    if (!recommendation || !selected || busy) return;
 
-      if (!recommendation || !selected || busy) return;
+    busy = true;
 
-      busy = true;
+    const button = $("#btn-confirm-accept");
 
-      const button = $("#btn-confirm-accept");
+    button.disabled = true;
 
-      button.disabled = true;
+    try {
+      const result = await api("accept", "POST", {
+        id_rekomendasi: recommendation.id_rekomendasi,
 
-      try {
+        id_alternatif_rekomendasi: selected.id,
+      });
 
-        const result = await api(
-          "accept",
-          "POST",
-          {
-            id_rekomendasi:
-              recommendation.id_rekomendasi,
+      closeAccept();
 
-            id_alternatif_rekomendasi:
-              selected.id
-          }
-        );
+      feedback(result.message);
 
-        closeAccept();
+      await load();
+    } catch (error) {
+      feedback(error.message, true);
+    } finally {
+      busy = false;
 
-        feedback(result.message);
-
-        await load();
-
-      } catch (error) {
-
-        feedback(error.message, true);
-
-      } finally {
-
-        busy = false;
-
-        button.disabled = false;
-      }
-    });
+      button.disabled = false;
+    }
+  });
 
   // =====================================
   // BUKA MODAL PENOLAKAN
   // =====================================
 
-  $(".recommendation-reject")
-    ?.addEventListener("click", (event) => {
+  $(".recommendation-reject")?.addEventListener("click", (event) => {
+    event.preventDefault();
 
-      event.preventDefault();
+    if (recommendation && !busy) {
+      rejectModal.classList.add("show");
+    }
+  });
 
-      if (recommendation && !busy) {
-        rejectModal.classList.add("show");
-      }
-    });
+  $(".btn-reject-cancel")?.addEventListener("click", (event) => {
+    event.preventDefault();
 
-  $(".btn-reject-cancel")
-    ?.addEventListener("click", (event) => {
+    closeReject();
+  });
 
-      event.preventDefault();
+  $(".reject-modal-backdrop")?.addEventListener("click", (event) => {
+    event.preventDefault();
 
-      closeReject();
-    });
-
-  $(".reject-modal-backdrop")
-    ?.addEventListener("click", (event) => {
-
-      event.preventDefault();
-
-      closeReject();
-    });
+    closeReject();
+  });
 
   // =====================================
   // KONFIRMASI PENOLAKAN
   // =====================================
 
-  $(".btn-reject-confirm")
-    ?.addEventListener("click", async (event) => {
+  $(".btn-reject-confirm")?.addEventListener("click", async (event) => {
+    event.preventDefault();
 
-      event.preventDefault();
+    if (!recommendation || busy) return;
 
-      if (!recommendation || busy) return;
+    busy = true;
 
-      busy = true;
+    try {
+      const result = await api("reject", "POST", {
+        id_rekomendasi: recommendation.id_rekomendasi,
+      });
 
-      try {
+      closeReject();
 
-        const result = await api(
-          "reject",
-          "POST",
-          {
-            id_rekomendasi:
-              recommendation.id_rekomendasi
-          }
-        );
+      feedback(result.message);
 
-        closeReject();
-
-        feedback(result.message);
-
-        await load();
-
-      } catch (error) {
-
-        feedback(error.message, true);
-
-      } finally {
-
-        busy = false;
-      }
-    });
+      await load();
+    } catch (error) {
+      feedback(error.message, true);
+    } finally {
+      busy = false;
+    }
+  });
 
   // =====================================
   // INISIALISASI
   // =====================================
 
   load();
-
 })();

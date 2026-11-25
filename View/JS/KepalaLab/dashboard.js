@@ -164,31 +164,6 @@
   }
 
   // =====================================
-  // 6. RENDER KARTU PEMINJAMAN
-  // =====================================
-
-  function renderRingkasanPeminjaman() {
-    const card = document.querySelector(".booking-card");
-
-    if (!card) return;
-
-    const data = statistikDatabase.peminjaman;
-
-    const value = card.querySelector(".card-value strong");
-    const unit = card.querySelector(".card-value span");
-
-    if (value) {
-      value.textContent = formatAngka(data.totalPengajuan);
-    }
-
-    if (unit) {
-      unit.textContent = "Pengajuan";
-    }
-
-    setDeskripsi(card, `${formatAngka(data.disetujui)} Pengajuan Disetujui`);
-  }
-
-  // =====================================
   // 7. RENDER KARTU EVALUASI BENTROKAN
   // =====================================
 
@@ -542,7 +517,6 @@
       statistikDatabase.konflik = hasil.data.konflik;
 
       renderRingkasanJadwal();
-      renderRingkasanPeminjaman();
       renderRingkasanKonflik();
 
       console.log("Statistik Dashboard berhasil diperbarui.", hasil.data);
@@ -558,7 +532,6 @@
 
   function renderDashboard() {
     renderRingkasanJadwal();
-    renderRingkasanPeminjaman();
     renderRingkasanKonflik();
     renderTabelJadwal();
 

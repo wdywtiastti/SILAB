@@ -201,21 +201,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
         </div>
       </article>
 
-      <!-- KONFLIK SELESAI -->
-      <article class="stat-card stat-sop">
-        <div class="stat-content">
-          <span class="stat-label"> KONFLIK SELESAI </span>
-
-          <h3 id="resolved-conflict-count">0</h3>
-
-          <p>Kelompok yang sudah diputuskan</p>
-        </div>
-
-        <div class="stat-icon">
-          <i class="bi bi-check-circle"></i>
-        </div>
-      </article>
-
       <!-- MENUNGGU KEPUTUSAN -->
       <article class="stat-card stat-collision">
         <div class="stat-content">
