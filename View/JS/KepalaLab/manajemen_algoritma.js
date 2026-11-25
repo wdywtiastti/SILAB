@@ -985,7 +985,7 @@
       saveCriteriaButton.dataset.ruleId = rule.id;
 
       saveCriteriaButton.innerHTML =
-        '<i class="bi bi-save"></i> Simpan Perubahan';
+        'Simpan Perubahan';
 
       const hasPendingChanges =
         Object.keys(state.pendingCriteriaWeights[rule.id] || {}).length > 0;

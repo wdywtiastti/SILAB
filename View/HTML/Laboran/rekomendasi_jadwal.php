@@ -15,6 +15,12 @@ $namaLaboran = htmlspecialchars(
     "UTF-8"
 );
 
+$nipLaboran = htmlspecialchars(
+    (string) ($_SESSION["nip_npm"] ?? "-"),
+    ENT_QUOTES,
+    "UTF-8"
+);
+
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +48,7 @@ $namaLaboran = htmlspecialchars(
     >
 
     <!-- CSS -->
+     <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
     <link rel="stylesheet" href="../../CSS/laboran/navbar.css">
     <link rel="stylesheet" href="../../CSS/laboran/rekomendasi.css">
 
@@ -89,10 +96,10 @@ $namaLaboran = htmlspecialchars(
 
         <div class="navbar-profile">
 
-<div class="profile-info">
-    <h3><?= $namaLaboran ?></h3>
-    <p>Laboran Lab RPL</p>
-</div>
+            <div class="profile-info">
+                <h3><?= $namaLaboran ?></h3>
+                <p>Laboran Lab RPL</p>
+            </div>
 
             <details class="profile-dropdown">
 
@@ -100,26 +107,35 @@ $namaLaboran = htmlspecialchars(
                     <i class="bi bi-person"></i>
                 </summary>
 
-                <div class="profile-menu">
-<div class="profile-info-dropdown">
-    <p><?= $namaLaboran ?></p>
 
-    <span>Akun Laboran SILAB</span>
+            <div class="profile-menu">
 
-    <div class="profile-role">
-        <i class="bi bi-check-circle-fill"></i>
-        Laboran Lab
-    </div>
-</div>
+                <div class="profile-info-dropdown">
+                    <p><?= $namaLaboran ?></p>
+                    <span>NIP : <?= $nipLaboran ?></span>
 
-                    <div class="profile-divider"></div>
-
-                    <a href="../auth/login.php" class="logout-link">
-                        <i class="bi bi-box-arrow-right"></i>
-                        Keluar/Logout
-                    </a>
-
+                    <div class="profile-role">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Laboran Lab
+                    </div>
                 </div>
+
+                <div class="profile-divider"></div>
+                <button type="button"
+                        class="logout-link profile-link"
+                        data-open-profile>
+                    <i class="bi bi-person-gear"></i>
+                    Edit Profile
+                </button>
+
+                <div class="profile-divider"></div>
+
+                <a href="../auth/logout.php" class="logout-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Keluar/Logout
+                </a>
+
+            </div>
 
             </details>
 
@@ -363,7 +379,11 @@ $namaLaboran = htmlspecialchars(
 
     </main>
 
+    <?php
+require_once __DIR__ . "/../edit_profile/modal.php";
+?>
 
+<script src="../../JS/edit_profile/profile.js"></script>
     <!-- UTILITAS WAKTU -->
     <script src="../../JS/laboran/utils/waktu.js"></script>
 

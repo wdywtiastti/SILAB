@@ -267,19 +267,20 @@
       createElement("small", "", item.pemohon),
     );
 
-    const prioritasCell = document.createElement("td");
+    // =====================================
+    // KOLOM KATEGORI
+    // =====================================
 
-    const prioritas = item.prioritas;
+    const kategoriCell = document.createElement("td");
 
-    prioritasCell.appendChild(
-      createElement(
-        "span",
-        prioritas
-          ? `schedule-priority-badge priority-level-p${prioritas}`
-          : "schedule-priority-empty",
-        prioritas ? `P${prioritas}` : "Belum Dihitung",
-      ),
+    kategoriCell.appendChild(
+      createElement("span", "schedule-category", item.kategori || "-"),
     );
+
+    // =====================================
+    // KOLOM STATUS
+    // =====================================
+
     const statusCell = document.createElement("td");
 
     const konfigurasiStatus = {
@@ -304,7 +305,7 @@
       createElement("span", statusInfo.kelas, statusInfo.label),
     );
 
-    row.append(waktuCell, kegiatanCell, prioritasCell, statusCell);
+    row.append(waktuCell, kegiatanCell, kategoriCell, statusCell);
 
     return row;
   }

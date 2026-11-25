@@ -17,6 +17,7 @@ $namaKepalaLab = $user["nama"] ?? "Kepala Laboratorium";
 $nipKepalaLab = $user["nip_npm"] ?? "-";
 ?>
 
+
 <!doctype html>
 <html lang="id">
   <head>
@@ -45,6 +46,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
     <!-- CSS KHUSUS DASHBOARD -->
     <link rel="stylesheet" href="../../CSS/KepalaLab/dashboard.css" />
+    <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
   </head>
 
   <body>
@@ -90,48 +92,62 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
       </nav>
 
       <!-- PROFIL KEPALA LAB -->
-      <div class="navbar-profile">
 
-        <div class="profile-info">
-          <h3>
-            <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-          </h3>
-          <p>Kepala Lab</p>
-        </div>
+<!-- PROFIL KEPALA LAB -->
+<div class="navbar-profile">
 
-        <details class="profile-dropdown">
+    <div class="profile-info">
+        <h3><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></h3>
+        <p>Kepala Laboratorium</p>
+    </div>
 
-          <summary class="profile-trigger">
+    <details class="profile-dropdown">
+
+        <summary class="profile-trigger">
             <i class="bi bi-person"></i>
-          </summary>
+        </summary>
 
-          <div class="profile-menu">
+        <div class="profile-menu">
 
-            <div class="profile-info">
+            <div class="profile-info-dropdown">
 
-              <p>
-                <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-              </p>
+                <p><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></p>
 
-              <span>
-                NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
-              </span>
+                <span>
+                    NIP : <?= htmlspecialchars((string)$nipKepalaLab, ENT_QUOTES, 'UTF-8') ?>
+                </span>
 
-              <div class="profile-role">
-                <i class="bi bi-shield-check"></i>
-                Kepala Lab RPL
-              </div>
+                <div class="profile-role">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Kepala Lab
+                </div>
+
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <button
+                type="button"
+                class="logout-link profile-link"
+                data-open-profile
+            >
+                <i class="bi bi-person-gear"></i>
+                Edit Profile
+            </button>
 
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
-              <i class="bi bi-box-arrow-right"></i>
-              Keluar / Logout
+                <i class="bi bi-box-arrow-right"></i>
+                Keluar/Logout
             </a>
 
-          </div>
-        </details>
-      </div>
+        </div>
+
+    </details>
+
+</div>
+
     </header>
 
     <!-- =====================================
@@ -303,14 +319,14 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
             <table class="schedule-table">
 
-             <thead>
-    <tr>
-        <th>JAM / SESI</th>
-        <th>KEGIATAN & PEMOHON</th>
-        <th>PRIORITAS</th>
-        <th>STATUS</th>
-    </tr>
-</thead>
+            <thead>
+                <tr>
+                    <th>JAM / SESI</th>
+                    <th>KEGIATAN & PEMOHON</th>
+                    <th>KATEGORI</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
 
               <tbody id="jadwalKepalaLab">
                 <tr>
@@ -454,11 +470,11 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
               <a href="#" class="btn-cancel">Batal</a>
 
-              <<button
-    type="button"
-    class="btn-download pdf-button"
-    data-unduh-laporan="pdf"
->
+              <button
+                    type="button"
+                    class="btn-download pdf-button"
+                    data-unduh-laporan="pdf"
+                >
                 <i class="bi bi-download"></i>
                 Unduh Berkas Rekapan (PDF)
               </button>
@@ -547,14 +563,20 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
     <script src="../../JS/KepalaLab/dashboard.js"></script>
     <!-- LIBRARY EXCEL -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <?php
+require_once __DIR__ . "/../edit_profile/modal.php";
+?>
+<script src="../../JS/edit_profile/profile.js"></script>
 
 <!-- LIBRARY PDF -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
 
+
 <!-- MODUL LAPORAN DATABASE -->
  <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 <script src="../../JS/laboran/laporan.js"></script>
   </body>
+
 </html>

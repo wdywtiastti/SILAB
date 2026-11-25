@@ -43,6 +43,7 @@ $namaPengguna = htmlspecialchars(
   <!-- BOOTSTRAP ICON -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
+   <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
   <!-- CSS BERSAMA -->
   <link rel="stylesheet" href="../../CSS/pengguna/navbar.css" />
 
@@ -185,6 +186,7 @@ $namaPengguna = htmlspecialchars(
   </main>
   <script src="../../JS/Pengguna/dashboard_pengguna.js"></script>
   <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
+  <script src="../../JS/edit_profile/profile.js"></script>
 </body>
 
 </html>

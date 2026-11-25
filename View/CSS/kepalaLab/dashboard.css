@@ -841,7 +841,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 590px;
+  max-width: 490px;
   background-color: #ffffff;
   border-radius: 15px;
   overflow: hidden;
@@ -875,7 +875,7 @@
 /* Isi modal */
 
 .modal-body {
-  padding: 26px 28px 28px;
+  padding: 20px 23px 23px;
 }
 
 .modal-label {
@@ -892,7 +892,7 @@
 
 .modal-body h2 {
   margin-top: 13px;
-  margin-bottom: 64px;
+  margin-bottom: 24px;
   color: #33266a;
   font-size: 21px;
   font-weight: 800;
@@ -1336,4 +1336,66 @@
   color: #8793a7;
   font-size: 11px;
   font-weight: 500;
+}
+
+/* =========================================
+   FIX UKURAN POPUP LAPORAN KEPALA LAB
+   Disamakan dengan popup Laboran
+========================================= */
+
+#modal-pdf .modal-content,
+#modal-excel .modal-content {
+  width: 100% !important;
+  max-width: 440px !important;
+  box-sizing: border-box !important;
+  border-radius: 14px;
+}
+
+/* Ukuran bagian isi */
+#modal-pdf .modal-body,
+#modal-excel .modal-body {
+  padding: 20px 20px 20px !important;
+}
+
+/* Judul popup */
+#modal-pdf .modal-body h2,
+#modal-excel .modal-body h2 {
+  font-size: 19px !important;
+  margin-top: 10px !important;
+  margin-bottom: 22px !important;
+  line-height: 1.4;
+}
+
+/* Jarak pembatas */
+#modal-pdf .modal-divider,
+#modal-excel .modal-divider {
+  margin: 16px 0 !important;
+}
+
+/* Tombol */
+#modal-pdf .modal-actions,
+#modal-excel .modal-actions {
+  gap: 10px;
+}
+
+#modal-pdf .modal-actions .btn,
+#modal-excel .modal-actions .btn {
+  padding: 10px 12px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
+
+/* =========================================
+   KOLOM KATEGORI JADWAL KEPALA LAB
+========================================= */
+
+.schedule-table .schedule-category {
+  display: inline-block;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #202b40;
+  line-height: 1.5;
+  text-align: center;
 }

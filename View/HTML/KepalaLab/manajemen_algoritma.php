@@ -83,46 +83,62 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 </nav>
 
 
+
+<!-- PROFIL KEPALA LAB -->
 <div class="navbar-profile">
+
     <div class="profile-info">
-        <h3>
-            <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-        </h3>
-        <p>Kepala Lab</p>
+        <h3><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></h3>
+        <p>Kepala Laboratorium</p>
     </div>
 
     <details class="profile-dropdown">
+
         <summary class="profile-trigger">
             <i class="bi bi-person"></i>
         </summary>
 
-          <div class="profile-menu">
+        <div class="profile-menu">
 
-            <div class="profile-info">
+            <div class="profile-info-dropdown">
 
-              <p>
-                <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-              </p>
+                <p><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></p>
 
-              <span>
-                NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
-              </span>
+                <span>
+                    NIP : <?= htmlspecialchars((string)$nipKepalaLab, ENT_QUOTES, 'UTF-8') ?>
+                </span>
 
-              <div class="profile-role">
-                <i class="bi bi-shield-check"></i>
-                Kepala Lab RPL
-              </div>
+                <div class="profile-role">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Kepala Lab
+                </div>
+
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <button
+                type="button"
+                class="logout-link profile-link"
+                data-open-profile
+            >
+                <i class="bi bi-person-gear"></i>
+                Edit Profile
+            </button>
 
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
-              <i class="bi bi-box-arrow-right"></i>
-              Keluar / Logout
+                <i class="bi bi-box-arrow-right"></i>
+                Keluar/Logout
             </a>
 
-          </div>
+        </div>
+
     </details>
+
 </div>
+
 
     </nav>
 
@@ -248,7 +264,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
           <p id="facilityWeightWarning">Total bobot harus tepat 100%.</p>
 
           <button type="button" class="btn-save-facility-weight">
-            <i class="bi bi-save"></i>
             Simpan Perubahan
           </button>
         </div>
@@ -317,7 +332,6 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
             </div>
 
             <button type="button" class="btn-save-weight">
-              <i class="bi bi-save"></i>
               Simpan Perubahan
             </button>
           </div>

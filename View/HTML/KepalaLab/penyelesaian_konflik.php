@@ -37,6 +37,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
   <!-- CSS -->
+  <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
   <link rel="stylesheet" href="../../CSS/kepalaLab/navbar.css" />
   <link rel="stylesheet" href="../../CSS/kepalaLab/konflik.css" />
 </head>
@@ -77,44 +78,62 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
 
     <!-- PROFIL KEPALA LAB -->
-    <div class="navbar-profile">
-      <div class="profile-info">
-        <h3>
-          <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-        </h3>
-        <p>Kepala Lab</p>
-      </div>
 
-      <details class="profile-dropdown">
+<!-- PROFIL KEPALA LAB -->
+<div class="navbar-profile">
+
+    <div class="profile-info">
+        <h3><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></h3>
+        <p>Kepala Laboratorium</p>
+    </div>
+
+    <details class="profile-dropdown">
+
         <summary class="profile-trigger">
-          <i class="bi bi-person"></i>
+            <i class="bi bi-person"></i>
         </summary>
+
         <div class="profile-menu">
 
-          <div class="profile-info">
+            <div class="profile-info-dropdown">
 
-            <p>
-              <?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, "UTF-8") ?>
-            </p>
+                <p><?= htmlspecialchars($namaKepalaLab, ENT_QUOTES, 'UTF-8') ?></p>
 
-            <span>
-              NIP : <?= htmlspecialchars($nipKepalaLab, ENT_QUOTES, "UTF-8") ?>
-            </span>
+                <span>
+                    NIP : <?= htmlspecialchars((string)$nipKepalaLab, ENT_QUOTES, 'UTF-8') ?>
+                </span>
 
-            <div class="profile-role">
-              <i class="bi bi-shield-check"></i>
-              Kepala Lab RPL
+                <div class="profile-role">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Kepala Lab
+                </div>
+
             </div>
+
+            <div class="profile-divider"></div>
+
+            <button
+                type="button"
+                class="logout-link profile-link"
+                data-open-profile
+            >
+                <i class="bi bi-person-gear"></i>
+                Edit Profile
+            </button>
+
             <div class="profile-divider"></div>
 
             <a href="../auth/logout.php" class="logout-link">
-              <i class="bi bi-box-arrow-right"></i>
-              Keluar / Logout
+                <i class="bi bi-box-arrow-right"></i>
+                Keluar/Logout
             </a>
 
-          </div>
-      </details>
-    </div>
+        </div>
+
+    </details>
+
+</div>
+
 
   </header>
 
@@ -522,6 +541,10 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
   </div>
 
   <!-- MODUL PENYELESAIAN KONFLIK -->
+     <?php
+require_once __DIR__ . "/../edit_profile/modal.php";
+?>
+<script src="../../JS/edit_profile/profile.js"></script>
   <script src="../../JS/kepalaLab/penyelesaian_konflik.js"></script>
   <script src="/SILAB/View/JS/auth/session_timeout.js"></script>
 </body>
