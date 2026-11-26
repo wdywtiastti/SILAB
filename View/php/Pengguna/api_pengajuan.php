@@ -881,13 +881,21 @@ try {
 
         WHERE p.id_user = :id_user
 
-          AND LOWER(TRIM(p.status)) = 'disetujui'
+           
+WHERE p.id_user = :id_user
 
-          AND LOWER(TRIM(b.status)) = 'terjadwal'
+AND LOWER(TRIM(p.status)) = 'disetujui'
 
-          AND DATE(p.waktu_mulai) = :tanggal
+AND LOWER(TRIM(b.status)) IN (
+    'terjadwal',
+    'disetujui',
+    'digunakan'
+)
 
-          AND p.waktu_selesai >= :sekarang
+AND DATE(p.waktu_mulai) = :tanggal
+
+AND p.waktu_selesai >= :sekarang
+
 
         ORDER BY
             p.waktu_mulai ASC
