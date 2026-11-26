@@ -780,10 +780,33 @@
     return button;
   }
 
+  // =========================================
+// TOMBOL TOLAK PENGAJUAN KONFLIK
+// =========================================
+
+function buatTombolTolakKonflik(id) {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "btn-tolak-konflik";
+    button.dataset.tolakKonflik = id;
+
+    button.innerHTML =
+        '<i class="bi bi-x-circle"></i> Tolak Pengajuan';
+
+    return button;
+}
 
 function tampilkanAksiEskalasi(item) {
     const id = ambilId(item);
     const dikirim = sudahDieskalasi(item);
+
+    // Tombol penolakan hanya untuk pengajuan baru
+    // yang masih menunggu verifikasi.
+    const bolehDitolak =
+        isPending(item) &&
+        !isApproved(item) &&
+        !dikirim;
 
     // =====================================
     // PANEL BENTROK BIASA
@@ -798,9 +821,15 @@ function tampilkanAksiEskalasi(item) {
     );
 
     if (areaKonflik) {
-        areaKonflik.replaceChildren(
+        const tombol = [
             buatTombolEskalasi(id, dikirim)
-        );
+        ];
+
+        if (bolehDitolak) {
+            tombol.push(buatTombolTolakKonflik(id));
+        }
+
+        areaKonflik.replaceChildren(...tombol);
     }
 
     // =====================================
@@ -841,7 +870,6 @@ function tampilkanAksiEskalasi(item) {
             : "Kasus ini perlu diteruskan kepada Kepala Lab untuk mendapatkan keputusan.";
     }
 }
-
 
   // =========================================
   // 20. BUKA MODAL DETAIL
@@ -1279,6 +1307,87 @@ function tampilkanAksiEskalasi(item) {
   }
 
   // =========================================
+// 26A. TOLAK PENGAJUAN YANG MENGALAMI KONFLIK
+// =========================================
+
+async function tolakPengajuanKonflik(id) {
+    const item = cariItem(id);
+
+    if (!item) {
+        pesanModal("Data pengajuan tidak ditemukan.");
+        return;
+    }
+
+    // Pastikan pengajuan masih pending.
+    if (!isPending(item) || isApproved(item)) {
+        pesanModal(
+            "Hanya pengajuan baru yang masih menunggu verifikasi yang dapat ditolak."
+        );
+        return;
+    }
+
+    if (!mengalamiKonflik(item)) {
+        pesanModal(
+            "Pengajuan ini tidak mengalami konflik jadwal."
+        );
+        return;
+    }
+
+    if (sudahDieskalasi(item)) {
+        pesanModal(
+            "Pengajuan sudah diteruskan kepada Kepala Lab dan tidak dapat ditolak melalui tindakan ini."
+        );
+        return;
+    }
+
+    if (sedangMengirim) return;
+
+    const konfirmasi = window.confirm(
+        "Tolak pengajuan baru ini karena mengalami konflik jadwal?\n\n" +
+        "Booking lama yang sudah disetujui atau sedang menunggu presensi tidak akan diubah."
+    );
+
+    if (!konfirmasi) return;
+
+    const buttons = el.modal.querySelectorAll(
+        "[data-tolak-konflik]"
+    );
+
+    sedangMengirim = true;
+
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+    try {
+        const result = await kirimTindakan(
+            "tolak_konflik",
+            id
+        );
+
+        tutupModal();
+
+        await muatAntrean();
+
+        notifikasi(
+            result.message ||
+            "Pengajuan konflik berhasil ditolak."
+        );
+
+    } catch (error) {
+
+        pesanModal(error.message);
+
+        buttons.forEach(button => {
+            button.disabled = false;
+        });
+
+    } finally {
+        sedangMengirim = false;
+    }
+}
+
+  // =========================================
   // 27. PILIH FILTER
   // =========================================
 
@@ -1338,6 +1447,21 @@ function tampilkanAksiEskalasi(item) {
     if (escalationButton) {
       eskalasiKonflik(escalationButton.dataset.eskalasiKonflik);
       return;
+    }
+
+        // =====================================
+    // TOMBOL TOLAK PENGAJUAN KONFLIK
+    // =====================================
+
+    const rejectConflictButton = event.target.closest(
+        "[data-tolak-konflik]"
+    );
+
+    if (rejectConflictButton) {
+        tolakPengajuanKonflik(
+            rejectConflictButton.dataset.tolakKonflik
+        );
+        return;
     }
 
     const id = el.modal.dataset.pengajuanId;

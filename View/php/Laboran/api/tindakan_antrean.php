@@ -134,6 +134,8 @@ $aliasAksi = [
 
     'setujui' => 'setujui',
     'tolak' => 'tolak',
+    'tolak_konflik' => 'tolak_konflik',
+
     'batalkan_persetujuan' => 'batalkan_persetujuan'
 ];
 
@@ -268,36 +270,36 @@ function ambilKelompokKonflik(
             $row['status_booking'] ?? null
         );
 
-$pending = in_array(
-    $statusP,
-    $pendingStatuses,
-    true
-);
+        $pending = in_array(
+            $statusP,
+            $pendingStatuses,
+            true
+        );
 
-$isDisplaced = in_array(
-    $statusP,
-    ['tergeser', 'displaced'],
-    true
-);
+        $isDisplaced = in_array(
+            $statusP,
+            ['tergeser', 'displaced'],
+            true
+        );
 
-$approved =
-    $statusP === 'disetujui'
-    ||
-    in_array(
-        $statusB,
-        $activeBookingStatuses,
-        true
-    );
+        $approved =
+            $statusP === 'disetujui'
+            ||
+            in_array(
+                $statusB,
+                $activeBookingStatuses,
+                true
+            );
 
-// Pengajuan tergeser tidak boleh
+        // Pengajuan tergeser tidak boleh
 // masuk kelompok konflik baru.
 
-if (
-    !$isDisplaced &&
-    ($pending || $approved)
-) {
-    $kandidat[(int) $row['id_pengajuan']] = $row;
-}
+        if (
+            !$isDisplaced &&
+            ($pending || $approved)
+        ) {
+            $kandidat[(int) $row['id_pengajuan']] = $row;
+        }
 
     }
 
@@ -540,7 +542,7 @@ try {
         */
 
 
-$stmt = $pdo->prepare("
+        $stmt = $pdo->prepare("
     INSERT INTO konflik (
         id_user_laboran,
         id_pengajuan_terpilih,
@@ -562,9 +564,9 @@ $stmt = $pdo->prepare("
     )
 ");
 
-$stmt->execute([
-    ':laboran' => $idLaboran
-]);
+        $stmt->execute([
+            ':laboran' => $idLaboran
+        ]);
 
         $idKonflik = (int) $pdo->lastInsertId();
 
@@ -889,6 +891,142 @@ $stmt->execute([
             ]
         );
     }
+
+
+    /*
+    ==================================================
+    TINDAKAN 4: TOLAK PENGAJUAN YANG MENGALAMI KONFLIK
+    ==================================================
+    */
+
+    if ($aksi === 'tolak_konflik') {
+
+        // 1. Pastikan pengajuan masih pending.
+
+        if (
+            !in_array(
+                $statusPengajuan,
+                $pendingStatuses,
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                'Pengajuan tidak lagi berada dalam antrean verifikasi.'
+            );
+        }
+
+        // 2. Pastikan pengajuan benar-benar mengalami konflik.
+
+        $kelompok = ambilKelompokKonflik(
+            $pdo,
+            (int) $idPengajuan,
+            $pendingStatuses,
+            $activeBookingStatuses
+        );
+
+        if (count($kelompok) < 2) {
+            throw new RuntimeException(
+                'Pengajuan tidak memiliki konflik jadwal yang valid.'
+            );
+        }
+
+        // 3. Pastikan belum dikirim ke Kepala Lab.
+
+        $stmt = $pdo->prepare("
+        SELECT
+            k.id_konflik,
+            k.status
+
+        FROM konflik k
+
+        INNER JOIN pengajuan_konflik pk
+            ON pk.id_konflik = k.id_konflik
+
+        WHERE pk.id_pengajuan = :id_pengajuan
+
+          AND LOWER(TRIM(k.status)) NOT IN (
+              'selesai',
+              'ditutup',
+              'dibatalkan'
+          )
+
+        LIMIT 1
+
+        FOR UPDATE
+    ");
+
+        $stmt->execute([
+            ':id_pengajuan' => $idPengajuan
+        ]);
+
+        $kasusKonflik = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($kasusKonflik) {
+            throw new RuntimeException(
+                'Pengajuan sudah diteruskan kepada Kepala Lab. '
+                . 'Penolakan harus menunggu keputusan Kepala Lab.'
+            );
+        }
+
+        // 4. Pastikan pengajuan target tidak memiliki booking aktif.
+
+        if (
+            $booking &&
+            in_array(
+                $statusBooking,
+                $activeBookingStatuses,
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                'Pengajuan memiliki booking aktif dan tidak dapat ditolak.'
+            );
+        }
+
+        // 5. Tolak hanya pengajuan yang dipilih.
+
+        $stmt = $pdo->prepare("
+        UPDATE pengajuan
+
+        SET status = 'ditolak'
+
+        WHERE id_pengajuan = :id
+
+          AND LOWER(TRIM(status)) IN (
+              'menunggu',
+              'verifikasi',
+              'menunggu_verifikasi',
+              'pending',
+              'bentrok',
+              'konflik'
+          )
+    ");
+
+        $stmt->execute([
+            ':id' => $idPengajuan
+        ]);
+
+        if ($stmt->rowCount() !== 1) {
+            throw new RuntimeException(
+                'Status pengajuan gagal diperbarui.'
+            );
+        }
+
+        // 6. Simpan transaksi.
+
+        $pdo->commit();
+
+        responsJSON(
+            true,
+            'Pengajuan yang mengalami konflik berhasil ditolak.',
+            200,
+            [
+                'idPengajuan' => (int) $idPengajuan,
+                'status' => 'ditolak'
+            ]
+        );
+    }
+
 
     /*
     ==================================================

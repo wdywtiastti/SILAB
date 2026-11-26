@@ -1646,3 +1646,48 @@ textarea {
 .detail-dinamis {
   display: contents;
 }
+
+
+/* =========================================
+   TOMBOL TOLAK PENGAJUAN KONFLIK
+========================================= */
+
+.btn-tolak-konflik {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    background-color: #eab308;
+    color: #422006;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn-tolak-konflik:hover {
+    background-color: #ca8a04;
+    transform: translateY(-1px);
+}
+
+.btn-tolak-konflik:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-eskalasi {
+    margin-right: 10px;
+}
