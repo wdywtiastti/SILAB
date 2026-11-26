@@ -521,6 +521,30 @@ try {
 
     if ($method === 'GET' && $action === 'list_rekomendasi') {
 
+        // Acuan waktu server: Asia/Jayapura.
+        $sekarang = new DateTimeImmutable(
+            'now',
+            new DateTimeZone('Asia/Jayapura')
+        );
+
+        $waktuSekarang = $sekarang->format('Y-m-d H:i:s');
+
+        // Kedaluwarsakan rekomendasi yang sudah melewati 24 jam.
+        $stmt = $pdo->prepare("
+        UPDATE rekomendasi
+        SET status = 'Kedaluwarsa'
+        WHERE id_user_laboran = :laboran
+        AND LOWER(status) = 'dikirim'
+        AND (
+            batas_waktu IS NULL
+            OR batas_waktu <= :sekarang
+        )
+    ");
+
+        $stmt->execute([
+            ':laboran' => $idLaboran,
+            ':sekarang' => $waktuSekarang
+        ]);
         $stmt = $pdo->prepare("
 
             SELECT
@@ -544,6 +568,8 @@ try {
             FROM rekomendasi r
 
             WHERE r.id_user_laboran = :laboran
+
+            AND LOWER(r.status) <> 'kedaluwarsa'
 
             ORDER BY r.waktu_dibuat DESC
 
@@ -1439,8 +1465,6 @@ try {
             FILTER_VALIDATE_INT
         );
 
-        $batasWaktuInput = $input['batas_waktu'] ?? null;
-
         if (!$idRekomendasi || $idRekomendasi <= 0) {
 
             responsJSON(
@@ -1578,35 +1602,20 @@ try {
 
 
         /*
-        Validasi batas waktu jika dikirim.
+        Tetapkan waktu pengiriman dan batas konfirmasi di server.
+        Masa berlaku selalu tepat 24 jam.
         */
 
-        $sekarang = new DateTimeImmutable(
+        $waktuDikirimObj = new DateTimeImmutable(
             'now',
             new DateTimeZone('Asia/Jayapura')
         );
 
-        if (
-            !is_string($batasWaktuInput) ||
-            trim($batasWaktuInput) === ''
-        ) {
-            // Batas konfirmasi otomatis 24 jam
-            $batasWaktu = $sekarang
-                ->modify('+24 hours')
-                ->format('Y-m-d H:i:s');
+        $waktuDikirim = $waktuDikirimObj->format('Y-m-d H:i:s');
 
-        } else {
-
-            $batasWaktu = normalisasiWaktu(
-                $batasWaktuInput
-            );
-
-            if ($batasWaktu <= $sekarang->format('Y-m-d H:i:s')) {
-                throw new RuntimeException(
-                    'Batas waktu konfirmasi harus lebih besar dari waktu sekarang.'
-                );
-            }
-        }
+        $batasWaktu = $waktuDikirimObj
+            ->modify('+24 hours')
+            ->format('Y-m-d H:i:s');
 
         /*
         Perbarui status rekomendasi.
@@ -1614,23 +1623,25 @@ try {
 
         $stmt = $pdo->prepare("
 
-            UPDATE rekomendasi
+        UPDATE rekomendasi
 
-            SET
+        SET
 
-                status = 'Dikirim',
+            status = 'Dikirim',
 
-                waktu_dikirim = NOW(),
+            waktu_dikirim = :dikirim,
 
-                batas_waktu = :batas
+            batas_waktu = :batas
 
-            WHERE id_rekomendasi = :id
+        WHERE id_rekomendasi = :id
 
-              AND id_user_laboran = :laboran
+        AND id_user_laboran = :laboran
 
         ");
 
         $stmt->execute([
+
+            ':dikirim' => $waktuDikirim,
 
             ':batas' => $batasWaktu,
 
@@ -1639,6 +1650,7 @@ try {
             ':laboran' => $idLaboran
 
         ]);
+
 
         $pdo->commit();
 

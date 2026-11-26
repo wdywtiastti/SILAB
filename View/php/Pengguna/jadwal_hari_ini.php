@@ -60,14 +60,25 @@ try {
 
         WHERE DATE(p.waktu_mulai) = :tanggal
 
-AND LOWER(TRIM(b.status)) IN (
-    'terjadwal',
-    'disetujui',
-    'digunakan',
-    'berlangsung',
-    'tidak_digunakan',
-    'tidak digunakan'
-)
+        AND LOWER(TRIM(p.status)) = 'disetujui'
+
+        AND LOWER(TRIM(b.status)) IN (
+            'terjadwal',
+            'disetujui',
+            'digunakan',
+            'berlangsung',
+            'tidak_digunakan',
+            'tidak digunakan'
+        )
+
+        AND LOWER(TRIM(b.status)) IN (
+            'terjadwal',
+            'disetujui',
+            'digunakan',
+            'berlangsung',
+            'tidak_digunakan',
+            'tidak digunakan'
+        )
 
         ORDER BY p.waktu_mulai ASC
     ";
@@ -78,14 +89,14 @@ AND LOWER(TRIM(b.status)) IN (
     $hasil = [];
 
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-$hasil[] = [
-    "id" => (int) $row["id"],
-    "waktuMulai" => date("H:i", strtotime($row["waktu_mulai"])),
-    "waktuSelesai" => date("H:i", strtotime($row["waktu_selesai"])),
-    "namaKegiatan" => $row["nama_kegiatan"],
-    "namaPemohon" => $row["nama_pemohon"],
-    "status" => $row["status"]
-];
+        $hasil[] = [
+            "id" => (int) $row["id"],
+            "waktuMulai" => date("H:i", strtotime($row["waktu_mulai"])),
+            "waktuSelesai" => date("H:i", strtotime($row["waktu_selesai"])),
+            "namaKegiatan" => $row["nama_kegiatan"],
+            "namaPemohon" => $row["nama_pemohon"],
+            "status" => $row["status"]
+        ];
     }
 
     respons(200, true, "Jadwal berhasil diambil.", $hasil);

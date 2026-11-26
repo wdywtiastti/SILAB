@@ -279,6 +279,8 @@
             new CustomEvent("silab:data-changed")
         );
 
+        aturTombol(kartu, false);
+
         return;
     }
 

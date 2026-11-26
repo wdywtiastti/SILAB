@@ -230,17 +230,22 @@ function formatTime(dateValue) {
 ========================================= */
 
 function getStatusLabel(status) {
+  const normalizedStatus = String(status || "")
+    .trim()
+    .toLowerCase();
+
   const statusLabels = {
     menunggu_verifikasi: "Menunggu",
     menunggu: "Menunggu",
     direkomendasikan: "Direkomendasikan",
     disetujui: "Disetujui",
+    tergeser: "Tergeser",
     ditolak: "Ditolak",
     dibatalkan: "Dibatalkan",
     selesai: "Selesai Digunakan",
   };
 
-  return statusLabels[status] || status || "Tidak diketahui";
+  return statusLabels[normalizedStatus] || status || "Tidak diketahui";
 }
 
 /* =========================================
@@ -302,6 +307,7 @@ function createHistoryRow(data) {
     menunggu: "status-pending",
     direkomendasikan: "status-recommended",
     disetujui: "status-approved",
+    tergeser: "status-rejected",
     ditolak: "status-rejected",
     dibatalkan: "status-cancelled",
     selesai: "status-completed",

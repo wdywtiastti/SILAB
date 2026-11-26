@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+date_default_timezone_set('Asia/Jayapura');
 
 // =============================================
 // SILAB - API REKOMENDASI PENGGUNA
@@ -86,7 +87,15 @@ try {
 
     if ($method === "GET" && $action === "list") {
 
-        // Perbarui rekomendasi yang sudah kedaluwarsa.
+        // Acuan waktu server: Asia/Jayapura.
+        $sekarang = new DateTimeImmutable(
+            'now',
+            new DateTimeZone('Asia/Jayapura')
+        );
+
+        $waktuSekarang = $sekarang->format('Y-m-d H:i:s');
+
+        // Tandai rekomendasi yang sudah melewati batas 24 jam.
         $stmt = $pdo->prepare("
             UPDATE rekomendasi r
             INNER JOIN pengajuan p
@@ -94,11 +103,16 @@ try {
             SET r.status = 'Kedaluwarsa'
             WHERE p.id_user = :id_user
             AND r.status = 'Dikirim'
-            AND r.batas_waktu IS NOT NULL
-            AND r.batas_waktu <= NOW()
+            AND (
+                r.batas_waktu IS NULL
+                OR r.batas_waktu <= :sekarang
+            )
         ");
 
-        $stmt->execute([":id_user" => $idUser]);
+        $stmt->execute([
+            ':id_user' => $idUser,
+            ':sekarang' => $waktuSekarang
+        ]);
 
         // Nama pengguna.
         $stmt = $pdo->prepare("
@@ -130,11 +144,8 @@ try {
                 ON p.id_pengajuan = r.id_pengajuan
 
             WHERE p.id_user = :id_user
-                AND r.status = 'Dikirim'
-                AND (
-                    r.batas_waktu IS NULL
-                    OR r.batas_waktu > NOW()
-                )
+            AND r.status = 'Dikirim'
+            AND r.batas_waktu > :sekarang
 
             ORDER BY
                 r.waktu_dikirim DESC,
@@ -143,7 +154,10 @@ try {
             LIMIT 1
         ");
 
-        $stmt->execute([":id_user" => $idUser]);
+        $stmt->execute([
+            ':id_user' => $idUser,
+            ':sekarang' => $waktuSekarang
+        ]);
 
         $rekomendasi = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -268,9 +282,16 @@ try {
                 );
             }
 
+            $waktuSekarang = new DateTimeImmutable(
+                'now',
+                new DateTimeZone('Asia/Jayapura')
+            );
+
+            $sekarangDb = $waktuSekarang->format('Y-m-d H:i:s');
+
             if (
-                !empty($rekomendasi["batas_waktu"]) &&
-                strtotime($rekomendasi["batas_waktu"]) <= time()
+                empty($rekomendasi["batas_waktu"]) ||
+                $rekomendasi["batas_waktu"] <= $sekarangDb
             ) {
                 $stmt = $pdo->prepare("
                     UPDATE rekomendasi
@@ -365,53 +386,124 @@ try {
                 ":id_rekomendasi" => (int) $idRekomendasi
             ]);
 
-            // Perbarui waktu pengajuan.
+            // Pastikan pengajuan lama tetap berstatus Tergeser.
             $stmt = $pdo->prepare("
                 UPDATE pengajuan
-
-                SET
-                    waktu_mulai = :waktu_mulai,
-                    waktu_selesai = :waktu_selesai
-
+                SET status = 'Tergeser'
                 WHERE id_pengajuan = :id_pengajuan
-                  AND id_user = :id_user
+                AND id_user = :id_user
+            ");
+
+            $stmt->execute([
+                ":id_pengajuan" => (int) $rekomendasi["id_pengajuan"],
+                ":id_user" => $idUser
+            ]);
+
+
+            // =============================================
+            // BUAT PENGAJUAN BARU DARI REKOMENDASI
+            // =============================================
+
+            // Pengajuan lama tidak diubah.
+            // Buat pengajuan baru dengan status Disetujui.
+            $stmt = $pdo->prepare("
+                INSERT INTO pengajuan (
+                    id_user,
+                    nama_kegiatan,
+                    waktu_mulai,
+                    waktu_selesai,
+                    status
+                )
+                SELECT
+                    id_user,
+                    nama_kegiatan,
+                    :waktu_mulai,
+                    :waktu_selesai,
+                    'Disetujui'
+                FROM pengajuan
+                WHERE id_pengajuan = :id_pengajuan_lama
+                AND id_user = :id_user
             ");
 
             $stmt->execute([
                 ":waktu_mulai" => $alternatif["waktu_mulai"],
                 ":waktu_selesai" => $alternatif["waktu_selesai"],
-                ":id_pengajuan" => (int) $rekomendasi["id_pengajuan"],
+                ":id_pengajuan_lama" =>
+                    (int) $rekomendasi["id_pengajuan"],
                 ":id_user" => $idUser
             ]);
 
-            // Buat booking agar jadwal yang diterima
-            // muncul pada halaman jadwal Laboran.
-            // UNIQUE(id_pengajuan) mencegah booking ganda.
+            // Pastikan pengajuan baru berhasil dibuat.
+            if ($stmt->rowCount() !== 1) {
+                throw new RuntimeException(
+                    "Gagal membuat pengajuan jadwal pengganti."
+                );
+            }
+
+            // Ambil ID pengajuan baru.
+            $idPengajuanBaru = (int) $pdo->lastInsertId();
+
+            if ($idPengajuanBaru <= 0) {
+                throw new RuntimeException(
+                    "ID pengajuan baru tidak valid."
+                );
+            }
+
+            // =============================================
+// SALIN FASILITAS PENGAJUAN LAMA
+// =============================================
+
             $stmt = $pdo->prepare("
-                INSERT INTO booking (
-                    id_pengajuan,
-                    status
-                ) VALUES (
-                    :id_pengajuan,
-                    'terjadwal'
-                )
-                ON DUPLICATE KEY UPDATE
-                    status = 'terjadwal'
-            ");
+    INSERT INTO pengajuan_fasilitas (
+        id_pengajuan,
+        id_fasilitas,
+        jumlah
+    )
+    SELECT
+        :id_pengajuan_baru,
+        id_fasilitas,
+        jumlah
+    FROM pengajuan_fasilitas
+    WHERE id_pengajuan = :id_pengajuan_lama
+");
 
             $stmt->execute([
-                ":id_pengajuan" =>
+                ":id_pengajuan_baru" => $idPengajuanBaru,
+                ":id_pengajuan_lama" =>
                     (int) $rekomendasi["id_pengajuan"]
             ]);
+
+            // =============================================
+// BUAT BOOKING BARU
+// =============================================
+
+            $stmt = $pdo->prepare("
+    INSERT INTO booking (
+        id_pengajuan,
+        status
+    ) VALUES (
+        :id_pengajuan,
+        'terjadwal'
+    )
+");
+
+            $stmt->execute([
+                ":id_pengajuan" => $idPengajuanBaru
+            ]);
+
+            // =============================================
+// TRANSAKSI BERHASIL
+// =============================================
 
             $pdo->commit();
 
             jsonResponse(
                 true,
-                "Rekomendasi berhasil diterima dan jadwal pengajuan diperbarui.",
+                "Rekomendasi berhasil diterima dan pengajuan jadwal pengganti berhasil dibuat.",
                 [
-                    "id_pengajuan" =>
-                        (int) $rekomendasi["id_pengajuan"]
+                    "id_pengajuan_lama" =>
+                        (int) $rekomendasi["id_pengajuan"],
+                    "id_pengajuan_baru" => $idPengajuanBaru
                 ]
             );
 

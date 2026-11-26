@@ -90,7 +90,13 @@ require_once __DIR__ . '/../../../config/database.php';
 
 function statusNorm(?string $value): string
 {
-    return strtolower(trim((string) $value));
+    return strtolower(
+        preg_replace(
+            '/[\s-]+/',
+            '_',
+            trim((string) $value)
+        )
+    );
 }
 
 
