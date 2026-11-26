@@ -107,11 +107,12 @@ try {
 
     $query = "
         SELECT
-            b.id_booking,
-            b.status AS status_booking,
-            p.waktu_mulai,
-            p.waktu_selesai,
-            vb.id_validasi_booking
+        b.id_booking,
+        b.status AS status_booking,
+        p.waktu_mulai,
+        p.waktu_selesai,
+        vb.id_validasi_booking,
+        vb.status AS status_validasi
 
         FROM booking b
 
@@ -164,9 +165,25 @@ try {
         );
     }
 
-    // Memastikan belum pernah dilakukan presensi.
+    // Memastikan presensi benar-benar belum dilakukan.
+// Status disetujui bukan berarti sudah presensi.
 
-    if ($booking["id_validasi_booking"] !== null) {
+    $statusValidasi = strtolower(
+        trim((string) ($booking["status_validasi"] ?? ""))
+    );
+
+    $statusPresensiSelesai = [
+        "digunakan",
+        "tidak_digunakan"
+    ];
+
+    if (
+        in_array(
+            $statusValidasi,
+            $statusPresensiSelesai,
+            true
+        )
+    ) {
         $pdo->rollBack();
 
         kirimRespons(
@@ -231,12 +248,42 @@ try {
     }
 
     // =====================================
-    // 9. MENYIMPAN HASIL VALIDASI
-    // =====================================
+// 9. MENYIMPAN HASIL VALIDASI
+// =====================================
 
     $waktuSekarang = $sekarang->format("Y-m-d H:i:s");
 
-    $insert = "
+    if ($booking["id_validasi_booking"] !== null) {
+
+        // Data validasi sudah dibuat ketika pengajuan disetujui.
+        // Perbarui data tersebut menjadi hasil presensi.
+
+        $updateValidasi = "
+        UPDATE validasi_booking
+
+        SET
+            id_user_laboran = :id_user_laboran,
+            status = :status,
+            waktu_validasi = :waktu_validasi
+
+        WHERE id_booking = :id_booking
+    ";
+
+        $stmtValidasi = $pdo->prepare($updateValidasi);
+
+        $stmtValidasi->execute([
+            ":id_user_laboran" => $idLaboran,
+            ":status" => $status,
+            ":waktu_validasi" => $waktuSekarang,
+            ":id_booking" => $idBooking
+        ]);
+
+    } else {
+
+        // Jika belum memiliki data validasi,
+        // buat data baru.
+
+        $insertValidasi = "
         INSERT INTO validasi_booking (
             id_booking,
             id_user_laboran,
@@ -252,39 +299,40 @@ try {
         )
     ";
 
-    $stmtInsert = $pdo->prepare($insert);
+        $stmtValidasi = $pdo->prepare($insertValidasi);
 
-    $stmtInsert->execute([
-        ":id_booking" => $idBooking,
-        ":id_user_laboran" => $idLaboran,
-        ":status" => $status,
-        ":waktu_validasi" => $waktuSekarang,
-        ":waktu_dibuat" => $waktuSekarang
-    ]);
+        $stmtValidasi->execute([
+            ":id_booking" => $idBooking,
+            ":id_user_laboran" => $idLaboran,
+            ":status" => $status,
+            ":waktu_validasi" => $waktuSekarang,
+            ":waktu_dibuat" => $waktuSekarang
+        ]);
+    }
 
     // =====================================
 // 9A. SINKRONISASI STATUS BOOKING
 // =====================================
 
-$queryUpdateBooking = "
+    $queryUpdateBooking = "
     UPDATE booking
     SET status = :status
     WHERE id_booking = :id_booking
       AND status IN ('terjadwal', 'disetujui')
 ";
 
-$stmtUpdateBooking = $pdo->prepare($queryUpdateBooking);
+    $stmtUpdateBooking = $pdo->prepare($queryUpdateBooking);
 
-$stmtUpdateBooking->execute([
-    ":status" => $status,
-    ":id_booking" => $idBooking
-]);
+    $stmtUpdateBooking->execute([
+        ":status" => $status,
+        ":id_booking" => $idBooking
+    ]);
 
-if ($stmtUpdateBooking->rowCount() !== 1) {
-    throw new RuntimeException(
-        "Gagal memperbarui status booking."
-    );
-}   
+    if ($stmtUpdateBooking->rowCount() !== 1) {
+        throw new RuntimeException(
+            "Gagal memperbarui status booking."
+        );
+    }
     // =====================================
     // 10. COMMIT TRANSAKSI
     // =====================================
