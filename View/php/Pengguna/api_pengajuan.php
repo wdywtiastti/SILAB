@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+date_default_timezone_set('Asia/Jayapura');
+
 // =============================================
 // SILAB - API PENGAJUAN PENGGUNA
 // =============================================
@@ -50,7 +52,16 @@ if (
     );
 }
 
-$idUser = (int) $_SESSION["id_user"];
+$idUser = (int) ($_SESSION["id_user"] ?? 0);
+
+if ($idUser <= 0) {
+    jsonResponse(
+        false,
+        "Sesi pengguna tidak valid.",
+        [],
+        401
+    );
+}
 
 // =============================================
 // FUNGSI BANTU
@@ -94,7 +105,7 @@ function validDateTime(string $value): ?DateTime
         !$date ||
         ($errors !== false &&
             ($errors["warning_count"] > 0 ||
-             $errors["error_count"] > 0)) ||
+                $errors["error_count"] > 0)) ||
         $date->format("Y-m-d\TH:i") !== $value
     ) {
         return null;
@@ -107,60 +118,71 @@ function validDateTime(string $value): ?DateTime
 // REQUEST DAN ACTION
 // =============================================
 
-$method = $_SERVER["REQUEST_METHOD"];
+$method = $_SERVER["REQUEST_METHOD"] ?? "GET";
 $input = getInput();
 
 $action = $input["action"] ?? $_GET["action"] ?? "";
 
 try {
 
-
     // =========================================
     // 0. AMBIL RIWAYAT PENGAJUAN PENGGUNA
+    // GET ?action=history
     // =========================================
+
+
+    // =========================================
+// 0. AMBIL RIWAYAT PENGAJUAN PENGGUNA
+// =========================================
 
     if ($method === "GET" && $action === "history") {
 
         $stmt = $pdo->prepare("
-            SELECT
-                p.id_pengajuan,
-                p.nama_kegiatan,
-                p.waktu_mulai,
-                p.waktu_selesai,
-                p.status,
-                p.waktu_dibuat,
+        SELECT
+            p.id_pengajuan,
+            p.nama_kegiatan,
+            p.waktu_mulai,
+            p.waktu_selesai,
+            p.status,
+            p.waktu_dibuat,
 
-                COALESCE(
-                    GROUP_CONCAT(
-                        DISTINCT ak.nama_kriteria
-                        ORDER BY ak.nama_kriteria
-                        SEPARATOR ', '
-                    ),
-                    '-'
-                ) AS kategori
+            COALESCE(
+                GROUP_CONCAT(
+                    DISTINCT ak.nama_kriteria
+                    ORDER BY ak.nama_kriteria
+                    SEPARATOR ', '
+                ),
+                '-'
+            ) AS kategori
 
-            FROM pengajuan p
+        FROM pengajuan p
 
-            LEFT JOIN pengajuan_aturan pa
-                ON pa.id_pengajuan = p.id_pengajuan
+        LEFT JOIN pengajuan_aturan pa
+            ON pa.id_pengajuan = p.id_pengajuan
 
-            LEFT JOIN aturan_kriteria ak
-                ON ak.id_aturan_kriteria = pa.id_aturan_kriteria
+        LEFT JOIN aturan_kriteria ak
+            ON ak.id_aturan_kriteria = pa.id_aturan_kriteria
 
-            WHERE p.id_user = :id_user
+        WHERE p.id_user = :id_user
 
-            GROUP BY
-                p.id_pengajuan,
-                p.nama_kegiatan,
-                p.waktu_mulai,
-                p.waktu_selesai,
-                p.status,
-                p.waktu_dibuat
+        GROUP BY
+            p.id_pengajuan,
+            p.nama_kegiatan,
+            p.waktu_mulai,
+            p.waktu_selesai,
+            p.status,
+            p.waktu_dibuat
 
-            ORDER BY
-                p.waktu_dibuat DESC,
-                p.id_pengajuan DESC
-        ");
+        ORDER BY
+            CASE
+                WHEN LOWER(TRIM(p.status)) = 'disetujui' THEN 1
+                WHEN LOWER(TRIM(p.status)) = 'tergeser' THEN 2
+                ELSE 3
+            END ASC,
+
+            p.waktu_dibuat DESC,
+            p.id_pengajuan DESC
+    ");
 
         $stmt->execute([
             ":id_user" => $idUser
@@ -197,6 +219,7 @@ try {
 
     // =========================================
     // 1. AMBIL ATURAN, KRITERIA, DAN FASILITAS
+    // GET ?action=config
     // =========================================
 
     if ($method === "GET" && $action === "config") {
@@ -265,7 +288,6 @@ try {
 
         $facilities = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Sesuaikan struktur dengan kebutuhan JavaScript.
         $facilities = array_map(
             function ($item) {
                 return [
@@ -291,6 +313,7 @@ try {
 
     // =========================================
     // 2. SIMPAN PENGAJUAN
+    // POST ?action=submit
     // =========================================
 
     if ($method === "POST" && $action === "submit") {
@@ -438,7 +461,6 @@ try {
 
             $namaKelompok = $item["nama_kelompok"];
 
-            // Kelompok waktu pengajuan bukan dropdown pilihan.
             if (
                 stripos($namaKelompok, "waktu pengajuan") !== false
             ) {
@@ -614,7 +636,6 @@ try {
             );
         }
 
-
         // =====================================
         // SIMPAN PENGAJUAN + VALIDASI ANTI-SPAM
         // =====================================
@@ -644,25 +665,31 @@ try {
             }
 
             // 2. Periksa pengajuan terakhir pengguna.
+            // Batas pengiriman ulang: 60 detik.
 
-            $stmtLast = $pdo->prepare("
+            $stmt = $pdo->prepare("
                 SELECT
                     TIMESTAMPDIFF(
                         SECOND,
                         NOW(),
-                        DATE_ADD(waktu_dibuat, INTERVAL 5 MINUTE)
+                        DATE_ADD(
+                            MAX(waktu_dibuat),
+                            INTERVAL 60 SECOND
+                        )
                     ) AS sisa_detik
+
                 FROM pengajuan
+
                 WHERE id_user = :id_user
-                ORDER BY waktu_dibuat DESC, id_pengajuan DESC
-                LIMIT 1
+
+                HAVING sisa_detik > 0
             ");
 
-            $stmtLast->execute([
+            $stmt->execute([
                 ":id_user" => $idUser
             ]);
 
-            $lastSubmission = $stmtLast->fetch(PDO::FETCH_ASSOC);
+            $lastSubmission = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if (
                 $lastSubmission &&
@@ -712,7 +739,7 @@ try {
 
             $idPengajuan = (int) $pdo->lastInsertId();
 
-            // 4. Simpan pilihan kriteria ke tabel pengajuan_aturan.
+            // 4. Simpan pilihan kriteria.
 
             $stmtAturan = $pdo->prepare("
                 INSERT INTO pengajuan_aturan (
@@ -732,7 +759,7 @@ try {
                 ]);
             }
 
-            // 5. Simpan fasilitas ke tabel pengajuan_fasilitas.
+            // 5. Simpan fasilitas.
 
             $stmtFasilitas = $pdo->prepare("
                 INSERT INTO pengajuan_fasilitas (
@@ -755,26 +782,25 @@ try {
                 ]);
             }
 
-            // 6. Semua penyimpanan berhasil.
-// 6. HITUNG SKOR DAN KLASIFIKASI PRIORITAS
+            // 6. Hitung skor dan klasifikasi prioritas.
 
-$hasilSkor = hitungSkorPengajuan(
-    $pdo,
-    $idPengajuan
-);
+            $hasilSkor = hitungSkorPengajuan(
+                $pdo,
+                $idPengajuan
+            );
 
-// 7. SIMPAN SELURUH TRANSAKSI
+            // 7. Simpan seluruh transaksi.
 
-$pdo->commit();
+            $pdo->commit();
 
-jsonResponse(
-    true,
-    "Pengajuan berhasil dikirim dan skor berhasil dihitung.",
-    [
-        "id_pengajuan" => $idPengajuan,
-        "penilaian" => $hasilSkor
-    ]
-);
+            jsonResponse(
+                true,
+                "Pengajuan berhasil dikirim dan skor berhasil dihitung.",
+                [
+                    "id_pengajuan" => $idPengajuan,
+                    "penilaian" => $hasilSkor
+                ]
+            );
 
         } catch (Throwable $e) {
 
@@ -786,67 +812,92 @@ jsonResponse(
         }
     }
 
-
     // =========================================
     // 3. AMBIL JADWAL PENGGUNA
     // GET ?action=schedule
     // =========================================
 
+
+    // =========================================
+// 3. AMBIL JADWAL HARI INI PENGGUNA
+// GET ?action=schedule
+// =========================================
+
     if ($method === "GET" && $action === "schedule") {
+
+        $zonaWaktu = new DateTimeZone("Asia/Jayapura");
+
+        $sekarang = new DateTimeImmutable("now", $zonaWaktu);
+
+        $tanggalHariIni = $sekarang->format("Y-m-d");
+
+        $waktuSekarang = $sekarang->format("Y-m-d H:i:s");
 
         $stmt = $pdo->prepare("
 
-            SELECT
-                p.id_pengajuan,
-                p.nama_kegiatan,
-                p.waktu_mulai,
-                p.waktu_selesai,
-                p.status AS status_pengajuan,
+        SELECT
+            p.id_pengajuan,
+            p.nama_kegiatan,
+            p.waktu_mulai,
+            p.waktu_selesai,
+            p.status AS status_pengajuan,
 
-                b.id_booking,
-                b.status AS status_booking,
+            b.id_booking,
+            b.status AS status_booking,
 
-                u.nama AS nama_pemohon,
+            u.nama AS nama_pemohon,
 
-                (
-                    SELECT COALESCE(SUM(pf.jumlah), 0)
-                    FROM pengajuan_fasilitas pf
-                    INNER JOIN fasilitas f
-                        ON f.id_fasilitas = pf.id_fasilitas
-                    WHERE pf.id_pengajuan = p.id_pengajuan
-                      AND LOWER(f.nama_fasilitas) LIKE '%pc%'
-                ) AS kebutuhan_pc,
+            (
+                SELECT COALESCE(SUM(pf.jumlah), 0)
+                FROM pengajuan_fasilitas pf
 
-                (
-                    SELECT COALESCE(SUM(pf.jumlah), 0)
-                    FROM pengajuan_fasilitas pf
-                    INNER JOIN fasilitas f
-                        ON f.id_fasilitas = pf.id_fasilitas
-                    WHERE pf.id_pengajuan = p.id_pengajuan
-                      AND LOWER(f.nama_fasilitas) LIKE '%kursi%'
-                ) AS kebutuhan_kursi
+                INNER JOIN fasilitas f
+                    ON f.id_fasilitas = pf.id_fasilitas
 
-            FROM booking b
+                WHERE pf.id_pengajuan = p.id_pengajuan
+                  AND LOWER(f.nama_fasilitas) LIKE '%pc%'
 
-            INNER JOIN pengajuan p
-                ON p.id_pengajuan = b.id_pengajuan
+            ) AS kebutuhan_pc,
 
-            INNER JOIN users u
-                ON u.id_user = p.id_user
+            (
+                SELECT COALESCE(SUM(pf.jumlah), 0)
+                FROM pengajuan_fasilitas pf
 
-            WHERE p.id_user = :id_user
+                INNER JOIN fasilitas f
+                    ON f.id_fasilitas = pf.id_fasilitas
 
-              AND LOWER(b.status) = 'terjadwal'
+                WHERE pf.id_pengajuan = p.id_pengajuan
+                  AND LOWER(f.nama_fasilitas) LIKE '%kursi%'
 
-              AND p.waktu_selesai >= NOW()
+            ) AS kebutuhan_kursi
 
-            ORDER BY
-                p.waktu_mulai ASC
+        FROM pengajuan p
 
-        ");
+        INNER JOIN booking b
+            ON b.id_pengajuan = p.id_pengajuan
+
+        INNER JOIN users u
+            ON u.id_user = p.id_user
+
+        WHERE p.id_user = :id_user
+
+          AND LOWER(TRIM(p.status)) = 'disetujui'
+
+          AND LOWER(TRIM(b.status)) = 'terjadwal'
+
+          AND DATE(p.waktu_mulai) = :tanggal
+
+          AND p.waktu_selesai >= :sekarang
+
+        ORDER BY
+            p.waktu_mulai ASC
+
+    ");
 
         $stmt->execute([
-            ":id_user" => $idUser
+            ":id_user" => $idUser,
+            ":tanggal" => $tanggalHariIni,
+            ":sekarang" => $waktuSekarang
         ]);
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -858,6 +909,8 @@ jsonResponse(
             $jadwal[] = [
 
                 "id" => (int) $row["id_pengajuan"],
+
+                "id_booking" => (int) $row["id_booking"],
 
                 "kegiatan" => $row["nama_kegiatan"],
 
@@ -884,19 +937,22 @@ jsonResponse(
 
                 "pemohon" => $row["nama_pemohon"],
 
-                "status" => $row["status_booking"]
+                "status" => $row["status_booking"],
+
+                "status_pengajuan" => $row["status_pengajuan"]
 
             ];
         }
 
         jsonResponse(
             true,
-            "Jadwal penggunaan laboratorium berhasil diambil.",
+            "Jadwal hari ini berhasil diambil.",
             [
                 "jadwal" => $jadwal
             ]
         );
     }
+
 
     // =========================================
     // ACTION TIDAK DIKENALI
@@ -919,14 +975,14 @@ jsonResponse(
         $pdo->rollBack();
     }
 
-jsonResponse(
-    false,
-    "Terjadi kesalahan saat memproses pengajuan.",
-    [],
-    500
-);
+    jsonResponse(
+        false,
+        "Terjadi kesalahan saat memproses pengajuan.",
+        [],
+        500
+    );
 
-}catch (Throwable $e) {
+} catch (Throwable $e) {
 
     error_log(
         "API PENGAJUAN ERROR: " . $e->getMessage()
@@ -936,10 +992,10 @@ jsonResponse(
         $pdo->rollBack();
     }
 
-jsonResponse(
-    false,
-    "Terjadi kesalahan saat memproses pengajuan.",
-    [],
-    500
-);
+    jsonResponse(
+        false,
+        "Terjadi kesalahan saat memproses pengajuan.",
+        [],
+        500
+    );
 }

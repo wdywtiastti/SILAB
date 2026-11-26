@@ -237,13 +237,6 @@ $nipLaboran = htmlspecialchars(
                         -
                     </span>
 
-                    <span
-                        class="priority-badge"
-                        data-detail="kategoriPrioritas"
-                    >
-                        -
-                    </span>
-
                     <p data-detail="namaKegiatan">
                         -
                     </p>

@@ -199,7 +199,13 @@ $zonaWaktu = new DateTimeZone('Asia/Jayapura');
 
 function normalisasiStatus(?string $status): string
 {
-    return strtolower(trim((string) $status));
+    return strtolower(
+        preg_replace(
+            '/[\s-]+/',
+            '_',
+            trim((string) $status)
+        )
+    );
 }
 
 /*
