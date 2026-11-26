@@ -356,16 +356,6 @@ async function ambilData() {
 
         isi("namaKegiatan", kasus.namaKegiatan);
 
-        isi(
-            "kebutuhanPC",
-            `Kebutuhan: ${Number(kasus.kebutuhanPC) || 0} PC`
-        );
-
-        isi(
-            "kebutuhanKursi",
-            `Kebutuhan: ${Number(kasus.kebutuhanKursi) || 0} Kursi`
-        );
-
         // Mengatur tombol rekomendasi.
         const tombol = salinan.querySelector(
             "[data-aksi-rekomendasi]"

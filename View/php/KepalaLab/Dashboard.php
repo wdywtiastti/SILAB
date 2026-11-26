@@ -299,7 +299,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
                 <tr>
                     <th>JAM / SESI</th>
                     <th>KEGIATAN & PEMOHON</th>
-                    <th>KATEGORI</th>
+                    <th>PRIORITAS</th>
                     <th>STATUS</th>
                 </tr>
             </thead>

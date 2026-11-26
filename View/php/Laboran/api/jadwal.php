@@ -145,6 +145,10 @@ try {
             u.nama AS namaPemohon,
             b.status AS status,
 
+            -- HASIL PERHITUNGAN PRIORITAS
+            sp.skor_akhir AS skorAkhir,
+            sp.prioritas AS prioritas,
+
             ak.nama_kriteria AS kategori,
 
         CASE
@@ -192,6 +196,9 @@ try {
         INNER JOIN users u
             ON u.id_user = p.id_user
 
+        LEFT JOIN skor_pengajuan sp
+    ON sp.id_pengajuan = p.id_pengajuan
+
         LEFT JOIN pengajuan_aturan pa
             ON pa.id_pengajuan_aturan = (
                 SELECT MIN(pa2.id_pengajuan_aturan)
@@ -215,14 +222,23 @@ try {
             ON a.id_aturan = ak.id_aturan
            AND a.nama_kelompok = 'Jenis Kegiatan'
 
-        LEFT JOIN (
-            SELECT
-                id_booking,
-                MAX(status) AS status
-            FROM validasi_booking
-            GROUP BY id_booking
-        ) vb
-            ON vb.id_booking = b.id_booking
+       LEFT JOIN (
+    SELECT
+        vb1.id_booking,
+        vb1.id_validasi_booking,
+        vb1.status
+    FROM validasi_booking vb1
+
+    INNER JOIN (
+        SELECT
+            id_booking,
+            MAX(id_validasi_booking) AS id_terakhir
+        FROM validasi_booking
+        GROUP BY id_booking
+    ) terbaru
+        ON terbaru.id_terakhir = vb1.id_validasi_booking
+) vb
+    ON vb.id_booking = b.id_booking
 
         WHERE DATE(p.waktu_mulai) = :tanggal
 
@@ -249,9 +265,17 @@ try {
     // 8. MENYESUAIKAN FORMAT DATA JSON
     // =====================================
 
+    // =====================================
+    // 8. MENYESUAIKAN FORMAT DATA JSON
+    // =====================================
+
     $data = [];
 
     foreach ($daftarJadwal as $booking) {
+
+        $statusPresensi = strtolower(
+            trim((string) ($booking["status_presensi"] ?? ""))
+        );
 
         $data[] = [
             "id" => (int) $booking["id"],
@@ -272,15 +296,33 @@ try {
 
             "kodeKategori" => $booking["kodeKategori"],
 
+            // HASIL SKOR DAN PRIORITAS
+            "skorAkhir" => $booking["skorAkhir"] !== null
+                ? (float) $booking["skorAkhir"]
+                : null,
+
+            "prioritas" => $booking["prioritas"] !== null
+                ? (int) $booking["prioritas"]
+                : null,
+
             "status" => $booking["status"],
 
-            "presensi" => $booking["status_presensi"] !== null
+            // Status presensi terakhir
+            "presensi" => $statusPresensi !== ""
                 ? [
-                    "status" => $booking["status_presensi"]
+                    "status" => $statusPresensi
                 ]
-                : null
+                : null,
+
+            // Hanya presensi final yang dianggap sudah tercatat
+            "sudahPresensi" => in_array(
+                $statusPresensi,
+                ["digunakan", "tidak_digunakan"],
+                true
+            )
         ];
     }
+
 
     // =====================================
     // 9. MENGIRIM RESPONS

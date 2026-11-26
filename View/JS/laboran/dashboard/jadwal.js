@@ -119,7 +119,7 @@
         kode: selesai ? "selesai" : "aktif",
         label: selesai
           ? "Selesai Digunakan"
-          : "Aktif di Lab",
+          : "Sedang Digunakan",
         ikon: "bi-check-circle-fill",
       };
     }

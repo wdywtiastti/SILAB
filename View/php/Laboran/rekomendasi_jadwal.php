@@ -279,7 +279,7 @@ $nipLaboran = htmlspecialchars(
 
                         <span>JADWAL ASAL DIBATALKAN</span>
 
-                        <span>KEGIATAN & KEBUTUHAN</span>
+                        <span>KEGIATAN</span>
 
                         <span>AKSI LABORAN</span>
 
@@ -323,10 +323,6 @@ $nipLaboran = htmlspecialchars(
                             <div class="kolom-kegiatan">
 
                                 <strong data-field="namaKegiatan"></strong>
-
-                                <span data-field="kebutuhanPC"></span>
-
-                                <span data-field="kebutuhanKursi"></span>
 
                             </div>
 

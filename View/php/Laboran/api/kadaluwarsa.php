@@ -184,53 +184,20 @@ try {
 
     $daftarBooking = $stmtBooking->fetchAll(PDO::FETCH_ASSOC);
 
-    // =====================================
-    // 9. MENYIAPKAN AKUN SISTEM
-    // =====================================
+// =====================================
+// 9. IDENTITAS LABORAN
+// =====================================
 
-    $idSistem = null;
+// Proses kedaluwarsa dijalankan melalui
+// akun Laboran yang sedang login.
 
-    foreach ($daftarBooking as $booking) {
+$idSistem = (int) ($_SESSION["id_user"] ?? 0);
 
-        if ($booking["id_validasi_booking"] === null) {
-
-            $querySistem = "
-
-                SELECT id_user
-
-                FROM users
-
-                WHERE role = 'sistem'
-
-                  AND nip_npm = 'SILAB-SYSTEM'
-
-                  AND status = 'nonaktif'
-
-                LIMIT 1
-
-                FOR UPDATE
-
-            ";
-
-            $stmtSistem = $pdo->prepare($querySistem);
-
-            $stmtSistem->execute();
-
-            $akunSistem = $stmtSistem->fetch(PDO::FETCH_ASSOC);
-
-            if (!$akunSistem) {
-
-                throw new RuntimeException(
-                    "Akun sistem belum tersedia."
-                );
-
-            }
-
-            $idSistem = (int) $akunSistem["id_user"];
-
-            break;
-        }
-    }
+if ($idSistem <= 0) {
+    throw new RuntimeException(
+        "Identitas Laboran tidak valid."
+    );
+}
 
     // =====================================
     // 10. MEMPROSES SETIAP BOOKING

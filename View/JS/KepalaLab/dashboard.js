@@ -242,16 +242,15 @@
       createElement("small", "", item.pemohon),
     );
 
-    // =====================================
-    // KOLOM KATEGORI
-    // =====================================
+    const prioritasCell = document.createElement("td");
 
-    const kategoriCell = document.createElement("td");
-
-    kategoriCell.appendChild(
-      createElement("span", "schedule-category", item.kategori || "-"),
+    prioritasCell.appendChild(
+      createElement(
+        "span",
+        "schedule-priority",
+        item.prioritas || "Belum Dihitung",
+      ),
     );
-
     // =====================================
     // KOLOM STATUS
     // =====================================
@@ -280,7 +279,8 @@
       createElement("span", statusInfo.kelas, statusInfo.label),
     );
 
-    row.append(waktuCell, kegiatanCell, kategoriCell, statusCell);
+    row.append(waktuCell, kegiatanCell, prioritasCell, statusCell);
+    label: "Sedang Digunakan";
 
     return row;
   }
@@ -458,7 +458,12 @@
         selesai: item.waktuSelesai || "00:00",
         pc: Number(item.pc || 0),
         kursi: Number(item.kursi || 0),
-        prioritas: item.prioritas || null,
+        skorAkhir: item.skorAkhir !== null ? Number(item.skorAkhir) : null,
+
+        prioritas:
+          item.prioritas !== null && item.prioritas !== undefined
+            ? `P${item.prioritas}`
+            : null,
         status: status,
       };
     });

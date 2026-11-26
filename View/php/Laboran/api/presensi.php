@@ -263,6 +263,29 @@ try {
     ]);
 
     // =====================================
+// 9A. SINKRONISASI STATUS BOOKING
+// =====================================
+
+$queryUpdateBooking = "
+    UPDATE booking
+    SET status = :status
+    WHERE id_booking = :id_booking
+      AND status IN ('terjadwal', 'disetujui')
+";
+
+$stmtUpdateBooking = $pdo->prepare($queryUpdateBooking);
+
+$stmtUpdateBooking->execute([
+    ":status" => $status,
+    ":id_booking" => $idBooking
+]);
+
+if ($stmtUpdateBooking->rowCount() !== 1) {
+    throw new RuntimeException(
+        "Gagal memperbarui status booking."
+    );
+}   
+    // =====================================
     // 10. COMMIT TRANSAKSI
     // =====================================
 

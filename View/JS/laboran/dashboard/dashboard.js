@@ -1,4 +1,3 @@
-
 (function (window, document) {
   "use strict";
 
@@ -22,14 +21,8 @@
   // 2. PEMERIKSAAN ELEMEN
   // =========================================
 
-  if (
-    !waktu ||
-    !el.presensi ||
-    !el.templatePresensi
-  ) {
-    console.error(
-      "SILAB: Elemen atau utilitas waktu presensi belum tersedia."
-    );
+  if (!waktu || !el.presensi || !el.templatePresensi) {
+    console.error("SILAB: Elemen atau utilitas waktu presensi belum tersedia.");
 
     return;
   }
@@ -39,13 +32,28 @@
   // =========================================
 
   function statusPresensi(booking) {
-    const status = booking.presensi?.status;
+    // Periksa penanda presensi dari API.
+    if (booking.sudahPresensi === true) {
+      return "sudah_divalidasi";
+    }
 
-    return ["digunakan", "tidak_digunakan"].includes(status)
-      ? status
-      : ["digunakan", "tidak_digunakan"].includes(booking.status)
-        ? booking.status
-        : null;
+    const status = String(booking.presensi?.status || "")
+      .toLowerCase()
+      .trim();
+
+    if (["digunakan", "tidak_digunakan"].includes(status)) {
+      return status;
+    }
+
+    const statusBooking = String(booking.status || "")
+      .toLowerCase()
+      .trim();
+
+    if (["digunakan", "tidak_digunakan"].includes(statusBooking)) {
+      return statusBooking;
+    }
+
+    return null;
   }
 
   // =========================================
@@ -56,7 +64,7 @@
     return waktu.validasiRentang(
       booking.tanggal,
       booking.waktuMulai,
-      booking.waktuSelesai
+      booking.waktuSelesai,
     );
   }
 
@@ -66,38 +74,31 @@
 
   async function ambilJadwalHariIni(tanggal) {
     const response = await fetch(
-    `api/jadwal.php?tanggal=${encodeURIComponent(tanggal)}`,
-    {
-      method: "GET",
-      cache: "no-store",
-      credentials: "same-origin",
-      headers: {
-        Accept: "application/json",
+      `api/jadwal.php?tanggal=${encodeURIComponent(tanggal)}`,
+      {
+        method: "GET",
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+        },
       },
-    }
-  );
+    );
 
     let hasil;
 
     try {
       hasil = await response.json();
     } catch {
-      throw new Error(
-        "Respons API jadwal bukan JSON yang valid."
-      );
+      throw new Error("Respons API jadwal bukan JSON yang valid.");
     }
 
     if (!response.ok || !hasil.success) {
-      throw new Error(
-        hasil.message ||
-        "Gagal mengambil data presensi."
-      );
+      throw new Error(hasil.message || "Gagal mengambil data presensi.");
     }
 
     if (!Array.isArray(hasil.data)) {
-      throw new Error(
-        "Format data jadwal tidak valid."
-      );
+      throw new Error("Format data jadwal tidak valid.");
     }
 
     return hasil.data;
@@ -123,7 +124,6 @@
     const fragmen = document.createDocumentFragment();
 
     data.forEach((booking) => {
-
       // Tidak menampilkan booking yang sudah divalidasi.
       if (statusPresensi(booking)) return;
 
@@ -138,16 +138,13 @@
       if (sekarang >= rentang.selesai) return;
 
       // Menghitung batas validasi 15 menit.
-      const batas =
-        rentang.mulai.getTime() +
-        BATAS_VALIDASI * 60000;
+      const batas = rentang.mulai.getTime() + BATAS_VALIDASI * 60000;
 
       // Tidak menampilkan card setelah batas validasi.
       if (sekarang.getTime() >= batas) return;
 
       // Membuat card berdasarkan template HTML.
-      const isiTemplate =
-        el.templatePresensi.content.cloneNode(true);
+      const isiTemplate = el.templatePresensi.content.cloneNode(true);
 
       const kartu = isiTemplate.querySelector(".sesi-card");
 
@@ -159,30 +156,17 @@
       isi(
         kartu,
         '[data-field="rentang-jam"]',
-        waktu.formatRentangJam(
-          booking.waktuMulai,
-          booking.waktuSelesai
-        )
+        waktu.formatRentangJam(booking.waktuMulai, booking.waktuSelesai),
       );
 
       // Mengisi nama kegiatan.
-      isi(
-        kartu,
-        '[data-field="nama-kegiatan"]',
-        booking.namaKegiatan
-      );
+      isi(kartu, '[data-field="nama-kegiatan"]', booking.namaKegiatan);
 
       // Mengisi nama pemohon.
-      isi(
-        kartu,
-        '[data-field="pemohon"]',
-        booking.namaPemohon
-      );
+      isi(kartu, '[data-field="pemohon"]', booking.namaPemohon);
 
       // Mengisi informasi batas validasi.
-      const feedback = kartu.querySelector(
-        "[data-presensi-feedback]"
-      );
+      const feedback = kartu.querySelector("[data-presensi-feedback]");
 
       if (feedback) {
         feedback.textContent =
@@ -218,73 +202,55 @@
   // =========================================
 
   async function perbaruiPresensi() {
-
     if (sedangMemperbarui) {
-        perluMemperbarui = true;
-        return;
+      perluMemperbarui = true;
+      return;
     }
 
     sedangMemperbarui = true;
 
     try {
+      const tanggal = waktu.tanggalHariIni();
+      const sekarang = new Date();
 
-        const tanggal = waktu.tanggalHariIni();
-        const sekarang = new Date();
+      const data = await ambilJadwalHariIni(tanggal);
 
-        const data = await ambilJadwalHariIni(tanggal);
-
-        tampilkanPresensi(data, sekarang);
-
+      tampilkanPresensi(data, sekarang);
     } catch (error) {
+      console.error("SILAB: Gagal memperbarui card presensi.", error);
 
-        console.error(
-            "SILAB: Gagal memperbarui card presensi.",
-            error
-        );
-
-        tampilkanErrorPresensi();
-
+      tampilkanErrorPresensi();
     } finally {
+      sedangMemperbarui = false;
 
-        sedangMemperbarui = false;
-
-        if (perluMemperbarui) {
-            perluMemperbarui = false;
-            perbaruiPresensi();
-        }
+      if (perluMemperbarui) {
+        perluMemperbarui = false;
+        perbaruiPresensi();
+      }
     }
-}
+  }
 
   // =========================================
   // 10. EVENT PERUBAHAN DATA
   // =========================================
 
-  window.addEventListener(
-    "silab:data-changed",
-    perbaruiPresensi
-);
+  window.addEventListener("silab:data-changed", perbaruiPresensi);
 
   // =========================================
   // 11. EVENT KETIKA HALAMAN DIBUKA KEMBALI
   // =========================================
 
-  document.addEventListener(
-    "visibilitychange",
-    () => {
-      if (!document.hidden) {
-        perbaruiPresensi();
-      }
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      perbaruiPresensi();
     }
-  );
+  });
 
   // =========================================
   // 12. PEMERIKSAAN BERKALA
   // =========================================
 
-  window.setInterval(
-    perbaruiPresensi,
-    15000
-  );
+  window.setInterval(perbaruiPresensi, 15000);
 
   // =========================================
   // 13. INISIALISASI
@@ -292,8 +258,5 @@
 
   perbaruiPresensi();
 
-  console.log(
-    "SILAB: Modul tampilan presensi berhasil dimuat."
-  );
-
+  console.log("SILAB: Modul tampilan presensi berhasil dimuat.");
 })(window, document);
