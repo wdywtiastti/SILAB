@@ -200,9 +200,9 @@
       );
 
       // Kembali ke modal profil setelah berhasil
+      // Setelah berhasil menyimpan, tutup modal edit saja
       setTimeout(() => {
         tutupModal(editModal);
-        bukaModal(profileModal);
       }, 1000);
     } catch (error) {
       tampilkanPesan(error.message || "Terjadi kesalahan.", "error");

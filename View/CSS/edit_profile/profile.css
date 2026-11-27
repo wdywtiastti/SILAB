@@ -1,6 +1,6 @@
 /* =========================================
-   SILAB - PROFILE MODAL
-========================================= */
+    SILAB - PROFILE MODAL
+  ========================================= */
 
 .profile-modal[hidden] {
   display: none !important;
@@ -65,10 +65,15 @@
 }
 
 .profile-label {
+  display: inline-block;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #dc2626;
+  color: #981b43;
+  background: #fff1f4;
+  border: 1px solid #ffcbd8;
+  border-radius: 20px;
+  padding: 4px 10px;
 }
 
 .profile-close {
@@ -83,8 +88,8 @@
 }
 
 .profile-close:hover {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #fff1f4;
+  color: #981b43;
 }
 
 /* PROFILE INFORMATION */
@@ -163,10 +168,10 @@
 }
 
 .profile-form-group input:focus {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  border-color: #981b43;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(152, 27, 67, 0.1);
 }
-
 .profile-form-group small {
   display: block;
   margin-top: 7px;
@@ -220,26 +225,28 @@
 }
 
 .btn-edit-profile {
-  background: #dc2626;
+  background: #981b43;
   color: #ffffff;
+  border: 1px solid #981b43;
 }
 
 .btn-edit-profile:hover {
-  background: #b91c1c;
+  background: #7f1737;
+  border-color: #7f1737;
 }
-
 .btn-edit-profile:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .btn-profile-cancel {
-  background: #f3f4f6;
-  color: #374151;
+  background: #f3f0ff;
+  color: #33266a;
+  border: 1px solid #e8e2fa;
 }
 
 .btn-profile-cancel:hover {
-  background: #e5e7eb;
+  background: #eae5fa;
 }
 
 /* MESSAGE */
@@ -289,14 +296,11 @@
 }
 
 /* =========================================
-   TOMBOL EDIT PROFILE PADA DROPDOWN
-========================================= */
+    TOMBOL EDIT PROFILE PADA DROPDOWN
+  ========================================= */
 
 button.logout-link.profile-link {
   width: 100%;
-  font-size: 12px;
-  line-height: normal;
-  font-weight: 200;
   border: none !important;
   outline: none !important;
   background: transparent !important;
