@@ -200,27 +200,31 @@ $identitasPengguna = htmlspecialchars(
         <div class="history-panel-footer">
           <p id="historyInfo">Menampilkan 0 dari 0 pengajuan</p>
 
-          <div class="history-pagination">
-            <button
-              type="button"
-              id="prevPage"
-              class="pagination-btn"
-              aria-label="Halaman sebelumnya"
-            >
-              <i class="bi bi-chevron-left"></i>
-            </button>
 
-            <div id="paginationNumbers" class="pagination-numbers"></div>
+<div class="history-pagination">
 
-            <button
-              type="button"
-              id="nextPage"
-              class="pagination-btn"
-              aria-label="Halaman selanjutnya"
-            >
-              <i class="bi bi-chevron-right"></i>
-            </button>
-          </div>
+    <button
+      type="button"
+      id="prevPage"
+      class="pagination-btn"
+      aria-label="Halaman sebelumnya"
+    >
+      Sebelumnya
+    </button>
+
+    <div id="paginationNumbers" class="pagination-numbers"></div>
+
+    <button
+      type="button"
+      id="nextPage"
+      class="pagination-btn"
+      aria-label="Halaman selanjutnya"
+    >
+      Selanjutnya
+    </button>
+
+</div>
+
         </div>
       </section>
     </main>

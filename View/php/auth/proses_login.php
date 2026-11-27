@@ -7,6 +7,7 @@ declare(strict_types=1);
 // =========================================
 
 require_once __DIR__ . "/sesi.php";
+require_once __DIR__ . "/rate_limit.php";
 require_once __DIR__ . "/../../config/database.php";
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -53,7 +54,19 @@ if (!preg_match('/^[0-9]+$/', $identifier)) {
 // =========================================
 // PROSES LOGIN
 // =========================================
+$batasLogin = rateLimitLogin($identifier, "check");
 
+if ($batasLogin["blocked"]) {
+
+    http_response_code(429);
+
+    responseJSON(
+        false,
+        "Terlalu banyak percobaan login. Silakan coba kembali setelah "
+        . ceil($batasLogin["retry_after"] / 60)
+        . " menit."
+    );
+}
 try {
 
     $stmt = $pdo->prepare("
@@ -76,6 +89,18 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
+
+        $hasilLimit = rateLimitLogin($identifier, "failed");
+
+        if ($hasilLimit["blocked"]) {
+            http_response_code(429);
+
+            responseJSON(
+                false,
+                "Terlalu banyak percobaan login. Akun diblokir sementara selama 15 menit."
+            );
+        }
+
         responseJSON(false, "NIP/NPM atau password salah.");
     }
 
@@ -86,6 +111,18 @@ try {
         $passwordHash === "" ||
         !password_verify($plainPassword, $passwordHash)
     ) {
+
+        $hasilLimit = rateLimitLogin($identifier, "failed");
+
+        if ($hasilLimit["blocked"]) {
+            http_response_code(429);
+
+            responseJSON(
+                false,
+                "Terlalu banyak percobaan login. Akun diblokir sementara selama 15 menit."
+            );
+        }
+
         responseJSON(false, "NIP/NPM atau password salah.");
     }
 
@@ -122,7 +159,11 @@ try {
     if (!in_array($user["role"], $roleDiizinkan, true)) {
         responseJSON(false, "Role akun tidak dikenali.");
     }
+    // Reset catatan percobaan login setelah autentikasi berhasil
+    rateLimitLogin($identifier, "reset");
 
+    // Buat session
+    session_regenerate_id(true);
     // Buat session
     session_regenerate_id(true);
     $_SESSION["login_time"] = time();

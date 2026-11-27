@@ -32,13 +32,10 @@
     "Pemohon",
     "NIP/NPM",
     "Nama Kegiatan",
-    "Jenis Kegiatan",
-    "Kategori",
+    "Kategori Kegiatan",
+    "Fasilitas",
     "Waktu",
-    "PC",
-    "Kursi",
     "Status Presensi",
-    "Waktu Validasi",
   ];
 
   // Memeriksa validitas tanggal kalender.
@@ -86,33 +83,6 @@
     return keterangan[status];
   }
 
-  // Memformat waktu validasi berdasarkan zona waktu WIT.
-  function formatWaktuValidasi(booking) {
-    const nilai = booking.presensi?.waktuValidasi;
-
-    if (!nilai) {
-      return "-";
-    }
-
-    const tanggal = new Date(nilai);
-
-    if (Number.isNaN(tanggal.getTime())) {
-      return "-";
-    }
-
-    return (
-      new Intl.DateTimeFormat("id-ID", {
-        timeZone: ZONA_WAKTU,
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23",
-      }).format(tanggal) + " WIT"
-    );
-  }
-
   // Mengambil seluruh peminjaman berdasarkan tanggal.
   async function ambilDataTanggal(tanggal) {
     const response = await fetch(
@@ -145,9 +115,9 @@
         nipNpm: item.nipNpm,
 
         namaKegiatan: item.namaKegiatan,
-        jenisKegiatan: item.jenisKegiatan,
+        kategoriKegiatan: item.kategoriKegiatan,
 
-        kategori: item.fasilitas,
+        fasilitas: item.fasilitas,
 
         waktuMulai: item.waktuMulai ? item.waktuMulai.substring(11, 16) : "",
 
@@ -162,7 +132,6 @@
 
         presensi: {
           status: item.presensi?.status,
-          waktuValidasi: item.presensi?.waktuValidasi,
         },
 
         skorAkhir: item.skorAkhir,
@@ -202,16 +171,12 @@
       pemohon: booking.namaPemohon || "-",
       identifier: booking.nipNpm || "-",
       kegiatan: booking.namaKegiatan || "-",
-      jenisKegiatan: booking.jenisKegiatan || "-",
-      kategori: booking.kategori || "-",
+      kategoriKegiatan: booking.kategoriKegiatan || "-",
+      fasilitas: booking.fasilitas || "-",
 
       waktu: `${waktu.formatJam(booking.waktuMulai)} - ${waktu.formatJam(booking.waktuSelesai)}`,
 
-      pc: Number(booking.kebutuhanPC) || 0,
-      kursi: Number(booking.kebutuhanKursi) || 0,
-
       status: formatStatusPresensi(booking),
-      validasi: formatWaktuValidasi(booking),
     }));
   }
 
@@ -222,13 +187,10 @@
       item.pemohon,
       item.identifier,
       item.kegiatan,
-      item.jenisKegiatan,
-      item.kategori,
+      item.kategoriKegiatan,
+      item.fasilitas,
       item.waktu,
-      item.pc,
-      item.kursi,
       item.status,
-      item.validasi,
     ];
   }
 
@@ -350,26 +312,23 @@
       { wch: 24 },
       { wch: 18 },
       { wch: 35 },
-      { wch: 22 },
-      { wch: 12 },
-      { wch: 22 },
-      { wch: 10 },
-      { wch: 10 },
-      { wch: 22 },
       { wch: 25 },
+      { wch: 45 },
+      { wch: 22 },
+      { wch: 22 },
     ];
 
     // Menggabungkan judul laporan.
     lembar["!merges"] = [
       {
         s: { r: 0, c: 0 },
-        e: { r: 0, c: 10 },
+        e: { r: 0, c: 7 },
       },
     ];
 
     // Mengaktifkan filter pada tabel laporan.
     lembar["!autofilter"] = {
-      ref: `A5:K${5 + data.length}`,
+      ref: `A5:H${5 + data.length}`,
     };
 
     const buku = window.XLSX.utils.book_new();
@@ -468,12 +427,9 @@
         2: { cellWidth: 25 },
         3: { cellWidth: 48 },
         4: { cellWidth: 32 },
-        5: { cellWidth: 15, halign: "center" },
-        6: { cellWidth: 28, halign: "center" },
-        7: { cellWidth: 10, halign: "center" },
-        8: { cellWidth: 10, halign: "center" },
-        9: { cellWidth: 32 },
-        10: { cellWidth: 38 },
+        5: { cellWidth: 55 },
+        6: { cellWidth: 38, halign: "center" },
+        7: { cellWidth: 40 },
       },
     });
 

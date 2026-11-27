@@ -243,7 +243,7 @@ function renderDynamicRules() {
     dynamicRuleFields.appendChild(group);
 
     // Tampilkan kategori di panel samping
-    if (dynamicRuleSummary && /jenis\s*kegiatan/i.test(ruleName)) {
+    if (dynamicRuleSummary && /kategori\s*kegiatan/i.test(ruleName)) {
       criteria.forEach((item) => {
         const category = document.createElement("div");
 

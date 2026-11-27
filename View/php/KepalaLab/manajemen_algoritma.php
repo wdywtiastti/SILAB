@@ -42,6 +42,7 @@ $nipKepalaLab = $user["nip_npm"] ?? "-";
 
     <!-- CSS NAVBAR BERSAMA -->
     <link rel="stylesheet" href="../../CSS/kepalaLab/navbar.css" />
+    <link rel="stylesheet" href="../../CSS/edit_profile/profile.css">
 
     <!-- CSS HALAMAN -->
     <link rel="stylesheet" href="../../CSS/kepalaLab/algoritma.css" />

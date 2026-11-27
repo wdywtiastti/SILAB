@@ -217,7 +217,7 @@ LEFT JOIN (
 
             "namaKegiatan" => $row["nama_kegiatan"],
 
-            "jenisKegiatan" => $row["jenis_kegiatan"],
+            "kategoriKegiatan" => $row["jenis_kegiatan"],
 
             "waktuMulai" => $row["waktu_mulai"],
 
@@ -232,8 +232,7 @@ LEFT JOIN (
             "status" => $row["status_booking"],
 
             "presensi" => [
-                "status" => $row["status_presensi"] ?? "menunggu",
-                "waktuValidasi" => null
+                "status" => $row["status_presensi"] ?? "menunggu"
             ],
 
             "skorJenisKegiatan" => $row["skor_jenis_kegiatan"],
